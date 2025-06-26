@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chiamate Settimanali</title>
+  <style>
+    body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+  margin: 0;
+  padding: 20px;
+}
+
+h2 {
+  text-align: center;
+  color: #001f3f;
+  font-size: 2rem;
+  margin-top: 30px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.moduli-container, .switcher {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.bottone-chiamata, .switcher button {
+  background-color: #0074D9;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.bottone-chiamata:hover, .switcher button:hover {
+  background-color: #005fa3;
+}
+
+#chiamate-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 10px;
+  font-size: 0.95rem;
+}
+
+#chiamate-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+#chiamate-container th,
+#chiamate-container td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+#chiamate-container thead {
+  background-color: #001f3f;
+  color: white;
+}
+
+.avviso {
+  background-color: #001f3f;
+  color: white;
+  padding: 12px;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f4f4;
+  color: #222;
+}
+
+nav {
+  background-color: #001f3f;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  flex-wrap: wrap;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.home-icon {
+  font-size: 1.4rem;
+  text-decoration: none;
+  color: white;
+}
+
+.hamburger {
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: none;
+  color: white;
+}
+
+.navbar {
+  list-style-type: none;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.navbar li {
+  position: relative;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: white;
+  padding: 8px 12px;
+  display: block;
+}
+
+.navbar a:hover {
+  background-color: #0074D9;
+  border-radius: 6px;
+}
+
+.submenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  background-color: #001f3f;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-radius: 6px;
+}
+
+.dropdown.show .submenu {
+  display: block;
+}
+
+.submenu li a {
+  padding: 8px 16px;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .navbar {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .navbar.show {
+    display: flex;
+  }
+
+  .navbar li {
+    width: 100%;
+  }
+
+  .submenu {
+    position: static;
+  }
+}
+
+  </style>
+</head>
+<body class="pagina-chiamate">
+  <!-- NAVBAR -->
+ <nav>
+  <div class="nav-left">
+    <span id="hamburger" class="hamburger">☰</span>
+    <a href="index.html" class="home-icon">🏠</a>
+    <ul class="navbar" id="mainMenu">
+      <li><a href="rose.html">Rose</a></li>
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Draft ▾</a>
+        <ul class="submenu">
+          <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
+          <li><a href="draft_conference.html">🟨 Conf.League</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Classifiche ▾</a>
+        <ul class="submenu">
+          <li><a href="classifica.html">📊 Classifica</a></li>
+          <li><a href="playoff.html">🏆 Playoff</a></li>
+        </ul>
+      </li>
+      <li><a href="svincolati.html">Svincolati</a></li>
+      <li><a href="chiamate.html">Chiamate</a></li>
+      <li><a href="albo.html">Albo d'Oro</a></li>
+    </ul>
+  </div>
+</nav>
+  
+  <h1 class="titolo">CHIAMATE SETTIMANALI</h1>
+
+  <div class="moduli-container">
+    <a class="bottone-chiamata" href="https://docs.google.com/forms/d/e/1FAIpQLSdxOpFrvWkhi6TrhryrIVJUeMISAxo-CatGtw8TuNApRyU8Yg/viewform?usp=dialog" target="_blank">
+      ➕ Compila chiamata 15:00 (Conference League)
+    </a>
+    <a class="bottone-chiamata" href="https://docs.google.com/forms/d/e/1FAIpQLScR411PT9pvIZ9SxoFeiKKwbI_Mk0r5USa-rk6Egv0ZyOnSSQ/viewform?usp=dialog" target="_blank">
+      ➕ Compila chiamata 16:00 (Conference League)
+    </a>
+    <a class="bottone-chiamata" href="https://docs.google.com/forms/d/e/1FAIpQLScNaxnbpVmIW_t23uvRqLkRy6sDrzyEvQQ-mpLDkk67DVDLag/viewform?usp=dialog" target="_blank">
+      ➕ Compila chiamata 15:00 (Conference Championship)
+    </a>
+    <a class="bottone-chiamata" href="https://docs.google.com/forms/d/e/1FAIpQLSfwpZkHssyd3GVJodKLwGJjNttEe-qvMqqCRE50LiTp6bH2jA/viewform?usp=dialog" target="_blank">
+      ➕ Compila chiamata 16:00 (Conference Championship)
+    </a>
+  </div>
+
+  <div class="switcher">
+    <button onclick="caricaChiamate('league15')">📋 Visualizza Conference League (15:00)</button>
+    <button onclick="caricaChiamate('league16')">📋 Visualizza Conference League (16:00)</button>
+    <button onclick="caricaChiamate('champ15')">📋 Visualizza Conference Championship (15:00)</button>
+    <button onclick="caricaChiamate('champ16')">📋 Visualizza Conference Championship (16:00)</button>
+  </div>
+
+  <div id="chiamate-container">
+    <p>⏳ Seleziona una conference per visualizzare le chiamate.</p>
+  </div>
+
+  <script src="chiamate.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const hamburger = document.getElementById("hamburger");
+      const mainMenu = document.getElementById("mainMenu");
+      const submenuToggles = document.querySelectorAll(".toggle-submenu");
+
+      hamburger?.addEventListener("click", () => {
+        mainMenu.classList.toggle("show");
+      });
+
+      submenuToggles.forEach(toggle => {
+        toggle.addEventListener("click", function (e) {
+          e.preventDefault();
+          const parent = this.closest(".dropdown");
+          parent.classList.toggle("show");
+        });
+      });
+    });
+  </script>
+</body>
+</html>
