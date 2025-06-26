@@ -1,0 +1,278 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f4f4;
+  color: #222;
+}
+
+nav {
+  background-color: #001f3f;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  flex-wrap: wrap;
+}
+
+.home-icon {
+  font-size: 1.4rem;
+  margin-right: 20px;
+  text-decoration: none;
+  color: white;
+}
+
+.hamburger {
+  font-size: 1.5rem;
+  cursor: pointer;
+  margin-right: 20px;
+  display: none;
+}
+
+.navbar {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.navbar li {
+  position: relative;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: white;
+  padding: 8px 12px;
+  display: block;
+}
+
+.navbar a:hover {
+  background-color: #0074D9;
+  border-radius: 6px;
+}
+
+.submenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #003366;
+  border-radius: 4px;
+  z-index: 10;
+  min-width: 180px;
+  flex-direction: column;
+}
+
+.submenu a {
+  font-size: 0.95rem;
+}
+
+.dropdown.show .submenu {
+  display: flex;
+}
+
+h1 {
+  color: #001f3f;
+  margin: 20px 0 10px;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.switcher {
+  text-align: center;
+  margin: 20px;
+}
+
+.switcher button {
+  padding: 10px 20px;
+  margin: 0 5px;
+  background-color: #001f3f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.switcher button:hover {
+  background-color: #0074D9;
+}
+
+#classifica-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+#tabella-classifica {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 1200px;
+  margin-bottom: 40px;
+  table-layout: auto; /* ✅ Adatta la larghezza in base al contenuto */
+}
+
+thead {
+  background-color: #001f3f;
+  color: white;
+}
+
+th, td {
+  padding: 10px;
+  text-align: center;
+}
+
+#tabella-classifica th:nth-child(2),
+#tabella-classifica td:nth-child(2) {
+  text-align: left;
+  white-space: normal;     /* ✅ consente l'andata a capo */
+  word-break: break-word;  /* ✅ forza il testo a capo se troppo lungo */
+}
+
+#tabella-classifica td .logo-nome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+#tabella-classifica td .logo-nome img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.riga-classifica {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  margin-bottom: 8px;
+}
+
+.top4 {
+  background-color: #ffcc00 !important;
+  color: black;
+  font-weight: bold;
+}
+
+.ultime4 {
+  background-color: #8B0000 !important;
+  color: white;
+  font-weight: bold;
+}
+
+.top1 {
+  background-color: #ffcc00 !important;
+  color: black;
+  font-weight: bold;
+}
+
+#classifica-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  #tabella-classifica {
+    display: none;
+  }
+
+  #classifica-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .accordion-item {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .accordion-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    background-color: #003b66;
+    color: white;
+  }
+
+  .accordion-header img {
+    height: 48px;
+    width: 48px;
+    object-fit: contain;
+  }
+
+  .accordion-body {
+    display: none;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 16px;
+    background-color: #004080;
+    font-size: 0.85rem;
+  }
+
+  .accordion-item.active .accordion-body {
+    display: flex;
+  }
+
+  .accordion-body span {
+    flex: 1 1 45%;
+    white-space: nowrap;
+    color: white;
+  }
+
+  .accordion-item.top4 .accordion-header {
+    background-color: #ffcc00 !important;
+    color: black;
+  }
+
+  .accordion-item.ultime4 .accordion-header {
+    background-color: #8B0000 !important;
+    color: white;
+  }
+
+  .accordion-item.top1 .accordion-header {
+    background-color: #ffcc00 !important;
+    color: black;
+  }
+}
+@media (max-width: 768px) {
+  .navbar {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .navbar.show {
+    display: flex;
+  }
+
+  .navbar li {
+    width: 100%;
+  }
+
+  .submenu {
+    position: static;
+    width: 100%;
+  }
+  .hamburger {
+    display: block;
+  }
+  .nav-left {
+  display: flex;
+  align-items: center;
+  flex-direction: row; /* 👈 FORZA l’allineamento orizzontale */
+  gap: 12px;
+}
+}
+
