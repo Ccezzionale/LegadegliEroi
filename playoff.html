@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.5, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">
+  <title>Playoff Lega degli Eroi</title>
+  <script src="risultati_playoff.js" defer></script>
+  <script src="playoff.js" defer></script>
+  <style>
+    body {
+      background: url('img/champions_bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #00f0ff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: 100vh;
+      overflow-x: auto;
+      overflow-y: auto;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    html {
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .bracket {
+      display: flex;
+      align-items: flex-start;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 30px;
+      width: max-content;
+      padding-top: 40px;
+    }
+
+    .blocco-colonna {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .blocco-colonna h2 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #ffcc00;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px black;
+    }
+
+    .colonna {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+.match {
+  background-color: rgba(0, 0, 0, 0.4); /* sfondo uniforme */
+  border: 1px solid #00f0ff;
+  border-radius: 8px;
+  padding: 10px 20px;
+  min-width: 160px;
+  color: #ffffff; /* testo bianco */
+}
+    .finale {
+      font-weight: bold;
+      background-color: transparent;
+      border: 1px solid #00f0ff;
+      color: #00f0ff;
+    }
+
+.match.vincente {
+  background-color: rgba(255, 215, 0, 0.15); /* sfondo dorato chiaro */
+  border: 3px solid #ffcc00;
+  box-shadow: 0 0 12px #ffcc00, 0 0 24px #ffcc00;
+  animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 8px #ffcc00; }
+  to { box-shadow: 0 0 20px #ffcc00; }
+}
+
+.match img {
+  max-width: 30px;
+  max-height: 30px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+    .squadra.orizzontale {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: flex-start;
+    }
+
+    .squadra.orizzontale img {
+      max-height: 24px;
+      max-width: 24px;
+    }
+
+.squadra.orizzontale span {
+  color: #ffe066; /* oro chiaro */
+  font-weight: bold;
+  text-shadow: 1px 1px 2px black;
+}
+
+    .squadra.orizzontale.vincente span {
+      font-weight: bold;
+    }
+
+    .squadra.orizzontale.perdente span {
+      font-weight: normal;
+    }
+
+    .spaziata {
+      margin-top: 100px;
+    }
+
+    .semifinale-sx,
+    .semifinale-dx {
+      margin-top: 120px;
+    }
+
+    .wc-dx, .wc-sx {
+      margin-left: 0px;
+    }
+
+h1 {
+  margin-top: 20px;
+  font-size: 2.4rem;
+  color: #ffcc00; /* oro */
+  font-weight: bold;
+  text-shadow: 1px 1px 2px black;
+}
+
+ @media (max-width: 768px) {
+  body {
+    transform: scale(0.85);
+    transform-origin: top left;
+    min-width: 1200px; /* larghezza minima per evitare tagli */
+    overflow-x: auto;
+  }
+
+  .bracket {
+    flex-wrap: nowrap;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .blocco-colonna h2 {
+    font-size: 1rem;
+  }
+
+  .match {
+    min-width: 140px;
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+
+  .squadra.orizzontale img {
+    max-height: 20px;
+    max-width: 20px;
+  }
+
+  .coppa-vittoria img {
+    width: 120px;
+  }
+
+  .logo-vincitore {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nome-vincitore {
+    font-size: 0.9rem;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    margin-top: 10px;
+  }
+}
+
+    .coppa-vittoria {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 30px;
+    }
+
+    .coppa-vittoria img {
+      width: 200px;
+      height: auto;
+      filter: drop-shadow(0 0 8px gold);
+    }
+
+    .vincitore-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.logo-vincitore {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-bottom: 6px;
+}
+
+.nome-vincitore {
+  color: #ffcc00;
+  font-weight: bold;
+  font-size: 1rem;
+  text-shadow: 1px 1px 2px black;
+}
+
+  </style>
+</head>
+<body>
+  <h1>PLAYOFF LEGA DEGLI EROI</h1>
+  <div class="bracket">
+    <div class="blocco-colonna">
+      <h2>Wildcard</h2>
+      <div class="colonna wc-sx">
+        <div class="match" data-match="WC1-A"></div>
+        <div class="match" data-match="WC1-B"></div>
+        <div class="match spaziata" data-match="WC3-A"></div>
+        <div class="match" data-match="WC3-B"></div>
+      </div>
+    </div>
+
+    <div class="blocco-colonna">
+      <h2>Quarti</h2>
+      <div class="colonna">
+        <div class="match" data-match="Q1-A"></div>
+        <div class="match" data-match="Q1-B"></div>
+        <div class="match spaziata" data-match="Q3-A"></div>
+        <div class="match" data-match="Q3-B"></div>
+      </div>
+    </div>
+
+    <div class="blocco-colonna">
+      <h2>Semifinale</h2>
+      <div class="colonna semifinale-sx">
+        <div class="match" data-match="S1-A"></div>
+        <div class="match" data-match="S1-B"></div>
+      </div>
+    </div>
+
+ <div class="blocco-colonna">
+      <h2>Finale</h2>
+      <div class="colonna">
+        <div class="match finale" data-match="F-A"></div>
+        <div class="match finale" data-match="F-B"></div>
+      </div>
+      <div class="coppa-vittoria">
+        <img src="img/coppa.png" alt="Coppa del Vincitore">
+       <div id="vincitore-assoluto" class="vincitore-info">
+          <img id="logo-vincitore" src="" alt="Logo Vincitore">
+          <span id="nome-vincitore"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="blocco-colonna">
+      <h2>Semifinale</h2>
+      <div class="colonna semifinale-dx">
+        <div class="match" data-match="S2-A"></div>
+        <div class="match" data-match="S2-B"></div>
+      </div>
+    </div>
+
+    <div class="blocco-colonna">
+      <h2>Quarti</h2>
+      <div class="colonna">
+        <div class="match" data-match="Q2-A"></div>
+        <div class="match" data-match="Q2-B"></div>
+        <div class="match spaziata" data-match="Q4-A"></div>
+        <div class="match" data-match="Q4-B"></div>
+      </div>
+    </div>
+
+    <div class="blocco-colonna">
+          <h2>Wildcard</h2>
+      <div class="colonna wc-dx">
+        <div class="match" data-match="WC2-A"></div>
+        <div class="match" data-match="WC2-B"></div>
+        <div class="match spaziata" data-match="WC4-A"></div>
+        <div class="match" data-match="WC4-B"></div>
+      </div>
+  </div>
+</body>
+</html>
