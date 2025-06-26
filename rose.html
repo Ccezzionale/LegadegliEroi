@@ -235,25 +235,25 @@ thead {
 <div id="contenitore-rose">Caricamento rose...</div>
 
 <script src="rose.js?v=11"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const hamburger = document.getElementById("hamburger");
-    const mainMenu = document.getElementById("mainMenu");
-    const submenuToggles = document.querySelectorAll(".toggle-submenu");
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const hamburger = document.getElementById("hamburger");
+      const mainMenu = document.getElementById("mainMenu");
+      const submenuToggles = document.querySelectorAll(".toggle-submenu");
 
-    hamburger?.addEventListener("click", () => {
-      mainMenu.classList.toggle("show");
-    });
+      hamburger?.addEventListener("click", () => {
+        mainMenu.classList.toggle("show");
+      });
 
-    submenuToggles.forEach(toggle => {
-      toggle.addEventListener("click", function (e) {
-        e.preventDefault();
-        const parent = this.closest(".dropdown");
-        parent.classList.toggle("show");
+      submenuToggles.forEach(toggle => {
+        toggle.addEventListener("click", function (e) {
+          e.preventDefault();
+          const parent = this.closest(".dropdown");
+          parent.classList.toggle("show");
+        });
       });
     });
-  });
-</script>
+  </script>
 
 </body>
 </html>
