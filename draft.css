@@ -1,0 +1,338 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f4f4;
+  color: #222;
+}
+
+nav {
+  background-color: #001f3f;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  flex-wrap: wrap;
+}
+
+.home-icon {
+  font-size: 1.4rem;
+  margin-right: 20px;
+  text-decoration: none;
+  color: white;
+}
+
+.hamburger {
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: none;
+  color: white;
+}
+
+.navbar {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.navbar li {
+  position: relative;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: white;
+  padding: 8px 12px;
+  display: block;
+}
+
+.navbar a:hover {
+  background-color: #0074D9;
+  border-radius: 6px;
+}
+
+.submenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #003366;
+  border-radius: 4px;
+  z-index: 10;
+  min-width: 180px;
+  flex-direction: column;
+}
+
+.submenu a {
+  font-size: 0.95rem;
+}
+
+.dropdown.show .submenu {
+  display: flex;
+}
+
+h1 {
+  color: #001f3f;
+  margin: 20px 0 10px;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.container {
+  display: flex;
+  gap: 20px;
+  padding: 0 20px 40px;
+  align-items: flex-start;
+}
+
+.colonna-pick {
+  flex: 1;
+  max-height: 550px;
+  overflow-y: auto;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.lista-container {
+  flex: 1;
+  max-height: 550px;
+  overflow-y: auto;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.colonna-pick {
+  flex: 1;
+  max-height: 550px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+th {
+  background-color: #001f3f;
+  color: white;
+  cursor: pointer;
+}
+
+input[type="text"], select {
+  width: 100%;
+  padding: 6px;
+  margin: 6px 0;
+  box-sizing: border-box;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95em;
+}
+.card-pick {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 15px;
+  text-align: center;
+  min-width: 200px;
+  max-width: 220px;
+  flex: 1 1 200px;
+}
+.card-pick img {
+  max-width: 60px;
+  margin: 0 auto 8px;
+}
+.card-pick h4 {
+  font-size: 1.1rem;
+  color: #001f3f;
+}
+.card-pick div {
+  color: #001f3f;
+  font-size: 0.9rem;
+  margin: 2px 0;
+}
+
+.btn-riepilogo {
+  background-color: #001f3f;
+  color: white;
+  font-weight: bold;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 10px;
+  transition: background-color 0.3s;
+}
+
+.btn-riepilogo:hover {
+  background-color: #0074D9;
+}
+
+#turno-attuale {
+  font-size: 1.2rem;
+  color: #ff851b;
+  font-weight: bold;
+  margin: 10px auto;
+  text-align: center;
+}
+
+#lista-giocatori-table tbody tr {
+  cursor: pointer;
+}
+
+.colonna-pick {
+  flex: 1 1 60%;
+  max-height: 500px;
+  overflow-y: auto;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  padding: 10px;
+}
+
+.pick-top6 {
+  color: #001f3f;
+  font-weight: bold;
+  background-color: #ffecb3; /* giallino chiaro, modificabile */
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.highlight-pick {
+  color: #003366;
+  background-color: #ffecb3;
+  font-weight: bold;
+  border-radius: 4px;
+  padding: 2px 4px;
+  margin: 1px 0;
+}
+
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .navbar {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .navbar.show {
+    display: flex;
+  }
+
+  .navbar li {
+    width: 100%;
+  }
+
+  .submenu {
+    position: static;
+    width: 100%;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .colonna-pick {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 0;
+  }
+
+ #tabella-pick {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#tabella-pick thead,
+#tabella-pick tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+#tabella-pick tbody {
+  display: block;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#tabella-pick th,
+#tabella-pick td {
+  padding: 4px 6px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+#tabella-pick td:nth-child(3),
+#tabella-pick th:nth-child(3) {
+  width: auto;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis
+  }
+
+#tabella-pick td:nth-child(1),
+#tabella-pick td:nth-child(2) {
+  max-width: 120px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+  #tabella-pick td:first-child,
+#tabella-pick th:first-child {
+  text-align: center;
+  width: 36px;
+}
+
+#tabella-pick td:nth-child(4),
+#tabella-pick th:nth-child(4) {
+  width: 40px;               /* stretta */
+  text-align: center;        /* o left se preferisci */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+  #lista-giocatori-scroll {
+  max-height: 300px;
+  overflow-y: auto;
+}
+  .lista-container {
+  display: flex;
+  flex-direction: column;
+}
+}

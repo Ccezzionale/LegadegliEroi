@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Draft Conference</title>
+  <link rel="stylesheet" href="draft.css" />
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <span id="hamburger" class="hamburger">☰</span>
+    <a href="index.html" class="home-icon">🏠</a>
+  </div>
+  <ul class="navbar" id="mainMenu">
+    <li><a href="rose.html">Rose</a></li>
+    <li class="dropdown">
+      <a href="#" class="toggle-submenu">Draft ▾</a>
+      <ul class="submenu">
+        <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
+        <li><a href="draft_conference.html">🟨 Conf.League</a></li>
+      </ul>
+    </li>
+    <li class="dropdown">
+      <a href="#" class="toggle-submenu">Classifiche ▾</a>
+      <ul class="submenu">
+        <li><a href="classifica.html">📊 Classifica</a></li>
+        <li><a href="playoff.html">🏆 Playoff</a></li>
+      </ul>
+    </li>
+    <li><a href="svincolati.html">Svincolati</a></li>
+    <li><a href="chiamate.html">Chiamate</a></li>
+    <li><a href="albo.html">Albo d'Oro</a></li>
+  </ul>
+</nav>
+
+<h1>🟨 Draft Room - Conference League</h1>
+</div>
+<div id="turno-attuale">⏳ Caricamento turno in corso...</div>
+
+<div class="container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; padding: 20px;">
+  <div class="colonna-pick">
+  <table id="tabella-pick">
+      <thead>
+        <tr>
+          <th onclick="ordinaPick(0)">Pick</th>
+          <th onclick="ordinaPick(1)">Squadra</th>
+          <th onclick="ordinaPick(2)">Giocatore</th>
+          <th onclick="ordinaPick(3)">Ruolo</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="lista-container" style="flex: 1 1 35%;">
+    <label for="filtroSerieA">Filtra per Squadra Serie A:</label>
+    <select id="filtroSerieA"><option value="">-- Tutte --</option></select>
+    <label for="filtroRuolo">Filtra per Ruolo:</label>
+    <input type="text" id="cercaRuolo" placeholder="Cerca ruolo..." />
+    <select id="filtroRuolo"><option value="">-- Tutti i Ruoli --</option></select>
+    <label for="searchGiocatore">Cerca Giocatore:</label>
+    <input id="searchGiocatore" placeholder="Digita un nome..." type="text"/>
+  <div id="lista-giocatori-scroll">
+  <table id="lista-giocatori-table">
+        <thead>
+          <tr>
+            <th onclick="ordinaLista(0)">Giocatore</th>
+            <th onclick="ordinaLista(1)">Ruolo</th>
+            <th onclick="ordinaLista(2)">Squadra</th>
+            <th onclick="ordinaLista(3, true)">Quotazione</th>
+          </tr>
+        </thead>
+        <tbody id="lista-giocatori"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<h2 style="text-align:center; color:#001f3f;">📋 Riepilogo Pick per Squadra</h2>
+<button class="btn-riepilogo" onclick="aggiornaChiamatePerSquadra()">🔄 Ricarica Riepilogo</button>
+<div id="riepilogo-squadre" style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px;"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const hamburger = document.getElementById("hamburger");
+    const mainMenu = document.getElementById("mainMenu");
+    const submenuToggles = document.querySelectorAll(".toggle-submenu");
+
+    hamburger?.addEventListener("click", () => {
+      mainMenu.classList.toggle("show");
+    });
+
+    submenuToggles.forEach(toggle => {
+      toggle.addEventListener("click", function (e) {
+        e.preventDefault();
+        const parent = this.closest(".dropdown");
+        parent.classList.toggle("show");
+      });
+    });
+  });
+</script>
+
+<script src="draft_script_unificato.js"></script>
+</body>
+</html>
+
