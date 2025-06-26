@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lega degli Eroi</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+      color: #222;
+    }
+
+    nav {
+      background-color: #001f3f;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      flex-wrap: wrap;
+    }
+
+    .home-icon {
+      font-size: 1.4rem;
+      margin-right: 20px;
+      text-decoration: none;
+      color: white;
+    }
+
+    .hamburger {
+      font-size: 1.5rem;
+      cursor: pointer;
+      margin-right: 20px;
+      display: none;
+    }
+
+    .navbar {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: row;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .navbar li {
+      position: relative;
+    }
+
+    .navbar a {
+      text-decoration: none;
+      color: white;
+      padding: 8px 12px;
+      display: block;
+    }
+
+    .navbar a:hover {
+      background-color: #0074D9;
+      border-radius: 6px;
+    }
+
+    .submenu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: #003366;
+      border-radius: 4px;
+      z-index: 10;
+      min-width: 180px;
+      flex-direction: column;
+    }
+
+    .submenu a {
+      font-size: 0.95rem;
+    }
+
+    .dropdown.show .submenu {
+      display: flex;
+    }
+
+    .hero {
+      background: url('img/hero_desktop.jpg') no-repeat center center;
+      background-size: cover;
+      height: 250px;
+      border-bottom: 4px solid #ffcc00;
+    }
+
+    h1 {
+      color: #001f3f;
+      margin: 30px 0 10px;
+      font-size: 2.2rem;
+      text-align: center;
+      text-shadow: 2px 2px 8px #ffcc00;
+    }
+
+    p {
+      font-size: 1.1rem;
+      color: #333;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .hamburger {
+        display: block;
+      }
+
+      .navbar {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #001f3f;
+        margin-top: 10px;
+      }
+
+      .navbar.show {
+        display: flex;
+      }
+
+      .submenu {
+        position: relative;
+        background-color: #003366;
+        margin-left: 10px;
+      }
+
+      .dropdown .submenu a {
+        padding-left: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span id="hamburger" class="hamburger">☰</span>
+  <a href="index.html" class="home-icon">🏠</a>
+  <ul class="navbar" id="mainMenu">
+    <li><a href="rose.html">Rose</a></li>
+    <li class="dropdown">
+      <a href="#" class="toggle-submenu">Draft ▾</a>
+      <ul class="submenu">
+        <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
+        <li><a href="draft_conference.html">🟨 Conf.League</a></li>
+      </ul>
+    </li>
+    <li class="dropdown">
+      <a href="#" class="toggle-submenu">Competizioni ▾</a>
+      <ul class="submenu">
+        <li><a href="classifica.html">📊 Classifiche</a></li>
+        <li><a href="playoff.html">🏆 Playoff</a></li>
+      </ul>
+    </li>
+    <li><a href="svincolati.html">Svincolati</a></li>
+    <li><a href="chiamate.html">Chiamate</a></li>
+    <li><a href="albo.html">Albo d'Oro</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="hero"></div>
+  <h1>Benvenuto nella Lega degli Eroi</h1>
+  <p>Seleziona una sezione dal menu.</p>
+</main>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const hamburger = document.getElementById("hamburger");
+    const mainMenu = document.getElementById("mainMenu");
+    const submenuToggles = document.querySelectorAll(".toggle-submenu");
+
+    hamburger?.addEventListener("click", () => {
+      mainMenu.classList.toggle("show");
+    });
+
+    submenuToggles.forEach(toggle => {
+      toggle.addEventListener("click", function (e) {
+        e.preventDefault();
+        const parent = this.closest(".dropdown");
+        parent.classList.toggle("show");
+      });
+    });
+  });
+</script>
+</body>
+</html>
