@@ -100,7 +100,7 @@ function caricaPick() {
           tr.innerHTML = `
             <td>${pick}</td>
             <td>${fantaTeam}</td>
-            <td>${nome}</td>
+            <td>${nome}</td>;
 
           if (i === prossimaIndex) {
             tr.classList.add("next-pick");
