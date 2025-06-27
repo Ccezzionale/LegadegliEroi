@@ -128,8 +128,8 @@ function caricaPick() {
         }
 
         document.getElementById("turno-attuale").textContent = prossima
-          ? `🎯 È il turno di: ${prossima.fantaTeam} (Pick ${prossima.pick})`
-          : "✅ Draft completato!";
+  ? `🎯 È il turno di: ${prossima.fantaTeam} (Pick ${prossima.pick})`
+  : "✅ Draft completato!";
       } catch (err) {
         console.error("❌ Errore parsing JSON:", err);
         console.error("❌ Risposta ricevuta:", txt);
