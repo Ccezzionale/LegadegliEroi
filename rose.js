@@ -164,6 +164,8 @@ function mostraRose() {
   if (!container) return;
   container.innerHTML = "";
 
+  const nomeCercato = document.getElementById("filtro-nome")?.value?.toLowerCase() || "";
+
   for (const [nome, data] of Object.entries(rose)) {
     const div = document.createElement("div");
     div.className = "box-rosa giocatore";
@@ -187,21 +189,27 @@ function mostraRose() {
 
     const table = document.createElement("table");
     table.innerHTML = `
-  <thead><tr><th>Ruolo</th><th>Nome</th><th>Squadra</th></tr></thead>
-  <tbody>
-    ${data.giocatori.map(g => `
-      <tr>
-        <td>${g.ruolo}</td>
-        <td class="nome">${g.nome} ${g.fp ? '🅕' : ''} ${g.u21 ? '🅤21' : ''}</td>
-        <td>${g.squadra}</td>
-      </tr>`).join("")}
-  </tbody>
+      <thead><tr><th>Ruolo</th><th>Nome</th><th>Squadra</th></tr></thead>
+      <tbody>
+        ${data.giocatori.map(g => {
+          const nomeBasso = g.nome.toLowerCase();
+          const evidenziato = nomeCercato && nomeBasso.includes(nomeCercato)
+            ? g.nome.replace(new RegExp(`(${nomeCercato})`, 'i'), '<span class="evidenziato">$1</span>')
+            : g.nome;
+
+          return `
+            <tr>
+              <td>${g.ruolo}</td>
+              <td class="nome">${evidenziato} ${g.fp ? '🅕' : ''} ${g.u21 ? '🅤21' : ''}</td>
+              <td>${g.squadra}</td>
+            </tr>`;
+        }).join("")}
+      </tbody>
     `;
     div.appendChild(table);
     container.appendChild(div);
   }
 }
-
 function popolaFiltri() {
   const selectSquadra = document.getElementById("filtro-squadra");
   const selectConference = document.getElementById("filtro-conference");
