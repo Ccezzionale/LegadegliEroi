@@ -23,8 +23,11 @@ fetch(URL_PLAYOFF)
     window.risultati = risultati;
 
     if (typeof aggiornaPlayoff === "function" && window.squadre) {
-      aggiornaPlayoff();
-    }
+  aggiornaPlayoff();
+}
+if (typeof aggiornaPlayoffMobile === "function" && window.squadre) {
+  aggiornaPlayoffMobile();
+}
   })
   .catch(err => {
     console.error("❌ Errore nel caricamento dei risultati playoff:", err);
