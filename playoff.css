@@ -425,8 +425,4 @@ display: block;
   font-weight: 700;
   color: #d35400; /* arancio scuro, oppure lascia #000 per solo bold */
 }   
-    .toggle-submenu::after {
-  content: '▾';
-  margin-left: 6px;
-}
 }
