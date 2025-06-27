@@ -232,7 +232,7 @@ function aggiornaChiamatePerSquadra() {
     const celle = r.querySelectorAll("td");
     const team = celle[1]?.textContent?.trim();
     const nome = celle[2]?.textContent?.trim();
-    const ruolo = celle[3]?.textContent?.trim();
+    const ruolo = mappaGiocatori[normalize(nome)]?.ruolo || "";
     if (!team || !nome) return;
     if (!riepilogo[team]) riepilogo[team] = [];
     riepilogo[team].push(`${riepilogo[team].length + 1}. ${nome} (${ruolo})`);
