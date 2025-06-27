@@ -246,6 +246,9 @@ function filtraGiocatori() {
   const conference = document.getElementById('filtro-conference').value;
   const squadra = document.getElementById('filtro-squadra').value;
 
+  // Mostra di nuovo tutte le rose aggiornate con evidenziato
+  mostraRose();
+
   document.querySelectorAll('.giocatore').forEach(row => {
     const nomiGiocatori = [...row.querySelectorAll('.nome')].map(e => e.textContent.toLowerCase());
     const conf = row.getAttribute('data-conference');
@@ -262,6 +265,7 @@ function filtraGiocatori() {
     }
   });
 }
+
 
 document.getElementById('filtro-nome').addEventListener('input', filtraGiocatori);
 document.getElementById('filtro-conference').addEventListener('change', filtraGiocatori);
