@@ -1,0 +1,94 @@
+
+.blocchi-medagliere {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 20px;
+}
+
+.blocco-competizione {
+  background-color: #001f3f; /* 🔵 blu */
+  color: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  width: 250px;
+  text-align: center;
+}
+
+.blocco-competizione h2 {
+  font-size: 1.2rem;
+  color: #ffcc00; /* giallo/arancio */
+  margin-bottom: 12px;
+  text-shadow: 1px 1px 2px #000; /* ombra più marcata */
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.2;
+  padding: 0 6px;
+  border-bottom: 2px solid #ffcc00; /* bordo per definizione */
+}
+
+.blocco-competizione ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.blocco-competizione li {
+  font-weight: bold;
+  padding: 6px 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.blocco-competizione li img {
+  height: 28px;
+  width: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.oro { background-color: #ffd70033; }
+.argento { background-color: #c0c0c033; }
+.bronzo { background-color: #cd7f3233; }
+
+.blocco-competizione .anno {
+  background-color: white;
+  color: #222;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+}
+.anno .contenuto-anno {
+  display: none;
+}
+
+.anno.attivo .contenuto-anno {
+  display: block;
+}
+
+.titolo-anno {
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+  .blocchi-medagliere {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .blocco-competizione {
+    width: 90% !important;
+    max-width: 400px !important;
+  }
+}
