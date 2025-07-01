@@ -4,291 +4,56 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Albo d'Oro - Medagliere</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-size: cover;
-      color: #212529;
-      padding: 20px;
-    }
-
-    h1 {
-      text-align: center;
-      color: #001f3f;
-      margin-bottom: 30px;
-      text-transform: uppercase;
-      text-shadow: 2px 2px 6px #ffcc00;
-      letter-spacing: 1px;
-    }
-
-    /* Desktop table */
-    table {
-      width: 95%;
-      max-width: 1000px;
-      border-collapse: separate;
-      border-spacing: 0 12px;
-      margin: 0 auto;
-      font-size: 1.1rem;
-      backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.15);
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 0 12px rgba(0,0,0,0.4);
-    }
-
-th {
-  background-color: #001f3f; /* 🔵 Blu Lega degli Eroi */
-  color: #fff;
-  padding: 14px 12px;
-  font-weight: bold;
-  text-shadow: 1px 1px 2px #000;
-  text-align: left;
-}
-    
-
-    td {
-      padding: 14px 12px;
-      text-align: left;
-      background-color: rgba(255, 255, 255, 0.85);
-      border-bottom: 2px solid #ccc;
-      vertical-align: middle;
-    }
-
-    tr:hover td {
-      background-color: rgba(255, 255, 255, 0.95);
-      transform: scale(1.01);
-      transition: all 0.2s ease-in-out;
-    }
-
-    .top1 td { background-color: rgba(255, 215, 0, 0.85); color: #000; font-weight: bold; }
-    .top2 td { background-color: rgba(192, 192, 192, 0.85); color: #000; font-weight: bold; }
-    .top3 td { background-color: rgba(205, 127, 50, 0.85); color: #000; font-weight: bold; }
-
-.logo-squadra {
-  height: 48px;
-  width: 48px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.logo-placeholder {
-  width: 48px;
-  height: 48px;     /* 👈 stesso dell'immagine */
-  display: inline-block;
-  flex-shrink: 0;
-}
-
-    th:nth-child(3),
-th:nth-child(4),
-th:nth-child(5),
-th:nth-child(6),
-td:nth-child(3),
-td:nth-child(4),
-td:nth-child(5),
-td:nth-child(6) {
-  text-align: center;
-}
-
-.nome-squadra {
-  font-weight: bold;
-  font-size: 1.1rem;
-  line-height: normal; /* 👈 rimuove l'offset verticale */
-}
-    
-.squadra-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px; /* 👈 questo crea lo stesso spazio tra logo e nome */
-}
-
-    nav {
-  background-color: #001f3f;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 20px;
-  flex-wrap: wrap;
-}
-
-.nav-left {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.home-icon {
-  font-size: 1.4rem;
-  text-decoration: none;
-  color: white;
-}
-
-.hamburger {
-  font-size: 1.5rem;
-  cursor: pointer;
-  display: none;
-  color: white;
-}
-
-.navbar {
-  list-style-type: none;
-  display: flex;
-  gap: 15px;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  flex-wrap: wrap;
-}
-
-.navbar li {
-  position: relative;
-}
-
-.navbar a {
-  text-decoration: none;
-  color: white;
-  padding: 8px 12px;
-  display: block;
-}
-
-.navbar a:hover {
-  background-color: #0074D9;
-  border-radius: 6px;
-}
-
-.submenu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  background-color: #001f3f;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  border-radius: 6px;
-}
-
-.dropdown.show .submenu {
-  display: block;
-}
-
-.submenu li a {
-  padding: 8px 16px;
-}
-
-@media (max-width: 768px) {
-  .hamburger {
-    display: block;
-  }
-
-  .navbar {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .navbar.show {
-    display: flex;
-  }
-
-  .navbar li {
-    width: 100%;
-  }
-
-  .submenu {
-    position: static;
-  }
-
-    /* Mobile Accordion */
-    .accordion {
-      display: none;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .accordion-item {
-      background-color: rgba(255, 255, 255, 0.9);
-      margin-bottom: 10px;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 0 6px rgba(0,0,0,0.2);
-    }
-
-.accordion-header {
-  display: flex;
-  align-items: center;     /* 👈 centra verticalmente */
-  gap: 12px;
-  padding: 12px 16px;
-  background-color: #001f3f;
-  color: white;
-  font-weight: bold;
-  font-size: 1rem;
-  border-radius: 8px;
-}
-
-.accordion-header img {
-  height: 48px;
-  width: 48px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-    .accordion-content {
-      padding: 10px 16px;
-      display: none;
-      background-color: #fff;
-    }
-
-    @media (max-width: 768px) {
-      table { display: none; }
-      .accordion { display: block; }
-    }
-  </style>
+  <link rel="stylesheet" href="albo.css">
 </head>
 <body>
 
-<nav>
-  <div class="nav-left">
-    <span id="hamburger" class="hamburger">☰</span>
-    <a href="index.html" class="home-icon">🏠</a>
-    <ul class="navbar" id="mainMenu">
-      <li><a href="rose.html">Rose</a></li>
-      <li class="dropdown">
-        <a href="#" class="toggle-submenu">Draft ▾</a>
-        <ul class="submenu">
-          <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
-          <li><a href="draft_conference.html">🟨 Conf.League</a></li>
-        </ul>
-      </li>
-      <li class="dropdown">
-        <a href="#" class="toggle-submenu">Competizioni ▾</a>
-        <ul class="submenu">
-          <li><a href="classifica.html">📊 Classifica</a></li>
-          <li><a href="playoff.html">🏆 Playoff</a></li>
-          <li><a href="arena.html">🏟️ Higlander</a></li>
-        </ul>
-      </li>
-      <li><a href="svincolati.html">Svincolati</a></li>
-      <li><a href="chiamate.html">Chiamate</a></li>
-      <li><a href="albo.html">Albo d'Oro</a></li>
-    </ul>
-  </div>
-</nav>
+  <nav>
+    <div class="nav-left">
+      <span id="hamburger" class="hamburger">☰</span>
+      <a href="index.html" class="home-icon">🏠</a>
+      <ul class="navbar" id="mainMenu">
+        <li><a href="rose.html">Rose</a></li>
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">Draft ▾</a>
+          <ul class="submenu">
+            <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
+            <li><a href="draft_conference.html">🟨 Conf.League</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">Competizioni ▾</a>
+          <ul class="submenu">
+            <li><a href="classifica.html">📊 Classifica</a></li>
+            <li><a href="playoff.html">🏆 Playoff</a></li>
+            <li><a href="arena.html">🏟️ Higlander</a></li>
+          </ul>
+        </li>
+        <li><a href="svincolati.html">Svincolati</a></li>
+        <li><a href="chiamate.html">Chiamate</a></li>
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
+          <ul class="submenu">
+            <li><a href="albo.html">🏆 Albo d'oro</a></li>
+            <li><a href="medagliere.html">🏟️ Medagliere</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
 
-  <h1>Albo d'Oro - Medagliere</h1>
+  <h1 class="titolo-albo">Albo d'Oro - Medagliere</h1>
 
-  <!-- Tabella Desktop -->
   <table id="medagliere">
     <thead>
       <tr>
         <th>Pos</th>
         <th>
-  <div class="squadra-wrapper">
-    <span class="logo-placeholder"></span>
-    <span>Squadra</span>
-  </div>
-</th>
+          <div class="squadra-wrapper">
+            <span class="logo-placeholder"></span>
+            <span>Squadra</span>
+          </div>
+        </th>
         <th>🥇 Oro</th>
         <th>🥈 Argento</th>
         <th>🥉 Bronzo</th>
@@ -298,7 +63,6 @@ td:nth-child(6) {
     <tbody></tbody>
   </table>
 
-  <!-- Accordion Mobile -->
   <div class="accordion" id="accordion"></div>
 
   <script>
@@ -318,7 +82,7 @@ td:nth-child(6) {
       { squadra: "Giody", oro: 0, argento: 0, bronzo: 1 },
       { squadra: "Union Librino", oro: 0, argento: 0, bronzo: 1 },
       { squadra: "Minnesode Timberland", oro: 0, argento: 0, bronzo: 1 },
-      ];
+    ];
 
     medagliere.sort((a, b) => {
       if (b.oro !== a.oro) return b.oro - a.oro;
@@ -336,22 +100,21 @@ td:nth-child(6) {
       else if (i === 2) tr.classList.add("top3");
 
       const logoPath = `img/${s.squadra}.png`;
-tr.innerHTML = `
-  <td>${i + 1}</td>
-  <td>
-    <div class="squadra-wrapper">
-      <img src="${logoPath}" alt="${s.squadra}" class="logo-squadra">
-      <span class="nome-squadra">${s.squadra}</span>
-    </div>
-  </td>
-  <td>${s.oro}</td>
-  <td>${s.argento}</td>
-  <td>${s.bronzo}</td>
-  <td>${s.oro + s.argento + s.bronzo}</td>
-`;
+      tr.innerHTML = `
+        <td>${i + 1}</td>
+        <td>
+          <div class="squadra-wrapper">
+            <img src="${logoPath}" alt="${s.squadra}" class="logo-squadra">
+            <span class="nome-squadra">${s.squadra}</span>
+          </div>
+        </td>
+        <td>${s.oro}</td>
+        <td>${s.argento}</td>
+        <td>${s.bronzo}</td>
+        <td>${s.oro + s.argento + s.bronzo}</td>
+      `;
       tbody.appendChild(tr);
 
-      // Accordion item
       const acc = document.createElement("div");
       acc.className = "accordion-item";
       acc.innerHTML = `
@@ -366,7 +129,6 @@ tr.innerHTML = `
       accordion.appendChild(acc);
     });
 
-    // Fisarmonica toggle
     document.querySelectorAll('.accordion-header').forEach(header => {
       header.addEventListener('click', () => {
         const content = header.nextElementSibling;
@@ -375,7 +137,7 @@ tr.innerHTML = `
     });
   </script>
 
- <script>
+  <script>
     document.addEventListener("DOMContentLoaded", function () {
       const hamburger = document.getElementById("hamburger");
       const mainMenu = document.getElementById("mainMenu");
