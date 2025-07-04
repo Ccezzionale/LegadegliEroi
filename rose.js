@@ -1,5 +1,6 @@
 const rose = {};
 
+
 const conferencePerSquadra = {
   "Team Bartowski": "Conference League",
   "Desperados": "Conference League",
