@@ -74,6 +74,16 @@
   display: block;
 }
 
+.titolo-pagina {
+  text-align: center;
+  color: #001f3f;
+  font-size: 2.2rem;
+  margin: 30px 0 20px;
+  font-weight: 700;
+  text-shadow: 2px 2px 6px #FFD700; /* giallo oro tenue */
+}
+
+
 .titolo-anno {
   font-weight: bold;
   cursor: pointer;
