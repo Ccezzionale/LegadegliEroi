@@ -1,0 +1,324 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  color: #222;
+  margin: 0;
+  padding: 20px;
+}
+
+/* Titolo */
+.titolo {
+  text-align: center;
+  color: #001f3f;
+  font-size: 2rem;
+  margin: 30px 0 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+/* Container delle tabelle */
+.draft-container {
+  width: 100%;
+  margin: 0 auto 40px auto;
+  overflow-x: auto;
+}
+
+/* Tabella */
+.draft-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.95rem;
+  background-color: white;
+}
+
+.draft-container th,
+.draft-container td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+/* Intestazioni */
+.draft-container thead {
+  background-color: #001f3f;
+  color: white;
+}
+
+/* Alternanza righe */
+.draft-container tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+nav {
+  background-color: #001f3f;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* 👈 cambia da space-between */
+  padding: 10px 20px;
+  flex-wrap: wrap;
+  gap: 20px; /* 👈 aggiungi se vuoi spazio tra casetta e menu */
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.home-icon {
+  font-size: 1.4rem;
+  text-decoration: none;
+  color: white;
+}
+
+.hamburger {
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: none;
+  color: white;
+}
+
+.navbar {
+  list-style-type: none;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.navbar li {
+  position: relative;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: white;
+  padding: 8px 12px;
+  display: block;
+}
+
+.navbar a:hover {
+  background-color: #0074D9;
+  border-radius: 6px;
+}
+
+.submenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  background-color: #001f3f;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-radius: 6px;
+}
+
+.dropdown.show .submenu {
+  display: block;
+}
+
+.submenu li a {
+  padding: 8px 16px;
+}
+
+
+/* Colonna singola */
+.draft-columns {
+  display: flex;
+  flex-wrap: nowrap;     /* ⬅️ questo impedisce il ritorno a capo */
+  overflow-x: auto;      /* ⬅️ questo abilita lo scroll orizzontale */
+  justify-content: flex-start;
+  gap: 30px;
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.draft-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 12px;
+  width: 220px;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.draft-header {
+  min-height: 130px; /* aumenta per allineare TUTTO */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  box-sizing: border-box;
+}
+
+
+.draft-header h3 {
+  text-align: center;
+  min-height: 40px;  /* forza stessa altezza per tutti i nomi squadra */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  margin: 0; /* elimina margine extra */
+}
+
+
+.draft-picks {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-grow: 1;
+  margin-top: 16px;  /* ✅ sposta più in basso le pick */
+}
+
+.draft-logo-wrapper {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.draft-logo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.draft-scroll {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.draft-picks .pick {
+  padding: 4px 8px;
+  margin: 2px 0;
+  border-radius: 4px;
+  text-align: center;
+}
+
+/* Lista delle pick */
+.draft-column div {
+  margin: 4px 0;
+}
+
+.pick {
+  padding: 4px 8px;
+  margin: 2px 0;
+  border-radius: 4px;
+}
+
+.scambio-1 {
+  background-color: #ff9999; /* rosso chiaro */
+}
+
+.scambio-2 {
+  background-color: #99ccff; /* azzurro chiaro */
+}
+
+.scambio-3 {
+  background-color: #99ff99; /* verde chiaro */
+}
+
+.scambio-4 {
+  background-color: #ffff99; /* giallo chiaro */
+}
+
+.scambio-5 {
+  background-color: #ffcc99; /* arancio chiaro */
+}
+
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .navbar {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .navbar.show {
+    display: flex;
+  }
+
+  .navbar li {
+    width: 100%;
+  }
+
+  .submenu {
+    position: static;
+  }
+
+  /* Nasconde eventuali tabelle alternative */
+  table { display: none; }
+  .accordion { display: block; }
+
+  .titolo {
+    font-size: 1.5rem;
+  }
+
+@media (max-width: 768px) {
+  .draft-scroll {
+    overflow-x: auto;
+    width: 100%;
+  }
+
+  .draft-columns {
+    display: flex;
+    flex-wrap: nowrap;
+    width: max-content;
+  }
+
+  .draft-card {
+    width: 130px;
+    min-width: 130px;
+    max-width: 130px;
+    flex-shrink: 0;
+  }
+
+  .draft-header {
+    min-height: 80px;
+    padding: 2px 0;
+  }
+
+  .draft-logo-wrapper {
+    width: 28px;
+    height: 28px;
+  }
+
+  .draft-logo {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .draft-header h3 {
+    font-size: 0.7rem;
+    min-height: 26px;
+    text-align: center;
+  }
+
+  .draft-picks .pick {
+    font-size: 0.7rem;
+    padding: 2px 4px;
+    margin: 1px 0;
+  }
+
+  .titolo {
+    font-size: 1.2rem;
+  }
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=0.5, maximum-scale=3.0">
+  <link rel="stylesheet" href="dinamico-draft.css" />
+  <title>Draft Dinamico</title>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-left">
+  <span id="hamburger" class="hamburger">☰</span>
+  <a href="index.html" class="home-icon">🏠</a>
+  <ul class="navbar" id="mainMenu">
+    <li><a href="rose.html">Rose</a></li>
+    <li class="dropdown">
+      <a href="#" class="toggle-submenu">Draft ▾</a>
+      <ul class="submenu">
+        <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
+        <li><a href="draft_conference.html">🟨 Conf.League</a></li>
+       <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+      </ul>
+    </li>
+    <li class="dropdown">
+      <a href="#" class="toggle-submenu">Competizioni ▾</a>
+      <ul class="submenu">
+        <li><a href="classifica.html">📊 Classifiche</a></li>
+        <li><a href="playoff.html">🏆 Playoff</a></li>
+        <li><a href="arena.html">🏟️ Higlander</a></li>
+      </ul>
+    </li>
+    <li><a href="svincolati.html">Svincolati</a></li>
+    <li><a href="chiamate.html">Chiamate</a></li>
+    <li class="dropdown">
+      <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
+      <ul class="submenu">
+   <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
+      <li><a href="albo.html">🏅  Medagliere</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+<h1 class="titolo">Draft Conference League</h1>
+<div class="draft-scroll">
+   <div id="draft-league" class="draft-container"></div>
+</div>
+
+<h1 class="titolo">Draft Conference Championship</h1>
+<div class="draft-scroll">
+   <div id="draft-championship" class="draft-container"></div>
+</div>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const hamburger = document.getElementById("hamburger");
+    const mainMenu = document.getElementById("mainMenu");
+    const submenuToggles = document.querySelectorAll(".toggle-submenu");
+
+    hamburger?.addEventListener("click", () => {
+      mainMenu.classList.toggle("show");
+    });
+
+    submenuToggles.forEach(toggle => {
+      toggle.addEventListener("click", function (e) {
+        e.preventDefault();
+        const parent = this.closest(".dropdown");
+        parent.classList.toggle("show");
+      });
+    });
+  });
+</script>
+  
+  <script src="dinamico-draft.js"></script>
+</body>
+</html>
