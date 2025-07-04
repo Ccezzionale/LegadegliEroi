@@ -187,5 +187,13 @@ nav {
 
   .submenu {
     position: static;
+}
+    
+  .arena {
+    flex-wrap: wrap;
+    gap: 10px;            /* riduce il gap tra i loghi */
+    padding: 10px;        /* meno spazio interno */
+    transform: scale(0.85); /* 👈 rimpicciolisce tutto */
+    transform-origin: top center;
   }
 }
