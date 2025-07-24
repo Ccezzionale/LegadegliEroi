@@ -74,3 +74,45 @@
     .dropdown.show .submenu {
       display: flex;
     }
+
+    section {
+      margin-bottom: 3rem;
+    }
+    details {
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    summary {
+      font-weight: bold;
+      cursor: pointer;
+
+ @media (max-width: 768px) {
+      .hamburger {
+        display: block;
+      }
+
+      .navbar {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #001f3f;
+        margin-top: 10px;
+      }
+
+      .navbar.show {
+        display: flex;
+      }
+
+      .submenu {
+        position: relative;
+        background-color: #003366;
+        margin-left: 10px;
+      }
+
+      .dropdown .submenu a {
+        padding-left: 20px;
+      }
+    }
