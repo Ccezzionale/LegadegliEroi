@@ -9,6 +9,15 @@ body {
   margin-right: auto;
 }
 
+    nav {
+      background-color: #001f3f;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      flex-wrap: wrap;
+    }
+
     .home-icon {
       font-size: 1.4rem;
       margin-right: 20px;
