@@ -79,6 +79,12 @@ body {
       display: flex;
     }
 
+.wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
 h1 {
   color: #001f3f;
   margin-bottom: 30px;
@@ -156,6 +162,32 @@ thead {
   font-weight: bold;
   padding: 2px 4px;
   border-radius: 4px;
+}
+
+.link-sezione {
+  background-color: #001f3f;
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.link-sezione a {
+  color: #FFD700;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.link-sezione a:hover {
+  background-color: #003366;
+  color: white;
 }
 
 /* Mobile adjustments */
