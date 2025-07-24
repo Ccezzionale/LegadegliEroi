@@ -3,10 +3,6 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f4f4f4;
   color: #222;
-  padding: 20px;
-  max-width: 1000px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
     nav {
@@ -16,6 +12,8 @@ body {
       align-items: center;
       padding: 10px 20px;
       flex-wrap: wrap;
+      width: 100vw;
+      box-sizing: border-box;
     }
 
     .home-icon {
@@ -174,6 +172,8 @@ thead {
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
+  width: 100vw;
+  box-sizing: border-box;
 }
 
 .link-sezione a {
