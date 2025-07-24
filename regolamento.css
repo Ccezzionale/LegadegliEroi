@@ -203,5 +203,31 @@ thead {
   summary {
     font-size: 1rem;
   }
+  .hamburger {
+        display: block;
+      }
+
+      .navbar {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #001f3f;
+        margin-top: 10px;
+      }
+
+      .navbar.show {
+        display: flex;
+      }
+
+      .submenu {
+        position: relative;
+        background-color: #003366;
+        margin-left: 10px;
+      }
+
+      .dropdown .submenu a {
+        padding-left: 20px;
+      }
+    }
 }
 
