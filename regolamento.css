@@ -14,6 +14,16 @@
       flex-wrap: wrap;
     }
 
+ nav a {
+      color: white;
+      text-decoration: none;
+      margin-right: 1rem;
+    }
+
+    h1, h2 {
+      color: #003366;
+    }
+
     .home-icon {
       font-size: 1.4rem;
       margin-right: 20px;
