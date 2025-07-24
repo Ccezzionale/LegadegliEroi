@@ -4,47 +4,42 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Regolamento 2025/26 - Lega degli Eroi</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      padding: 2rem;
-      max-width: 900px;
-      margin: auto;
-      background-color: #f9f9f9;
-      color: #222;
-    }
-    h1, h2 {
-      color: #003366;
-    }
-    nav {
-      background-color: #003366;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 2rem;
-    }
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin-right: 1rem;
-    }
-    section {
-      margin-bottom: 3rem;
-    }
-    details {
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-    }
-    summary {
-      font-weight: bold;
-      cursor: pointer;
-    }
-  </style>
+<link rel="stylesheet" href="regolamento.css">
+    
 </head>
 <body>
+
+<nav>
+    <span id="hamburger" class="hamburger">☰</span>
+    <a href="index.html" class="home-icon">🏠</a>
+    <ul class="navbar" id="mainMenu">
+      <li><a href="rose.html">Rose</a></li>
+    <li class="dropdown">
+      <a href="#" class="toggle-submenu">Draft ▾</a>
+      <ul class="submenu">
+        <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
+        <li><a href="draft_conference.html">🟨 Conf.League</a></li>
+        <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+      </ul>
+    </li>
+    <li class="dropdown">
+      <a href="#" class="toggle-submenu">Competizioni ▾</a>
+      <ul class="submenu">
+        <li><a href="classifica.html">📊 Classifiche</a></li>
+        <li><a href="playoff.html">🏆 Playoff</a></li>
+        <li><a href="arena.html">🏟️ Higlander</a></li>
+      </ul>
+    </li>
+    <li><a href="svincolati.html">Svincolati</a></li>
+    <li><a href="chiamate.html">Chiamate</a></li>
+    <li class="dropdown">
+      <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
+      <ul class="submenu">
+   <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
+      <li><a href="albo.html">🏅  Medagliere</a></li>
+    </ul>
+  </nav>
+
   <h1>📘 Regolamento Lega degli Eroi – Stagione 2025/26</h1>
 
   <nav>
@@ -562,6 +557,25 @@
       <p>Quota di partecipazione: 70 €. Montepremi: 1050 €. Premi distribuiti a vincitori di Conference, Round Robin, Regular Season, Highlander, Playoff e posizioni finali (1°, 2°, 3°).</p>
     </details>
   </section>
+    
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const hamburger = document.getElementById("hamburger");
+      const mainMenu = document.getElementById("mainMenu");
+      const submenuToggles = document.querySelectorAll(".toggle-submenu");
 
+      hamburger?.addEventListener("click", () => {
+        mainMenu.classList.toggle("show");
+      });
+
+      submenuToggles.forEach(toggle => {
+        toggle.addEventListener("click", function (e) {
+          e.preventDefault();
+          const parent = this.closest(".dropdown");
+          parent.classList.toggle("show");
+        });
+      });
+    });
+  </script>
 </body>
 </html>
