@@ -276,21 +276,17 @@ thead {
       .dropdown .submenu a {
         padding-left: 20px;
       }
-  .link-sezione {
-  flex-direction: column;
-  align-items: center;
+.link-sezione {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  justify-items: center;
 }
 
 .link-sezione a {
+  font-size: 0.95rem;
   width: 90%;
   text-align: center;
-  font-size: 1rem;
-  padding: 10px;
-  background-color: #003366;
-  color: #FFD700;
-  margin: 5px 0;
-  border-radius: 6px;
-  box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
 }
     }
 
