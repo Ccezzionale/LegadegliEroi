@@ -224,8 +224,19 @@ thead {
 .highlight {
   background-color: yellow;
   font-weight: bold;
+  border-radius: 4px;
+  padding: 1px 3px;
 }
 
+.flash {
+  animation: flashHighlight 1s ease-in-out;
+}
+
+@keyframes flashHighlight {
+  0%   { background-color: yellow; }
+  50%  { background-color: orange; }
+  100% { background-color: yellow; }
+}
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
