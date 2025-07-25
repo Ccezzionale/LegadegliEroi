@@ -584,41 +584,46 @@
     });
   </script>
 
-    <script>
+<script>
 function cercaNelRegolamento() {
-  const input = document.getElementById("searchInput").value.toLowerCase();
+  const input = document.getElementById("searchInput").value.trim().toLowerCase();
   const sections = document.querySelectorAll("details");
-  
-  // Pulisce evidenziazioni precedenti
+
+  // Rimuove vecchie evidenziazioni
   document.querySelectorAll(".highlight").forEach(el => {
     el.outerHTML = el.innerText;
   });
 
-  if (!input.trim()) return;
+  if (!input) return;
+
+  let trovato = false;
 
   sections.forEach(section => {
     const text = section.innerText.toLowerCase();
-    
+
     if (text.includes(input)) {
-      section.open = true; // apre la fisarmonica
-      evidenziaTesto(section, input);
+      section.open = true;
+      evidenziaInSezione(section, input);
+      trovato = true;
     } else {
       section.open = false;
     }
   });
+
+  if (!trovato) {
+    alert("🔍 Nessun risultato trovato.");
+  }
 }
 
-function evidenziaTesto(container, keyword) {
-  const regex = new RegExp(`(${keyword})`, "gi");
-
-  container.querySelectorAll("p, li, td").forEach(el => {
-    if (el.innerText.toLowerCase().includes(keyword)) {
-      el.innerHTML = el.innerHTML.replace(regex, `<span class="highlight">$1</span>`);
+function evidenziaInSezione(section, parola) {
+  const regex = new RegExp(`(${parola})`, 'gi');
+  section.querySelectorAll("p, li, td, summary").forEach(el => {
+    if (el.innerText.toLowerCase().includes(parola)) {
+      el.innerHTML = el.innerHTML.replace(regex, `<span class="highlight flash">$1</span>`);
     }
   });
 }
 </script>
 
-    
 </body>
 </html>
