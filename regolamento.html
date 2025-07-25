@@ -630,36 +630,42 @@ function evidenziaInSezione(section, parola) {
 </script>
     
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const hash = window.location.hash;
+  function apriFisarmonicaDaHash(hash) {
+    if (!hash) return;
 
-    if (hash) {
-      // Prova a cercare un <details> con quell'ID
-      let details = document.querySelector(`details${hash}`);
-
-      // Se non trovato, prova a cercare un section con quell'ID e il primo details al suo interno
-      if (!details) {
-        const section = document.querySelector(hash);
-        if (section) {
-          details = section.querySelector("details");
-        }
-      }
-
-      // Se trovato, aprilo
-      if (details) {
-        details.open = true;
-
-        // Scrolla al summary dentro il details (così scrolla bene, non in alto vuoto)
-        const summary = details.querySelector("summary");
-        if (summary) {
-          setTimeout(() => {
-            summary.scrollIntoView({ behavior: "smooth", block: "start" });
-          }, 100); // Delay minimo per evitare scroll sbagliati
-        }
+    let details = document.querySelector(`details${hash}`);
+    if (!details) {
+      const section = document.querySelector(hash);
+      if (section) {
+        details = section.querySelector("details");
       }
     }
+
+    if (details) {
+      details.open = true;
+      const summary = details.querySelector("summary");
+      if (summary) {
+        setTimeout(() => {
+          summary.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
+    }
+  }
+
+  // Quando la pagina viene caricata con un hash nell'URL
+  document.addEventListener("DOMContentLoaded", function () {
+    apriFisarmonicaDaHash(window.location.hash);
+  });
+
+  // Quando clicchi uno dei link nella griglia
+  document.querySelectorAll('.link-sezione a').forEach(link => {
+    link.addEventListener('click', function (e) {
+      const href = this.getAttribute('href');
+      apriFisarmonicaDaHash(href);
+    });
   });
 </script>
+
 
 
 </body>
