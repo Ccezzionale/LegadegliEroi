@@ -585,30 +585,40 @@
   </script>
 
     <script>
-  function cercaNelRegolamento() {
-    const input = document.getElementById("searchInput").value.toLowerCase();
-    const sezioni = document.querySelectorAll("details");
+function cercaNelRegolamento() {
+  const input = document.getElementById("searchInput").value.toLowerCase();
+  const sections = document.querySelectorAll("details");
+  
+  // Pulisce evidenziazioni precedenti
+  document.querySelectorAll(".highlight").forEach(el => {
+    el.outerHTML = el.innerText;
+  });
 
-    if (!input) return;
+  if (!input.trim()) return;
 
-    let trovata = false;
-
-    sezioni.forEach(section => {
+  sections.forEach(section => {
+    const text = section.innerText.toLowerCase();
+    
+    if (text.includes(input)) {
+      section.open = true; // apre la fisarmonica
+      evidenziaTesto(section, input);
+    } else {
       section.open = false;
-      const text = section.innerText.toLowerCase();
-
-      if (text.includes(input) && !trovata) {
-        section.open = true;
-        section.scrollIntoView({ behavior: "smooth", block: "start" });
-        trovata = true;
-      }
-    });
-
-    if (!trovata) {
-      alert("Nessuna corrispondenza trovata.");
     }
-  }
+  });
+}
+
+function evidenziaTesto(container, keyword) {
+  const regex = new RegExp(`(${keyword})`, "gi");
+
+  container.querySelectorAll("p, li, td").forEach(el => {
+    if (el.innerText.toLowerCase().includes(keyword)) {
+      el.innerHTML = el.innerHTML.replace(regex, `<span class="highlight">$1</span>`);
+    }
+  });
+}
 </script>
+
     
 </body>
 </html>
