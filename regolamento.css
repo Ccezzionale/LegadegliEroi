@@ -190,6 +190,37 @@ thead {
   color: white;
 }
 
+.search-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px auto 40px auto;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.search-container input {
+  padding: 10px;
+  font-size: 1rem;
+  width: 300px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.search-container button {
+  padding: 10px 16px;
+  font-size: 1rem;
+  background-color: #001f3f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.search-container button:hover {
+  background-color: #0074D9;
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
   body {
