@@ -599,14 +599,17 @@ function cercaNelRegolamento() {
   let trovato = false;
 
   sections.forEach(section => {
+    // Apri temporaneamente per accedere a tutto il contenuto
+    const eraAperto = section.open;
+    section.open = true;
     const text = section.innerText.toLowerCase();
 
     if (text.includes(input)) {
-      section.open = true;
-      evidenziaInSezione(section, input);
       trovato = true;
+      section.open = true; // lascialo aperto
+      evidenziaInSezione(section, input);
     } else {
-      section.open = false;
+      section.open = eraAperto; // rimettilo com'era
     }
   });
 
