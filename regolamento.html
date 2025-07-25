@@ -632,20 +632,35 @@ function evidenziaInSezione(section, parola) {
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const hash = window.location.hash;
+
     if (hash) {
-      const target = document.querySelector(hash);
-      if (target && target.tagName.toLowerCase() === "section") {
-        const details = target.querySelector("details");
-        if (details) {
-          details.open = true;
-          // Optional: scroll di sicurezza sul summary
-          const summary = details.querySelector("summary");
-          if (summary) summary.scrollIntoView({ behavior: "smooth", block: "start" });
+      // Prova a cercare un <details> con quell'ID
+      let details = document.querySelector(`details${hash}`);
+
+      // Se non trovato, prova a cercare un section con quell'ID e il primo details al suo interno
+      if (!details) {
+        const section = document.querySelector(hash);
+        if (section) {
+          details = section.querySelector("details");
+        }
+      }
+
+      // Se trovato, aprilo
+      if (details) {
+        details.open = true;
+
+        // Scrolla al summary dentro il details (così scrolla bene, non in alto vuoto)
+        const summary = details.querySelector("summary");
+        if (summary) {
+          setTimeout(() => {
+            summary.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 100); // Delay minimo per evitare scroll sbagliati
         }
       }
     }
   });
 </script>
+
 
 </body>
 </html>
