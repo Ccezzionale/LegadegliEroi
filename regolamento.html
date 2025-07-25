@@ -583,5 +583,32 @@
       });
     });
   </script>
+
+    <script>
+  function cercaNelRegolamento() {
+    const input = document.getElementById("searchInput").value.toLowerCase();
+    const sezioni = document.querySelectorAll("details");
+
+    if (!input) return;
+
+    let trovata = false;
+
+    sezioni.forEach(section => {
+      section.open = false;
+      const text = section.innerText.toLowerCase();
+
+      if (text.includes(input) && !trovata) {
+        section.open = true;
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+        trovata = true;
+      }
+    });
+
+    if (!trovata) {
+      alert("Nessuna corrispondenza trovata.");
+    }
+  }
+</script>
+    
 </body>
 </html>
