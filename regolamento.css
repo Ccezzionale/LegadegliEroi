@@ -221,6 +221,12 @@ thead {
   background-color: #0074D9;
 }
 
+.highlight {
+  background-color: yellow;
+  font-weight: bold;
+}
+
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
   body {
