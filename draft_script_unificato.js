@@ -345,3 +345,4 @@ function ordinaLista(colonnaIndex, numerico = false) {
   righe.forEach(r => tbody.appendChild(r));
 }
 window.ordinaLista = ordinaLista;
+}
