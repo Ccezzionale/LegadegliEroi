@@ -164,32 +164,33 @@ function popolaListaDisponibili() {
         const righe = document.querySelectorAll("#tabella-pick tbody tr");
         for (let r of righe) {
           const celle = r.querySelectorAll("td");
-if (celle.length >= 3 && !celle[2].textContent.trim()) {
-  const pick = celle[0]?.textContent || "";
-  const fantaTeam = celle[1]?.textContent || "";
+        if (celle.length >= 3 && !celle[2].textContent.trim()) {
+          const pick = celle[0]?.textContent || "";
+          const fantaTeam = celle[1]?.textContent || "";
 
-  // Assicura che ci siano almeno 6 celle (per giocatore, ruolo, squadra, quotazione)
-  while (r.children.length < 6) {
-    const td = document.createElement("td");
-    r.appendChild(td);
-  }
+          while (r.children.length < 6) {
+            const td = document.createElement("td");
+            r.appendChild(td);
+          }
 
-  r.children[2].textContent = nome;
-  r.children[3].textContent = ruolo;
-  r.children[4].textContent = squadra;
-  r.children[5].textContent = parseInt(quotazione);
+          r.children[2].textContent = nome;
+          r.children[3].textContent = ruolo;
+          r.children[4].textContent = squadra;
+          r.children[5].textContent = parseInt(quotazione);
 
-  tr.style.backgroundColor = "white";
-  r.style.fontWeight = "bold";
-  r.classList.remove("next-pick");
-  document.getElementById("turno-attuale").textContent = `✅ ${nome} selezionato!`;
+          tr.style.backgroundColor = "white";
+          r.style.fontWeight = "bold";
+          r.classList.remove("next-pick");
+          document.getElementById("turno-attuale").textContent = `✅ ${nome} selezionato!`;
 
-  inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
-  break;
-}
-  tr.remove();
-  listaGiocatori.appendChild(tr);
-});
+          inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
+          
+          // ✅ SPOSTATO QUI
+          tr.remove();
+          listaGiocatori.appendChild(tr);
+
+          break;
+        }
         
   Array.from(ruoli).forEach(r => {
     const opt = document.createElement("option");
