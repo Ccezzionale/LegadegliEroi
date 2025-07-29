@@ -192,6 +192,7 @@ if (celle.length >= 3 && !celle[2].textContent.trim()) {
   }); // chiusura del forEach(mappaGiocatori)
 
 } // 👈 chiusura della funzione popolaListaDisponibili()
+      
   Array.from(ruoli).forEach(r => {
     const opt = document.createElement("option");
     opt.value = r;
