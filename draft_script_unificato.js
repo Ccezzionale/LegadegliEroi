@@ -161,37 +161,38 @@ function popolaListaDisponibili() {
       <td>${squadra}</td>
       <td>${parseInt(quotazione)}</td>`;
 
-    tr.addEventListener("click", () => {
-      const conferma = confirm(`Vuoi selezionare ${nome} per la squadra al turno?`);
-      if (conferma) {
-        const righe = document.querySelectorAll("#tabella-pick tbody tr");
-        for (let r of righe) {
-          const celle = r.querySelectorAll("td");
-          if (celle.length >= 3 && !celle[2].textContent.trim()) {
-            const pick = celle[0]?.textContent || "";
-            const fantaTeam = celle[1]?.textContent || "";
+   tr.addEventListener("click", () => {
+  const conferma = confirm(`Vuoi selezionare ${nome} per la squadra al turno?`);
+  if (conferma) {
+    const righe = document.querySelectorAll("#tabella-pick tbody tr");
+    for (let r of righe) {
+      const celle = r.querySelectorAll("td");
+      if (celle.length >= 3 && !celle[2].textContent.trim()) {
+        const pick = celle[0]?.textContent || "";
+        const fantaTeam = celle[1]?.textContent || "";
 
-            // Assicura almeno 6 celle
-            while (r.children.length < 6) {
-              const td = document.createElement("td");
-              r.appendChild(td);
-            }
-
-            r.children[2].textContent = nome;
-
-            tr.style.backgroundColor = "white";
-            r.style.fontWeight = "bold";
-            r.classList.remove("next-pick");
-            document.getElementById("turno-attuale").textContent = `✅ ${nome} selezionato!`;
-
-            inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
-            break;
-          }
+        // 🔥 Elimina eventuali celle in eccesso oltre la 3
+        while (r.children.length > 3) {
+          r.removeChild(r.lastChild);
         }
-        tr.remove();
-        listaGiocatori.appendChild(tr);
+
+        // ✅ Inserisci il nome nella terza colonna
+        r.children[2].textContent = nome;
+
+        tr.style.backgroundColor = "white";
+        r.style.fontWeight = "bold";
+        r.classList.remove("next-pick");
+        document.getElementById("turno-attuale").textContent = `✅ ${nome} selezionato!`;
+
+        inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
+        break;
       }
-    });
+    }
+
+    tr.remove();
+    listaGiocatori.appendChild(tr);
+  }
+});
 
     listaGiocatori.appendChild(tr); // <-- mancava anche questa
   }); // <--- CHIUDE il forEach
