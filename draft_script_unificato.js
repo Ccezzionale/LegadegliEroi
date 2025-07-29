@@ -28,10 +28,15 @@ fetch(endpoint, {
   method: "POST",
   body: dati
 })
-  .then(res => res.text())
-  .then(txt => console.log("Risposta foglio:", txt))
-  .catch(err => console.error("Errore invio pick:", err));
-}
+.then(res => res.text())
+.then(txt => {
+  console.log("✅ Risposta dal foglio:", txt);
+  alert("✅ Pick inviata al foglio: " + txt);
+})
+.catch(err => {
+  console.error("❌ Errore invio pick:", err);
+  alert("❌ ERRORE invio pick: " + err);
+});
 
 function caricaGiocatori() {
   return fetch("giocatori_completo_finale.csv")
