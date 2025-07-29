@@ -38,6 +38,7 @@ fetch(endpoint, {
   console.error("❌ Errore invio pick:", err);
   alert("❌ ERRORE invio pick: " + err);
 });
+  }
 
 function caricaGiocatori() {
   return fetch("giocatori_completo_finale.csv")
