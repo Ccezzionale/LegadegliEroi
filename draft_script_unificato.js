@@ -189,7 +189,8 @@ if (celle.length >= 3 && !celle[2].textContent.trim()) {
 }
   tr.remove();
   listaGiocatori.appendChild(tr);
-});
+  }
+  });
 
   Array.from(ruoli).forEach(r => {
     const opt = document.createElement("option");
