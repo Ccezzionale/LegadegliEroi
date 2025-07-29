@@ -178,9 +178,6 @@ function popolaListaDisponibili() {
             }
 
             r.children[2].textContent = nome;
-            r.children[3].textContent = ruolo;
-            r.children[4].textContent = squadra;
-            r.children[5].textContent = parseInt(quotazione);
 
             tr.style.backgroundColor = "white";
             r.style.fontWeight = "bold";
