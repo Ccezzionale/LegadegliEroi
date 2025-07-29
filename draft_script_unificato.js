@@ -24,10 +24,10 @@ function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione) {
   dati.append("ruolo", ruolo);
   dati.append("quotazione", quotazione);
 
-  fetch(`https://script.google.com/macros/s/AKfycby8hk9db1JtLsi6UyuKCBrDntO7JAATwuI3lEHJmqx1VXKrPmlOnFGv3k6Ie3UKQspyPA/exec?tab=${encodeURIComponent(tab)}`, {
-    method: "POST",
-    body: dati
-  })
+fetch(endpoint, {
+  method: "POST",
+  body: dati
+})
   .then(res => res.text())
   .then(txt => console.log("Risposta foglio:", txt))
   .catch(err => console.error("Errore invio pick:", err));
