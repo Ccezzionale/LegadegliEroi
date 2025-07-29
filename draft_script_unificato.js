@@ -149,49 +149,57 @@ function caricaPick() {
 
 function popolaListaDisponibili() {
   listaGiocatori.innerHTML = "";
+  
   Object.values(mappaGiocatori).forEach(({ nome, ruolo, squadra, quotazione }) => {
     const key = normalize(nome);
     if (giocatoriScelti.has(key)) return;
+
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${nome}</td>
       <td>${ruolo}</td>
       <td>${squadra}</td>
       <td>${parseInt(quotazione)}</td>`;
+
     tr.addEventListener("click", () => {
       const conferma = confirm(`Vuoi selezionare ${nome} per la squadra al turno?`);
       if (conferma) {
         const righe = document.querySelectorAll("#tabella-pick tbody tr");
         for (let r of righe) {
           const celle = r.querySelectorAll("td");
-        if (celle.length >= 3 && !celle[2].textContent.trim()) {
-          const pick = celle[0]?.textContent || "";
-          const fantaTeam = celle[1]?.textContent || "";
+          if (celle.length >= 3 && !celle[2].textContent.trim()) {
+            const pick = celle[0]?.textContent || "";
+            const fantaTeam = celle[1]?.textContent || "";
 
-          while (r.children.length < 6) {
-            const td = document.createElement("td");
-            r.appendChild(td);
+            // Assicura almeno 6 celle
+            while (r.children.length < 6) {
+              const td = document.createElement("td");
+              r.appendChild(td);
+            }
+
+            r.children[2].textContent = nome;
+            r.children[3].textContent = ruolo;
+            r.children[4].textContent = squadra;
+            r.children[5].textContent = parseInt(quotazione);
+
+            tr.style.backgroundColor = "white";
+            r.style.fontWeight = "bold";
+            r.classList.remove("next-pick");
+            document.getElementById("turno-attuale").textContent = `✅ ${nome} selezionato!`;
+
+            inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
+            break;
           }
-
-          r.children[2].textContent = nome;
-          r.children[3].textContent = ruolo;
-          r.children[4].textContent = squadra;
-          r.children[5].textContent = parseInt(quotazione);
-
-          tr.style.backgroundColor = "white";
-          r.style.fontWeight = "bold";
-          r.classList.remove("next-pick");
-          document.getElementById("turno-attuale").textContent = `✅ ${nome} selezionato!`;
-
-          inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
-          
-          // ✅ SPOSTATO QUI
-          tr.remove();
-          listaGiocatori.appendChild(tr);
-
-          break;
         }
-        
+        tr.remove();
+        listaGiocatori.appendChild(tr);
+      }
+    });
+
+    listaGiocatori.appendChild(tr); // <-- mancava anche questa
+  }); // <--- CHIUDE il forEach
+
+  // Aggiunta filtri
   Array.from(ruoli).forEach(r => {
     const opt = document.createElement("option");
     opt.value = r;
