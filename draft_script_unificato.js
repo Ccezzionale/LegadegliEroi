@@ -24,6 +24,7 @@ function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione) {
   dati.append("ruolo", ruolo);
   dati.append("quotazione", quotazione);
 
+console.log("🌐 Chiamata a endpoint:", endpoint);
 fetch(endpoint, {
   method: "POST",
   body: dati
@@ -345,4 +346,3 @@ function ordinaLista(colonnaIndex, numerico = false) {
   righe.forEach(r => tbody.appendChild(r));
 }
 window.ordinaLista = ordinaLista;
-}
