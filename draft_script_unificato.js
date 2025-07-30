@@ -123,6 +123,8 @@ function caricaPick() {
           corpoTabella.appendChild(tr);
         });
 
+        applicaColoriPickSpeciali();
+
         // Su mobile, mostra solo le 5 righe attorno alla pick corrente
         if (window.innerWidth <= 768 && prossimaIndex >= 0) {
           const start = Math.max(0, prossimaIndex - 2);
