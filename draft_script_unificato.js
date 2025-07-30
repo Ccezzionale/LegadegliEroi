@@ -149,7 +149,7 @@ function caricaPick() {
 
 function popolaListaDisponibili() {
   listaGiocatori.innerHTML = "";
-  
+
   Object.values(mappaGiocatori).forEach(({ nome, ruolo, squadra, quotazione }) => {
     const key = normalize(nome);
     if (giocatoriScelti.has(key)) return;
@@ -161,43 +161,48 @@ function popolaListaDisponibili() {
       <td>${squadra}</td>
       <td>${parseInt(quotazione)}</td>`;
 
-   tr.addEventListener("click", () => {
-  const conferma = confirm(`Vuoi selezionare ${nome} per la squadra al turno?`);
-  if (conferma) {
-    const righe = document.querySelectorAll("#tabella-pick tbody tr");
-    for (let r of righe) {
-      const celle = r.querySelectorAll("td");
-      if (celle.length >= 3 && !celle[2].textContent.trim()) {
-        const pick = celle[0]?.textContent || "";
-        const fantaTeam = celle[1]?.textContent || "";
+    tr.addEventListener("click", () => {
+      const conferma = confirm(`Vuoi selezionare ${nome} per la squadra al turno?`);
+      if (conferma) {
+        const righe = document.querySelectorAll("#tabella-pick tbody tr");
+        for (let r of righe) {
+          const celle = r.querySelectorAll("td");
+          if (celle.length >= 3 && !celle[2].textContent.trim()) {
+            const pick = celle[0]?.textContent || "";
+            const fantaTeam = celle[1]?.textContent || "";
 
-        // 🔥 Elimina eventuali celle in eccesso oltre la 3
-        while (r.children.length > 3) {
-          r.removeChild(r.lastChild);
+            // 🔥 Elimina eventuali celle in eccesso oltre la 3
+            while (r.children.length > 3) {
+              r.removeChild(r.lastChild);
+            }
+
+            // ✅ Inserisci il nome nella terza colonna
+            r.children[2].textContent = nome;
+
+            // 🔄 Aggiorna stile della pick
+            tr.style.backgroundColor = "white";
+            r.style.fontWeight = "bold";
+            r.classList.remove("next-pick");
+
+            // ✅ Aggiorna messaggio turno
+            document.getElementById("turno-attuale").textContent = `✅ ${nome} selezionato!`;
+
+            // 📤 Invia la pick al foglio
+            inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
+            break;
+          }
         }
 
-        // ✅ Inserisci il nome nella terza colonna
-        r.children[2].textContent = nome;
-
-        tr.style.backgroundColor = "white";
-        r.style.fontWeight = "bold";
-        r.classList.remove("next-pick");
-        document.getElementById("turno-attuale").textContent = `✅ ${nome} selezionato!`;
-
-        inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
-        break;
+        // 🔄 Rimuovi dalla lista e riposiziona in fondo
+        tr.remove();
+        listaGiocatori.appendChild(tr);
       }
-    }
+    });
 
-    tr.remove();
     listaGiocatori.appendChild(tr);
-  }
-});
+  });
 
-    listaGiocatori.appendChild(tr); // <-- mancava anche questa
-  }); // <--- CHIUDE il forEach
-
-  // Aggiunta filtri
+  // 🎯 Aggiunta dei filtri Ruolo
   Array.from(ruoli).forEach(r => {
     const opt = document.createElement("option");
     opt.value = r;
@@ -205,6 +210,7 @@ function popolaListaDisponibili() {
     filtroRuolo.appendChild(opt);
   });
 
+  // 🎯 Aggiunta dei filtri Squadra Serie A
   Array.from(squadre).sort((a, b) => a.localeCompare(b)).forEach(s => {
     const opt = document.createElement("option");
     opt.value = s;
