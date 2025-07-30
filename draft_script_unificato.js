@@ -221,7 +221,43 @@ function popolaListaDisponibili() {
     filtroSerieA.appendChild(opt);
   });
 }
+function applicaColoriPickSpeciali() {
+  const righe = document.querySelectorAll("#tabella-pick tbody tr");
 
+  righe.forEach(r => {
+    const celle = r.querySelectorAll("td");
+    const pickNum = parseInt(celle[0]?.textContent);
+
+    if (isNaN(pickNum)) return;
+
+    // Reset base
+    r.style.backgroundColor = "";
+    r.style.borderLeft = "";
+
+    if (tab === "Draft Championship") {
+      if (pickNum >= 49 && pickNum <= 55) {
+        r.style.backgroundColor = "#cce5ff";
+        r.style.borderLeft = "4px solid #004085";
+      }
+      if (pickNum >= 98 && pickNum <= 104) {
+        r.style.backgroundColor = "#d4edda";
+        r.style.borderLeft = "4px solid #155724";
+      }
+    }
+
+    if (tab === "Draft Conference") {
+      const pickFP = [44, 46, 51, 52, 53, 54, 56];
+      if (pickFP.includes(pickNum)) {
+        r.style.backgroundColor = "#cce5ff";
+        r.style.borderLeft = "4px solid #004085";
+      }
+      if (pickNum >= 99 && pickNum <= 105) {
+        r.style.backgroundColor = "#d4edda";
+        r.style.borderLeft = "4px solid #155724";
+      }
+    }
+  });
+}
 function filtraLista() {
   const ruoloTesto = cercaRuolo.value.toLowerCase();
   const ruoloSelect = filtroRuolo.value.toLowerCase().split(/[,;\s]+/).filter(Boolean);
