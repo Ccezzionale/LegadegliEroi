@@ -125,6 +125,16 @@ function caricaPick() {
 
         applicaColoriPickSpeciali();
 
+        // 🎯 Ricolora la pick attuale in giallo
+if (prossimaIndex >= 0) {
+  const righe = document.querySelectorAll("#tabella-pick tbody tr");
+  const rigaCorrente = righe[prossimaIndex];
+  if (rigaCorrente) {
+    rigaCorrente.style.backgroundColor = "#ffcc00";
+    rigaCorrente.classList.add("next-pick");
+  }
+}
+
         // Su mobile, mostra solo le 5 righe attorno alla pick corrente
         if (window.innerWidth <= 768 && prossimaIndex >= 0) {
           const start = Math.max(0, prossimaIndex - 2);
