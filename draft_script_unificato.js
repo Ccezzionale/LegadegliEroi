@@ -180,7 +180,6 @@ function popolaListaDisponibili() {
             r.children[2].textContent = nome;
 
             // 🔄 Aggiorna stile della pick
-            tr.style.backgroundColor = "white";
             r.style.fontWeight = "bold";
             r.classList.remove("next-pick");
 
@@ -189,11 +188,15 @@ function popolaListaDisponibili() {
 
             // 📤 Invia la pick al foglio
             inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
+
+            // 🎨 Riapplica i colori speciali FP / U21
+            applicaColoriPickSpeciali();
+
             break;
           }
         }
 
-        // 🔄 Rimuovi dalla lista e riposiziona in fondo
+        // 🔄 Rimuovi il giocatore dalla lista
         tr.remove();
         listaGiocatori.appendChild(tr);
       }
