@@ -25,7 +25,7 @@ const giocatoriFP = new Set();
 const giocatoriU21PerSquadra = {
   "Team Bartowski": ["baldanzi"],
   "Desperados": ["fazzini"],
-  "Riverfilo ": ["fabbian"],
+  "Riverfilo": ["fabbian"],
   "Golden Knights": ["bonny"],
   "Lokomotiv Lipsia": ["goglichidze"],
   "Union Librino": [],
