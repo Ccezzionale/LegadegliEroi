@@ -127,10 +127,19 @@ async function caricaGiocatoriFP() {
         blocco.forEach(p => giocatoriFP.add(p.nome));
       }
     }
+
+    // 🔥 Aggiunta finale: FP manuali per squadra
+    for (const [squadra, giocatori] of Object.entries(giocatoriFPManualiPerSquadra)) {
+      giocatori.forEach(nome => {
+        giocatoriFP.add(nome.toLowerCase());
+      });
+    }
+
   } catch (e) {
     console.error("Errore nel caricamento FP:", e);
   }
 }
+
 
 async function caricaRose() {
   await caricaGiocatoriFP();
