@@ -41,6 +41,20 @@ const giocatoriU21PerSquadra = {
   "Pandinicoccolosini": ["yildiz"]
 };
 
+const giocatoriFPManualiPerSquadra = {
+  "Rubinkebab": ["ranieri l."],
+  "wildboys78": ["adams c."],
+  "Desperados": ["vasquez", "dodo'"],
+  "MinneSota Snakes": ["darmian"],
+  "PokerMantra": ["n'dicka"],
+  "Minnesode Timberland": ["zortea"],
+  "Bayern Christiansen": ["paleari", "frattesi"],
+  "Golden Knights": ["terracciano", "paleari", "mandragora"],
+  "Ibla": ["skorupski", "angelino", "zambo anguissa"],
+  "Pandinicoccolosini": ["leali", "n'dicka"]
+};
+
+
 const URL_ROSE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSE8Q0l1pnU8NCtId51qCk8Pstat27g6JBQaU-3UKIY0ZCZicUJ1u1T-ElvuR9NK9pc2WYpunW-a4ld/pub?output=csv";
 const URL_QUOTAZIONI = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSE8Q0l1pnU8NCtId51qCk8Pstat27g6JBQaU-3UKIY0ZCZicUJ1u1T-ElvuR9NK9pc2WYpunW-a4ld/pub?gid=2087990274&single=true&output=csv";
 
