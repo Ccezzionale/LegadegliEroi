@@ -46,9 +46,9 @@ function caricaGiocatori() {
     .then(csv => {
       const righe = csv.trim().split(/\r?\n/).slice(1);
       righe.forEach(r => {
-        const [nome, ruolo, squadra, quotazione] = r.split(",");
-        const key = normalize(nome);
-        mappaGiocatori[key] = { nome, ruolo, squadra, quotazione };
+        const [nome, ruolo, squadra, quotazione, u21] = r.split(",");
+const key = normalize(nome);
+mappaGiocatori[key] = { nome, ruolo, squadra, quotazione, u21 };
         if (ruolo) ruoli.add(ruolo);
         if (squadra) squadre.add(squadra);
       });
@@ -162,16 +162,31 @@ if (prossimaIndex >= 0) {
 function popolaListaDisponibili() {
   listaGiocatori.innerHTML = "";
 
+  // 🧼 Pulizia dei filtri per evitare duplicati
+  filtroRuolo.innerHTML = '<option value="">-- Tutti i Ruoli --</option>';
+  filtroSerieA.innerHTML = '<option value="">-- Tutte --</option>';
+
+  // 🧠 Set temporanei per ricostruire i filtri (senza duplicati)
+  const ruoliTrovati = new Set();
+  const squadreTrovate = new Set();
+
   Object.values(mappaGiocatori).forEach(({ nome, ruolo, squadra, quotazione }) => {
     const key = normalize(nome);
     if (giocatoriScelti.has(key)) return;
+
+    const u21 = mappaGiocatori[key]?.u21?.toLowerCase() === "u21" ? "U21" : "";
+
+    // 🧠 Accumula per i filtri
+    if (ruolo) ruoliTrovati.add(ruolo);
+    if (squadra) squadreTrovate.add(squadra);
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${nome}</td>
       <td>${ruolo}</td>
       <td>${squadra}</td>
-      <td>${parseInt(quotazione)}</td>`;
+      <td>${parseInt(quotazione)}</td>
+      <td>${u21}</td>`;
 
     tr.addEventListener("click", () => {
       const conferma = confirm(`Vuoi selezionare ${nome} per la squadra al turno?`);
@@ -204,13 +219,12 @@ function popolaListaDisponibili() {
             // 🎨 Riapplica i colori speciali FP / U21
             applicaColoriPickSpeciali();
 
+            // 🔄 Ricostruisci la lista aggiornata
+            popolaListaDisponibili();
+
             break;
           }
         }
-
-        // 🔄 Rimuovi il giocatore dalla lista
-        tr.remove();
-        listaGiocatori.appendChild(tr);
       }
     });
 
@@ -218,7 +232,7 @@ function popolaListaDisponibili() {
   });
 
   // 🎯 Aggiunta dei filtri Ruolo
-  Array.from(ruoli).forEach(r => {
+  Array.from(ruoliTrovati).forEach(r => {
     const opt = document.createElement("option");
     opt.value = r;
     opt.textContent = r;
@@ -226,13 +240,17 @@ function popolaListaDisponibili() {
   });
 
   // 🎯 Aggiunta dei filtri Squadra Serie A
-  Array.from(squadre).sort((a, b) => a.localeCompare(b)).forEach(s => {
+  Array.from(squadreTrovate).sort((a, b) => a.localeCompare(b)).forEach(s => {
     const opt = document.createElement("option");
     opt.value = s;
     opt.textContent = s;
     filtroSerieA.appendChild(opt);
   });
+
+  // 🧠 Applica filtri se ci sono già valori scritti
+  filtraLista();
 }
+
 function applicaColoriPickSpeciali() {
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
 
@@ -281,13 +299,15 @@ function filtraLista() {
     const r = row.children[1].textContent.toLowerCase();
     const s = row.children[2].textContent.toLowerCase();
     const ruoliGiocatore = r.split(/[,;\s]+/).map(part => part.trim());
+    const key = normalize(nome);
+
 
     const matchInput = !ruoloTesto || ruoliGiocatore.some(part => part.includes(ruoloTesto));
     const matchSelect = !ruoloSelect.length || ruoloSelect.some(rs => ruoliGiocatore.includes(rs));
     const matchSquadra = !squadra || s === squadra;
     const matchNome = !cerca || nome.includes(cerca);
 
-    row.style.display = (matchInput && matchSelect && matchSquadra && matchNome) ? "" : "none";
+   row.style.display = (matchInput && matchSelect && matchSquadra && matchNome) ? "" : "none";
   });
 }
 
@@ -311,10 +331,14 @@ function aggiornaChiamatePerSquadra() {
     const celle = r.querySelectorAll("td");
     const team = celle[1]?.textContent?.trim();
     const nome = celle[2]?.textContent?.trim();
-    const ruolo = mappaGiocatori[normalize(nome)]?.ruolo || "";
+    const key = normalize(nome);
+const ruolo = mappaGiocatori[key]?.ruolo || "";
+const isU21 = mappaGiocatori[key]?.u21?.toLowerCase() === "u21";
     if (!team || !nome) return;
     if (!riepilogo[team]) riepilogo[team] = [];
-    riepilogo[team].push(`${riepilogo[team].length + 1}. ${nome} (${ruolo})`);
+    const u21label = isU21 ? " (U21)" : "";
+riepilogo[team].push(`${riepilogo[team].length + 1}. ${nome} (${ruolo})${u21label}`);
+
   });
 
   const container = document.getElementById("riepilogo-squadre");
@@ -343,6 +367,9 @@ picks.forEach((txt, index) => {
   riga.style.textAlign = "center";
   if (index < 6) {
     riga.classList.add("highlight-pick");
+  }
+  if (txt.includes("(U21)")) {
+    riga.classList.add("under21");
   }
   div.appendChild(riga);
 });
@@ -415,6 +442,7 @@ function ordinaLista(colonnaIndex, numerico = false) {
     }
   });
 
+  
   tbody.innerHTML = "";
   righe.forEach(r => tbody.appendChild(r));
 }
