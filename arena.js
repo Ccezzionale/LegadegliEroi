@@ -1,21 +1,19 @@
 
 const squadre = [
-  { nome: "Rubin Kebab", logo: "img/Rubinkebab.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Team Bartowski", logo: "img/Team Bartowski.png", eliminata: false, ultimaEliminata: true },
-  { nome: "Real Mimmo", logo: "img/Real Mimmo.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Union Librino", logo: "img/Union Librino.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Ibla", logo: "img/Ibla.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Rafa Casablanca", logo: "img/Rafa Casablanca.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Giody", logo: "img/Giody.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Desperados", logo: "img/Desperados.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Wildboys 78", logo: "img/wildboys78.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Giulay", logo: "img/Giulay.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Pokermantra", logo: "img/PokerMantra.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Sharknado04", logo: "img/Sharknado 04.png", eliminata: true, ultimaEliminata: false }
+  { nome: "Rubinkebab", logo: "img/Rubinkebab.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Team Bartowski", logo: "img/Team Bartowski.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Golden Knights", logo: "img/Golden Knights.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Ibla", logo: "img/Ibla.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Lokomotiv Lipsia", logo: "img/Lokomotiv Lipsia.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Riverfilo", logo: "img/Riverfilo.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Desperados", logo: "img/Desperados.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Wildboys 78", logo: "img/wildboys78.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Pokermantra", logo: "img/PokerMantra.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.png", eliminata: false, ultimaEliminata: false }
 ];
 
 const center = document.getElementById("arena-center");
