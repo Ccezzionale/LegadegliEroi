@@ -62,8 +62,13 @@ function caricaClassifica(nomeFoglio = "Conference") {
 
         const tr = document.createElement("tr");
         tr.classList.add("riga-classifica");
-        if (nomeFoglio === "Totale" && i <= 4) tr.classList.add("top4");
-        if (nomeFoglio === "Totale" && i >= righe.length - 4) tr.classList.add("ultime4");
+        if (nomeFoglio === "Totale") {
+  const numeroSquadre = righe.length - startRow;
+  const posizione = i - startRow;
+
+  if (posizione <= 1) tr.classList.add("top4"); // Prime 2 (0 e 1)
+  if (posizione >= numeroSquadre - 4) tr.classList.add("ultime4"); // Ultime 4
+}
         if ((nomeFoglio === "Conference" || nomeFoglio === "Championship") && i === startRow) tr.classList.add("top1");
 
         colonne.forEach((val, idx) => {
