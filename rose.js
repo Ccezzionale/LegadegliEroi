@@ -71,10 +71,10 @@ const squadre = [
   { col: 5, start: 126, end: 153, headerRow: 124 },
   { col: 0, start: 157, end: 184, headerRow: 155 },
   { col: 5, start: 157, end: 184, headerRow: 155 },
-  { col: 0, start: 187, end: 215, headerRow: 186 },
-  { col: 5, start: 187, end: 215, headerRow: 186 },
-  { col: 0, start: 218, end: 246, headerRow: 217 },
-  { col: 5, start: 218, end: 246, headerRow: 217 },
+  { col: 0, start: 188, end: 215, headerRow: 186 },
+  { col: 5, start: 188, end: 215, headerRow: 186 },
+  { col: 0, start: 219, end: 246, headerRow: 217 },
+  { col: 5, start: 219, end: 246, headerRow: 217 },
 ];
 
 function trovaLogo(nomeSquadra) {
