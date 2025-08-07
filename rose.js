@@ -18,7 +18,7 @@ const conferencePerSquadra = {
   "Giulay": "Conference League",
   "MinneSota Snakes": "Conference League",
   "Ibla": "Conference League",
-  "Pandinicoccolosini": "Conference League"
+  "Pandinicoccolosini": "Conference League",
   "Athletic Pongao": "Conference League"
 };
 
