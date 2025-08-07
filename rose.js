@@ -54,6 +54,8 @@ const giocatoriFPManualiPerSquadra = {
   "Bayern Christiansen": ["paleari", "frattesi"],
   "Golden Knights": ["terracciano", "paleari", "mandragora"],
   "Ibla": ["skorupski", "angelino", "zambo anguissa"],
+  "FC Disoneste": ["angelino", "gatti"],
+  "Athletic Pongao": ["de roon", "weah"],
   "Pandinicoccolosini": ["leali", "n'dicka"]
 };
 
