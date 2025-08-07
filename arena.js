@@ -13,7 +13,9 @@ const squadre = [
   { nome: "Pokermantra", logo: "img/PokerMantra.png", eliminata: false, ultimaEliminata: false },
   { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.png", eliminata: false, ultimaEliminata: false },
   { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png", eliminata: false, ultimaEliminata: false },
-  { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.png", eliminata: false, ultimaEliminata: false }
+  { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.png", eliminata: false, ultimaEliminata: false },
+  { nome: "FC Disoneste", logo: "img/Eintracht Franco 126.png", eliminata: false, ultimaEliminata: false },
+ { nome: "Athletic Pongao", logo: "img/Eintracht Franco 126.png", eliminata: false, ultimaEliminata: false }
 ];
 
 const center = document.getElementById("arena-center");
