@@ -10,6 +10,7 @@ const conferencePerSquadra = {
   "Union Librino": "Conference Championship",
   "Rubinkebab": "Conference Championship",
   "Eintracht Franco 126": "Conference Championship",
+  "FC Disoneste": "Conference Championship",
   "PokerMantra": "Conference Championship",
   "wildboys78": "Conference Championship",
   "Bayern Christiansen": "Conference League",
@@ -18,6 +19,7 @@ const conferencePerSquadra = {
   "MinneSota Snakes": "Conference League",
   "Ibla": "Conference League",
   "Pandinicoccolosini": "Conference League"
+  "Athletic Pongao": "Conference League"
 };
 
 const giocatoriFP = new Set();
@@ -28,14 +30,14 @@ const giocatoriU21PerSquadra = {
   "Riverfilo": ["fabbian"],
   "Golden Knights": ["bonny"],
   "Lokomotiv Lipsia": ["goglichidze"],
-  "Union Librino": [],
+  "FC Disoneste": [],
   "Rubinkebab": [],
   "Eintracht Franco 126": ["coppola d."],
   "PokerMantra": ["yildiz"],
   "wildboys78": ["tchaouna"],
   "Bayern Christiansen": ["castro s."],
   "Minnesode Timberland": ["scalvini"],
-  "Giulay": ["goglichidze"],
+  "Athletic Pongao": ["goglichidze"],
   "MinneSota Snakes": ["fabbian"],
   "Ibla": ["soule'"],
   "Pandinicoccolosini": ["yildiz"]
