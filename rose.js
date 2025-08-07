@@ -40,6 +40,7 @@ const giocatoriU21PerSquadra = {
   "Athletic Pongao": ["goglichidze"],
   "MinneSota Snakes": ["fabbian"],
   "Ibla": ["soule'"],
+  "FC Disoneste": ["soule'"],
   "Pandinicoccolosini": ["yildiz"]
 };
 
