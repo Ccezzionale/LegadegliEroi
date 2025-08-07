@@ -143,6 +143,22 @@ async function caricaGiocatoriFP() {
   }
 }
 
+function isFP(nome, squadra) {
+  const nomeClean = nome.toLowerCase();
+
+  // Se è FP automatico, va bene ovunque
+  if (giocatoriFP.has(nomeClean)) {
+    // Se non è stato forzato in una squadra specifica, è valido ovunque
+    const squadreManuali = Object.keys(giocatoriFPManualiPerSquadra);
+    const èManuale = squadreManuali.some(s => giocatoriFPManualiPerSquadra[s].includes(nomeClean));
+    if (!èManuale) return true;
+
+    // Se è stato forzato manualmente, è FP solo nella squadra specifica
+    return giocatoriFPManualiPerSquadra[squadra]?.includes(nomeClean) || false;
+  }
+
+  return false;
+}
 
 async function caricaRose() {
   await caricaGiocatoriFP();
@@ -168,7 +184,7 @@ async function caricaRose() {
           ruolo,
           squadra,
           quotazione,
-          fp: giocatoriFP.has(nomeClean),
+          fp: isFP(nome, nomeSquadra),
           u21: giocatoriU21PerSquadra[nomeSquadra]?.includes(nomeClean) || false
         });
       }
