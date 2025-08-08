@@ -15,30 +15,28 @@ function normalize(nome) {
   return nome.trim().toLowerCase();
 }
 
-function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione) {
+function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, options = {}) {
   const dati = new URLSearchParams();
-  dati.append("pick", pick);
-  dati.append("squadra", squadra);
-  dati.append("fantaTeam", fantaTeam);
-  dati.append("giocatore", nome);
-  dati.append("ruolo", ruolo);
-  dati.append("quotazione", quotazione);
+  dati.append("pick", pick || "");                 // compatibilità
+  dati.append("fantaTeam", fantaTeam || "");
+  dati.append("giocatore", nome || "");
+  dati.append("ruolo", ruolo || "");
+  dati.append("squadra", squadra || "");
+  dati.append("quotazione", quotazione || "");
 
-console.log("🌐 Chiamata a endpoint:", endpoint);
-fetch(endpoint, {
-  method: "POST",
-  body: dati
-})
-.then(res => res.text())
-.then(txt => {
-  console.log("✅ Risposta dal foglio:", txt);
-  alert("✅ Pick inviata al foglio: " + txt);
-})
-.catch(err => {
-  console.error("❌ Errore invio pick:", err);
-  alert("❌ ERRORE invio pick: " + err);
-});
+  if (options.targetPick) dati.append("targetPick", options.targetPick);
+  if (typeof options.locked !== "undefined") {
+    dati.append("locked", options.locked ? "TRUE" : "FALSE");
   }
+
+  fetch(endpoint, { method: "POST", body: dati })
+    .then(r => r.text())
+    .then(txt => {
+      console.log("✅ Risposta:", txt);
+      return caricaPick().then(() => { popolaListaDisponibili(); aggiornaChiamatePerSquadra(); });
+    })
+    .catch(err => alert("❌ ERRORE invio pick: " + err));
+}
 
 function caricaGiocatori() {
   return fetch("giocatori_completo_finale.csv")
