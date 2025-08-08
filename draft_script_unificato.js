@@ -73,11 +73,15 @@ console.log("📡 Endpoint:", endpoint);
 
 
 function caricaPick() {
-  return fetch(endpoint)
+  return fetch(`${endpoint}?tab=${encodeURIComponent(tab)}`)
     .then(res => res.text())
     .then(txt => {
       try {
-        const dati = JSON.parse(txt);
+        if (!txt.trim().startsWith('[')) {
+  console.error("❌ Risposta non JSON dal server:", txt);
+  throw new Error("Risposta non JSON (doGet). Controlla il tab passato.");
+}
+const dati = JSON.parse(txt);
         const corpoTabella = document.querySelector("#tabella-pick tbody");
         corpoTabella.innerHTML = "";
 
