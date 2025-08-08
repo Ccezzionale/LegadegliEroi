@@ -17,7 +17,8 @@ function normalize(nome) {
 
 function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, options = {}) {
   const dati = new URLSearchParams();
-  dati.append("pick", pick || "");                 // compatibilità
+  dati.append("tab", tab); // <-- aggiungi questo, così prende il tab corretto
+  dati.append("pick", pick || "");
   dati.append("fantaTeam", fantaTeam || "");
   dati.append("giocatore", nome || "");
   dati.append("ruolo", ruolo || "");
@@ -37,6 +38,7 @@ function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, op
     })
     .catch(err => alert("❌ ERRORE invio pick: " + err));
 }
+
 
 function caricaGiocatori() {
   return fetch("giocatori_completo_finale.csv")
