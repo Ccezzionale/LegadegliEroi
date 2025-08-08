@@ -265,11 +265,11 @@ function applicaColoriPickSpeciali() {
     r.style.borderLeft = "";
 
     if (tab === "Draft Championship") {
-      if (pickNum >= 49 && pickNum <= 55) {
+      if (pickNum >= 56 && pickNum <= 63) {
         r.style.backgroundColor = "#cce5ff";
         r.style.borderLeft = "4px solid #004085";
       }
-      if (pickNum >= 98 && pickNum <= 104) {
+      if (pickNum >= 112 && pickNum <= 119) {
         r.style.backgroundColor = "#d4edda";
         r.style.borderLeft = "4px solid #155724";
       }
@@ -281,7 +281,7 @@ function applicaColoriPickSpeciali() {
         r.style.backgroundColor = "#cce5ff";
         r.style.borderLeft = "4px solid #004085";
       }
-      if (pickNum >= 112 && pickNum <= 119) {
+      if (pickNum >= 113 && pickNum <= 120) {
         r.style.backgroundColor = "#d4edda";
         r.style.borderLeft = "4px solid #155724";
       }
