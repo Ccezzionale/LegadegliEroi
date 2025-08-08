@@ -64,7 +64,8 @@ const tab = urlParams.get("tab") || (
 );
 
 // 🌐 Imposta l'endpoint corretto con il tab scelto
-const endpoint = `https://script.google.com/macros/s/AKfycbwGlBiarvPyDSGBIQfOp-nUXzwF9gIdP1K6TKY-jy_VGKyCGtji5pe46BCED5prESvytg/exec?tab=${encodeURIComponent(tab)}`;
+const endpoint = "https://script.google.com/macros/s/AKfycbyFSp-hdD7_r2pNoCJ_X1vjxAzVKXG4py42RUT5cFloUA9PG5zFGWh3sp-qg2MEg7H5OQ/exec";
+
 
 // 🧪 Debug
 console.log("🧪 Tab scelto:", tab);
