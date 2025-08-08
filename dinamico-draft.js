@@ -1,12 +1,13 @@
 const conferenceMap = {
   "Team Bartowski": "Conference League",
   "Desperados": "Conference League",
-  "Sharknado 04": "Conference Championship",
-  "Real Mimmo": "Conference Championship",
-  "Giody": "Conference Championship",
+  "Riverfilo": "Conference Championship",
+  "Golden Knights": "Conference Championship",
+  "Lokomotiv Lipsia": "Conference Championship",
   "Union Librino": "Conference Championship",
   "Rubinkebab": "Conference Championship",
-  "Rafa Casablanca": "Conference Championship",
+  "Eintracht Franco 126": "Conference Championship",
+  "FC Disoneste": "Conference Championship",
   "PokerMantra": "Conference Championship",
   "wildboys78": "Conference Championship",
   "Bayern Christiansen": "Conference League",
@@ -14,7 +15,8 @@ const conferenceMap = {
   "Giulay": "Conference League",
   "MinneSota Snakes": "Conference League",
   "Ibla": "Conference League",
-  "Pandinicoccolosini": "Conference League"
+  "Pandinicoccolosini": "Conference League",
+  "Athletic Pongao": "Conference League"
 };
 
 // Crea draft a serpentina base
