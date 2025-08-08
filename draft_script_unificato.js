@@ -329,21 +329,52 @@ window.addEventListener("DOMContentLoaded", function () {
   );
 });
 
+function mappaIndiceAssolutoPerTeam() {
+  const righe = document.querySelectorAll("#tabella-pick tbody tr");
+  const picksPerTeam = {};           // { team: [pick,...] }
+  const indexMap = {};               // { "team|pick": posizioneAssoluta }
+
+  righe.forEach(r => {
+    const celle = r.querySelectorAll("td");
+    const pick = parseInt(celle[0]?.textContent);
+    const team = (celle[1]?.textContent || "").trim();
+    if (!team || isNaN(pick)) return;
+    if (!picksPerTeam[team]) picksPerTeam[team] = [];
+    picksPerTeam[team].push(pick);
+  });
+
+  Object.keys(picksPerTeam).forEach(team => {
+    picksPerTeam[team].sort((a, b) => a - b);
+    picksPerTeam[team].forEach((p, i) => {
+      indexMap[`${team}|${p}`] = i + 1; // 1-based
+    });
+  });
+
+  return indexMap;
+}
+
 function aggiornaChiamatePerSquadra() {
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
   const riepilogo = {};
+  const indexMap = mappaIndiceAssolutoPerTeam(); // 📌 mappa posizione assoluta per team
+
   righe.forEach(r => {
     const celle = r.querySelectorAll("td");
+    const pickNum = parseInt(celle[0]?.textContent);
     const team = celle[1]?.textContent?.trim();
     const nome = celle[2]?.textContent?.trim();
-    const key = normalize(nome);
-const ruolo = mappaGiocatori[key]?.ruolo || "";
-const isU21 = mappaGiocatori[key]?.u21?.toLowerCase() === "u21";
-    if (!team || !nome) return;
-    if (!riepilogo[team]) riepilogo[team] = [];
-    const u21label = isU21 ? " (U21)" : "";
-riepilogo[team].push(`${riepilogo[team].length + 1}. ${nome} (${ruolo})${u21label}`);
+    if (!team || !nome || isNaN(pickNum)) return;
 
+    const key = normalize(nome);
+    const ruolo = mappaGiocatori[key]?.ruolo || "";
+    const isU21 = mappaGiocatori[key]?.u21?.toLowerCase() === "u21";
+    const u21label = isU21 ? " (U21)" : "";
+
+    // 📌 Numero corretto della chiamata in base all'ordine nel tabellone
+    const nAssoluto = indexMap[`${team}|${pickNum}`] || 1;
+
+    if (!riepilogo[team]) riepilogo[team] = [];
+    riepilogo[team].push(`${nAssoluto}. ${nome} (${ruolo})${u21label}`);
   });
 
   const container = document.getElementById("riepilogo-squadre");
