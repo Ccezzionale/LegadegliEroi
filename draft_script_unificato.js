@@ -356,7 +356,7 @@ function mappaIndiceAssolutoPerTeam() {
 function aggiornaChiamatePerSquadra() {
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
   const riepilogo = {};
-  const indexMap = mappaIndiceAssolutoPerTeam(); // 📌 mappa posizione assoluta per team
+  const indexMap = mappaIndiceAssolutoPerTeam(); // team|pick -> posizione assoluta
 
   righe.forEach(r => {
     const celle = r.querySelectorAll("td");
@@ -368,21 +368,22 @@ function aggiornaChiamatePerSquadra() {
     const key = normalize(nome);
     const ruolo = mappaGiocatori[key]?.ruolo || "";
     const isU21 = mappaGiocatori[key]?.u21?.toLowerCase() === "u21";
-    const u21label = isU21 ? " (U21)" : "";
-
-    // 📌 Numero corretto della chiamata in base all'ordine nel tabellone
     const nAssoluto = indexMap[`${team}|${pickNum}`] || 1;
 
     if (!riepilogo[team]) riepilogo[team] = [];
-    riepilogo[team].push(`${nAssoluto}. ${nome} (${ruolo})${u21label}`);
+    riepilogo[team].push({ n: nAssoluto, nome, ruolo, isU21 });
   });
 
   const container = document.getElementById("riepilogo-squadre");
   container.innerHTML = "";
 
   for (const [team, picks] of Object.entries(riepilogo)) {
-const div = document.createElement("div");
-div.className = "card-pick";
+    // Ordina per numero assoluto della chiamata
+    picks.sort((a, b) => a.n - b.n);
+
+    const div = document.createElement("div");
+    div.className = "card-pick";
+
     const logoPath = `img/${team}.png`;
     const img = document.createElement("img");
     img.src = logoPath;
@@ -397,22 +398,22 @@ div.className = "card-pick";
     h4.style.textAlign = "center";
     div.appendChild(h4);
 
-picks.forEach((txt, index) => {
-  const riga = document.createElement("div");
-  riga.textContent = txt;
-  riga.style.textAlign = "center";
-  if (index < 6) {
-    riga.classList.add("highlight-pick");
-  }
-  if (txt.includes("(U21)")) {
-    riga.classList.add("under21");
-  }
-  div.appendChild(riga);
-});
+    picks.forEach(p => {
+      const riga = document.createElement("div");
+      riga.textContent = `${p.n}. ${p.nome} (${p.ruolo})${p.isU21 ? " (U21)" : ""}`;
+      riga.style.textAlign = "center";
+
+      // 👉 giallo SOLO per le prime 6 chiamate assolute
+      if (p.n <= 6) riga.classList.add("highlight-pick");
+      if (p.isU21) riga.classList.add("under21");
+
+      div.appendChild(riga);
+    });
 
     container.appendChild(div);
   }
 }
+
 window.aggiornaChiamatePerSquadra = aggiornaChiamatePerSquadra;
 
 let ordineAscendente = {};
