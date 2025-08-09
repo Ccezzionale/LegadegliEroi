@@ -74,15 +74,14 @@ nav {
 
 .page-title {
   color: #001f3f;
-  margin: 10px 0 20px; /* meno spazio sopra, più sotto */
+  margin: 15px 0 25px; /* spazio sopra piccolo, sotto più ampio */
   text-align: center;
   font-size: 2rem;
   font-weight: 800;
 }
 
 .container {
-  margin-top: 0; /* evita distacco inutile */
-}
+  margin-top: 0; /* niente margine aggiuntivo */
 
 /* Card */
 .card {
