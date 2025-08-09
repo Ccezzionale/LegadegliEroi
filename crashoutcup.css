@@ -72,13 +72,14 @@ nav {
   border-bottom: 1px solid #e0e6ef;
 }
 
-.title {
+.page-title {
   color: #001f3f;
   margin: 20px 0 10px;
   text-align: center;
   font-size: 2rem;
   font-weight: 800;
-}
+
+
 
 /* Card */
 .card {
