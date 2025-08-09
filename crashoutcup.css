@@ -59,7 +59,6 @@ nav {
 }
 .submenu a { font-size: 0.95rem; }
 .dropdown.show .submenu { display: flex; }
-}
 
 .container {
   max-width: 1200px;
@@ -205,9 +204,8 @@ nav {
   font-size: 0.9rem;
 }
 
-  details:not([open]) .accordion-body {
-  display: none;
-}
+details:not([open]) .accordion-body { display: none; }
+details[open] .accordion-body { display: flex; }
 
 /* Griglia chiave:valore */
 .kv { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; width: 100%; }
