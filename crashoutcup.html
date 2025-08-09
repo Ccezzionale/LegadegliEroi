@@ -222,21 +222,27 @@
       });
     }
 
-    async function loadAndRender() {
-      try {
-        const text = await fetchCSV(CSV_URL);
-        const parsed = parseCSV(text);
-        if (!parsed.length) throw new Error('CSV vuoto');
-        const headers = parsed[0].map(h => String(h).trim());
-        const rows = parsed.slice(1);
-        buildTable(headers, rows);
-        buildAccordion(headers, rows);
-        elLastUpdate.textContent = `Aggiornata: ${formatDateTime(new Date())}`;
-      } catch (e) {
-        console.error(e);
-        alert('Impossibile caricare la classifica della Coppa. Controlla l\'URL CSV.');
-      }
+async function loadAndRender() {
+  try {
+    const text = await fetchCSV(CSV_URL);
+    const parsed = parseCSV(text);
+    if (!parsed.length) throw new Error('CSV vuoto');
+    
+    // Rimuove le prime due righe e usa la terza come header
+    if (parsed.length > 2) {
+      parsed.splice(0, 2);
     }
+    const headers = parsed[0].map(h => String(h).trim());
+    const rows = parsed.slice(1);
+
+    buildTable(headers, rows);
+    buildAccordion(headers, rows);
+    elLastUpdate.textContent = `Aggiornata: ${formatDateTime(new Date())}`;
+  } catch (e) {
+    console.error(e);
+    alert('Impossibile caricare la classifica della Coppa. Controlla l\'URL CSV.');
+  }
+}
 
     // Avvio
     loadAndRender();
