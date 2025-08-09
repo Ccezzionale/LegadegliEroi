@@ -154,7 +154,7 @@ body {
 
   details:not([open]) .accordion-body {
   display: none;
-
+}
 
 /* Griglia chiave:valore */
 .kv { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; width: 100%; }
