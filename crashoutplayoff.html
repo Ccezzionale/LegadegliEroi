@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crash Out Cup – Playoff Bracket</title>
+  <style>
+    :root{
+      --bg:#f5f8ff; /* bianco/blu chiaro come richiesto per lo stile base */
+      --card:#ffffff;
+      --ink:#0f1a2e;
+      --muted:#6b7a99;
+      --accent:#2563eb; /* blu */
+      --accent-2:#93c5fd; /* blu chiaro */
+      --win:#16a34a;
+      --loss:#ef4444;
+      --grid:#e6edf7;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; padding:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;
+      background:linear-gradient(180deg,var(--bg),#fff);
+      color:var(--ink);
+    }
+    header{
+      position:sticky; top:0; z-index:10; backdrop-filter:saturate(1.2) blur(6px);
+      background:rgba(245,248,255,.85); border-bottom:1px solid var(--grid);
+    }
+    .container{max-width:1200px; margin:0 auto; padding:16px 20px}
+    h1{margin:6px 0 10px; font-size:clamp(20px,3.2vw,32px)}
+    .sub{color:var(--muted); font-size:.95rem}
+
+    .controls{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:10px}
+    button,.select{
+      background:var(--accent); color:#fff; border:none; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600;
+      box-shadow:0 6px 16px rgba(37,99,235,.18);
+    }
+    button.secondary{background:#e8efff; color:var(--accent); box-shadow:none}
+    button:disabled{opacity:.6; cursor:not-allowed}
+    .chip{background:#eef4ff; color:var(--accent); padding:6px 10px; border-radius:999px; font-size:.85rem}
+
+    /* BRACKET */
+    .board{overflow-x:auto;}
+    .bracket{display:grid; gap:16px; padding:20px 0; align-items:start;
+      grid-template-columns: repeat(4, minmax(240px, 1fr));
+    }
+    .round-col{display:flex; flex-direction:column; gap:16px}
+    .round-title{font-weight:800; letter-spacing:.02em; color:var(--muted); font-size:.9rem; padding:0 6px}
+    .match{background:var(--card); border:1px solid var(--grid); border-radius:16px; padding:10px; box-shadow:0 4px 16px rgba(2,8,23,.04)}
+    .team{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 10px; border-radius:12px; border:1px dashed transparent}
+    .team + .team{margin-top:8px}
+    .seed{width:28px; height:28px; display:inline-grid; place-items:center; border-radius:8px; background:#eef4ff; color:var(--accent); font-weight:800}
+    .name{flex:1; font-weight:700}
+    .score{min-width:34px; text-align:center; font-variant-numeric:tabular-nums}
+    .win{border-color:#c6f6d5; background:#f0fff4}
+    .loss{opacity:.6}
+    .clickable{cursor:pointer}
+
+    /* connector lines */
+    .match{position:relative}
+    .connector{position:absolute; right:-16px; top:50%; width:16px; height:2px; background:var(--grid)}
+    .connector:after{content:""; position:absolute; right:0; top:-48px; width:2px; height:98px; background:var(--grid)}
+
+    /* responsive tweak */
+    @media (max-width: 900px){
+      .bracket{grid-template-columns: repeat(4, minmax(220px, 1fr));}
+    }
+    @media (max-width: 720px){
+      .bracket{grid-template-columns: repeat(2, minmax(260px, 1fr));}
+    }
+    @media (max-width: 520px){
+      .bracket{grid-template-columns: 1fr}
+    }
+
+    .legend{display:flex; gap:8px; align-items:center; color:var(--muted); font-size:.9rem}
+    .pill{height:10px; width:18px; border-radius:3px}
+    .pill.win{background:var(--win)}
+    .pill.loss{background:var(--loss)}
+
+    .empty{opacity:.6; font-style:italic}
+    .error{background:#fff1f2; color:#9f1239; border:1px solid #fecdd3; padding:10px 12px; border-radius:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Crash Out Cup – Playoff Bracket</h1>
+      <div class="sub">Tabellone automatico: seeding 1 vs 16, 2 vs 15, … stile NBA fino alla finale.</div>
+      <div class="controls">
+        <button id="refreshBtn">🔄 Aggiorna ora</button>
+        <button id="lockBtn" class="secondary">🔒 Blocca/ Sblocca seeding</button>
+        <span class="chip" id="seedState">Seeding: attivo</span>
+        <span class="legend"><span class="pill win"></span> vincitore · <span class="pill loss"></span> eliminato</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="status" class="sub" style="margin:10px 0 14px"></div>
+
+    <div class="board">
+      <div id="bracket" class="bracket" aria-live="polite"></div>
+    </div>
+
+    <div id="errors"></div>
+
+    <details style="margin-top:18px">
+      <summary>⚙️ Config e formato dei CSV</summary>
+      <div style="margin-top:10px; color:var(--muted); line-height:1.5">
+        <p><strong>STANDINGS CSV</strong> (usato per il seeding finché non si blocca): deve contenere almeno la colonna del nome squadra. Se esiste una colonna chiamata <em>Squadra</em> o <em>Team</em> verrà usata; altrimenti si prende la prima colonna testuale.</p>
+        <p><strong>RESULTS CSV</strong> (facoltativo per avanzamento automatico): colonne consigliate: <code>round,match,home,away,homePts,awayPts,winner</code>. Se <em>winner</em> è vuota ma i punteggi sono numerici, il sistema calcola il vincitore. Round supportati: <code>R16</code>, <code>QF</code>, <code>SF</code>, <code>F</code>.</p>
+        <p>Si può bloccare il seeding (per evitare che cambi con la classifica) col pulsante in alto. Una volta bloccato, il tabellone resta fisso; i risultati faranno avanzare i vincitori.</p>
+      </div>
+    </details>
+  </main>
+
+  <script>
+  // ======== CONFIG ========
+  // 👉 Inserisci qui i tuoi CSV
+  // Esempio: URL della classifica Totale già pubblicata in CSV (sostituisci con il tuo)
+  const URL_STANDINGS = ""; // es: "https://docs.google.com/spreadsheets/d/e/.../pub?output=csv"
+  // Esempio: URL risultati Crash Out Cup (facoltativo). Se vuoto, puoi cliccare manualmente i vincitori.
+  const URL_RESULTS = ""; // es: "https://docs.google.com/spreadsheets/d/e/.../pub?output=csv"
+
+  // Se true, il seeding resta fisso (non rilegge la classifica per ricalcolare le teste di serie)
+  let LOCK_SEEDING = false;
+
+  // ======== STATE ========
+  let seeds = []; // [{seed:1, team:"..."}, ...]
+  // Struttura del bracket: round -> array di match { id, a:{seed,team}, b:{seed,team}, winner }
+  const BRACKET = {
+    R16: [], QF: [], SF: [], F: []
+  };
+
+  const el = (sel)=>document.querySelector(sel);
+  const statusEl = el('#status');
+  const errorsEl = el('#errors');
+  const bracketEl = el('#bracket');
+  const seedStateEl = el('#seedState');
+
+  el('#refreshBtn').addEventListener('click', ()=> init(true));
+  el('#lockBtn').addEventListener('click', ()=> { LOCK_SEEDING = !LOCK_SEEDING; render(); });
+
+  function setStatus(msg){ statusEl.textContent = msg; }
+  function setError(msg){
+    errorsEl.innerHTML = `<div class="error">${msg}</div>`;
+  }
+
+  function csvToRows(text){
+    return text.trim().split(/\r?\n/).map(r=>r.split(',').map(c=>c.replace(/^\"|\"$/g,'').trim()));
+  }
+
+  async function fetchCSV(url){
+    if(!url) return null;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('Impossibile caricare: '+url);
+    return csvToRows(await res.text());
+  }
+
+  function findTeamColumn(header){
+    const lower = header.map(h=>h.toLowerCase());
+    let idx = lower.findIndex(h => h.includes('squadra'));
+    if(idx===-1) idx = lower.findIndex(h => h.includes('team'));
+    if(idx===-1) idx = lower.findIndex(h => h.includes('nome'));
+    if(idx===-1) idx = 0; // fallback: prima colonna
+    return idx;
+  }
+
+  function buildSeedsFromStandings(rows){
+    if(!rows || !rows.length) throw new Error('CSV classifica vuoto.');
+    const header = rows[0];
+    const teamCol = findTeamColumn(header);
+    const data = rows.slice(1).filter(r => (r[teamCol]||'').trim());
+
+    // Prendi le prime 16 squadre nell'ordine in cui compaiono
+    const top16 = data.slice(0,16).map((r,i)=> ({ seed:i+1, team:r[teamCol].trim() }));
+    if(top16.length<16) throw new Error('Servono almeno 16 squadre nella classifica per comporre il tabellone.');
+    return top16;
+  }
+
+  function defaultPairing(seeds){
+    // Classico tabellone: 1v16, 8v9, 5v12, 4v13 | 3v14, 6v11, 7v10, 2v15
+    const order = [ [1,16],[8,9],[5,12],[4,13], [3,14],[6,11],[7,10],[2,15] ];
+    const bySeed = Object.fromEntries(seeds.map(s=>[s.seed,s]));
+    return order.map((pair, idx)=> ({
+      id: 'R16-'+(idx+1),
+      a: bySeed[pair[0]], b: bySeed[pair[1]], winner: null
+    }));
+  }
+
+  function linkNextRound(){
+    // QF: (1) vs (2), (3) vs (4), (5) vs (6), (7) vs (8)
+    BRACKET.QF = [0,1,2,3].map(i=> ({ id:'QF-'+(i+1), a:null, b:null, winner:null }));
+    BRACKET.SF = [0,1].map(i=> ({ id:'SF-'+(i+1), a:null, b:null, winner:null }));
+    BRACKET.F = [{ id:'F-1', a:null, b:null, winner:null }];
+  }
+
+  function advanceWinnersFrom(roundFrom, roundTo){
+    const pairs = [];
+    for(let i=0;i<BRACKET[roundFrom].length;i+=2){ pairs.push([BRACKET[roundFrom][i], BRACKET[roundFrom][i+1]]); }
+    BRACKET[roundTo].forEach((m, idx)=>{
+      const [m1, m2] = pairs[idx];
+      m.a = m1?.winner || null; m.b = m2?.winner || null;
+    });
+  }
+
+  function clearWinners(){
+    ['R16','QF','SF','F'].forEach(r=> BRACKET[r].forEach(m=> m.winner=null));
+  }
+
+  function ensureStructure(){
+    if(!BRACKET.R16.length) BRACKET.R16 = defaultPairing(seeds);
+    if(!BRACKET.QF.length || !BRACKET.SF.length || !BRACKET.F.length) linkNextRound();
+  }
+
+  function selectWinner(round, matchId, winnerObj){
+    const match = BRACKET[round].find(m=>m.id===matchId);
+    if(!match) return;
+    match.winner = winnerObj;
+    // Ricalcola round successivi
+    if(round==='R16'){
+      advanceWinnersFrom('R16','QF');
+      BRACKET.SF.forEach(m=> m.winner=null);
+      BRACKET.F[0].winner=null;
+      advanceWinnersFrom('QF','SF');
+      advanceWinnersFrom('SF','F');
+    } else if(round==='QF'){
+      BRACKET.SF.forEach(m=> m.winner=null); BRACKET.F[0].winner=null;
+      advanceWinnersFrom('QF','SF'); advanceWinnersFrom('SF','F');
+    } else if(round==='SF'){
+      BRACKET.F[0].winner=null; advanceWinnersFrom('SF','F');
+    }
+    render();
+  }
+
+  function teamNode(t, round, matchId){
+    const div = document.createElement('div');
+    div.className = 'team clickable';
+    if(!t){
+      div.classList.add('empty');
+      div.innerHTML = `<span class="seed">–</span><span class="name">In attesa</span><span class="score"> </span>`;
+      return div;
+    }
+    div.innerHTML = `<span class="seed">${t.seed ?? '–'}</span><span class="name">${t.team}</span><span class="score"></span>`;
+    div.addEventListener('click', ()=> selectWinner(round, matchId, t));
+    return div;
+  }
+
+  function matchNode(m, round, withConnector){
+    const card = document.createElement('div');
+    card.className = 'match';
+
+    const a = teamNode(m.a, round, m.id);
+    const b = teamNode(m.b, round, m.id);
+
+    // Applica classi win/loss
+    if(m.winner){
+      const isA = m.winner && m.a && m.winner.team===m.a.team;
+      a.classList.toggle('win', isA); b.classList.toggle('loss', isA);
+      b.classList.toggle('win', !isA); a.classList.toggle('loss', !isA);
+    }
+
+    card.appendChild(a); card.appendChild(b);
+    if(withConnector){
+      const c = document.createElement('div'); c.className='connector'; card.appendChild(c);
+    }
+    return card;
+  }
+
+  function col(title, nodes){
+    const div = document.createElement('div'); div.className='round-col';
+    const h = document.createElement('div'); h.className='round-title'; h.textContent = title; div.appendChild(h);
+    nodes.forEach(n=> div.appendChild(n));
+    return div;
+  }
+
+  function render(){
+    seedStateEl.textContent = `Seeding: ${LOCK_SEEDING? 'bloccato' : 'attivo'}`;
+    bracketEl.innerHTML = '';
+
+    // R16
+    const r16Nodes = BRACKET.R16.map((m,i)=> matchNode(m,'R16',true));
+    // QF dipende dai winner R16
+    advanceWinnersFrom('R16','QF');
+    const qfNodes = BRACKET.QF.map((m)=> matchNode(m,'QF',true));
+    // SF
+    advanceWinnersFrom('QF','SF');
+    const sfNodes = BRACKET.SF.map((m)=> matchNode(m,'SF',true));
+    // F
+    advanceWinnersFrom('SF','F');
+    const fNodes = BRACKET.F.map((m)=> matchNode(m,'F',false));
+
+    bracketEl.appendChild(col('Ottavi (R16)', r16Nodes));
+    bracketEl.appendChild(col('Quarti', qfNodes));
+    bracketEl.appendChild(col('Semifinali', sfNodes));
+    bracketEl.appendChild(col('Finale', fNodes));
+  }
+
+  function applyResults(resultsRows){
+    // resultsRows include header
+    const header = resultsRows[0].map(h=>h.toLowerCase());
+    const idx = {
+      round: header.findIndex(h=>h==='round'),
+      match: header.findIndex(h=>h==='match'),
+      home: header.findIndex(h=>h==='home'),
+      away: header.findIndex(h=>h==='away'),
+      homePts: header.findIndex(h=>h==='homepts'),
+      awayPts: header.findIndex(h=>h==='awaypts'),
+      winner: header.findIndex(h=>h==='winner'),
+    };
+
+    const rows = resultsRows.slice(1);
+    const groups = { R16:[], QF:[], SF:[], F:[] };
+    rows.forEach(r=>{
+      const round = (r[idx.round]||'').toUpperCase();
+      if(!groups[round]) return;
+      groups[round].push({
+        round,
+        match: r[idx.match],
+        home: r[idx.home],
+        away: r[idx.away],
+        homePts: Number(r[idx.homePts]),
+        awayPts: Number(r[idx.awayPts]),
+        winner: r[idx.winner]
+      });
+    });
+
+    // Helper per trovare e settare winner by team name
+    const setWinnerByName = (round, matchId, name)=>{
+      const match = BRACKET[round].find(m=>m.id.toLowerCase()===String(matchId).toLowerCase());
+      if(!match) return;
+      const cand = [match.a, match.b].find(t=> t && t.team.toLowerCase()===String(name||'').toLowerCase());
+      if(cand) match.winner = cand;
+    }
+
+    // Applica round per round
+    ['R16','QF','SF','F'].forEach(round=>{
+      const arr = groups[round]; if(!arr || !arr.length) return;
+      arr.forEach(entry=>{
+        const id = `${round}-${String(entry.match).replace(/\s+/g,'')}`;
+        let chosen = entry.winner;
+        if(!chosen && Number.isFinite(entry.homePts) && Number.isFinite(entry.awayPts)){
+          if(entry.homePts>entry.awayPts) chosen = entry.home; else if(entry.awayPts>entry.homePts) chosen = entry.away;
+        }
+        if(chosen) setWinnerByName(round, id, chosen);
+      });
+      // Propaga ai round successivi ogni volta che completiamo uno step
+      if(round==='R16') advanceWinnersFrom('R16','QF');
+      if(round==='QF') advanceWinnersFrom('QF','SF');
+      if(round==='SF') advanceWinnersFrom('SF','F');
+    });
+  }
+
+  async function init(force=false){
+    setError('');
+    try{
+      setStatus('Caricamento…');
+
+      // 1) Seeding
+      if(!LOCK_SEEDING || force){
+        if(URL_STANDINGS){
+          const rows = await fetchCSV(URL_STANDINGS);
+          seeds = buildSeedsFromStandings(rows);
+        } else if(!seeds.length){
+          // Dummy seeds per demo
+          seeds = Array.from({length:16}, (_,i)=>({seed:i+1, team:`Squadra ${i+1}`}));
+        }
+        BRACKET.R16 = defaultPairing(seeds);
+        linkNextRound();
+        clearWinners();
+      } else {
+        ensureStructure();
+      }
+
+      // 2) Risultati (facoltativo)
+      if(URL_RESULTS){
+        const resRows = await fetchCSV(URL_RESULTS);
+        if(resRows) applyResults(resRows);
+      }
+
+      render();
+      const ts = new Date();
+      setStatus(`Aggiornato alle ${ts.toLocaleTimeString()} · ${LOCK_SEEDING? 'Seeding bloccato' : 'Seeding attivo'}`);
+
+    } catch(err){
+      console.error(err);
+      setError(err.message || String(err));
+      render();
+      setStatus('');
+    }
+  }
+
+  // Auto init
+  init();
+  </script>
+</body>
+</html>
