@@ -96,6 +96,14 @@ body{
   border-radius: 4px;
 }
 
+.series-status {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+  font-style: italic;
+}
+
 
 /* Responsive */
 @media (max-width: 900px){
