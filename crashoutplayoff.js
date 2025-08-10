@@ -44,11 +44,24 @@ function findTeamColumn(header){
 
 function buildSeedsFromStandings(rows){
   if(!rows || !rows.length) throw new Error('CSV classifica vuoto.');
+
+  // Ignora le prime 3 righe (link e titoli vari)
+  rows = rows.slice(3);
+
   const header = rows[0];
   const teamCol = findTeamColumn(header);
+
+  // Dati reali dalla riga successiva
   const data = rows.slice(1).filter(r => (r[teamCol]||'').trim());
-  const top16 = data.slice(0,16).map((r,i)=> ({ seed:i+1, team:r[teamCol].trim() }));
+
+  // Prendi le prime 16 squadre
+  const top16 = data.slice(0,16).map((r,i)=> ({
+    seed: i+1,
+    team: r[teamCol].trim()
+  }));
+
   if(top16.length<16) throw new Error('Servono almeno 16 squadre nella classifica per comporre il tabellone.');
+
   return top16;
 }
 
