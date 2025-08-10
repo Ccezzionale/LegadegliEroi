@@ -42,7 +42,7 @@ function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, op
 
 // CSV con cache locale (TTL 24h) + parser separato
 async function caricaGiocatori() {
-  const KEY = "giocatori_csv_cache_v2";           // chiave cache
+  const KEY = "giocatori_csv_cache_v3";           // chiave cache
   const TTL = 24 * 60 * 60 * 1000;                // 24 ore in ms
   const now = Date.now();
 
