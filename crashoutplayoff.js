@@ -107,9 +107,23 @@ function selectWinner(round, matchId, winnerObj){
 function teamNode(t, round, matchId){
   const div = document.createElement('div');
   div.className = 'team';
-  if(!t){ div.classList.add('empty'); div.innerHTML = `<span class="seed">–</span><span class="name">In attesa</span><span class="score"> </span>`; return div; }
+
+  if(!t){
+    div.classList.add('empty');
+    div.innerHTML = `<span class="seed">–</span><span class="name">In attesa</span><span class="score"> </span>`;
+    return div;
+  }
+
   div.classList.add('clickable');
-  div.innerHTML = `<span class="seed">${t.seed ?? '–'}</span><span class="name">${t.team}</span><span class="score"></span>`;
+
+  const logoPath = `img/${t.team}.png`; // stesso nome della squadra
+  div.innerHTML = `
+    <span class="seed">${t.seed ?? '–'}</span>
+    <img src="${logoPath}" alt="${t.team}" class="logo" onerror="this.style.display='none'">
+    <span class="name">${t.team}</span>
+    <span class="score"></span>
+  `;
+
   div.addEventListener('click', ()=> selectWinner(round, matchId, t));
   return div;
 }
