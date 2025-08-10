@@ -66,11 +66,28 @@ const tab = urlParams.get("tab") || (
 // 🌐 Imposta l'endpoint corretto con il tab scelto
 const endpoint = "https://script.google.com/macros/s/AKfycbyFSp-hdD7_r2pNoCJ_X1vjxAzVKXG4py42RUT5cFloUA9PG5zFGWh3sp-qg2MEg7H5OQ/exec";
 
-
 // 🧪 Debug
 console.log("🧪 Tab scelto:", tab);
 console.log("📡 Endpoint:", endpoint);
 
+function rangeToSet(a, b) {
+  const s = new Set();
+  for (let i = a; i <= b; i++) s.add(i);
+  return s;
+}
+
+function getSpecialPickSets(tab) {
+  if (tab === "Draft Championship") {
+    return {
+      fp: new Set([56, 59, 60]),
+      u21: new Set([114, 115])
+    };
+  }
+  return {
+    fp: new Set([50, 52, 58, 59, 60, 61, 62, 64]),
+    u21: rangeToSet(113, 120)
+  };
+}
 
 function caricaPick() {
   return fetch(`${endpoint}?tab=${encodeURIComponent(tab)}`)
@@ -258,42 +275,31 @@ function popolaListaDisponibili() {
 
 function applicaColoriPickSpeciali() {
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
+  const sets = getSpecialPickSets(tab);
 
   righe.forEach(r => {
     const celle = r.querySelectorAll("td");
     const pickNum = parseInt(celle[0]?.textContent);
-
     if (isNaN(pickNum)) return;
 
-    // Reset base
+    // reset
     r.style.backgroundColor = "";
     r.style.borderLeft = "";
 
-    if (tab === "Draft Championship") {
-    const pickFP = [56, 59, 60];
-      if (pickFP.includes(pickNum)) {
-        r.style.backgroundColor = "#cce5ff";
-        r.style.borderLeft = "4px solid #004085";
-      }
-      if (pickNum >= 114 && pickNum <= 115) {
-        r.style.backgroundColor = "#d4edda";
-        r.style.borderLeft = "4px solid #155724";
-      }
+    // FP
+    if (sets.fp.has(pickNum)) {
+      r.style.backgroundColor = "#cce5ff";
+      r.style.borderLeft = "4px solid #004085";
     }
 
-    if (tab === "Draft Conference") {
-      const pickFP = [50, 52, 58, 59, 60, 61, 62, 64];
-      if (pickFP.includes(pickNum)) {
-        r.style.backgroundColor = "#cce5ff";
-        r.style.borderLeft = "4px solid #004085";
-      }
-      if (pickNum >= 113 && pickNum <= 120) {
-        r.style.backgroundColor = "#d4edda";
-        r.style.borderLeft = "4px solid #155724";
-      }
+    // U21
+    if (sets.u21.has(pickNum)) {
+      r.style.backgroundColor = "#d4edda";
+      r.style.borderLeft = "4px solid #155724";
     }
   });
 }
+
 function filtraLista() {
   const ruoloTesto = cercaRuolo.value.toLowerCase();
   const ruoloSelect = filtroRuolo.value.toLowerCase().split(/[,;\s]+/).filter(Boolean);
@@ -358,6 +364,7 @@ function aggiornaChiamatePerSquadra() {
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
   const riepilogo = {};
   const indexMap = mappaIndiceAssolutoPerTeam(); // team|pick -> posizione assoluta
+  const sets = getSpecialPickSets(tab);
 
   righe.forEach(r => {
     const celle = r.querySelectorAll("td");
@@ -372,7 +379,7 @@ function aggiornaChiamatePerSquadra() {
     const nAssoluto = indexMap[`${team}|${pickNum}`] || 1;
 
     if (!riepilogo[team]) riepilogo[team] = [];
-    riepilogo[team].push({ n: nAssoluto, nome, ruolo, isU21 });
+    riepilogo[team].push({ n: nAssoluto, nome, ruolo, isU21, pickNum });
   });
 
   const container = document.getElementById("riepilogo-squadre");
@@ -399,17 +406,35 @@ function aggiornaChiamatePerSquadra() {
     h4.style.textAlign = "center";
     div.appendChild(h4);
 
-    picks.forEach(p => {
-      const riga = document.createElement("div");
-      riga.textContent = `${p.n}. ${p.nome} (${p.ruolo})${p.isU21 ? " (U21)" : ""}`;
-      riga.style.textAlign = "center";
+ picks.forEach(p => {
+  const riga = document.createElement("div");
+  riga.style.textAlign = "center";
 
-      // 👉 giallo SOLO per le prime 6 chiamate assolute
-      if (p.n <= 6) riga.classList.add("highlight-pick");
-      if (p.isU21) riga.classList.add("under21");
+  const parts = [];
+  parts.push(`${p.n}. ${p.nome} (${p.ruolo})`);
 
-      div.appendChild(riga);
-    });
+  // Badge FP se la pick è in uno slot FP
+  if (sets.fp.has(p.pickNum || 0)) {
+    parts.push('<span class="badge fp">FP</span>');
+  }
+
+  // Badge U21 se la pick è in uno slot U21
+  if (sets.u21.has(p.pickNum || 0)) {
+    parts.push('<span class="badge u21">U21</span>');
+  }
+
+  // (opzionale) badge u21 anagrafico dal CSV
+  if (p.isU21) {
+    parts.push('<span class="badge u21-flag">u21</span>');
+  }
+
+  riga.innerHTML = parts.join(" ");
+
+  // giallo per prime 6 chiamate assolute del team
+  if (p.n <= 6) riga.classList.add("highlight-pick");
+
+  div.appendChild(riga);
+});
 
     container.appendChild(div);
   }
