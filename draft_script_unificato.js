@@ -270,11 +270,12 @@ function applicaColoriPickSpeciali() {
     r.style.borderLeft = "";
 
     if (tab === "Draft Championship") {
-      if (pickNum >= 56 && pickNum <= 63) {
+    const pickFP = [56, 59, 60];
+      if (pickFP.includes(pickNum)) {
         r.style.backgroundColor = "#cce5ff";
         r.style.borderLeft = "4px solid #004085";
       }
-      if (pickNum >= 112 && pickNum <= 119) {
+      if (pickNum >= 114 && pickNum <= 115) {
         r.style.backgroundColor = "#d4edda";
         r.style.borderLeft = "4px solid #155724";
       }
