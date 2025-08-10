@@ -5,6 +5,11 @@ const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1pXJCNL
 // Se true, il seeding resta fisso (non rilegge la classifica)
 let LOCK_SEEDING = false;
 
+const SERIES_STATUS = {
+  "R16-1": "TBA conduce 1 - 0",
+  "R16-2": "TBA conduce 0 - 0",
+  "QF-1": "TBA conduce 0 - 0",
+
 // ======== STATE ========
 let seeds = []; // [{seed:1, team:"..."}, ...]
 const BRACKET = { R16: [], QF: [], SF: [], F: [] };
@@ -129,11 +134,37 @@ function teamNode(t, round, matchId){
 }
 
 function matchNode(m, round, withConnector){
-  const card = document.createElement('div'); card.className = 'match';
-  const a = teamNode(m.a, round, m.id); const b = teamNode(m.b, round, m.id);
-  if(m.winner){ const isA = m.winner && m.a && m.winner.team===m.a.team; a.classList.toggle('win', isA); b.classList.toggle('loss', isA); b.classList.toggle('win', !isA); a.classList.toggle('loss', !isA); }
-  card.appendChild(a); card.appendChild(b);
-  if(withConnector){ const c = document.createElement('div'); c.className='connector'; card.appendChild(c); }
+  const card = document.createElement('div');
+  card.className = 'match';
+
+  const a = teamNode(m.a, round, m.id);
+  const b = teamNode(m.b, round, m.id);
+
+  if(m.winner){
+    const isA = m.winner && m.a && m.winner.team === m.a.team;
+    a.classList.toggle('win', isA);
+    b.classList.toggle('loss', isA);
+    b.classList.toggle('win', !isA);
+    a.classList.toggle('loss', !isA);
+  }
+
+  card.appendChild(a);
+  card.appendChild(b);
+
+  // 🔹 Riga stato serie
+  if (SERIES_STATUS[m.id]) {
+    const statusDiv = document.createElement('div');
+    statusDiv.className = 'series-status';
+    statusDiv.textContent = SERIES_STATUS[m.id];
+    card.appendChild(statusDiv);
+  }
+
+  if(withConnector){
+    const c = document.createElement('div');
+    c.className = 'connector';
+    card.appendChild(c);
+  }
+
   return card;
 }
 
