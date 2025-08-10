@@ -40,19 +40,43 @@ function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, op
 }
 
 
-function caricaGiocatori() {
-  return fetch("giocatori_completo_finale.csv")
-    .then(res => res.text())
-    .then(csv => {
-      const righe = csv.trim().split(/\r?\n/).slice(1);
-      righe.forEach(r => {
-        const [nome, ruolo, squadra, quotazione, u21] = r.split(",");
-const key = normalize(nome);
-mappaGiocatori[key] = { nome, ruolo, squadra, quotazione, u21 };
-        if (ruolo) ruoli.add(ruolo);
-        if (squadra) squadre.add(squadra);
-      });
-    });
+// CSV con cache locale (TTL 24h) + parser separato
+async function caricaGiocatori() {
+  const KEY = "giocatori_csv_cache_v2";
+  const TTL = 24 * 60 * 60 * 1000; // 24 ore
+  const now = Date.now();
+
+  try {
+    const cache = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (cache && (now - cache.time) < TTL && cache.csv) {
+      parseGiocatoriCSV(cache.csv);
+      return;
+    }
+    const res = await fetch("giocatori_completo_finale.csv");
+    const csv = await res.text();
+    localStorage.setItem(KEY, JSON.stringify({ time: now, csv }));
+    parseGiocatoriCSV(csv);
+  } catch (e) {
+    // fallback
+    const res = await fetch("giocatori_completo_finale.csv");
+    const csv = await res.text();
+    parseGiocatoriCSV(csv);
+  }
+}
+
+function parseGiocatoriCSV(csv) {
+  ruoli = new Set();
+  squadre = new Set();
+  Object.keys(mappaGiocatori).forEach(k => delete mappaGiocatori[k]);
+
+  const righe = csv.trim().split(/\r?\n/).slice(1);
+  righe.forEach(r => {
+    const [nome, ruolo, squadra, quotazione, u21] = r.split(",");
+    const key = normalize(nome);
+    mappaGiocatori[key] = { nome, ruolo, squadra, quotazione, u21 };
+    if (ruolo) ruoli.add(ruolo);
+    if (squadra) squadre.add(squadra);
+  });
 }
 
 // 📦 Estrae il parametro "tab" dall'URL o decide quale usare in base al nome del file
@@ -303,6 +327,11 @@ function applicaColoriPickSpeciali() {
   });
 }
 
+function debounce(fn, delay = 150) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
+}
+
 function filtraLista() {
   const ruoloTesto = cercaRuolo.value.toLowerCase();
   const ruoloSelect = filtroRuolo.value.toLowerCase().split(/[,;\s]+/).filter(Boolean);
@@ -327,7 +356,7 @@ function filtraLista() {
 }
 
 [filtroRuolo, filtroSerieA, searchInput, cercaRuolo].forEach(el => {
-  if (el) el.addEventListener("input", filtraLista);
+  if (el) el.addEventListener("input", debounce(filtraLista, 150));
 });
 
 window.addEventListener("DOMContentLoaded", function () {
@@ -396,13 +425,15 @@ function aggiornaChiamatePerSquadra() {
     div.className = "card-pick";
 
     const logoPath = `img/${team}.png`;
-    const img = document.createElement("img");
-    img.src = logoPath;
-    img.alt = team;
-    img.style.maxWidth = "60px";
-    img.style.margin = "0 auto 8px";
-    img.style.display = "block";
-    div.appendChild(img);
+ const img = document.createElement("img");
+img.src = logoPath;
+img.alt = team;
+img.loading = "lazy";     // 👈 lazy-load
+img.width = 60;           // 👈 dimensioni fisse utili al layout
+img.height = 60;
+img.style.margin = "0 auto 8px";
+img.style.display = "block";
+div.appendChild(img);
 
     const h4 = document.createElement("h4");
     h4.textContent = team;
