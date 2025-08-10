@@ -1,7 +1,6 @@
 // ======== CONFIG ========
 // ⚠️ Inserisci qui gli URL CSV pubblicati
-export const URL_STANDINGS = ""; // es: "https://docs.google.com/spreadsheets/d/e/.../pub?output=csv"
-export const URL_RESULTS   = ""; // facoltativo – risultati della coppa
+export const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1pXJCNLgchygyLnGbDEsnIV3QAdPUiLcmgzMAhlzYRivXV4fnoSBW5VwiopwXEMfwk32mvdF3gWZC/pub?output=csv"
 
 // Se true, il seeding resta fisso (non rilegge la classifica)
 let LOCK_SEEDING = false;
