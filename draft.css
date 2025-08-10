@@ -234,6 +234,34 @@ input[type="text"], select {
   margin: 1px 0;
 }
 
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  margin-left: 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+  vertical-align: middle;
+}
+
+.badge.fp {
+  background: #cce5ff;
+  color: #004085;
+  border: 1px solid #004085;
+}
+
+.badge.u21 {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #155724;
+}
+
+.badge.u21-flag {
+  background: #eef8f0;
+  color: #2a6b3a;
+  border: 1px solid #b7dfc0;
+}
 
 @media (max-width: 768px) {
   .container {
