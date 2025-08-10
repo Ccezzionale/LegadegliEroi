@@ -42,28 +42,34 @@ function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, op
 
 // CSV con cache locale (TTL 24h) + parser separato
 async function caricaGiocatori() {
-  const KEY = "giocatori_csv_cache_v2";
-  const TTL = 24 * 60 * 60 * 1000; // 24 ore
+  const KEY = "giocatori_csv_cache_v2";           // chiave cache
+  const TTL = 24 * 60 * 60 * 1000;                // 24 ore in ms
   const now = Date.now();
 
   try {
+    // prova a usare la cache
     const cache = JSON.parse(localStorage.getItem(KEY) || "null");
     if (cache && (now - cache.time) < TTL && cache.csv) {
       parseGiocatoriCSV(cache.csv);
       return;
     }
-    const res = await fetch("giocatori_completo_finale.csv");
-    const csv = await res.text();
-    localStorage.setItem(KEY, JSON.stringify({ time: now, csv }));
-    parseGiocatoriCSV(csv);
-  } catch (e) {
-    // fallback
-    const res = await fetch("giocatori_completo_finale.csv");
-    const csv = await res.text();
-    parseGiocatoriCSV(csv);
+    // niente cache valida → fetch
+    await fetchAndParseGiocatori(KEY, now);
+  } catch (err) {
+    console.warn("Cache CSV non disponibile, fallback al fetch:", err);
+    await fetchAndParseGiocatori(KEY, now);
   }
 }
 
+// helper per evitare duplicazione del fetch
+async function fetchAndParseGiocatori(KEY, now) {
+  const res = await fetch("giocatori_completo_finale.csv");
+  const csv = await res.text();
+  localStorage.setItem(KEY, JSON.stringify({ time: now, csv }));
+  parseGiocatoriCSV(csv);
+}
+
+// parser CSV → popola mappaGiocatori + set ruoli/squadre
 function parseGiocatoriCSV(csv) {
   ruoli = new Set();
   squadre = new Set();
@@ -78,6 +84,7 @@ function parseGiocatoriCSV(csv) {
     if (squadra) squadre.add(squadra);
   });
 }
+
 
 // 📦 Estrae il parametro "tab" dall'URL o decide quale usare in base al nome del file
 const urlParams = new URLSearchParams(window.location.search);
