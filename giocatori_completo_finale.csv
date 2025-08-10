@@ -1,11 +1,10 @@
 Nome,Ruolo,Squadra,Quotazione,U21
-Abdulhamid,Dd;E,Roma,1,
 Aboukhlal,A,Torino,9,
 Acerbi,Dc,Inter,9,
 Adams C.,A,Torino,14,
 Addai,W;A,Como,7,U21
 Adopo,M;C,Cagliari,6,
-Aebischer,C,Bologna,4,
+Aebischer,C,Pisa,4,
 Ahanor,B;Ds;E,Atalanta,7,U21
 Akinsanmiro,C;T,Pisa,3,U21
 Alli,T,Como,1,
@@ -53,7 +52,7 @@ Bonfanti,Dc,Atalanta,2,
 Bonfanti N.,Pc,Pisa,1,
 Bonny,Pc,Inter,5,
 Borrelli,Pc,Cagliari,4,
-Braunoder,M;C,Como,1,
+Bradaric,Ds;E,Verona,4,
 Bravo,A,Udinese,6,U21
 Bremer,Dc,Juventus,13,
 Brenner,A,Udinese,3,
@@ -96,6 +95,7 @@ Coppola F.,Dc,Pisa,1,U21
 Corvi,Por,Parma,1,
 Coulibaly L.,M;C,Lecce,8,
 Cristante,M;C,Roma,9,
+Cuadrado,E,Pisa,6,
 Cutrone,Pc,Como,10,
 Da Cunha,C;W;T,Como,13,
 Dallinga,Pc,Bologna,10,
@@ -145,7 +145,6 @@ El Aynaoui,M;C,Roma,9,
 El Shaarawy,W,Roma,7,
 Ellertsson,C;W,Genoa,5,
 Engelhardt,M;C,Como,2,
-Erlic,Dc,Bologna,3,
 Esposito F.P.,Pc,Inter,7,U21
 Esposito Se.,A,Inter,7,
 Esteves T.,Dd;E,Pisa,1,
@@ -185,6 +184,7 @@ Gilmour,M;C,Napoli,7,
 Gimenez,Pc,Milan,25,
 Gineitis,C,Torino,5,U21
 Giovane,A,Verona,1,
+Goglichidze,Dd;Dc,Udinese,4,U21
 Goldaniga,Dc,Como,4,
 Gollini,Por,Roma,1,
 Gonzalez N.,W;A,Juventus,12,
@@ -204,6 +204,7 @@ Holm,Dd;E,Bologna,8,
 Hysaj,Dd;Ds;E,Lazio,3,
 Iannoni,C,Sassuolo,1,
 Idrissi R.,Ds;E,Cagliari,3,U21
+Idzes,Dc,Sassuolo,7,
 Ilic,C,Torino,7,
 Ilic M.,Dc,Bologna,1,
 Immobile,Pc,Bologna,19,
@@ -211,6 +212,7 @@ Isaksen,W;A,Lazio,14,
 Ismajli,Dc,Torino,8,
 Israel,Por,Torino,9,
 Jack,Ds;Dc,Como,2,U21
+Jashari,C,Milan,13,
 Jean,Dc,Lecce,3,
 Jimenez A.,Dd;Ds;E,Milan,6,U21
 Joao Mario,E,Juventus,7,
@@ -227,6 +229,7 @@ Kean,Pc,Fiorentina,33,
 Keita M.,M;C,Parma,7,
 Kelly L.,Ds;Dc,Juventus,8,
 Kempf,Dc,Como,5,
+Kilicsoy,A,Cagliari,6,U21
 Kolasinac,B;Ds;E,Atalanta,7,
 Konè I.,M;C,Sassuolo,7,
 Konè M.,M;C,Roma,15,
@@ -247,7 +250,6 @@ Leao,A,Milan,24,
 Leoni,Dc,Parma,7,U21
 Leris,W,Pisa,2,
 Lezzerini,Por,Fiorentina,1,
-Liberali,W;T,Milan,1,U21
 Lind,Pc,Pisa,4,
 Lipani,M;C,Sassuolo,4,U21
 Liteta,M;C,Cagliari,1,U21
@@ -314,6 +316,7 @@ Musah,C;W,Milan,6,
 Nasti,Pc,Cremonese,1,
 Nava,Por,Cremonese,1,U21
 Ndaba,Ds;E,Lecce,1,
+Ndiaye,Dc,Parma,4,
 N'Dicka,Dc,Roma,10,
 Ndour,M;C,Fiorentina,2,U21
 N'Dri,W;A,Lecce,5,
@@ -325,6 +328,7 @@ Njie,A,Torino,1,U21
 Norton-Cuffy,Dd;E,Genoa,3,U21
 Noslin,A,Lazio,7,
 Nunziante,Por,Udinese,1,U21
+Nzola,Pc,Pisa,12,
 Obert,Ds;Dc,Cagliari,4,
 Odenthal,Dc,Sassuolo,3,
 Odgaard,T;A,Bologna,15,
@@ -430,12 +434,12 @@ Serdar,C,Verona,5,
 Sergi Roberto,M;C,Como,4,
 Sernicola,Dd;Ds;E,Cremonese,1,
 Siegrist,Por,Genoa,1,
-Simeone,Pc,Napoli,7,
+Simeone,Pc,Torino,7,
 Skjellerup,Pc,Sassuolo,1,
 Skorupski,Por,Bologna,10,
 Slotsager,Dc,Verona,2,U21
 Smolcic I.,Dd;Dc,Como,2,
-Sohm,C,Parma,12,
+Sohm,C,Fiorentina,12,
 Solet,Dc,Udinese,11,
 Sommariva,Por,Genoa,1,
 Sommer,Por,Inter,16,
@@ -456,7 +460,6 @@ Tchatchoua,Dd;E,Verona,8,
 Terracciano,Por,Milan,1,
 Terracciano F.,Dd;Ds;E,Milan,2,
 Tete Morente,W,Lecce,8,
-Thauvin,A,Udinese,16,
 Thiaw,Dc,Milan,4,
 Thorsby,C;T,Genoa,5,
 Thorstvedt,C;T,Sassuolo,8,
@@ -495,13 +498,11 @@ Vojvoda,Dd;E,Como,6,
 Volpato,W;T,Sassuolo,5,
 Vural,C,Pisa,3,U21
 Walukiewicz,Dd;Dc,Sassuolo,6,
-Weah,E;W,Juventus,7,
 Wesley,E,Roma,13,
 Yildiz,A,Juventus,25,U21
 Zaccagni,W;A,Lazio,25,
 Zalewski,E;W,Inter,6,
 Zambo Anguissa,M;C,Napoli,16,
-Zanimacchia,W,Cremonese,4,
 Zanoli,Dd;E,Napoli,3,
 Zapata D.,Pc,Torino,20,
 Zappa,B;Dd;E,Cagliari,7,
@@ -512,3 +513,4 @@ Zemura,Ds;E,Udinese,3,
 Zerbin,E;W,Cremonese,3,
 Zielinski,C;T,Inter,4,
 Zortea,E,Cagliari,15,
+
