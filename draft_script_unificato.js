@@ -237,7 +237,10 @@ function popolaListaDisponibili() {
 
             // 📤 Invia la pick al foglio
             inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
-
+           
+            // ✅ Messaggio di conferma
+            alert(`✅ Pick confermata!\n${nome} assegnato a ${fantaTeam}`);
+            
             // 🎨 Riapplica i colori speciali FP / U21
             applicaColoriPickSpeciali();
 
