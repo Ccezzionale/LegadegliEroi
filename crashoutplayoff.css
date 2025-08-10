@@ -89,6 +89,14 @@ body{
 .connector{position:absolute; right:-16px; top:50%; width:16px; height:2px; background:var(--grid)}
 .connector:after{content:""; position:absolute; right:0; top:-48px; width:2px; height:98px; background:var(--grid)}
 
+.team .logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+
 /* Responsive */
 @media (max-width: 900px){
   .bracket{grid-template-columns: repeat(4, minmax(220px, 1fr));}
