@@ -213,15 +213,15 @@ if (prossimaIndex >= 0) {
 }
 
 function popolaListaDisponibili() {
+  // svuota tabella una volta sola
   listaGiocatori.innerHTML = "";
 
-  // 🧼 Pulizia dei filtri per evitare duplicati
-  filtroRuolo.innerHTML = '<option value="">-- Tutti i Ruoli --</option>';
-  filtroSerieA.innerHTML = '<option value="">-- Tutte --</option>';
-
-  // 🧠 Set temporanei per ricostruire i filtri (senza duplicati)
+  // ricostruisci i filtri da zero
   const ruoliTrovati = new Set();
   const squadreTrovate = new Set();
+
+  // crea un buffer in memoria per evitare reflow continui
+  const frag = document.createDocumentFragment();
 
   Object.values(mappaGiocatori).forEach(({ nome, ruolo, squadra, quotazione }) => {
     const key = normalize(nome);
@@ -229,81 +229,74 @@ function popolaListaDisponibili() {
 
     const u21 = mappaGiocatori[key]?.u21?.toLowerCase() === "u21" ? "U21" : "";
 
-    // 🧠 Accumula per i filtri
     if (ruolo) ruoliTrovati.add(ruolo);
     if (squadra) squadreTrovate.add(squadra);
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${nome}</td>
-      <td>${ruolo}</td>
-      <td>${squadra}</td>
-      <td>${parseInt(quotazione)}</td>
-      <td>${u21}</td>`;
+      <td>${ruolo || ""}</td>
+      <td>${squadra || ""}</td>
+      <td>${parseInt(quotazione) || 0}</td>
+      <td>${u21}</td>
+    `;
+    frag.appendChild(tr);
+  });
 
-    tr.addEventListener("click", () => {
+  // inserisci tutte le righe in un colpo solo
+  listaGiocatori.appendChild(frag);
+
+  // delega click sulla tabella (un solo listener, non per riga)
+  if (!listaGiocatori.dataset.bound) {
+    listaGiocatori.addEventListener("click", (e) => {
+      const tr = e.target.closest("tr");
+      if (!tr) return;
+
+      const nome = tr.children[0].textContent;
+      const ruolo = tr.children[1].textContent;
+      const squadra = tr.children[2].textContent;
+      const quotazione = tr.children[3].textContent;
+
       const conferma = confirm(`Vuoi selezionare ${nome} per la squadra al turno?`);
-      if (conferma) {
-        const righe = document.querySelectorAll("#tabella-pick tbody tr");
-        for (let r of righe) {
-          const celle = r.querySelectorAll("td");
-          if (celle.length >= 3 && !celle[2].textContent.trim()) {
-            const pick = celle[0]?.textContent || "";
-            const fantaTeam = celle[1]?.textContent || "";
+      if (!conferma) return;
 
-            // 🔥 Elimina eventuali celle in eccesso oltre la 3
-            while (r.children.length > 3) {
-              r.removeChild(r.lastChild);
-            }
+      const righe = document.querySelectorAll("#tabella-pick tbody tr");
+      for (let r of righe) {
+        const celle = r.querySelectorAll("td");
+        if (celle.length >= 3 && !celle[2].textContent.trim()) {
+          const pick = celle[0]?.textContent || "";
+          const fantaTeam = celle[1]?.textContent || "";
 
-            // ✅ Inserisci il nome nella terza colonna
-            r.children[2].textContent = nome;
+          while (r.children.length > 3) r.removeChild(r.lastChild);
+          r.children[2].textContent = nome;
 
-            // 🔄 Aggiorna stile della pick
-            r.style.fontWeight = "bold";
-            r.classList.remove("next-pick");
+          r.style.fontWeight = "bold";
+          r.classList.remove("next-pick");
 
-            // ✅ Aggiorna messaggio turno
-            document.getElementById("turno-attuale").textContent = `✅ ${nome} selezionato!`;
+          document.getElementById("turno-attuale").textContent = `✅ ${nome} selezionato!`;
 
-            // 📤 Invia la pick al foglio
-            inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
-           
-            // ✅ Messaggio di conferma
-            alert(`✅ Pick confermata!\n${nome} assegnato a ${fantaTeam}`);
-            
-            // 🎨 Riapplica i colori speciali FP / U21
-            applicaColoriPickSpeciali();
+          inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione);
 
-            // 🔄 Ricostruisci la lista aggiornata
-            popolaListaDisponibili();
+          alert(`✅ Pick confermata!\n${nome} assegnato a ${fantaTeam}`);
 
-            break;
-          }
+          applicaColoriPickSpeciali();
+          popolaListaDisponibili(); // ricostruisci la lista aggiornata
+          break;
         }
       }
     });
+    listaGiocatori.dataset.bound = "1"; // evita di aggiungere più volte il listener
+  }
 
-    listaGiocatori.appendChild(tr);
-  });
+  // ricostruisci le <option> una volta sola
+  filtroRuolo.innerHTML = '<option value="">-- Tutti i Ruoli --</option>' +
+    Array.from(ruoliTrovati).map(r => `<option value="${r}">${r}</option>`).join("");
 
-  // 🎯 Aggiunta dei filtri Ruolo
-  Array.from(ruoliTrovati).forEach(r => {
-    const opt = document.createElement("option");
-    opt.value = r;
-    opt.textContent = r;
-    filtroRuolo.appendChild(opt);
-  });
+  filtroSerieA.innerHTML = '<option value="">-- Tutte --</option>' +
+    Array.from(squadreTrovate).sort((a, b) => a.localeCompare(b))
+      .map(s => `<option value="${s}">${s}</option>`).join("");
 
-  // 🎯 Aggiunta dei filtri Squadra Serie A
-  Array.from(squadreTrovate).sort((a, b) => a.localeCompare(b)).forEach(s => {
-    const opt = document.createElement("option");
-    opt.value = s;
-    opt.textContent = s;
-    filtroSerieA.appendChild(opt);
-  });
-
-  // 🧠 Applica filtri se ci sono già valori scritti
+  // applica i filtri esistenti (se l'utente aveva già scritto qualcosa)
   filtraLista();
 }
 
