@@ -414,14 +414,14 @@ function aggiornaChiamatePerSquadra() {
   parts.push(`${p.n}. ${p.nome} (${p.ruolo})`);
 
   // Badge FP se la pick è in uno slot FP
-  if (sets.fp.has(p.pickNum || 0)) {
-    parts.push('<span class="badge fp">FP</span>');
-  }
+if (sets.fp.has(p.pickNum || 0)) {
+  parts.push('<span class="badge fp">⭐</span>');
+}
 
-  // Badge U21 se la pick è in uno slot U21
-  if (sets.u21.has(p.pickNum || 0)) {
-    parts.push('<span class="badge u21">U21</span>');
-  }
+// Badge U21 se la pick è in uno slot U21
+if (sets.u21.has(p.pickNum || 0)) {
+  parts.push('<span class="badge u21">🐣</span>');
+}
 
   // (opzionale) badge u21 anagrafico dal CSV
   if (p.isU21) {
