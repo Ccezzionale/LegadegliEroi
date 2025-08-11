@@ -241,12 +241,13 @@ function renderPicks(dati) {
 
 // --- SOSTITUISCI LA TUA caricaPick() CON QUESTA ---
 function caricaPick() {
-  return fetchRetry(
+  showSpinner(true);
+  return abortAndFetch(
+    "pick",
     `${endpoint}?tab=${encodeURIComponent(tab)}`,
-    {},
-    4,      // tries
-    1200,   // baseDelay ms (backoff esponenziale)
-    25000   // timeout per tentativo
+    4,     // tries
+    1200,  // baseDelay
+    25000  // timeout per tentativo
   )
     .then(res => res.text())
     .then(txt => {
@@ -254,7 +255,6 @@ function caricaPick() {
         console.error("❌ Risposta non JSON dal server:", txt);
         throw new Error("Risposta non JSON (doGet). Controlla il tab passato.");
       }
-      // salva ultimo stato buono e renderizza
       localStorage.setItem("last_picks_json", txt);
       const dati = JSON.parse(txt);
       renderPicks(dati);
@@ -274,11 +274,12 @@ function caricaPick() {
       } else {
         if (el) el.textContent = "⚠️ Problema di rete nel caricare le pick. Riprova.";
       }
-
-      // auto-retry tra 5s
+      // auto-retry soft
       setTimeout(() => caricaPick(), 5000);
-    });
+    })
+    .finally(() => showSpinner(false));
 }
+
 
 function popolaListaDisponibili() {
   // svuota tabella una volta sola
