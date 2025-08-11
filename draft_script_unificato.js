@@ -15,6 +15,13 @@ function normalize(nome) {
   return nome.trim().toLowerCase();
 }
 
+// 🔹 Evita cache del browser/Google aggiungendo un cache-buster alla URL
+function urlNoCache(url) {
+  const sep = url.includes("?") ? "&" : "?";
+  return `${url}${sep}_cb=${Date.now()}`;
+}
+
+
 function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, options = {}) {
   const dati = new URLSearchParams();
   dati.append("tab", tab); // <-- aggiungi questo, così prende il tab corretto
@@ -63,7 +70,8 @@ async function caricaGiocatori() {
 
 // helper per evitare duplicazione del fetch
 async function fetchAndParseGiocatori(KEY, now) {
-  const res = await fetch("giocatori_completo_finale.csv");
+  - const res = await fetch("giocatori_completo_finale.csv");
++ const res = await fetch(urlNoCache("giocatori_completo_finale.csv"), { cache: "no-store" });
   const csv = await res.text();
   localStorage.setItem(KEY, JSON.stringify({ time: now, csv }));
   parseGiocatoriCSV(csv);
@@ -121,7 +129,7 @@ function getSpecialPickSets(tab) {
 }
 
 function caricaPick() {
-  return fetch(`${endpoint}?tab=${encodeURIComponent(tab)}`)
+ return fetch(urlNoCache(`${endpoint}?tab=${encodeURIComponent(tab)}`), { cache: "no-store" })
     .then(res => res.text())
     .then(txt => {
       try {
