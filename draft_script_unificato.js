@@ -21,6 +21,13 @@ function urlNoCache(url) {
   return `${url}${sep}_cb=${Date.now()}`;
 }
 
+// ⏱️ Timeout: se la fetch non risponde entro ms, fallisce
+function withTimeout(promise, ms = 12000) {
+  return Promise.race([
+    promise,
+    new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))
+  ]);
+}
 
 function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, options = {}) {
   const dati = new URLSearchParams();
@@ -70,11 +77,26 @@ async function caricaGiocatori() {
 
 // helper per evitare duplicazione del fetch
 async function fetchAndParseGiocatori(KEY, now) {
-  const res = await fetch(urlNoCache("giocatori_completo_finale.csv"), { cache: "no-store" });
-  const csv = await res.text();
-  localStorage.setItem(KEY, JSON.stringify({ time: now, csv }));
-  parseGiocatoriCSV(csv);
+  try {
+    const res = await withTimeout(
+      fetch(urlNoCache("giocatori_completo_finale.csv"), { cache: "no-store" }),
+      12000
+    );
+    const csv = await res.text();
+    localStorage.setItem(KEY, JSON.stringify({ time: now, csv }));
+    parseGiocatoriCSV(csv);
+  } catch (err) {
+    console.error("❌ Timeout/errore nel fetch CSV:", err);
+    // opzionale: prova a usare l'ultima cache se esiste
+    const cache = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (cache?.csv) {
+      console.warn("↩️ Uso cache locale fallback");
+      parseGiocatoriCSV(cache.csv);
+    } else {
+      alert("Problema di rete nel caricare il listone. Riprova tra poco.");
+    }
   }
+}
 
 // parser CSV → popola mappaGiocatori + set ruoli/squadre
 function parseGiocatoriCSV(csv) {
@@ -128,62 +150,97 @@ function getSpecialPickSets(tab) {
 }
 
 function caricaPick() {
- return fetch(urlNoCache(`${endpoint}?tab=${encodeURIComponent(tab)}`), { cache: "no-store" })
+  return withTimeout(
+    fetch(urlNoCache(`${endpoint}?tab=${encodeURIComponent(tab)}`), { cache: "no-store" }),
+    12000 // ⏱️ timeout 12s
+  )
     .then(res => res.text())
     .then(txt => {
-      try {
-        if (!txt.trim().startsWith('[')) {
-  console.error("❌ Risposta non JSON dal server:", txt);
-  throw new Error("Risposta non JSON (doGet). Controlla il tab passato.");
-}
-const dati = JSON.parse(txt);
-        const corpoTabella = document.querySelector("#tabella-pick tbody");
-        corpoTabella.innerHTML = "";
+      if (!txt.trim().startsWith("[")) {
+        console.error("❌ Risposta non JSON dal server:", txt);
+        throw new Error("Risposta non JSON (doGet). Controlla il tab passato.");
+      }
 
-        let prossima = null;
-        let prossimaIndex = -1;
+      const dati = JSON.parse(txt);
+      const corpoTabella = document.querySelector("#tabella-pick tbody");
+      corpoTabella.innerHTML = "";
 
-        // Identifica la prossima pick
-        dati.forEach((riga, index) => {
-          const nome = riga["Giocatore"]?.trim() || "";
-          if (!nome && prossimaIndex === -1) {
-            prossimaIndex = index;
-            prossima = {
-              fantaTeam: riga["Fanta Team"],
-              pick: riga["Pick"]
-            };
-          }
-        });
+      // evitiamo di accumulare nomi tra refresh
+      giocatoriScelti.clear();
 
-        dati.forEach((riga, i) => {
-          const tr = document.createElement("tr");
-          const nome = riga["Giocatore"]?.trim() || "";
-          const fantaTeam = riga["Fanta Team"];
-          const ruolo = riga["Ruolo"];
-          const pick = riga["Pick"];
+      let prossima = null;
+      let prossimaIndex = -1;
 
-          giocatoriScelti.add(normalize(nome));
+      // Identifica la prossima pick
+      dati.forEach((riga, index) => {
+        const nome = riga["Giocatore"]?.trim() || "";
+        if (!nome && prossimaIndex === -1) {
+          prossimaIndex = index;
+          prossima = { fantaTeam: riga["Fanta Team"], pick: riga["Pick"] };
+        }
+      });
+
+      dati.forEach((riga, i) => {
+        const tr = document.createElement("tr");
+        const nome = riga["Giocatore"]?.trim() || "";
+        const fantaTeam = riga["Fanta Team"];
+        const pick = riga["Pick"];
+
+        if (nome) giocatoriScelti.add(normalize(nome));
 
         tr.innerHTML = `
-  <td>${pick}</td>
-  <td>${fantaTeam}</td>
-  <td>${nome}</td>`;
+          <td>${pick}</td>
+          <td>${fantaTeam}</td>
+          <td>${nome}</td>
+        `;
 
-          if (i === prossimaIndex) {
-            tr.classList.add("next-pick");
-            tr.style.backgroundColor = "#ffcc00";
-            setTimeout(() => {
-              tr.scrollIntoView({ behavior: "smooth", block: "center" });
-            }, 300);
-          } else if (nome) {
-            tr.style.backgroundColor = "white";
-            tr.style.fontWeight = "bold";
-          }
+        if (i === prossimaIndex) {
+          tr.classList.add("next-pick");
+          tr.style.backgroundColor = "#ffcc00";
+          setTimeout(() => {
+            tr.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 300);
+        } else if (nome) {
+          tr.style.backgroundColor = "white";
+          tr.style.fontWeight = "bold";
+        }
 
-          corpoTabella.appendChild(tr);
+        corpoTabella.appendChild(tr);
+      });
+
+      applicaColoriPickSpeciali();
+
+      // Ricolora la pick attuale in giallo
+      if (prossimaIndex >= 0) {
+        const righe = document.querySelectorAll("#tabella-pick tbody tr");
+        const rigaCorrente = righe[prossimaIndex];
+        if (rigaCorrente) {
+          rigaCorrente.style.backgroundColor = "#ffcc00";
+          rigaCorrente.classList.add("next-pick");
+        }
+      }
+
+      // Mobile: mostra solo 5 righe attorno alla corrente
+      if (window.innerWidth <= 768 && prossimaIndex >= 0) {
+        const start = Math.max(0, prossimaIndex - 2);
+        const end = prossimaIndex + 3;
+        document.querySelectorAll("#tabella-pick tbody tr").forEach((riga, i) => {
+          if (i >= start && i < end) riga.classList.add("show-mobile");
         });
+      }
 
-        applicaColoriPickSpeciali();
+      document.getElementById("turno-attuale").textContent = prossima
+        ? `🎯 È il turno di: ${prossima.fantaTeam} (Pick ${prossima.pick})`
+        : "✅ Draft completato!";
+    })
+    .catch(err => {
+      console.error("❌ Errore/timeout caricaPick:", err);
+      const el = document.getElementById("turno-attuale");
+      if (el) el.textContent = "⚠️ Problema di rete nel caricare le pick. Riprova.";
+      // opzionale: non svuotiamo la tabella, così l'utente vede ancora l'ultimo stato valido
+    });
+}
+
 
         // 🎯 Ricolora la pick attuale in giallo
 if (prossimaIndex >= 0) {
