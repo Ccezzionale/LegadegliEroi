@@ -207,6 +207,21 @@ input[type="text"], select {
   cursor: pointer;
 }
 
+.spinner {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  vertical-align: middle;
+  border: 3px solid rgba(0,0,0,.15);
+  border-top-color: #ffcc00;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  margin-left: 8px;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .colonna-pick {
   flex: 1 1 60%;
   max-height: 500px;
