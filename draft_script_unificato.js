@@ -1,4 +1,4 @@
-
+// ========== Helper & Global ==========
 const tabella = document.querySelector("#tabella-pick tbody");
 const listaGiocatori = document.getElementById("lista-giocatori");
 const giocatoriScelti = new Set();
@@ -11,17 +11,24 @@ const mappaGiocatori = {};
 let ruoli = new Set();
 let squadre = new Set();
 
-function normalize(nome) {
-  return nome.trim().toLowerCase();
+function normalize(nome) { return nome.trim().toLowerCase(); }
+
+// Spinner
+function showSpinner(show = true) {
+  const s = document.getElementById("spinner");
+  if (s) s.style.display = show ? "inline-block" : "none";
 }
 
-// 🔹 Evita cache del browser/Google aggiungendo un cache-buster alla URL
+// Abort
+const _controllers = { pick: null, csv: null };
+
+// No-cache
 function urlNoCache(url) {
   const sep = url.includes("?") ? "&" : "?";
   return `${url}${sep}_cb=${Date.now()}`;
 }
 
-// ⏱️ Timeout: se la fetch non risponde entro ms, fallisce
+// Timeout
 function withTimeout(promise, ms = 12000) {
   return Promise.race([
     promise,
@@ -29,6 +36,7 @@ function withTimeout(promise, ms = 12000) {
   ]);
 }
 
+// Retry GET con backoff + jitter
 async function fetchRetry(url, opt = {}, tries = 3, baseDelay = 800, timeoutMs = 12000) {
   let lastErr;
   for (let i = 0; i < tries; i++) {
@@ -38,146 +46,35 @@ async function fetchRetry(url, opt = {}, tries = 3, baseDelay = 800, timeoutMs =
         timeoutMs
       );
       if (res.ok) return res;
-
       console.warn(`[retry] tentativo ${i+1}/${tries}: HTTP ${res.status} su`, url);
-
-      if (![429, 500, 502, 503, 504].includes(res.status)) {
-        throw new Error(`HTTP ${res.status}`);
-      }
+      if (![429, 500, 502, 503, 504].includes(res.status)) throw new Error(`HTTP ${res.status}`);
       lastErr = new Error(`HTTP ${res.status}`);
     } catch (e) {
       if (e.name === "AbortError") throw e;
       lastErr = e;
       console.warn(`[retry] tentativo ${i+1}/${tries} errore:`, e?.message || e, 'URL:', url);
     }
-    const delay = baseDelay * Math.pow(2, i);
-    const jitter = Math.random() * 250;
-    await new Promise(r => setTimeout(r, delay + jitter));
+    const delay = baseDelay * Math.pow(2, i) + Math.random() * 250;
+    await new Promise(r => setTimeout(r, delay));
   }
   throw lastErr;
 }
 
-
-function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, options = {}) {
-  const dati = new URLSearchParams();
-  dati.append("tab", tab); // <-- aggiungi questo, così prende il tab corretto
-  dati.append("pick", pick || "");
-  dati.append("fantaTeam", fantaTeam || "");
-  dati.append("giocatore", nome || "");
-  dati.append("ruolo", ruolo || "");
-  dati.append("squadra", squadra || "");
-  dati.append("quotazione", quotazione || "");
-
-  if (options.targetPick) dati.append("targetPick", options.targetPick);
-  if (typeof options.locked !== "undefined") {
-    dati.append("locked", options.locked ? "TRUE" : "FALSE");
-  }
-
-  fetch(endpoint, { method: "POST", body: dati })
-    .then(r => r.text())
-    .then(txt => {
-      console.log("✅ Risposta:", txt);
-      return caricaPick().then(() => { popolaListaDisponibili(); aggiornaChiamatePerSquadra(); });
-    })
-    .catch(err => alert("❌ ERRORE invio pick: " + err));
+// Abort + Retry
+function abortAndFetch(key, url, tries = 4, baseDelay = 1200, timeoutMs = 25000) {
+  if (_controllers[key]) _controllers[key].abort();
+  const controller = new AbortController();
+  _controllers[key] = controller;
+  return fetchRetry(url, { signal: controller.signal }, tries, baseDelay, timeoutMs)
+    .finally(() => { if (_controllers[key] === controller) _controllers[key] = null; });
 }
 
-
-// CSV con cache locale (TTL 24h) + parser separato
-async function caricaGiocatori() {
-  const KEY = "giocatori_csv_cache_v3";           // chiave cache
-  const TTL = 24 * 60 * 60 * 1000;                // 24 ore in ms
-  const now = Date.now();
-
-  try {
-    // prova a usare la cache
-    const cache = JSON.parse(localStorage.getItem(KEY) || "null");
-    if (cache && (now - cache.time) < TTL && cache.csv) {
-      parseGiocatoriCSV(cache.csv);
-      return;
-    }
-    // niente cache valida → fetch
-    await fetchAndParseGiocatori(KEY, now);
-  } catch (err) {
-    console.warn("Cache CSV non disponibile, fallback al fetch:", err);
-    await fetchAndParseGiocatori(KEY, now);
-  }
-}
-
-// helper per evitare duplicazione del fetch
-async function fetchAndParseGiocatori(KEY, now) {
-  try {
-    const res = await withTimeout(
-      fetch(urlNoCache("giocatori_completo_finale.csv"), { cache: "no-store" }),
-      12000
-    );
-    const csv = await res.text();
-    localStorage.setItem(KEY, JSON.stringify({ time: now, csv }));
-    parseGiocatoriCSV(csv);
-  } catch (err) {
-    console.error("❌ Timeout/errore nel fetch CSV:", err);
-    // opzionale: prova a usare l'ultima cache se esiste
-    const cache = JSON.parse(localStorage.getItem(KEY) || "null");
-    if (cache?.csv) {
-      console.warn("↩️ Uso cache locale fallback");
-      parseGiocatoriCSV(cache.csv);
-    } else {
-      alert("Problema di rete nel caricare il listone. Riprova tra poco.");
-    }
-  }
-}
-
-// parser CSV → popola mappaGiocatori + set ruoli/squadre
-function parseGiocatoriCSV(csv) {
-  ruoli = new Set();
-  squadre = new Set();
-  Object.keys(mappaGiocatori).forEach(k => delete mappaGiocatori[k]);
-
-  const righe = csv.trim().split(/\r?\n/).slice(1);
-  righe.forEach(r => {
-    const [nome, ruolo, squadra, quotazione, u21] = r.split(",");
-    const key = normalize(nome);
-    mappaGiocatori[key] = { nome, ruolo, squadra, quotazione, u21 };
-    if (ruolo) ruoli.add(ruolo);
-    if (squadra) squadre.add(squadra);
-  });
-}
-
-
-// 📦 Estrae il parametro "tab" dall'URL o decide quale usare in base al nome del file
+// Tab/endpoint
 const urlParams = new URLSearchParams(window.location.search);
-const tab = urlParams.get("tab") || (
-  window.location.href.includes("conference")
-    ? "Draft Conference"
-    : "Draft Championship"
-);
-
-// 🌐 Imposta l'endpoint corretto con il tab scelto
+const tab = urlParams.get("tab") || (window.location.href.includes("conference") ? "Draft Conference" : "Draft Championship");
 const endpoint = "https://script.google.com/macros/s/AKfycbyFSp-hdD7_r2pNoCJ_X1vjxAzVKXG4py42RUT5cFloUA9PG5zFGWh3sp-qg2MEg7H5OQ/exec";
 
-// 🧪 Debug
-console.log("🧪 Tab scelto:", tab);
-console.log("📡 Endpoint:", endpoint);
-
-function rangeToSet(a, b) {
-  const s = new Set();
-  for (let i = a; i <= b; i++) s.add(i);
-  return s;
-}
-
-function getSpecialPickSets(tab) {
-  if (tab === "Draft Championship") {
-    return {
-      fp: new Set([56, 59, 60]),
-      u21: new Set([114, 115])
-    };
-  }
-  return {
-    fp: new Set([50, 52, 58, 59, 60, 61, 62, 64]),
-    u21: rangeToSet(113, 120)
-  };
-}
-// --- METTI QUESTA SOPRA caricaPick() ---
+// ========== Render Picks ==========
 function renderPicks(dati) {
   const corpoTabella = document.querySelector("#tabella-pick tbody");
   corpoTabella.innerHTML = "";
@@ -185,7 +82,6 @@ function renderPicks(dati) {
 
   let prossima = null, prossimaIndex = -1;
 
-  // individua prossima pick
   dati.forEach((riga, index) => {
     const nome = riga["Giocatore"]?.trim() || "";
     if (!nome && prossimaIndex === -1) {
@@ -194,13 +90,11 @@ function renderPicks(dati) {
     }
   });
 
-  // render righe
   dati.forEach((riga, i) => {
     const tr = document.createElement("tr");
     const nome = riga["Giocatore"]?.trim() || "";
     const fantaTeam = riga["Fanta Team"];
     const pick = riga["Pick"];
-
     if (nome) giocatoriScelti.add(normalize(nome));
     tr.innerHTML = `<td>${pick}</td><td>${fantaTeam}</td><td>${nome}</td>`;
 
@@ -225,7 +119,6 @@ function renderPicks(dati) {
     }
   }
 
-  // mobile: 5 righe attorno alla corrente
   if (window.innerWidth <= 768 && prossimaIndex >= 0) {
     const start = Math.max(0, prossimaIndex - 2);
     const end = prossimaIndex + 3;
@@ -239,7 +132,7 @@ function renderPicks(dati) {
     : "✅ Draft completato!";
 }
 
-// --- SOSTITUISCI LA TUA caricaPick() CON QUESTA ---
+// ========== caricaPick con Retry + Abort + Spinner + Fallback ==========
 function caricaPick() {
   showSpinner(true);
   return abortAndFetch(
@@ -255,15 +148,13 @@ function caricaPick() {
         console.error("❌ Risposta non JSON dal server:", txt);
         throw new Error("Risposta non JSON (doGet). Controlla il tab passato.");
       }
-      localStorage.setItem("last_picks_json", txt);
-      const dati = JSON.parse(txt);
-      renderPicks(dati);
+      localStorage.setItem("last_picks_json", txt); // cache ultimo stato buono
+      renderPicks(JSON.parse(txt));
     })
     .catch(err => {
       console.error("❌ Errore/timeout caricaPick:", err, "URL:", `${endpoint}?tab=${encodeURIComponent(tab)}`);
       const el = document.getElementById("turno-attuale");
       const cached = localStorage.getItem("last_picks_json");
-
       if (cached) {
         try {
           renderPicks(JSON.parse(cached));
@@ -274,12 +165,49 @@ function caricaPick() {
       } else {
         if (el) el.textContent = "⚠️ Problema di rete nel caricare le pick. Riprova.";
       }
-      // auto-retry soft
-      setTimeout(() => caricaPick(), 5000);
+      setTimeout(() => caricaPick(), 5000); // auto-retry soft
     })
     .finally(() => showSpinner(false));
 }
 
+// ========== CSV Giocatori con Abort + Spinner ==========
+async function fetchAndParseGiocatori(KEY, now) {
+  showSpinner(true);
+  try {
+    const res = await abortAndFetch("csv", "giocatori_completo_finale.csv", 3, 800, 12000);
+    const csv = await res.text();
+    localStorage.setItem(KEY, JSON.stringify({ time: now, csv }));
+    parseGiocatoriCSV(csv);
+  } catch (err) {
+    console.error("❌ Errore nel caricamento giocatori:", err);
+    const el = document.getElementById("turno-attuale");
+    if (el) el.textContent = "⚠️ Problema di rete nel caricare i giocatori.";
+    const cache = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (cache?.csv) {
+      console.warn("↩️ Uso cache locale fallback");
+      parseGiocatoriCSV(cache.csv);
+    }
+  } finally {
+    showSpinner(false);
+  }
+}
+
+// Parser CSV semplice (ok se non hai virgole nei campi)
+function parseGiocatoriCSV(csv) {
+  ruoli = new Set();
+  squadre = new Set();
+  Object.keys(mappaGiocatori).forEach(k => delete mappaGiocatori[k]);
+
+  const righe = csv.trim().split(/\r?\n/).slice(1);
+  righe.forEach(r => {
+    const [nome, ruolo, squadra, quotazione, u21] = r.split(",");
+    if (!nome) return;
+    const key = normalize(nome);
+    mappaGiocatori[key] = { nome, ruolo, squadra, quotazione, u21 };
+    if (ruolo) ruoli.add(ruolo);
+    if (squadra) squadre.add(squadra);
+  });
+}
 
 function popolaListaDisponibili() {
   // svuota tabella una volta sola
