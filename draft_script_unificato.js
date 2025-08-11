@@ -38,12 +38,17 @@ async function fetchRetry(url, opt = {}, tries = 3, baseDelay = 800, timeoutMs =
         timeoutMs
       );
       if (res.ok) return res;
+
+      console.warn(`[retry] tentativo ${i+1}/${tries}: HTTP ${res.status} su`, url);
+
       if (![429, 500, 502, 503, 504].includes(res.status)) {
         throw new Error(`HTTP ${res.status}`);
       }
       lastErr = new Error(`HTTP ${res.status}`);
     } catch (e) {
+      if (e.name === "AbortError") throw e;
       lastErr = e;
+      console.warn(`[retry] tentativo ${i+1}/${tries} errore:`, e?.message || e, 'URL:', url);
     }
     const delay = baseDelay * Math.pow(2, i);
     const jitter = Math.random() * 250;
@@ -51,6 +56,7 @@ async function fetchRetry(url, opt = {}, tries = 3, baseDelay = 800, timeoutMs =
   }
   throw lastErr;
 }
+
 
 function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, options = {}) {
   const dati = new URLSearchParams();
