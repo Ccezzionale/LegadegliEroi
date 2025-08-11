@@ -152,7 +152,7 @@ function getSpecialPickSets(tab) {
 function caricaPick() {
   return withTimeout(
     fetch(urlNoCache(`${endpoint}?tab=${encodeURIComponent(tab)}`), { cache: "no-store" }),
-    12000 // ⏱️ timeout 12s
+    12000
   )
     .then(res => res.text())
     .then(txt => {
@@ -165,13 +165,13 @@ function caricaPick() {
       const corpoTabella = document.querySelector("#tabella-pick tbody");
       corpoTabella.innerHTML = "";
 
-      // evitiamo di accumulare nomi tra refresh
+      // reset elenco scelti ad ogni refresh
       giocatoriScelti.clear();
 
       let prossima = null;
       let prossimaIndex = -1;
 
-      // Identifica la prossima pick
+      // Individua prossima pick
       dati.forEach((riga, index) => {
         const nome = riga["Giocatore"]?.trim() || "";
         if (!nome && prossimaIndex === -1) {
@@ -210,7 +210,7 @@ function caricaPick() {
 
       applicaColoriPickSpeciali();
 
-      // Ricolora la pick attuale in giallo
+      // Evidenzia la corrente
       if (prossimaIndex >= 0) {
         const righe = document.querySelectorAll("#tabella-pick tbody tr");
         const rigaCorrente = righe[prossimaIndex];
@@ -220,7 +220,7 @@ function caricaPick() {
         }
       }
 
-      // Mobile: mostra solo 5 righe attorno alla corrente
+      // Mobile: 5 righe intorno
       if (window.innerWidth <= 768 && prossimaIndex >= 0) {
         const start = Math.max(0, prossimaIndex - 2);
         const end = prossimaIndex + 3;
@@ -237,42 +237,6 @@ function caricaPick() {
       console.error("❌ Errore/timeout caricaPick:", err);
       const el = document.getElementById("turno-attuale");
       if (el) el.textContent = "⚠️ Problema di rete nel caricare le pick. Riprova.";
-      // opzionale: non svuotiamo la tabella, così l'utente vede ancora l'ultimo stato valido
-    });
-}
-
-
-        // 🎯 Ricolora la pick attuale in giallo
-if (prossimaIndex >= 0) {
-  const righe = document.querySelectorAll("#tabella-pick tbody tr");
-  const rigaCorrente = righe[prossimaIndex];
-  if (rigaCorrente) {
-    rigaCorrente.style.backgroundColor = "#ffcc00";
-    rigaCorrente.classList.add("next-pick");
-  }
-}
-
-        // Su mobile, mostra solo le 5 righe attorno alla pick corrente
-        if (window.innerWidth <= 768 && prossimaIndex >= 0) {
-          const start = Math.max(0, prossimaIndex - 2);
-          const end = prossimaIndex + 3;
-          document.querySelectorAll("#tabella-pick tbody tr").forEach((riga, i) => {
-            if (i >= start && i < end) {
-              riga.classList.add("show-mobile");
-            }
-          });
-        }
-
-        document.getElementById("turno-attuale").textContent = prossima
-  ? `🎯 È il turno di: ${prossima.fantaTeam} (Pick ${prossima.pick})`
-  : "✅ Draft completato!";
-      } catch (err) {
-        console.error("❌ Errore parsing JSON:", err);
-        console.error("❌ Risposta ricevuta:", txt);
-      }
-    })
-    .catch(err => {
-      console.error("❌ Errore nella richiesta fetch:", err);
     });
 }
 
