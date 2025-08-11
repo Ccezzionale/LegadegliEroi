@@ -29,6 +29,29 @@ function withTimeout(promise, ms = 12000) {
   ]);
 }
 
+async function fetchRetry(url, opt = {}, tries = 3, baseDelay = 800, timeoutMs = 12000) {
+  let lastErr;
+  for (let i = 0; i < tries; i++) {
+    try {
+      const res = await withTimeout(
+        fetch(urlNoCache(url), { cache: "no-store", method: "GET", ...opt }),
+        timeoutMs
+      );
+      if (res.ok) return res;
+      if (![429, 500, 502, 503, 504].includes(res.status)) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      lastErr = new Error(`HTTP ${res.status}`);
+    } catch (e) {
+      lastErr = e;
+    }
+    const delay = baseDelay * Math.pow(2, i);
+    const jitter = Math.random() * 250;
+    await new Promise(r => setTimeout(r, delay + jitter));
+  }
+  throw lastErr;
+}
+
 function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, options = {}) {
   const dati = new URLSearchParams();
   dati.append("tab", tab); // <-- aggiungi questo, così prende il tab corretto
