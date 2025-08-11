@@ -229,6 +229,31 @@ function parseGiocatoriCSV(csv) {
   });
 }
 
+function inviaPickAlFoglio(pick, fantaTeam, nome, ruolo, squadra, quotazione, options = {}) {
+  const dati = new URLSearchParams();
+  dati.append("tab", tab);
+  dati.append("pick", pick || "");
+  dati.append("fantaTeam", fantaTeam || "");
+  dati.append("giocatore", nome || "");
+  dati.append("ruolo", ruolo || "");
+  dati.append("squadra", squadra || "");
+  dati.append("quotazione", quotazione || "");
+  if (options.targetPick) dati.append("targetPick", options.targetPick);
+  if (typeof options.locked !== "undefined") dati.append("locked", options.locked ? "TRUE" : "FALSE");
+
+  fetch(endpoint, { method: "POST", body: dati, cache: "no-store" })
+    .then(r => r.text())
+    .then(txt => {
+      console.log("✅ Risposta POST:", txt);
+      // ricarico le pick e aggiorno UI
+      return caricaPick().then(() => { popolaListaDisponibili(); aggiornaChiamatePerSquadra(); });
+    })
+    .catch(err => {
+      console.error("❌ ERRORE invio pick:", err);
+      alert("❌ Errore nell'invio della pick. Riprova.");
+    });
+}
+
 function popolaListaDisponibili() {
   // svuota tabella una volta sola
   listaGiocatori.innerHTML = "";
