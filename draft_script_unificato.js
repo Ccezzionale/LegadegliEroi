@@ -316,6 +316,25 @@ function popolaListaDisponibili() {
   // applica i filtri esistenti (se l'utente aveva già scritto qualcosa)
   filtraLista();
 }
+function rangeToSet(a, b) {
+  const s = new Set();
+  for (let i = a; i <= b; i++) s.add(i);
+  return s;
+}
+
+function getSpecialPickSets(tab) {
+  if (tab === "Draft Championship") {
+    return {
+      fp: new Set([56, 59, 60]),
+      u21: new Set([114, 115])
+    };
+  }
+  // Default: Conference
+  return {
+    fp: new Set([50, 52, 58, 59, 60, 61, 62, 64]),
+    u21: rangeToSet(113, 120)
+  };
+}
 
 function applicaColoriPickSpeciali() {
   const righe = document.querySelectorAll("#tabella-pick tbody tr");
