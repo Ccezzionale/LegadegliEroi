@@ -177,11 +177,76 @@ function getSpecialPickSets(tab) {
     u21: rangeToSet(113, 120)
   };
 }
+// --- METTI QUESTA SOPRA caricaPick() ---
+function renderPicks(dati) {
+  const corpoTabella = document.querySelector("#tabella-pick tbody");
+  corpoTabella.innerHTML = "";
+  giocatoriScelti.clear();
 
+  let prossima = null, prossimaIndex = -1;
+
+  // individua prossima pick
+  dati.forEach((riga, index) => {
+    const nome = riga["Giocatore"]?.trim() || "";
+    if (!nome && prossimaIndex === -1) {
+      prossimaIndex = index;
+      prossima = { fantaTeam: riga["Fanta Team"], pick: riga["Pick"] };
+    }
+  });
+
+  // render righe
+  dati.forEach((riga, i) => {
+    const tr = document.createElement("tr");
+    const nome = riga["Giocatore"]?.trim() || "";
+    const fantaTeam = riga["Fanta Team"];
+    const pick = riga["Pick"];
+
+    if (nome) giocatoriScelti.add(normalize(nome));
+    tr.innerHTML = `<td>${pick}</td><td>${fantaTeam}</td><td>${nome}</td>`;
+
+    if (i === prossimaIndex) {
+      tr.classList.add("next-pick");
+      tr.style.backgroundColor = "#ffcc00";
+      setTimeout(() => tr.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
+    } else if (nome) {
+      tr.style.backgroundColor = "white";
+      tr.style.fontWeight = "bold";
+    }
+    corpoTabella.appendChild(tr);
+  });
+
+  applicaColoriPickSpeciali();
+
+  if (prossimaIndex >= 0) {
+    const rigaCorrente = document.querySelectorAll("#tabella-pick tbody tr")[prossimaIndex];
+    if (rigaCorrente) {
+      rigaCorrente.style.backgroundColor = "#ffcc00";
+      rigaCorrente.classList.add("next-pick");
+    }
+  }
+
+  // mobile: 5 righe attorno alla corrente
+  if (window.innerWidth <= 768 && prossimaIndex >= 0) {
+    const start = Math.max(0, prossimaIndex - 2);
+    const end = prossimaIndex + 3;
+    document.querySelectorAll("#tabella-pick tbody tr").forEach((riga, i) => {
+      if (i >= start && i < end) riga.classList.add("show-mobile");
+    });
+  }
+
+  document.getElementById("turno-attuale").textContent = prossima
+    ? `🎯 È il turno di: ${prossima.fantaTeam} (Pick ${prossima.pick})`
+    : "✅ Draft completato!";
+}
+
+// --- SOSTITUISCI LA TUA caricaPick() CON QUESTA ---
 function caricaPick() {
-  return withTimeout(
-    fetch(urlNoCache(`${endpoint}?tab=${encodeURIComponent(tab)}`), { cache: "no-store" }),
-    12000
+  return fetchRetry(
+    `${endpoint}?tab=${encodeURIComponent(tab)}`,
+    {},
+    4,      // tries
+    1200,   // baseDelay ms (backoff esponenziale)
+    25000   // timeout per tentativo
   )
     .then(res => res.text())
     .then(txt => {
@@ -189,83 +254,29 @@ function caricaPick() {
         console.error("❌ Risposta non JSON dal server:", txt);
         throw new Error("Risposta non JSON (doGet). Controlla il tab passato.");
       }
-
+      // salva ultimo stato buono e renderizza
+      localStorage.setItem("last_picks_json", txt);
       const dati = JSON.parse(txt);
-      const corpoTabella = document.querySelector("#tabella-pick tbody");
-      corpoTabella.innerHTML = "";
-
-      // reset elenco scelti ad ogni refresh
-      giocatoriScelti.clear();
-
-      let prossima = null;
-      let prossimaIndex = -1;
-
-      // Individua prossima pick
-      dati.forEach((riga, index) => {
-        const nome = riga["Giocatore"]?.trim() || "";
-        if (!nome && prossimaIndex === -1) {
-          prossimaIndex = index;
-          prossima = { fantaTeam: riga["Fanta Team"], pick: riga["Pick"] };
-        }
-      });
-
-      dati.forEach((riga, i) => {
-        const tr = document.createElement("tr");
-        const nome = riga["Giocatore"]?.trim() || "";
-        const fantaTeam = riga["Fanta Team"];
-        const pick = riga["Pick"];
-
-        if (nome) giocatoriScelti.add(normalize(nome));
-
-        tr.innerHTML = `
-          <td>${pick}</td>
-          <td>${fantaTeam}</td>
-          <td>${nome}</td>
-        `;
-
-        if (i === prossimaIndex) {
-          tr.classList.add("next-pick");
-          tr.style.backgroundColor = "#ffcc00";
-          setTimeout(() => {
-            tr.scrollIntoView({ behavior: "smooth", block: "center" });
-          }, 300);
-        } else if (nome) {
-          tr.style.backgroundColor = "white";
-          tr.style.fontWeight = "bold";
-        }
-
-        corpoTabella.appendChild(tr);
-      });
-
-      applicaColoriPickSpeciali();
-
-      // Evidenzia la corrente
-      if (prossimaIndex >= 0) {
-        const righe = document.querySelectorAll("#tabella-pick tbody tr");
-        const rigaCorrente = righe[prossimaIndex];
-        if (rigaCorrente) {
-          rigaCorrente.style.backgroundColor = "#ffcc00";
-          rigaCorrente.classList.add("next-pick");
-        }
-      }
-
-      // Mobile: 5 righe intorno
-      if (window.innerWidth <= 768 && prossimaIndex >= 0) {
-        const start = Math.max(0, prossimaIndex - 2);
-        const end = prossimaIndex + 3;
-        document.querySelectorAll("#tabella-pick tbody tr").forEach((riga, i) => {
-          if (i >= start && i < end) riga.classList.add("show-mobile");
-        });
-      }
-
-      document.getElementById("turno-attuale").textContent = prossima
-        ? `🎯 È il turno di: ${prossima.fantaTeam} (Pick ${prossima.pick})`
-        : "✅ Draft completato!";
+      renderPicks(dati);
     })
     .catch(err => {
-      console.error("❌ Errore/timeout caricaPick:", err);
+      console.error("❌ Errore/timeout caricaPick:", err, "URL:", `${endpoint}?tab=${encodeURIComponent(tab)}`);
       const el = document.getElementById("turno-attuale");
-      if (el) el.textContent = "⚠️ Problema di rete nel caricare le pick. Riprova.";
+      const cached = localStorage.getItem("last_picks_json");
+
+      if (cached) {
+        try {
+          renderPicks(JSON.parse(cached));
+          if (el) el.textContent = "⚠️ Mostro ultimo stato salvato (rete lenta). Riprovo...";
+        } catch {
+          if (el) el.textContent = "⚠️ Problema di rete nel caricare le pick. Riprova.";
+        }
+      } else {
+        if (el) el.textContent = "⚠️ Problema di rete nel caricare le pick. Riprova.";
+      }
+
+      // auto-retry tra 5s
+      setTimeout(() => caricaPick(), 5000);
     });
 }
 
