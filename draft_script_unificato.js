@@ -70,12 +70,11 @@ async function caricaGiocatori() {
 
 // helper per evitare duplicazione del fetch
 async function fetchAndParseGiocatori(KEY, now) {
-  - const res = await fetch("giocatori_completo_finale.csv");
-+ const res = await fetch(urlNoCache("giocatori_completo_finale.csv"), { cache: "no-store" });
+  const res = await fetch(urlNoCache("giocatori_completo_finale.csv"), { cache: "no-store" });
   const csv = await res.text();
   localStorage.setItem(KEY, JSON.stringify({ time: now, csv }));
   parseGiocatoriCSV(csv);
-}
+  }
 
 // parser CSV → popola mappaGiocatori + set ruoli/squadre
 function parseGiocatoriCSV(csv) {
