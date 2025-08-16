@@ -10,6 +10,28 @@
 const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1pXJCNLgchygyLnGbDEsnIV3QAdPUiLcmgzMAhlzYRivXV4fnoSBW5VwiopwXEMfwk32mvdF3gWZC/pub?output=csv";
 const URL_RESULTS   = ""; // opzionale: CSV con risultati; lascia vuoto se non lo usi
 
+// === Colori anello per-team (facoltativo) ===
+const TEAM_COLORS = {
+  "Riverfilo": "#04532d",
+  "Lokomotiv Lipsia": "#8b5cf6",
+  "Golden Knights": "#0b1220",
+  "Athletic Pongao": "#60a5fa",
+  "Rubinkebab": "#ef4444",
+  "Team Bartowski": "#991b1b",
+  "Bayern Christiansen": "#7f1d1d",
+  "Ibla": "#86efac",
+  "Minnesode Timberland": "#f97316",
+  "PokerMantra": "#4c1d95",
+  "Wildboys 78": "#facc15",
+  "Eintracht Franco 126": "#fb923c",
+  "Desperados": "#9f1239",
+  "Pandinicoccolosini": "#22c55e",
+  "MinneSota Snakes": "#10b981",
+  "Fc Disoneste": "#3b82f6",
+};
+const ringColor = (name)=> TEAM_COLORS?.[name] || "var(--primary)";
+
+
 // Se true, il seeding resta fisso (non rilegge la classifica)
 let LOCK_SEEDING = false;
 
@@ -156,23 +178,46 @@ function teamNode(t, round, matchId){
   const div = document.createElement('div');
   div.className = 'team';
 
+  // Slot vuoto (placeholder)
   if(!t){
     div.classList.add('empty');
-    div.innerHTML = `<span class="seed">–</span><span class="name">In attesa</span><span class="score"> </span>`;
+    div.innerHTML = `
+      <span class="seed-badge">–</span>
+      <div class="puck"></div>
+    `;
     return div;
   }
 
+  // Clic per scegliere il vincitore
   div.classList.add('clickable');
-
-  const logoPath = `img/${t.team}.png`; // stesso nome della squadra
-  div.innerHTML = `
-    <span class="seed">${t.seed ?? '–'}</span>
-    <img src="${logoPath}" alt="${t.team}" class="logo" onerror="this.style.display='none'">
-    <span class="name">${t.team}</span>
-    <span class="score"></span>
-  `;
-
   div.addEventListener('click', ()=> selectWinner(round, matchId, t));
+
+  // Seed
+  const seed = document.createElement('span');
+  seed.className = 'seed-badge';
+  seed.textContent = t.seed ?? '–';
+
+  // Puck con bordo colorato
+  const puck = document.createElement('div');
+  puck.className = 'puck';
+  puck.style.setProperty('--ring', ringColor(t.team));
+
+  // Logo dentro al puck (misure forzate anche inline per battere CSS globali)
+  const img = document.createElement('img');
+  img.className = 'logo';
+  img.alt = t.team;
+  img.src = `img/${t.team}.png`;      // ⬅️ usa il tuo path esistente
+  img.width = 72; img.height = 72;    // attributi HTML
+  img.style.width = '72px';
+  img.style.height = '72px';
+  img.style.objectFit = 'contain';
+  img.draggable = false;
+  img.onerror = function(){ this.style.display = 'none'; };
+
+  puck.appendChild(img);
+  div.appendChild(seed);
+  div.appendChild(puck);
+
   return div;
 }
 
@@ -183,8 +228,9 @@ function matchNode(m, round, withConnector){
   const a = teamNode(m.a, round, m.id);
   const b = teamNode(m.b, round, m.id);
 
+  // Stato win/loss (bordo verde/trasparenza)
   if(m.winner){
-    const isA = m.winner && m.a && m.winner.team === m.a.team;
+    const isA = m.a && m.winner.team === m.a.team;
     a.classList.toggle('win',  isA);
     b.classList.toggle('loss', isA);
     b.classList.toggle('win',  !isA);
@@ -194,22 +240,22 @@ function matchNode(m, round, withConnector){
   card.appendChild(a);
   card.appendChild(b);
 
-  // Riga stato serie (facoltativo)
-  if (SERIES_STATUS[m.id]) {
-    const statusDiv = document.createElement('div');
-    statusDiv.className = 'series-status';
-    statusDiv.textContent = SERIES_STATUS[m.id];
-    card.appendChild(statusDiv);
-  }
+  // Riga stato serie (usa chiave dal tuo SERIES_STATUS)
+  const seriesText = SERIES_STATUS[m.id] || 'In attesa';
+  const statusDiv = document.createElement('div');
+  statusDiv.className = 'series';      // classe nuova, ma puoi tenere anche .series-status nel CSS
+  statusDiv.textContent = seriesText;
+  card.appendChild(statusDiv);
 
   if(withConnector){
-    const c = document.createElement('div');
+    const c = document.createElement('span');
     c.className = 'connector';
     card.appendChild(c);
   }
 
   return card;
 }
+
 
 function col(title, nodes){
   const div = document.createElement('div'); div.className='round-col';
