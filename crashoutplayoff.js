@@ -213,24 +213,28 @@ function col(title, nodes){
 }
 
 function render(){
-  if(seedStateEl) seedStateEl.textContent = `Seeding: ${LOCK_SEEDING? 'bloccato' : 'attivo'}`;
-  if(!bracketEl) return;
+  if (seedStateEl) seedStateEl.textContent = `Seeding: ${LOCK_SEEDING ? 'bloccato' : 'attivo'}`;
+  if (!bracketEl) return;
 
   bracketEl.innerHTML = '';
 
-  const r16Nodes = BRACKET.R16.map((m)=> matchNode(m,'R16',true));
-  advanceWinnersFrom('R16','QF');
-  const qfNodes = BRACKET.QF.map((m)=> matchNode(m,'QF',true));
-  advanceWinnersFrom('QF','SF');
-  const sfNodes = BRACKET.SF.map((m)=> matchNode(m,'SF',true'));
-  advanceWinnersFrom('SF','F');
-  const fNodes  = BRACKET.F.map((m)=> matchNode(m,'F',false));
+  const r16Nodes = BRACKET.R16.map(m => matchNode(m, 'R16', true));
+  advanceWinnersFrom('R16', 'QF');
+
+  const qfNodes  = BRACKET.QF.map(m  => matchNode(m, 'QF',  true));
+  advanceWinnersFrom('QF',  'SF');
+
+  const sfNodes  = BRACKET.SF.map(m  => matchNode(m, 'SF',  true)); // ✅
+  advanceWinnersFrom('SF',  'F');
+
+  const fNodes   = BRACKET.F.map(m   => matchNode(m, 'F',   false));
 
   bracketEl.appendChild(col('Ottavi (R16)', r16Nodes));
-  bracketEl.appendChild(col('Quarti', qfNodes));
-  bracketEl.appendChild(col('Semifinali', sfNodes));
-  bracketEl.appendChild(col('Finale', fNodes));
+  bracketEl.appendChild(col('Quarti',        qfNodes));
+  bracketEl.appendChild(col('Semifinali',    sfNodes));
+  bracketEl.appendChild(col('Finale',        fNodes));
 }
+
 
 // ======== RISULTATI (opzionali) ========
 function applyResults(resultsRows){
