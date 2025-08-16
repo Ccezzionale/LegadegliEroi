@@ -84,11 +84,9 @@ body{
 .puck:hover{ transform: translateY(-1px) scale(1.02); }
 
 .puck > img.logo{
-  display:block;
   width:72px !important; height:72px !important;
   max-width:72px !important; max-height:72px !important;
   object-fit:contain !important;
-  filter: drop-shadow(0 2px 2px rgba(2,8,23,.15));
 }
 
 /* Seed appeso */
