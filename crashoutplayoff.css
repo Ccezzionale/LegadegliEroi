@@ -1,3 +1,4 @@
+/* ===== NBA Tiles – Modern Dark ===== */
 :root{
   --bg:#0b0f14; --card:#151a21; --border:#262b33; --text:#e6edf3;
   --accent:#3b82f6; --east:#0ea5e9; --west:#f97316; --win:#22c55e; --loss:#ef4444;
@@ -6,66 +7,68 @@
 body{ background:var(--bg); color:var(--text); }
 
 .bracket{
-  display:grid; gap:18px; padding:16px;
-  grid-template-columns: repeat(4, 180px);              /* colonne strette */
+  display:grid; gap:18px; padding:24px 12px;
+  grid-template-columns: repeat(4, 190px);      /* 4 colonne classiche */
   justify-content:center;
 }
 
-/* Colonne round */
-.round-col{ display:flex; flex-direction:column; gap:14px; }
-.round-title{ font: 900 .85rem/1 system-ui; color:#9fb6ff; text-transform:uppercase; letter-spacing:.04em; }
+.round-col{ display:flex; flex-direction:column; gap:12px; }
+.round-title{ font:900 .85rem/1 system-ui; color:#a8c3ff; text-transform:uppercase; letter-spacing:.04em; }
 
-/* Card match compatta */
+/* Match compatto */
 .match{
   background:var(--card); border:1px solid var(--border);
-  border-radius:10px; padding:8px; box-shadow:0 4px 10px rgba(0,0,0,.25);
+  border-radius:12px; padding:10px; box-shadow:0 4px 12px rgba(0,0,0,.25);
   display:flex; flex-direction:column; gap:8px;
 }
 
-/* Stack dei due tile */
+/* Stack due tile */
 .series-stack{ display:flex; flex-direction:column; gap:8px; }
 
-/* ===== Tile squadra ===== */
+/* Tile squadra */
 .tile{
-  display:flex; align-items:center; gap:8px;
+  display:flex; align-items:center; gap:10px;
   background:#0e1319; border:1px solid var(--border);
-  border-radius:8px; padding:6px 8px;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+  border-radius:10px; padding:6px 8px;
 }
+.tile.win{ outline:2px solid var(--win); }
+.tile.loss{ opacity:.45; }
 
-/* Striscia seed colorata (stile NBA) */
+/* Seed strip */
 .seed-strip{
-  width:18px; height:32px; border-radius:6px;
+  width:20px; height:32px; border-radius:6px;
   display:grid; place-items:center; font-weight:800; font-size:.8rem; color:#fff;
   background:var(--accent);
 }
 .round-col.east .seed-strip{ background:var(--east); }
 .round-col.west .seed-strip{ background:var(--west); }
 
-/* Logo quadrato */
+/* Logo pieno nel cerchio */
 .logo-box{
-  width:38px; height:38px; border-radius:6px; overflow:hidden;
-  background:#0b0f14; border:1px solid #202630;
+  width:40px; height:40px; border-radius:50%;
+  overflow:hidden; background:#0b0f14; border:2px solid #2b313a;
   display:grid; place-items:center;
 }
-.logo-box img{ width:100%; height:100%; object-fit:cover; } /* riempie tutto */
+.logo-box img{ width:100%; height:100%; object-fit:cover; }
 
-/* Stato win/loss */
-.tile.win{ outline:2px solid var(--win); }
-.tile.loss{ opacity:.45; }
+/* Placeholder (nessun <img>, quindi zero icone rotte) */
+.logo-box.empty{
+  background: repeating-conic-gradient(#0f141b 0 25%, #121821 0 50%) 50%/10px 10px;
+  border:2px dashed #334152;
+}
 
-/* Etichetta serie */
-.series-status{ text-align:center; font-size:.75rem; color:#9aa7b6; font-style:italic; }
+/* Serie status */
+.series-status{ text-align:center; font-size:.78rem; color:#9aa7b6; font-style:italic; }
 
-/* Connessione (sottile) */
+/* Connettore sottile */
 .connector{ height:1px; background:#2b323c; margin:4px 8px 0; }
 
-/* Finale centrale più grande */
-.final .tile .logo-box{ width:54px; height:54px; }
+/* Finale leggermente più grande */
+.final .logo-box{ width:52px; height:52px; }
 .final .seed-strip{ height:40px; }
 
-@media (max-width: 720px){
-  .bracket{ grid-template-columns: repeat(2, 180px); }
+@media (max-width: 780px){
+  .bracket{ grid-template-columns: repeat(2, 190px); }
 }
 @media (max-width: 520px){
   .bracket{ grid-template-columns: 1fr; }
