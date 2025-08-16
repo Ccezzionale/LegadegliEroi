@@ -1,111 +1,72 @@
-/* === Palette moderna === */
-:root {
-  --bg: #0d1117;            /* sfondo scuro */
-  --card: #161b22;          /* box match */
-  --border: #30363d;        /* bordi neutri */
-  --primary: #3b82f6;       /* blu acceso */
-  --win: #22c55e;           /* verde vittoria */
-  --loss: #ef4444;          /* rosso eliminato */
-  --text: #e6edf3;          /* testo chiaro */
+:root{
+  --bg:#0b0f14; --card:#151a21; --border:#262b33; --text:#e6edf3;
+  --accent:#3b82f6; --east:#0ea5e9; --west:#f97316; --win:#22c55e; --loss:#ef4444;
 }
 
-/* === Reset === */
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: "Segoe UI", sans-serif;
-  margin: 0;
-  padding: 0;
+body{ background:var(--bg); color:var(--text); }
+
+.bracket{
+  display:grid; gap:18px; padding:16px;
+  grid-template-columns: repeat(4, 180px);              /* colonne strette */
+  justify-content:center;
 }
 
-/* === Bracket container === */
-.bracket {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  padding: 20px;
+/* Colonne round */
+.round-col{ display:flex; flex-direction:column; gap:14px; }
+.round-title{ font: 900 .85rem/1 system-ui; color:#9fb6ff; text-transform:uppercase; letter-spacing:.04em; }
+
+/* Card match compatta */
+.match{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:10px; padding:8px; box-shadow:0 4px 10px rgba(0,0,0,.25);
+  display:flex; flex-direction:column; gap:8px;
 }
 
-/* === Colonne round === */
-.round {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-width: 180px;
-}
-.round h2 {
-  text-align: center;
-  margin-bottom: 8px;
-  font-size: 1rem;
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+/* Stack dei due tile */
+.series-stack{ display:flex; flex-direction:column; gap:8px; }
+
+/* ===== Tile squadra ===== */
+.tile{
+  display:flex; align-items:center; gap:8px;
+  background:#0e1319; border:1px solid var(--border);
+  border-radius:8px; padding:6px 8px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
 }
 
-/* === Match box === */
-.match {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-  transition: transform 0.2s;
+/* Striscia seed colorata (stile NBA) */
+.seed-strip{
+  width:18px; height:32px; border-radius:6px;
+  display:grid; place-items:center; font-weight:800; font-size:.8rem; color:#fff;
+  background:var(--accent);
 }
-.match:hover {
-  transform: scale(1.02);
-}
+.round-col.east .seed-strip{ background:var(--east); }
+.round-col.west .seed-strip{ background:var(--west); }
 
-/* === Squadre === */
-.team {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
+/* Logo quadrato */
+.logo-box{
+  width:38px; height:38px; border-radius:6px; overflow:hidden;
+  background:#0b0f14; border:1px solid #202630;
+  display:grid; place-items:center;
 }
-.team.win .puck {
-  border: 3px solid var(--win);
-}
-.team.loss {
-  opacity: 0.4;
-}
+.logo-box img{ width:100%; height:100%; object-fit:cover; } /* riempie tutto */
 
-/* Badge seed */
-.seed-badge {
-  background: var(--primary);
-  color: white;
-  font-size: 0.75rem;
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+/* Stato win/loss */
+.tile.win{ outline:2px solid var(--win); }
+.tile.loss{ opacity:.45; }
 
-/* === Cerchio logo === */
-.puck {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: #0a0a0a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-.puck img.logo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;   /* logo riempie tutto il cerchio */
-}
+/* Etichetta serie */
+.series-status{ text-align:center; font-size:.75rem; color:#9aa7b6; font-style:italic; }
 
-/* === Serie status === */
-.series {
-  font-size: 0.75rem;
-  color: #aaa;
-  text-align: center;
+/* Connessione (sottile) */
+.connector{ height:1px; background:#2b323c; margin:4px 8px 0; }
+
+/* Finale centrale più grande */
+.final .tile .logo-box{ width:54px; height:54px; }
+.final .seed-strip{ height:40px; }
+
+@media (max-width: 720px){
+  .bracket{ grid-template-columns: repeat(2, 180px); }
+}
+@media (max-width: 520px){
+  .bracket{ grid-template-columns: 1fr; }
 }
