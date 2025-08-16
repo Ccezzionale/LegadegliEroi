@@ -7,7 +7,7 @@
 // - Mobile: summary con Pos / Squadra / Pt. e dettagli con le altre colonne
 
 // ====== CONFIG ======
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1pXJCNLgchygyLnGbDEsnIV3QAdPUiLcmgzMAhlzYRivXV4fnoSBW5VwiopwXEMfwk32mvdF3gWZC/pub?output=csv";
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1pXJCNLgchygyLnGbDEsnIV3QAdPUiLcmgzMAhlzYRivXV4fnoSBW5VwiopwXEMfwk32mvdF3gWZC/pub?gid=1127607135&single=true&output=csv";
 const LOGO_DIR = "img/"; // lascia "" per disabilitare
 const COLONNA_NOME_SQUADRA = "Squadra"; // deve corrispondere all'intestazione nel CSV
 
