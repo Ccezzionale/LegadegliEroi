@@ -1,144 +1,111 @@
-/* ===== Crash Out Cup — NBA Style (from scratch) ===== */
-:root{
-  --bg: #f5f8ff;
-  --card: #ffffff;
-  --ink: #0f1a2e;
-  --muted: #475569;
-  --primary: #2563eb;
-  --grid: #e6edf7;
-  --win: #16a34a;
-  --loss: #ef4444;
+/* === Palette moderna === */
+:root {
+  --bg: #0d1117;            /* sfondo scuro */
+  --card: #161b22;          /* box match */
+  --border: #30363d;        /* bordi neutri */
+  --primary: #3b82f6;       /* blu acceso */
+  --win: #22c55e;           /* verde vittoria */
+  --loss: #ef4444;          /* rosso eliminato */
+  --text: #e6edf3;          /* testo chiaro */
 }
 
-/* Layout base */
-*{box-sizing:border-box} html,body{height:100%}
-body{
-  margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;
-  color:var(--ink); background:linear-gradient(180deg,var(--bg),#fff);
+/* === Reset === */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-/* ===== BOARD con parquet ===== */
-.board{
-  overflow-x:auto; padding:20px;
-  background:
-    repeating-linear-gradient(90deg, #f5e1c5 0 14px, #f0d7b0 14px 28px),
-    radial-gradient(1200px 600px at 50% -200px, rgba(0,0,0,.08), transparent 60%),
-    linear-gradient(#faefd9, #f6e4c5);
-  border-radius:18px;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.04);
+/* === Bracket container === */
+.bracket {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  padding: 20px;
 }
 
-/* ===== Griglia round ===== */
-.bracket{
-  display:grid; gap:18px; padding:16px 0; align-items:start;
-  grid-template-columns: repeat(4, minmax(240px, 1fr));
+/* === Colonne round === */
+.round {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 180px;
 }
-.round{display:flex; flex-direction:column; gap:16px}
-.round h3{
-  margin:0 0 2px; padding:0 6px;
-  font: 900 .82rem/1 var(--font, inherit);
-  letter-spacing:.05em; text-transform:uppercase; color:#0b1a3a;
-}
-
-/* ===== Card “glass” del match ===== */
-.match{
-  position:relative;
-  background: rgba(255,255,255,.78);
-  border: 1px solid #dbe7ff;
-  border-radius:20px;
-  padding:16px 14px;
-  box-shadow: 0 10px 24px rgba(2,8,23,.10);
-  backdrop-filter: blur(6px);
+.round h2 {
+  text-align: center;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-/* Connettori a destra */
-.match .connector{
-  position:absolute; right:-18px; top:50%;
-  width:18px; height:3px; background:#11182712; border-radius:3px;
+/* === Match box === */
+.match {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  transition: transform 0.2s;
 }
-.match .connector::after{
-  content:""; position:absolute; right:0; top:-54px;
-  width:3px; height:110px; background:#11182712; border-radius:3px;
-}
-
-/* ===== Team “puck” (solo logo) ===== */
-.team{
-  position:relative;
-  display:grid; place-items:center;
-  padding:8px 0; border:none; background:transparent;
-}
-.team + .team{ margin-top:12px; }
-
-.puck{
-  --ring: var(--primary);
-  width:96px; height:96px; border-radius:999px; overflow:hidden;
-  display:grid; place-items:center;
-  background:
-    radial-gradient(ellipse at 35% 35%, #ffffff 0%, #f5f7ff 70%, #eef2ff 100%);
-  box-shadow:
-    0 8px 22px rgba(2,8,23,.15),
-    inset 0 0 0 6px rgba(255,255,255,.85),
-    0 0 0 3px var(--ring);
-  transition: transform .15s ease, box-shadow .15s ease;
-}
-.puck:hover{ transform: translateY(-1px) scale(1.02); }
-
-.puck > img.logo{
-  width:72px !important; height:72px !important;
-  max-width:72px !important; max-height:72px !important;
-  object-fit:contain !important;
+.match:hover {
+  transform: scale(1.02);
 }
 
-/* Seed appeso */
-.seed-badge{
-  position:absolute; top:4px; left:8px;
-  min-width:26px; height:26px; padding:0 6px;
-  display:grid; place-items:center;
-  border-radius:12px; border:2px solid #fff;
-  background:#0b1a3a; color:#fff; font-weight:800; font-size:.85rem;
-  box-shadow:0 4px 10px rgba(2,8,23,.25);
+/* === Squadre === */
+.team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.team.win .puck {
+  border: 3px solid var(--win);
+}
+.team.loss {
+  opacity: 0.4;
 }
 
-/* Stato serie */
-.series{
-  margin-top:10px; font-size:.82rem; color:var(--muted);
-  text-align:center; font-style:italic;
+/* Badge seed */
+.seed-badge {
+  background: var(--primary);
+  color: white;
+  font-size: 0.75rem;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Stati win/loss */
-.team.win .puck{
-  box-shadow:
-    0 12px 28px rgba(22,163,74,.18),
-    inset 0 0 0 6px rgba(255,255,255,.9),
-    0 0 0 3px var(--win);
+/* === Cerchio logo === */
+.puck {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
-.team.loss{ opacity:.5; }
-
-/* Slot vuoto */
-.team.empty .puck{
-  --ring:#cbd5e1;
-  background:
-    repeating-conic-gradient(from 0deg,#f8fafc 0 25%,#f1f5f9 0 50%) 50%/10px 10px;
-}
-.team.empty::after{
-  content:"In attesa"; position:absolute; bottom:-18px;
-  font-size:.75rem; color:var(--muted);
+.puck img.logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* logo riempie tutto il cerchio */
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 900px){
-  .bracket{ grid-template-columns: repeat(4, minmax(220px, 1fr)); }
+/* === Serie status === */
+.series {
+  font-size: 0.75rem;
+  color: #aaa;
+  text-align: center;
 }
-@media (max-width: 720px){
-  .bracket{ grid-template-columns: repeat(2, minmax(260px, 1fr)); }
-  .puck{ width:88px; height:88px; }
-  .puck > img.logo{ width:64px !important; height:64px !important; }
-}
-@media (max-width: 520px){
-  .bracket{ grid-template-columns: 1fr; }
-  .puck{ width:80px; height:80px; }
-  .puck > img.logo{ width:60px !important; height:60px !important; }
-}
-
-/* ===== Kill switch contro regole globali sugli <img> ===== */
-.bracket img{ width:auto !important; height:auto !important; max-width:none !important; max-height:none !important; }
