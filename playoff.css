@@ -297,25 +297,27 @@ justify-content: center;
     padding-left: 10px;
   }
 
-  .match-card {
-    background: white;
-    border: 2px solid #001f3f;
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
-    font-size: 0.95rem;
-  }
+.match-card {
+  background: #001f3f;       /* blu scuro */
+  border: 2px solid #001f3f;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: white;              /* testo bianco */
+}
 
-  .match-card.vincente {
-    background-color: #fff8dc;
-    border-color: #ffcc00;
-  }
+.match-card.vincente {
+  background-color: #fff8dc;   /* se vuoi mantenere highlight */
+  border: 2px solid #ffcc00;   /* giallo */
+  color: #001f3f;              /* testo blu per contrasto */
+}
 
   .match-card img {
     height: 24px;
@@ -427,9 +429,12 @@ display: block;
   text-align: right;
   min-width: 16px;
 }
+
+    .match-card .team-line .nome, .match-card .team-line .pos, .match-card .team-line .gol { color: white; /* di base bianco */ }
+    
 .team-line.winner .nome,
 .team-line.winner .gol {
   font-weight: 700;
-  color: #d35400; /* arancio scuro, oppure lascia #000 per solo bold */
-}   
+  color: #ffcc00; /* giallo/arancio per chi passa */
+} 
 }
