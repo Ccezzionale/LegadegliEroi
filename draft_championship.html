@@ -110,8 +110,16 @@
       });
     });
   });
+<script src="draft_script_unificato.js"></script>
+
+<!-- Override per la CHAMPIONSHIP -->
+<script>
+  function caricaGiocatori() {
+    const KEY = "giocatori_championship_cache";
+    const now = Date.now();
+    return fetchAndParseGiocatoriGeneric(KEY, now, "giocatori_completo_finale.csv");
+  }
 </script>
 
-<script src="draft_script_unificato.js"></script>
 </body>
 </html>
