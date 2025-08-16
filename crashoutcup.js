@@ -171,12 +171,14 @@ async function loadAndRender() {
     const parsed = parseCSV(text);
     if (!parsed.length) throw new Error('CSV vuoto');
 
-    // Salta le prime 2 righe, usa la terza come intestazione
-    const data = parsed.slice();
-    if (data.length > 2) data.splice(0, 2);
+    // 1️⃣ Salta le prime 3 righe (titolo + sottotitolo + riga vuota/extra)
+    const data = parsed.slice(3);
 
+    // 2️⃣ Usa la prima riga (la 4ª del file) come intestazione
     const headers = data[0].map(h => String(h).trim());
-    const rows = data.slice(1);
+
+    // 3️⃣ Prendi solo le righe da A5 a I20 (cioè le successive 16 righe)
+    const rows = data.slice(1, 17).map(r => r.slice(0, 9));
 
     buildTable(headers, rows);
     buildAccordion(headers, rows);
