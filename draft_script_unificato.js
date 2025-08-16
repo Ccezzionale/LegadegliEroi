@@ -191,15 +191,15 @@ function caricaGiocatori() {
 }
 
 // ========== CSV Giocatori con Abort + Spinner ==========
-async function fetchAndParseGiocatori(KEY, now) {
+async function fetchAndParseGiocatoriGeneric(KEY, now, fileName) {
   showSpinner(true);
   try {
-    const res = await abortAndFetch("csv", "giocatori_completo_finale.csv", 3, 800, 12000);
+    const res = await abortAndFetch("csv", fileName, 3, 800, 12000);
     const csv = await res.text();
     localStorage.setItem(KEY, JSON.stringify({ time: now, csv }));
     parseGiocatoriCSV(csv);
   } catch (err) {
-    console.error("❌ Errore nel caricamento giocatori:", err);
+    console.error(`❌ Errore nel caricamento ${fileName}:`, err);
     const el = document.getElementById("turno-attuale");
     if (el) el.textContent = "⚠️ Problema di rete nel caricare i giocatori.";
     const cache = JSON.parse(localStorage.getItem(KEY) || "null");
