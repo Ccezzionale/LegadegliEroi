@@ -133,10 +133,15 @@ body{
 .puck:hover{ transform: translateY(-1px) scale(1.02); }
 
 /* Logo nel puck */
-.puck img.logo{
-  width: 72px; height: 72px; object-fit: contain;
+.puck img.logo {
+  max-width: 70%;   /* mantiene proporzione dentro al cerchio */
+  max-height: 70%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   filter: drop-shadow(0 2px 2px rgba(2,8,23,.15));
 }
+
 
 /* Seed badge */
 .seed-badge{
