@@ -313,11 +313,11 @@ justify-content: center;
   color: white;              /* testo bianco */
 }
 
-.match-card.vincente {
-  background-color: #fff8dc;   /* se vuoi mantenere highlight */
-  border: 2px solid #ffcc00;   /* giallo */
-  color: #001f3f;              /* testo blu per contrasto */
-}
+  .match-card.vincente {
+    background-color: #001f3f;           /* blu */
+    border: 2px solid #ffcc00;           /* bordo giallo */
+    color: #fff;
+  }
 
   .match-card img {
     height: 24px;
@@ -430,11 +430,16 @@ display: block;
   min-width: 16px;
 }
 
-    .match-card .team-line .nome, .match-card .team-line .pos, .match-card .team-line .gol { color: white; /* di base bianco */ }
+    .match-card .team-line .nome,
+  .match-card .team-line .pos,
+  .match-card .team-line .gol {
+    color: #fff;
+  }
     
-.team-line.winner .nome,
-.team-line.winner .gol {
-  font-weight: 700;
-  color: #ffcc00; /* giallo/arancio per chi passa */
-} 
+ .team-line.winner .nome,
+  .team-line.winner .gol {
+    font-weight: 700;
+    color: #ffcc00;                      /* giallo/arancio */
+  }
+    .match-card .vs { color: rgba(255,255,255,.7); }
 }
