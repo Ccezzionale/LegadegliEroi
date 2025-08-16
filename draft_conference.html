@@ -109,9 +109,17 @@
       });
     });
   });
+<script src="draft_script_unificato.js"></script>
+
+<script>
+  // Override per la pagina Conference League
+  function caricaGiocatori() {
+    const KEY = "giocatori_conference_cache";
+    const now = Date.now();
+    return fetchAndParseGiocatoriGeneric(KEY, now, "giocatori_league.csv");
+  }
 </script>
 
-<script src="draft_script_unificato.js"></script>
 </body>
 </html>
 
