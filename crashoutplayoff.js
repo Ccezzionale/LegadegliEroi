@@ -1,14 +1,25 @@
+// ========== CRASH OUT CUP – BRACKET ==========
+/*
+- Legge la classifica pubblicata in CSV e costruisce il seeding Top 16.
+- Intestazione trovata in modo dinamico (cerca "Pos" e "Squadra/Team").
+- Evita ReferenceError se alcuni elementi non esistono (bottoni, ecc.).
+- Supporto opzionale ai risultati da un secondo CSV (URL_RESULTS).
+*/
+
 // ======== CONFIG ========
-// ⚠️ Inserisci qui gli URL CSV pubblicati
-const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1pXJCNLgchygyLnGbDEsnIV3QAdPUiLcmgzMAhlzYRivXV4fnoSBW5VwiopwXEMfwk32mvdF3gWZC/pub?gid=1127607135&single=true&output=csv";
+const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1pXJCNLgchygyLnGbDEsnIV3QAdPUiLcmgzMAhlzYRivXV4fnoSBW5VwiopwXEMfwk32mvdF3gWZC/pub?output=csv";
+const URL_RESULTS   = ""; // opzionale: CSV con risultati; lascia vuoto se non lo usi
 
 // Se true, il seeding resta fisso (non rilegge la classifica)
 let LOCK_SEEDING = false;
 
+// Stato testuale per serie (facoltativo)
 const SERIES_STATUS = {
   "R16-1": "TBA conduce 1 - 0",
   "R16-2": "TBA conduce 0 - 0",
-  "QF-1": "TBA conduce 0 - 0",
+  "QF-1":  "TBA conduce 0 - 0",
+  // aggiungi altri se vuoi...
+};
 
 // ======== STATE ========
 let seeds = []; // [{seed:1, team:"..."}, ...]
@@ -16,30 +27,48 @@ const BRACKET = { R16: [], QF: [], SF: [], F: [] };
 
 // ======== UTILS ========
 const $ = (sel)=>document.querySelector(sel);
-const statusEl = $('#status');
-const errorsEl = $('#errors');
-const bracketEl = $('#bracket');
-const seedStateEl = $('#seedState');
+const statusEl   = $('#status');
+const errorsEl   = $('#errors');
+const bracketEl  = $('#bracket');
+const seedStateEl= $('#seedState');
 
-$('#refreshBtn').addEventListener('click', ()=> init(true));
-$('#lockBtn').addEventListener('click', ()=> { LOCK_SEEDING = !LOCK_SEEDING; render(); });
+$('#refreshBtn')?.addEventListener('click', ()=> init(true));
+$('#lockBtn')?.addEventListener('click', ()=> { LOCK_SEEDING = !LOCK_SEEDING; render(); });
 
 function setStatus(msg){ if(statusEl) statusEl.textContent = msg; }
-function setError(msg){ if(errorsEl) errorsEl.innerHTML = `<div class="error">${msg}</div>`; }
+function setError(msg){ if(errorsEl) errorsEl.innerHTML = msg ? `<div class="error">${msg}</div>` : ''; }
 
-function csvToRows(text){
-  return text.trim().split(/\r?\n/).map(r=> r.split(',').map(c=> c.replace(/^\"|\"$/g,'').trim()));
+// CSV parser che gestisce virgolette e virgole all’interno di campi
+function parseCSV(text) {
+  const rows = [];
+  let cur = '', cell = [], inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '"') {
+      if (inQuotes && text[i + 1] === '"') { cur += '"'; i++; }
+      else { inQuotes = !inQuotes; }
+    } else if (ch === ',' && !inQuotes) {
+      cell.push(cur); cur = '';
+    } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+      if (cur !== '' || cell.length) { cell.push(cur); rows.push(cell); cell = []; cur = ''; }
+    } else {
+      cur += ch;
+    }
+  }
+  if (cur !== '' || cell.length) { cell.push(cur); rows.push(cell); }
+  // rimuovi eventuali righe completamente vuote
+  return rows.filter(r => r.some(x => String(x).trim() !== ''));
 }
 
 async function fetchCSV(url){
   if(!url) return null;
-  const res = await fetch(url);
+  const res = await fetch(url, { cache: 'no-store' });
   if(!res.ok) throw new Error('Impossibile caricare: '+url);
-  return csvToRows(await res.text());
+  return parseCSV(await res.text());
 }
 
 function findTeamColumn(header){
-  const lower = header.map(h=> (h||'').toLowerCase());
+  const lower = header.map(h=> (h||'').toLowerCase().trim());
   let idx = lower.findIndex(h => h.includes('squadra'));
   if(idx===-1) idx = lower.findIndex(h => h.includes('team'));
   if(idx===-1) idx = lower.findIndex(h => h.includes('nome'));
@@ -47,17 +76,22 @@ function findTeamColumn(header){
   return idx;
 }
 
+// ======== STANDINGS -> SEEDS ========
 function buildSeedsFromStandings(rows){
   if(!rows || !rows.length) throw new Error('CSV classifica vuoto.');
 
-  // Ignora le prime 3 righe (link e titoli vari)
-  rows = rows.slice(3);
+  // Trova dinamicamente la riga intestazione (ha "pos" e "squadra"/"team")
+  const headerIdx = rows.findIndex(r => {
+    const cells = r.map(c => String(c).trim().toLowerCase());
+    return cells.includes('pos') && (cells.includes('squadra') || cells.includes('team'));
+  });
+  if (headerIdx === -1) throw new Error("Intestazione non trovata (serve 'Pos' e 'Squadra').");
 
-  const header = rows[0];
+  const header  = rows[headerIdx];
   const teamCol = findTeamColumn(header);
 
-  // Dati reali dalla riga successiva
-  const data = rows.slice(1).filter(r => (r[teamCol]||'').trim());
+  // Dati effettivi dalla riga successiva all'header
+  const data = rows.slice(headerIdx + 1).filter(r => (r[teamCol]||'').trim());
 
   // Prendi le prime 16 squadre
   const top16 = data.slice(0,16).map((r,i)=> ({
@@ -66,10 +100,10 @@ function buildSeedsFromStandings(rows){
   }));
 
   if(top16.length<16) throw new Error('Servono almeno 16 squadre nella classifica per comporre il tabellone.');
-
   return top16;
 }
 
+// ======== BRACKET BUILDING ========
 function defaultPairing(seeds){
   // Classico: 1v16, 8v9, 5v12, 4v13 | 3v14, 6v11, 7v10, 2v15
   const order = [ [1,16],[8,9],[5,12],[4,13], [3,14],[6,11],[7,10],[2,15] ];
@@ -99,16 +133,20 @@ function selectWinner(round, matchId, winnerObj){
   const match = BRACKET[round].find(m=>m.id===matchId);
   if(!match) return;
   match.winner = winnerObj;
+
   if(round==='R16'){
-    advanceWinnersFrom('R16','QF'); BRACKET.SF.forEach(m=> m.winner=null); BRACKET.F[0].winner=null; advanceWinnersFrom('QF','SF'); advanceWinnersFrom('SF','F');
+    advanceWinnersFrom('R16','QF'); BRACKET.SF.forEach(m=> m.winner=null); BRACKET.F[0].winner=null;
+    advanceWinnersFrom('QF','SF');  advanceWinnersFrom('SF','F');
   } else if(round==='QF'){
-    BRACKET.SF.forEach(m=> m.winner=null); BRACKET.F[0].winner=null; advanceWinnersFrom('QF','SF'); advanceWinnersFrom('SF','F');
+    BRACKET.SF.forEach(m=> m.winner=null); BRACKET.F[0].winner=null;
+    advanceWinnersFrom('QF','SF');  advanceWinnersFrom('SF','F');
   } else if(round==='SF'){
-    BRACKET.F[0].winner=null; advanceWinnersFrom('SF','F');
+    BRACKET.F[0].winner=null;       advanceWinnersFrom('SF','F');
   }
   render();
 }
 
+// ======== RENDER ========
 function teamNode(t, round, matchId){
   const div = document.createElement('div');
   div.className = 'team';
@@ -142,16 +180,16 @@ function matchNode(m, round, withConnector){
 
   if(m.winner){
     const isA = m.winner && m.a && m.winner.team === m.a.team;
-    a.classList.toggle('win', isA);
+    a.classList.toggle('win',  isA);
     b.classList.toggle('loss', isA);
-    b.classList.toggle('win', !isA);
+    b.classList.toggle('win',  !isA);
     a.classList.toggle('loss', !isA);
   }
 
   card.appendChild(a);
   card.appendChild(b);
 
-  // 🔹 Riga stato serie
+  // Riga stato serie (facoltativo)
   if (SERIES_STATUS[m.id]) {
     const statusDiv = document.createElement('div');
     statusDiv.className = 'series-status';
@@ -176,48 +214,64 @@ function col(title, nodes){
 
 function render(){
   if(seedStateEl) seedStateEl.textContent = `Seeding: ${LOCK_SEEDING? 'bloccato' : 'attivo'}`;
+  if(!bracketEl) return;
+
   bracketEl.innerHTML = '';
+
   const r16Nodes = BRACKET.R16.map((m)=> matchNode(m,'R16',true));
   advanceWinnersFrom('R16','QF');
   const qfNodes = BRACKET.QF.map((m)=> matchNode(m,'QF',true));
   advanceWinnersFrom('QF','SF');
-  const sfNodes = BRACKET.SF.map((m)=> matchNode(m,'SF',true));
+  const sfNodes = BRACKET.SF.map((m)=> matchNode(m,'SF',true'));
   advanceWinnersFrom('SF','F');
   const fNodes  = BRACKET.F.map((m)=> matchNode(m,'F',false));
+
   bracketEl.appendChild(col('Ottavi (R16)', r16Nodes));
   bracketEl.appendChild(col('Quarti', qfNodes));
   bracketEl.appendChild(col('Semifinali', sfNodes));
   bracketEl.appendChild(col('Finale', fNodes));
 }
 
+// ======== RISULTATI (opzionali) ========
 function applyResults(resultsRows){
   const header = resultsRows[0].map(h=> (h||'').toLowerCase());
   const idx = {
-    round: header.findIndex(h=>h==='round'),
-    match: header.findIndex(h=>h==='match'),
-    home: header.findIndex(h=>h==='home'),
-    away: header.findIndex(h=>h==='away'),
-    homePts: header.findIndex(h=>h==='homepts'),
-    awayPts: header.findIndex(h=>h==='awaypts'),
+    round:  header.findIndex(h=>h==='round'),
+    match:  header.findIndex(h=>h==='match'),
+    home:   header.findIndex(h=>h==='home'),
+    away:   header.findIndex(h=>h==='away'),
+    homePts:header.findIndex(h=>h==='homepts'),
+    awayPts:header.findIndex(h=>h==='awaypts'),
     winner: header.findIndex(h=>h==='winner'),
   };
   const rows = resultsRows.slice(1);
   const groups = { R16:[], QF:[], SF:[], F:[] };
+
   rows.forEach(r=>{
-    const round = (r[idx.round]||'').toUpperCase(); if(!groups[round]) return;
-    groups[round].push({ round, match: r[idx.match], home: r[idx.home], away: r[idx.away], homePts: Number(r[idx.homePts]), awayPts: Number(r[idx.awayPts]), winner: r[idx.winner] });
+    const round = (r[idx.round]||'').toUpperCase();
+    if(!groups[round]) return;
+    groups[round].push({
+      round, match: r[idx.match], home: r[idx.home], away: r[idx.away],
+      homePts: Number(r[idx.homePts]), awayPts: Number(r[idx.awayPts]),
+      winner: r[idx.winner]
+    });
   });
+
   const setWinnerByName = (round, matchId, name)=>{
-    const match = BRACKET[round].find(m=>m.id.toLowerCase()===String(matchId).toLowerCase()); if(!match) return;
-    const cand = [match.a, match.b].find(t=> t && t.team.toLowerCase()===String(name||'').toLowerCase()); if(cand) match.winner = cand;
-  }
+    const match = BRACKET[round].find(m=>m.id.toLowerCase()===String(matchId).toLowerCase());
+    if(!match) return;
+    const cand = [match.a, match.b].find(t=> t && t.team.toLowerCase()===String(name||'').toLowerCase());
+    if(cand) match.winner = cand;
+  };
+
   ['R16','QF','SF','F'].forEach(round=>{
     const arr = groups[round]; if(!arr || !arr.length) return;
     arr.forEach(entry=>{
       const id = `${round}-${String(entry.match).replace(/\s+/g,'')}`;
       let chosen = entry.winner;
       if(!chosen && Number.isFinite(entry.homePts) && Number.isFinite(entry.awayPts)){
-        if(entry.homePts>entry.awayPts) chosen = entry.home; else if(entry.awayPts>entry.homePts) chosen = entry.away;
+        if(entry.homePts>entry.awayPts) chosen = entry.home;
+        else if(entry.awayPts>entry.homePts) chosen = entry.away;
       }
       if(chosen) setWinnerByName(round, id, chosen);
     });
@@ -227,10 +281,12 @@ function applyResults(resultsRows){
   });
 }
 
+// ======== INIT ========
 async function init(force=false){
   setError('');
   try{
     setStatus('Caricamento…');
+
     if(!LOCK_SEEDING || force){
       if(URL_STANDINGS){
         const rows = await fetchCSV(URL_STANDINGS);
@@ -244,10 +300,12 @@ async function init(force=false){
     } else {
       ensureStructure();
     }
+
     if(URL_RESULTS){
       const resRows = await fetchCSV(URL_RESULTS);
-      if(resRows) applyResults(resRows);
+      if(resRows && resRows.length) applyResults(resRows);
     }
+
     render();
     const ts = new Date();
     setStatus(`Aggiornato alle ${ts.toLocaleTimeString()} · ${LOCK_SEEDING? 'Seeding bloccato' : 'Seeding attivo'}`);
@@ -259,15 +317,17 @@ async function init(force=false){
   }
 }
 
-// NAVBAR: hamburger + submenu (mobile)
+// ======== NAVBAR (mobile) ========
 function setupNav(){
   const burger = document.getElementById('hamburger');
   const menu   = document.getElementById('mainMenu');
   const ddBtns = document.querySelectorAll('.toggle-submenu');
+
   burger?.addEventListener('click', ()=>{
-    const open = menu.classList.toggle('open');
+    const open = menu?.classList.toggle('open');
     burger.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
+
   ddBtns.forEach(btn=>{
     btn.addEventListener('click', (e)=>{
       e.preventDefault();
