@@ -15,9 +15,15 @@ let LOCK_SEEDING = false;
 
 // Stato testuale per serie (facoltativo)
 const SERIES_STATUS = {
-  "R16-1": "TBA conduce 1 - 0",
-  "R16-2": "TBA conduce 0 - 0",
-  "QF-1":  "TBA conduce 0 - 0",
+  "R16-1": "Serie in parità 0-0",
+  "R16-2": "Serie in parità 0-0",
+  "R16-3": "Serie in parità 0-0",
+  "R16-4": "Serie in parità 0-0",
+  "R16-5": "Serie in parità 0-0",
+  "R16-6": "Serie in parità 0-0",
+  "R16-7": "Serie in parità 0-0",
+  "R16-8": "Serie in parità 0-0",
+  "QF-1":  
   // aggiungi altri se vuoi...
 };
 
