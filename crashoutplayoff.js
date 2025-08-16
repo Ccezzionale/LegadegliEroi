@@ -178,30 +178,29 @@ function selectWinner(round, matchId, winnerObj){
 function tileNode(t, round, matchId){
   const tile = document.createElement('div');
   tile.className = 'tile';
-  if(!t){
-    tile.innerHTML = `
-      <div class="seed-strip">–</div>
-      <div class="logo-box"><img alt="TBA" /></div>
-    `;
-    return tile;
-  }
-  tile.addEventListener('click', ()=> selectWinner(round, matchId, t));
 
   const seed = document.createElement('div');
   seed.className = 'seed-strip';
-  seed.textContent = t.seed ?? '–';
+  seed.textContent = t?.seed ?? '–';
 
-  const logo = document.createElement('div');
-  logo.className = 'logo-box';
-  const img = document.createElement('img');
-  img.alt = t.team;
-  img.src = `img/${t.team}.png`;
-  img.onerror = function(){ this.style.display='none'; };
-  logo.appendChild(img);
+  const box = document.createElement('div');
+  box.className = 'logo-box';
 
-  tile.append(seed, logo);
+  if (t && t.team) {
+    tile.addEventListener('click', ()=> selectWinner(round, matchId, t));
+    const img = document.createElement('img');
+    img.alt = t.team;
+    img.src = `img/${t.team}.png`;
+    img.onerror = function(){ this.remove(); box.classList.add('empty'); };
+    box.appendChild(img);
+  } else {
+    box.classList.add('empty');  // nessuna img -> niente icona rotta
+  }
+
+  tile.append(seed, box);
   return tile;
 }
+
 
 
 function teamNode(t, round, matchId){  // compat: non più usata direttamente
@@ -218,7 +217,7 @@ function matchNode(m, round, withConnector){
   const a = tileNode(m.a, round, m.id);
   const b = tileNode(m.b, round, m.id);
 
-  if(m.winner){
+  if (m.winner){
     const aWin = m.a && m.winner.team === m.a.team;
     a.classList.toggle('win', aWin);
     b.classList.toggle('loss', aWin);
@@ -229,16 +228,17 @@ function matchNode(m, round, withConnector){
   stack.append(a,b);
   card.appendChild(stack);
 
-  const statusDiv = document.createElement('div');
-  statusDiv.className = 'series-status';
-  statusDiv.textContent = SERIES_STATUS[m.id] || 'In attesa';
-  card.appendChild(statusDiv);
+  const s = document.createElement('div');
+  s.className = 'series-status';
+  s.textContent = SERIES_STATUS[m.id] || 'In attesa';
+  card.appendChild(s);
 
-  if(withConnector){
+  if (withConnector){
     const c = document.createElement('div');
     c.className = 'connector';
     card.appendChild(c);
   }
+
   return card;
 }
 
