@@ -174,99 +174,88 @@ function selectWinner(round, matchId, winnerObj){
 }
 
 // ======== RENDER ========
-function teamNode(t, round, matchId){
-  const div = document.createElement('div');
-  div.className = 'team';
 
-  // Slot vuoto (placeholder)
+function tileNode(t, round, matchId){
+  const tile = document.createElement('div');
+  tile.className = 'tile';
   if(!t){
-    div.classList.add('empty');
-    div.innerHTML = `
-      <span class="seed-badge">–</span>
-      <div class="puck"></div>
+    tile.innerHTML = `
+      <div class="seed-strip">–</div>
+      <div class="logo-box"><img alt="TBA" /></div>
     `;
-    return div;
+    return tile;
   }
+  tile.addEventListener('click', ()=> selectWinner(round, matchId, t));
 
-  // Clic per scegliere il vincitore
-  div.classList.add('clickable');
-  div.addEventListener('click', ()=> selectWinner(round, matchId, t));
-
-  // Seed
-  const seed = document.createElement('span');
-  seed.className = 'seed-badge';
+  const seed = document.createElement('div');
+  seed.className = 'seed-strip';
   seed.textContent = t.seed ?? '–';
 
-  // Puck con bordo colorato
-  const puck = document.createElement('div');
-  puck.className = 'puck';
-  puck.style.setProperty('--ring', ringColor(t.team));
-
-  // Logo dentro al puck (misure forzate anche inline per battere CSS globali)
+  const logo = document.createElement('div');
+  logo.className = 'logo-box';
   const img = document.createElement('img');
-  img.className = 'logo';
   img.alt = t.team;
-  img.src = `img/${t.team}.png`;      // ⬅️ usa il tuo path esistente
-  img.width = 72; img.height = 72;    // attributi HTML
-  img.style.width = '72px';
-  img.style.height = '72px';
-  img.style.objectFit = 'contain';
-  img.draggable = false;
-  img.onerror = function(){ this.style.display = 'none'; };
+  img.src = `img/${t.team}.png`;
+  img.onerror = function(){ this.style.display='none'; };
+  logo.appendChild(img);
 
-  puck.appendChild(img);
-  div.appendChild(seed);
-  div.appendChild(puck);
+  tile.append(seed, logo);
+  return tile;
+}
 
-  return div;
+
+function teamNode(t, round, matchId){  // compat: non più usata direttamente
+  return tileNode(t, round, matchId);
 }
 
 function matchNode(m, round, withConnector){
   const card = document.createElement('div');
   card.className = 'match';
 
-  const a = teamNode(m.a, round, m.id);
-  const b = teamNode(m.b, round, m.id);
+  const stack = document.createElement('div');
+  stack.className = 'series-stack';
 
-  // Stato win/loss (bordo verde/trasparenza)
+  const a = tileNode(m.a, round, m.id);
+  const b = tileNode(m.b, round, m.id);
+
   if(m.winner){
-    const isA = m.a && m.winner.team === m.a.team;
-    a.classList.toggle('win',  isA);
-    b.classList.toggle('loss', isA);
-    b.classList.toggle('win',  !isA);
-    a.classList.toggle('loss', !isA);
+    const aWin = m.a && m.winner.team === m.a.team;
+    a.classList.toggle('win', aWin);
+    b.classList.toggle('loss', aWin);
+    b.classList.toggle('win', !aWin);
+    a.classList.toggle('loss', !aWin);
   }
 
-  card.appendChild(a);
-  card.appendChild(b);
+  stack.append(a,b);
+  card.appendChild(stack);
 
-  // Riga stato serie (usa chiave dal tuo SERIES_STATUS)
-  const seriesText = SERIES_STATUS[m.id] || 'In attesa';
   const statusDiv = document.createElement('div');
-  statusDiv.className = 'series';      // classe nuova, ma puoi tenere anche .series-status nel CSS
-  statusDiv.textContent = seriesText;
+  statusDiv.className = 'series-status';
+  statusDiv.textContent = SERIES_STATUS[m.id] || 'In attesa';
   card.appendChild(statusDiv);
 
   if(withConnector){
-    const c = document.createElement('span');
+    const c = document.createElement('div');
     c.className = 'connector';
     card.appendChild(c);
   }
-
   return card;
 }
 
 
-function col(title, nodes){
-  const div = document.createElement('div'); div.className='round-col';
-  const h = document.createElement('div'); h.className='round-title'; h.textContent = title; div.appendChild(h);
-  nodes.forEach(n=> div.appendChild(n)); return div;
+function col(title, nodes, extraClass=''){
+  const div = document.createElement('div');
+  div.className = 'round-col ' + extraClass;
+  const h = document.createElement('div');
+  h.className = 'round-title'; h.textContent = title;
+  div.appendChild(h);
+  nodes.forEach(n=> div.appendChild(n));
+  return div;
 }
 
 function render(){
   if (seedStateEl) seedStateEl.textContent = `Seeding: ${LOCK_SEEDING ? 'bloccato' : 'attivo'}`;
   if (!bracketEl) return;
-
   bracketEl.innerHTML = '';
 
   const r16Nodes = BRACKET.R16.map(m => matchNode(m, 'R16', true));
@@ -275,15 +264,20 @@ function render(){
   const qfNodes  = BRACKET.QF.map(m  => matchNode(m, 'QF',  true));
   advanceWinnersFrom('QF',  'SF');
 
-  const sfNodes  = BRACKET.SF.map(m  => matchNode(m, 'SF',  true)); // ✅
+  const sfNodes  = BRACKET.SF.map(m  => matchNode(m, 'SF',  true));
   advanceWinnersFrom('SF',  'F');
 
   const fNodes   = BRACKET.F.map(m   => matchNode(m, 'F',   false));
 
-  bracketEl.appendChild(col('Ottavi (R16)', r16Nodes));
-  bracketEl.appendChild(col('Quarti',        qfNodes));
-  bracketEl.appendChild(col('Semifinali',    sfNodes));
-  bracketEl.appendChild(col('Finale',        fNodes));
+  // Colonne con etichette di conference (prime due = west, ultime due = east) — regola come preferisci
+  bracketEl.appendChild(col('Ottavi (R16)', r16Nodes.slice(0,4), 'west'));
+  bracketEl.appendChild(col('Quarti',        qfNodes.slice(0,2),  'west'));
+  bracketEl.appendChild(col('Semifinali',    sfNodes.slice(0,1),  'west'));
+  const finalCol = col('Finale',             fNodes,              'final');
+  bracketEl.appendChild(finalCol);
+  bracketEl.appendChild(col('Semifinali',    sfNodes.slice(1),    'east'));
+  bracketEl.appendChild(col('Quarti',        qfNodes.slice(2),    'east'));
+  bracketEl.appendChild(col('Ottavi (R16)',  r16Nodes.slice(4),   'east'));
 }
 
 
