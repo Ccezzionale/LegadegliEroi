@@ -172,15 +172,22 @@ async function loadAndRender() {
     const parsed = parseCSV(text);
     if (!parsed.length) throw new Error('CSV vuoto');
 
-// Salta le prime 2 righe (non 3)
-const data = parsed.slice(2);
+    // Trova dinamicamente l'intestazione (riga con "Pos" e "Squadra")
+    let headerIdx = parsed.findIndex(row => {
+      const cells = row.map(c => String(c).trim().toLowerCase());
+      const hasPos = cells.includes('pos');
+      const hasSquadra = cells.includes('squadra');
+      return hasPos && hasSquadra;
+    });
+    if (headerIdx === -1) throw new Error("Intestazione non trovata (serve 'Pos' e 'Squadra').");
 
-// Riga 3 del CSV diventa intestazione → corrisponde ad A4:I4
-const headers = data[0].slice(0, 9).map(h => String(h).trim());
+    // Header = A4:I4
+    const headers = parsed[headerIdx].slice(0, 9).map(h => String(h).trim());
 
-// Riga 5–20 = dati
-const rows = data.slice(1, 17).map(r => r.slice(0, 9));
-
+    // Dati = A5:I20 (16 righe) subito dopo l'header
+    const start = headerIdx + 1;       // riga 5
+    const end   = start + 16;          // fino a riga 20 inclusa
+    const rows  = parsed.slice(start, end).map(r => r.slice(0, 9));
 
     buildTable(headers, rows);
     buildAccordion(headers, rows);
@@ -189,6 +196,7 @@ const rows = data.slice(1, 17).map(r => r.slice(0, 9));
     alert("Impossibile caricare la classifica della Crash Out Cup. Controlla l'URL CSV.");
   }
 }
+
 
 
 // Avvio
