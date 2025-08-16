@@ -22,8 +22,7 @@ const SERIES_STATUS = {
   "R16-5": "Serie in parità 0-0",
   "R16-6": "Serie in parità 0-0",
   "R16-7": "Serie in parità 0-0",
-  "R16-8": "Serie in parità 0-0",
-  "QF-1":  
+  "R16-8": "Serie in parità 0-0",  
   // aggiungi altri se vuoi...
 };
 
