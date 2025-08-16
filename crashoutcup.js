@@ -171,22 +171,23 @@ async function loadAndRender() {
     const parsed = parseCSV(text);
     if (!parsed.length) throw new Error('CSV vuoto');
 
-    // 1️⃣ Salta le prime 3 righe (titolo + sottotitolo + riga vuota/extra)
+    // Salta le prime 3 righe → la 4ª diventa intestazione
     const data = parsed.slice(3);
 
-    // 2️⃣ Usa la prima riga (la 4ª del file) come intestazione
-    const headers = data[0].map(h => String(h).trim());
+    // Riga 4 = intestazione
+    const headers = data[0].slice(0, 9).map(h => String(h).trim());
 
-    // 3️⃣ Prendi solo le righe da A5 a I20 (cioè le successive 16 righe)
+    // Riga 5–20 = dati (16 righe)
     const rows = data.slice(1, 17).map(r => r.slice(0, 9));
 
     buildTable(headers, rows);
     buildAccordion(headers, rows);
   } catch (e) {
     console.error(e);
-    alert('Impossibile caricare la classifica della Crash Out Cup. Controlla l\'URL CSV.');
+    alert("Impossibile caricare la classifica della Crash Out Cup. Controlla l'URL CSV.");
   }
 }
+
 
 // Avvio
 window.addEventListener('DOMContentLoaded', loadAndRender);
