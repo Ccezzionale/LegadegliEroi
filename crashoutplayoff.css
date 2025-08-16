@@ -70,40 +70,114 @@ body{
 .pill.loss{background:var(--loss)}
 .status{margin-top:8px; color:var(--muted)}
 
-/* BRACKET */
-.board{overflow-x:auto}
-.bracket{display:grid; gap:16px; padding:20px 0; align-items:start; grid-template-columns: repeat(4, minmax(240px, 1fr));}
+/* ===== BRACKET (versione pulita NBA-style) ===== */
+.board{
+  overflow-x:auto;
+  padding:16px;
+  background:
+    repeating-linear-gradient(90deg, #f5e6c8 0 14px, #f2ddb6 14px 28px),
+    linear-gradient(#f9f1df, #f4e6c7);
+  border-radius:16px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.04);
+}
+
+.bracket{
+  display:grid; gap:16px; padding:20px 0; align-items:start;
+  grid-template-columns: repeat(4, minmax(240px, 1fr));
+}
 .round-col{display:flex; flex-direction:column; gap:16px}
-.round-title{font-weight:800; letter-spacing:.02em; color:var(--muted); font-size:.9rem; padding:0 6px}
-.match{background:var(--card); border:1px solid var(--grid); border-radius:16px; padding:10px; box-shadow:0 4px 16px rgba(2,8,23,.04); position:relative}
-.team{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 10px; border-radius:12px; border:1px dashed transparent; cursor:pointer}
-.team + .team{margin-top:8px}
-.seed{width:28px; height:28px; display:inline-grid; place-items:center; border-radius:8px; background:#eef4ff; color:var(--primary); font-weight:800}
-.name{flex:1; font-weight:700}
-.score{min-width:34px; text-align:center; font-variant-numeric:tabular-nums}
-.team.win{border-color:#c6f6d5; background:#f0fff4}
-.team.loss{opacity:.6}
-.empty{opacity:.6; font-style:italic}
-
-/* Connector lines */
-.connector{position:absolute; right:-16px; top:50%; width:16px; height:2px; background:var(--grid)}
-.connector:after{content:""; position:absolute; right:0; top:-48px; width:2px; height:98px; background:var(--grid)}
-
-.team .logo {
-  width: 56px;
-  height: 56px;
-  object-fit: contain;
-  border-radius: 4px;
+.round-title{
+  font-weight:900; letter-spacing:.04em;
+  color:#0b1a3a; text-transform:uppercase; padding:0 6px; font-size:.9rem;
 }
 
-.series-status {
-  margin-top: 6px;
-  font-size: 0.8rem;
-  color: var(--muted);
-  text-align: center;
-  font-style: italic;
+/* Match card “glass” */
+.match{
+  background: rgba(255,255,255,.75);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--primary-200);
+  border-radius: 20px;
+  padding: 14px;
+  box-shadow: 0 10px 24px rgba(2,8,23,.10);
+  position: relative;
 }
 
+/* Team in versione puck (solo logo) */
+.team{
+  position: relative;
+  display: grid; place-items: center;
+  padding: 14px 8px;
+  border: none; background: transparent;
+  cursor: default;
+}
+.team + .team { margin-top: 12px; }
+
+.puck{
+  --ring: var(--primary);
+  width: 92px; height: 92px; border-radius: 999px;
+  display: grid; place-items: center;
+  background: radial-gradient(ellipse at 35% 35%, #ffffff 0%, #f5f7ff 70%, #eef2ff 100%);
+  box-shadow:
+    0 6px 18px rgba(2,8,23,.15),
+    inset 0 0 0 6px rgba(255,255,255,.8),
+    0 0 0 3px var(--ring);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.team.win .puck{
+  box-shadow:
+    0 10px 28px rgba(22,163,74,.18),
+    inset 0 0 0 6px rgba(255,255,255,.9),
+    0 0 0 3px var(--win);
+}
+.team.loss .puck{ opacity:.45; }
+.puck:hover{ transform: translateY(-1px) scale(1.02); }
+
+/* Logo nel puck */
+.puck img.logo{
+  width: 72px; height: 72px; object-fit: contain;
+  filter: drop-shadow(0 2px 2px rgba(2,8,23,.15));
+}
+
+/* Seed badge */
+.seed-badge{
+  position: absolute; top: 4px; left: 8px;
+  min-width: 26px; height: 26px; padding: 0 6px;
+  display: grid; place-items: center;
+  border-radius: 12px; background: #0b1a3a; color: #fff;
+  font-weight: 800; font-size: .85rem;
+  box-shadow: 0 4px 10px rgba(2,8,23,.25);
+  border: 2px solid #fff;
+}
+
+/* Stato serie */
+.series-status{
+  margin-top: 10px; font-size: .82rem; color: var(--muted);
+  text-align: center; font-style: italic;
+}
+
+/* Connettori */
+.connector{
+  position:absolute; right:-18px; top:50%;
+  width:18px; height:3px; background:#11182710; border-radius:3px;
+}
+.connector:after{
+  content:""; position:absolute; right:0; top:-54px;
+  width:3px; height:110px; background:#11182710; border-radius:3px;
+}
+
+/* Placeholder slot vuoto */
+.team.empty .puck{
+  --ring: #cbd5e1;
+  background: repeating-conic-gradient(from 0deg,#f8fafc 0 25%,#f1f5f9 0 50%) 50%/10px 10px;
+  box-shadow:
+    0 4px 14px rgba(2,8,23,.08),
+    inset 0 0 0 6px rgba(255,255,255,.9),
+    0 0 0 3px var(--ring);
+}
+.team.empty .puck::after{
+  content:"In attesa";
+  position:absolute; bottom:-18px; font-size:.75rem; color:var(--muted);
+}
 
 /* Responsive */
 @media (max-width: 900px){
@@ -111,14 +185,12 @@ body{
 }
 @media (max-width: 720px){
   .bracket{grid-template-columns: repeat(2, minmax(260px, 1fr));}
+  .puck{ width: 84px; height: 84px; }
+  .puck img.logo{ width: 64px; height: 64px; }
 }
 @media (max-width: 520px){
   .bracket{grid-template-columns: 1fr}
+  .puck{ width: 78px; height: 78px; }
+  .puck img.logo{ width: 60px; height: 60px; }
 }
 
-/* Details */
-.details{margin-top:18px}
-.details-body{margin-top:10px; color:var(--muted); line-height:1.5}
-
-/* Error */
-.error{background:#fff1f2; color:#9f1239; border:1px solid #fecdd3; padding:10px 12px; border-radius:12px}
