@@ -165,20 +165,22 @@ function buildAccordion(headers, rows) {
   });
 }
 
+
 async function loadAndRender() {
   try {
     const text = await fetchCSV(CSV_URL);
     const parsed = parseCSV(text);
     if (!parsed.length) throw new Error('CSV vuoto');
 
-    // Salta le prime 3 righe → la 4ª diventa intestazione
-    const data = parsed.slice(3);
+// Salta le prime 2 righe (non 3)
+const data = parsed.slice(2);
 
-    // Riga 4 = intestazione
-    const headers = data[0].slice(0, 9).map(h => String(h).trim());
+// Riga 3 del CSV diventa intestazione → corrisponde ad A4:I4
+const headers = data[0].slice(0, 9).map(h => String(h).trim());
 
-    // Riga 5–20 = dati (16 righe)
-    const rows = data.slice(1, 17).map(r => r.slice(0, 9));
+// Riga 5–20 = dati
+const rows = data.slice(1, 17).map(r => r.slice(0, 9));
+
 
     buildTable(headers, rows);
     buildAccordion(headers, rows);
