@@ -390,4 +390,45 @@ nav {
     height: 48px;
     font-size: 1.15rem;
   }
+
+  /* === 1) Solo nel Round 1 si vede il seed; dagli altri turni sparisce === */
+.conference .round-2 .seed,
+.conference .round-3 .seed,
+.finals .seed { display: none; }
+
+/* quando non c'è il seed, la riga squadra ha solo logo + punteggio */
+.conference .round-2 .team,
+.conference .round-3 .team,
+.finals .team {
+  grid-template-columns: var(--logo) var(--score);
+}
+
+/* === 2) via i cerchi/contorni: mostra solo i loghi, tutti stessa misura === */
+.logo-wrap{
+  width: var(--logo);
+  height: var(--logo);
+  border: 0;
+  border-radius: 0;        /* niente cerchio */
+  overflow: visible;
+  background: transparent; /* nessun fondo */
+  display: grid;
+  place-items: center;
+}
+.logo-wrap .logo{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;     /* intero logo visibile, senza tagli */
+  background: transparent;
+}
+
+/* finals: loghi più grandi ma senza cerchio né seed */
+.finals .round-final .team{
+  grid-template-columns: 104px var(--score);
+}
+.finals .round-final .logo-wrap{
+  width: 104px;
+  height: 104px;
+  border: 0;
+  border-radius: 0;
+}
 }
