@@ -164,7 +164,7 @@ nav {
 /* una “riga squadra”: seed rosso | logo cerchio | box risultato rosso */
 .team{
   display: grid;
-  grid-template-columns: 42px 90px 1fr;
+  grid-template-columns: 42px 90px 50px; /* seed | logo | punteggio */
   align-items: center;
   gap: 10px;
 }
@@ -206,19 +206,18 @@ nav {
 
 /* box risultato rosso (contenteditable) */
 .score-box{
-  min-height: 58px;
+  width: 50px;
+  height: 50px;
   background: var(--score-red);
-  border-radius: 12px;
+  border-radius: 10px;
   color: #fff;
   font-weight: 800;
-  font-size: 1.3rem;
-  letter-spacing: .5px;
+  font-size: 1.2rem;
   display: grid;
   place-items: center;
   outline: none;
   border: 2px solid #8b0f15;
   user-select: text;
-  padding: 6px 10px;
 }
 .score-box:empty:before{
   content: attr(data-placeholder);
