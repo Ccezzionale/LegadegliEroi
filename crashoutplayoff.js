@@ -247,28 +247,38 @@ function drawWires() {
   const layer = ensureWireLayer(true);
   if (!layer) return;
 
-  const H_PAD = 14; // quanto vicino al target mettiamo la verticale
-  const STROKE = 3; // spessore linea
+  const H_PAD  = 14; // quanto vicino al target mettiamo la verticale
+  const STROKE = 3;  // spessore linea
 
   function elbow(fromEl, toEl, nearTo = false) {
-    const a = midRight(fromEl);
-    const b = midLeft(toEl);
+    const p  = document.querySelector('.bracket').getBoundingClientRect();
+    const fr = fromEl.getBoundingClientRect();
+    const tr = toEl.getBoundingClientRect();
 
-    const x1 = a.x, y1 = a.y;
-    const x2 = b.x, y2 = b.y;
+    // punti medi dei bordi
+    let ax = fr.right - p.left;                 // default: bordo destro del FROM
+    let ay = fr.top - p.top + fr.height / 2;
+    let bx = tr.left  - p.left;                 // default: bordo sinistro del TO
+    let by = tr.top - p.top + tr.height / 2;
 
-    // verticale vicino al target solo quando richiesto
-    const xk = nearTo
-      ? x2 + (x2 > x1 ? -H_PAD : H_PAD)
-      : Math.min(x1, x2) + Math.abs(x2 - x1) / 2;
+    // se il FROM è a destra del TO, invertiamo i bordi (si va verso sinistra)
+    if (ax > bx) {
+      ax = fr.left  - p.left;                   // esci dal bordo sinistro del FROM
+      bx = tr.right - p.left;                   // entra dal bordo destro del TO
+    }
 
-    // orizzontale from -> xk
-    addSeg(layer, x1, y1 - STROKE / 2, Math.max(1, xk - x1), STROKE);
+    // direzione orizzontale: +1 -> verso destra, -1 -> verso sinistra
+    const dir = (bx > ax) ? 1 : -1;
+
+    // x del “gomito” (verticale): vicino al target se richiesto
+    const xk = nearTo ? (bx - dir * H_PAD) : (ax + (bx - ax) / 2);
+
+    // orizzontale FROM -> xk
+    addSeg(layer, Math.min(ax, xk), ay - STROKE / 2, Math.abs(xk - ax), STROKE);
     // verticale xk
-    const top = Math.min(y1, y2);
-    addSeg(layer, xk - STROKE / 2, top, STROKE, Math.max(1, Math.abs(y2 - y1)));
-    // orizzontale xk -> to
-    addSeg(layer, xk, y2 - STROKE / 2, Math.max(1, x2 - xk), STROKE);
+    addSeg(layer, xk - STROKE / 2, Math.min(ay, by), STROKE, Math.abs(by - ay));
+    // orizzontale xk -> TO
+    addSeg(layer, Math.min(xk, bx), by - STROKE / 2, Math.abs(bx - xk), STROKE);
   }
 
   const MAP = [
@@ -301,6 +311,7 @@ function drawWires() {
     if (f && t) elbow(f, t, !!nearTo);
   });
 }
+
 
 
 // ======== BUILD & ACTIONS ========
