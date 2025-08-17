@@ -3,6 +3,20 @@ const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1pXJCNL
 const LOGO_BASE_PATH = "img/";   // cambia se necessario
 const LOGO_EXT = ".png";         // .png o .jpg in base ai tuoi file
 const SCORE_DEFAULT = "0";
+const RESULTS = {
+  // Round 1
+  L1:[0,0], L2:[0,0], L3:[0,0], L4:[0,0],
+  R1:[0,0], R2:[0,0], R3:[0,0], R4:[0,0],
+
+  // Semifinali di Conference
+  LSF1:[0,0], LSF2:[0,0], RSF1:[0,0], RSF2:[0,0],
+
+  // Finali di Conference
+  LCF:[0,0], RCF:[0,0],
+
+  // Finals
+  F:[0,0],
+};
 
 // ======== UTILS ========
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -103,61 +117,44 @@ function createMatchElement(match) {
   const node = tpl.content.firstElementChild.cloneNode(true);
   node.dataset.series = match.id;
 
-  const teamsEls  = $$(".team", node);
-  const seedEls   = $$(".seed", node);
-  const logoEls   = $$(".logo", node);
-  const scoreBoxes= $$(".score-box", node);
+  const teamsEls = $$(".team", node);
+  const seedEls  = $$(".seed", node);
+  const logoEls  = $$(".logo", node);
+  const scoreBoxes = $$(".score-box", node);
 
-  // dati seed
-  if (seedEls[0]) seedEls[0].textContent = match.home.seed || "";
-  if (seedEls[1]) seedEls[1].textContent = match.away.seed || "";
+  // dati squadra/seed
+  seedEls[0].textContent = match.home.seed || "";
+  seedEls[1].textContent = match.away.seed || "";
 
-  // logo + alt
-  if (logoEls[0]) {
-    logoEls[0].alt = match.home.team;
-    if (match.home.team && match.home.team !== "TBD") logoEls[0].src = logoSrc(match.home.team);
-    else logoEls[0].classList.add("hidden");
-    logoEls[0].onerror = function(){ this.classList.add("hidden"); this.parentElement.classList.add("no-logo"); };
-  }
-  if (logoEls[1]) {
-    logoEls[1].alt = match.away.team;
-    if (match.away.team && match.away.team !== "TBD") logoEls[1].src = logoSrc(match.away.team);
-    else logoEls[1].classList.add("hidden");
-    logoEls[1].onerror = function(){ this.classList.add("hidden"); this.parentElement.classList.add("no-logo"); };
-  }
+  logoEls[0].alt = match.home.team;
+  logoEls[1].alt = match.away.team;
 
-  // title tooltip
-  if (teamsEls[0]) teamsEls[0].title = match.home.team;
-  if (teamsEls[1]) teamsEls[1].title = match.away.team;
+  if (match.home.team && match.home.team !== "TBD") logoEls[0].src = logoSrc(match.home.team);
+  if (match.away.team && match.away.team !== "TBD") logoEls[1].src = logoSrc(match.away.team);
 
-  // SCORE (un box per squadra, salvato in localStorage)
-  scoreBoxes.forEach((b, idx) => {
-    const key = `seriesScore:${match.id}:${idx}`; // 0=home, 1=away
-    const saved = localStorage.getItem(key) || SCORE_DEFAULT;
-    b.textContent = saved;
+  // fallback logo
+  logoEls[0].onerror = function () { this.classList.add("hidden"); this.parentElement.classList.add("no-logo"); };
+  logoEls[1].onerror = function () { this.classList.add("hidden"); this.parentElement.classList.add("no-logo"); };
 
-    b.addEventListener("input", () => {
-      let val = b.textContent.trim().replace(/\D+/g, "");
-      if (val === "") val = SCORE_DEFAULT;
-      const num = Math.max(0, Math.min(3, parseInt(val, 10)));
-      b.textContent = String(isNaN(num) ? SCORE_DEFAULT : num);
-      localStorage.setItem(key, b.textContent);
-      // se cambi il punteggio, riallineo (in caso l'altezza cambi)
-      requestAnimationFrame(computeRoundOffsets);
-    });
+  // tooltip
+  teamsEls[0].title = match.home.team;
+  teamsEls[1].title = match.away.team;
 
-    b.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") { e.preventDefault(); b.blur(); }
-    });
-  });
+  // ===== punteggi SOLO da RESULTS, non editabili in pagina =====
+  const [homeScore, awayScore] = (RESULTS[match.id] ?? [0,0]).map(x => String(x));
+  scoreBoxes[0].textContent = homeScore;
+  scoreBoxes[1].textContent = awayScore;
 
-  // quando i loghi finiscono di caricare, ricalcola offsets
-  logoEls.forEach(img => {
-    if (img && !img.complete) img.addEventListener("load", computeRoundOffsets, { once: true });
+  // assicurati che non siano editabili
+  scoreBoxes.forEach(b => {
+    b.removeAttribute("contenteditable");
+    b.style.cursor = "default";
+    b.title = "Risultati bloccati (si aggiornano dal file JS)";
   });
 
   return node;
 }
+
 
 function renderRound(containerId, matches) {
   const container = document.getElementById(containerId);
