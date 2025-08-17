@@ -6,7 +6,8 @@
   --nav-hover: #0074D9;
   --subnav: #003366;
   --accent: #ffcc00;
-  --match-h: 190px; 
+  --match-h: 190px;                 /* contenuto */
+  --match-v: calc(var(--match-h) + 18px);
 
   --card: #ffffff;
   --muted: #6b7280;
@@ -433,17 +434,17 @@ nav {
 #round-final .team{ grid-template-columns: 104px var(--score); }
 #round-final .logo-wrap{ width:104px; height:104px; }
 
-/* Centra le colonne dei turni successivi rispetto alla precedente */
+
+/* Centra perfettamente le colonne tra i round */
 .bracket.single .round-col:nth-child(2){ /* Semifinali */
-  transform: translateY(calc(0.5 * var(--match-h) + 0.5 * var(--gap-round)));
+  transform: translateY(calc(0.5 * var(--match-v) + 0.5 * var(--gap-round)));
 }
-.bracket.single .round-col:nth-child(3){ /* Finali di Conference */
-  transform: translateY(calc(1 * var(--match-h) + 1 * var(--gap-round)));
+.bracket.single .round-col:nth-child(3){ /* Finale di Conference */
+  transform: translateY(calc(1 * var(--match-v) + 1 * var(--gap-round)));
 }
 .bracket.single .round-col:nth-child(4){ /* Finals */
-  transform: translateY(calc(1.5 * var(--match-h) + 1.5 * var(--gap-round)));
+  transform: translateY(calc(1.5 * var(--match-v) + 1.5 * var(--gap-round)));
 }
-
 
 
 /* ========== MOBILE ========== */
