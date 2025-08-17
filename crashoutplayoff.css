@@ -171,15 +171,15 @@ nav {
 
 /* seed rosso */
 .seed{
-  width: 42px;
-  height: 42px;
+  width: 34px;
+  height: 34px;
   background: var(--seed-red);
   color: #fff;
   display: grid;
   place-items: center;
-  border-radius: 10px;
+  border-radius: 8px;
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
 /* logo cerchio pieno (riempie tutto) */
@@ -301,10 +301,19 @@ nav {
 */
 
 /* Geometria base: stessa altezza per card e gap costante */
+/* card più compatte */
 .round .match{
-  position: relative;
-  min-height: 190px;          /* regola se vuoi card più alte */
+  width: 280px;          /* ← riduce la larghezza della card */
+  padding: 8px;          /* meno “aria” */
+  border-radius: 12px;
 }
+
+/* layout riga squadra: seed | logo | punteggio */
+.team{
+  grid-template-columns: 34px 90px 50px;
+  gap: 8px;
+}
+
 .round{ gap: 18px; }          /* spazio coerente tra match */
 
 /* ── linee che escono dai match di Round 1 verso la colonna successiva */
