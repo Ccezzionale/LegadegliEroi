@@ -101,11 +101,6 @@ nav {
   padding-left: 10px;
 }
 
-/* Offset dei round per centrare le colonne */
-#round-2{ padding-top: calc( (var(--match-v) + var(--gap-round)) / 2 + var(--round2-tweak) ); }
-#round-3{ padding-top: calc( 1 * (var(--match-v) + var(--gap-round)) ); }
-#round-final{ padding-top: calc( 1.5 * (var(--match-v) + var(--gap-round)) ); }
-
 /* ========== MATCH CARD ========== */
 .match{
   position: relative;
@@ -240,9 +235,11 @@ nav {
     #round-2 .match,
     #round-3 .match,
     #round-final .match{
-      width: fit-content;  /* niente spazio vuoto a destra */
+      width: fit-content;
     }
   }
+} /*  <——  MANCAVA QUESTO!  */
+
 /* ====== DESKTOP: split in 2 metà + Finals al centro ====== */
 /* === HOTFIX: split desktop in 2 metà + finals al centro === */
 /* ===== Split desktop: 2 metà + Finals al centro, offset con spacer CSS ===== */
@@ -255,7 +252,7 @@ nav {
 }
 
 @media (min-width: 1200px){
-  /* ordine colonne: Round1 | Round2 | Finals | Round3 */
+  /* 4 colonne: Round1 | Semifinali | Finals | Finali di Conf */
   .bracket.single{
     display: grid;
     grid-template-columns: max-content max-content max-content max-content;
@@ -263,57 +260,39 @@ nav {
     align-items: start;
     justify-content: flex-start;
   }
-
   #round-1{ grid-column: 1; }
   #round-2{ grid-column: 2; }
   #round-final{ grid-column: 3; } /* Finals al centro */
   #round-3{ grid-column: 4; }
 
-  /* ogni round ha 2 colonne (LEFT | RIGHT) e un row-gap definito */
+  /* Round 1/2/3 a 2 colonne (sinistra|destra) */
   #round-1, #round-2, #round-3{
     display: grid;
     grid-template-columns: max-content max-content;
     column-gap: 28px;
     row-gap: var(--gap-round);
   }
-
-  /* mappa le serie sulle 2 colonne */
-  #round-1 .match[data-series^="L"]{ grid-column: 1; } /* lato sinistro */
-  #round-1 .match[data-series^="R"]{ grid-column: 2; } /* lato destro */
-
+  /* Mappa delle serie sulle colonne */
+  #round-1 .match[data-series^="L"]{ grid-column: 1; }
+  #round-1 .match[data-series^="R"]{ grid-column: 2; }
   #round-2 .match[data-series^="LSF"]{ grid-column: 1; }
   #round-2 .match[data-series^="RSF"]{ grid-column: 2; }
+  #round-3 .match[data-series^="LC"]{ grid-column: 1; }
+  #round-3 .match[data-series^="RC"]{ grid-column: 2; }
 
-  #round-3 .match[data-series^="LC"]{ grid-column: 1; } /* LCF */
-  #round-3 .match[data-series^="RC"]{ grid-column: 2; } /* RCF */
-
-  /* IMPORTANTISSIMO: rimuovi ogni padding-top precedente */
+  /* Cancella ogni padding-top precedente */
   #round-2, #round-3, #round-final{ padding-top: 0 !important; }
 
-  /* OFFSET “perfetti” con spacer (::before) */
-  #round-2::before,
-  #round-3::before,
-  #round-final::before{
-    content: "";
-    display: block;
-    width: 1px;      /* invisibile, serve solo come altezza di spaziatura */
-    height: 0;
+  /* Offset perfetti con spacer */
+  #round-2::before, #round-3::before, #round-final::before{
+    content:""; display:block; width:1px; height:0;
   }
+  #round-2::before{ height: calc(0.5 * (var(--match-h) + var(--gap-round))); } /* SF tra 1-2 e 3-4 */
+  #round-3::before{ height: calc(1.5 * (var(--match-h) + var(--gap-round))); } /* CF tra le SF */
+  #round-final::before{ height: calc(1.5 * (var(--match-h) + var(--gap-round))); } /* Finals centrali */
 
-  /* Semifinali allineate tra 1°-2° e 3°-4° del Round 1 → metà passo */
-  #round-2::before{ height: calc(0.5 * var(--match-v)); }
-
-  /* Finali di conference a metà tra le semifinali → 1.5 passi */
-  #round-3::before{ height: calc(1.5 * var(--match-v)); }
-
-  /* Finals centrali tra le due finali di conference → stesso offset */
-  #round-final::before{ height: calc(1.5 * var(--match-v)); }
-
-  /* Compatta un filo i turni successivi (come avevi chiesto) */
-  #round-2 .match,
-  #round-3 .match,
-  #round-final .match{
-    width: 200px;
-    padding-right: 10px;
+  /* Card più strette dai turni successivi */
+  #round-2 .match, #round-3 .match, #round-final .match{
+    width: 200px; padding-right: 10px;
   }
 }
