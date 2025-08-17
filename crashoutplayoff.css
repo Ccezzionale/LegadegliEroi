@@ -146,7 +146,8 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
     gap: 12px;
   }
 
-  .logo-wrap{
+/* Fix: i loghi non devono uscire e hanno un po' di respiro */
+.logo-wrap{
   width: 92px;
   height: 92px;
   aspect-ratio: 1 / 1;  /* box sempre quadrato */
@@ -155,6 +156,17 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   display: grid;
   place-items: center;
 }
+
+.logo-wrap .logo{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;  /* adatta senza deformare */
+  display: block;       /* elimina il gap baseline delle <img> */
+}
+
+/* Un filo più di spazio tra i due team, se ancora ti sembrano vicini */
+.match{ gap: 20px; }     /* prova 18–22px a gusto */
+
 }
 /* ========== MOBILE ========== */
 .bracket-mobile{ display:none; }
