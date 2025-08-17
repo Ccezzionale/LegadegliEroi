@@ -145,6 +145,36 @@ function createMatchElement(match) {
   return node;
 }
 
+// --- RENDER HELPERS (aggiungi dopo createMatchElement) ----
+function renderRound(containerId, matches){
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  matches.forEach(m => container.appendChild(createMatchElement(m)));
+}
+
+function renderMobileList(bracket){
+  const mob = document.getElementById("bracket-mobile");
+  if (!mob) return;
+
+  const makeGroup = (title, matches) => {
+    const wrp = document.createElement("section");
+    wrp.className = "round-mobile";
+    wrp.innerHTML = `<h3>${title}</h3>`;
+    matches.forEach(m => wrp.appendChild(createMatchElement(m)));
+    mob.appendChild(wrp);
+  };
+
+  mob.innerHTML = "";
+  makeGroup("Round 1 — Left",  bracket.r1.left);
+  makeGroup("Round 1 — Right", bracket.r1.right);
+  makeGroup("Semifinali — Left",  bracket.leftSF);
+  makeGroup("Semifinali — Right", bracket.rightSF);
+  makeGroup("Finale Conference — Left", bracket.leftCF);
+  makeGroup("Finale Conference — Right", bracket.rightCF);
+  makeGroup("Finals", bracket.finals);
+}
+
+
 // ======== WIRES (connettori) ========
 
 // Crea (una volta sola) il layer dove disegnare i fili e lo ripulisce
