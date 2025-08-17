@@ -126,15 +126,26 @@ function createMatchElement(match) {
   seedEls[0].textContent = match.home.seed || "";
   seedEls[1].textContent = match.away.seed || "";
 
-  logoEls[0].alt = match.home.team;
-  logoEls[1].alt = match.away.team;
+  // logo + alt
+logoEls[0].alt = match.home.team;
+logoEls[1].alt = match.away.team;
 
-  if (match.home.team && match.home.team !== "TBD") logoEls[0].src = logoSrc(match.home.team);
-  if (match.away.team && match.away.team !== "TBD") logoEls[1].src = logoSrc(match.away.team);
+// HOME
+if (match.home.team && match.home.team !== "TBD") {
+  logoEls[0].src = logoSrc(match.home.team);
+} else {
+  // niente logo: nascondi l'img e metti uno sfondo neutro
+  logoEls[0].classList.add("hidden");
+  logoEls[0].parentElement.classList.add("no-logo");
+}
 
-  // fallback logo
-  logoEls[0].onerror = function () { this.classList.add("hidden"); this.parentElement.classList.add("no-logo"); };
-  logoEls[1].onerror = function () { this.classList.add("hidden"); this.parentElement.classList.add("no-logo"); };
+// AWAY
+if (match.away.team && match.away.team !== "TBD") {
+  logoEls[1].src = logoSrc(match.away.team);
+} else {
+  logoEls[1].classList.add("hidden");
+  logoEls[1].parentElement.classList.add("no-logo");
+}
 
   // tooltip
   teamsEls[0].title = match.home.team;
