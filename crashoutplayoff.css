@@ -437,7 +437,9 @@ nav {
 
 /* Centra perfettamente le colonne tra i round */
 .bracket.single .round-col:nth-child(2){ /* Semifinali */
-  transform: translateY(calc(0.5 * var(--match-v) + 0.5 * var(--gap-round)));
+  transform: translateY(
+    calc(0.5 * var(--match-v) + 0.5 * var(--gap-round) + var(--col2-tweak))
+  );
 }
 .bracket.single .round-col:nth-child(3){ /* Finale di Conference */
   transform: translateY(calc(1 * var(--match-v) + 1 * var(--gap-round)));
@@ -448,7 +450,7 @@ nav {
 
 /* micro-tweak: abbassa un po' le Semifinali */
 :root{
-  --col2-tweak: 12px; /* prova 10–14px finché è perfetto sul tuo schermo */
+  --col2-tweak: 14px; /* prova 10–14px finché è perfetto sul tuo schermo */
 }
 
 .bracket.single .round-col:nth-child(2){ /* Semifinali */
