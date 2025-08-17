@@ -4,7 +4,11 @@
   --nav:#001f3f; --nav-hover:#0074D9; --subnav:#003366; --accent:#ffcc00;
   --card:#fff; --muted:#6b7280; --line:#e5e7eb;
   --seed-red:#d61f2a; --score-red:#c5161f;
+
+  /* distanza verticale di uno “step” dell’albero */
+  --slot:150px;
 }
+
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
 body{
@@ -31,23 +35,24 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .cup-toolbar .btn{ background:var(--nav); color:#fff; border:0; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:600; box-shadow:0 2px 6px rgba(0,0,0,.06); }
 .cup-toolbar .btn:hover{ filter:brightness(1.08); }
 
-/* ========== BRACKET DESKTOP ========== */
+/* ========== BRACKET (desktop) ========== */
 .cup-container{ max-width:none; margin:10px 16px 48px; padding-right:16px; overflow-x:auto; }
 
 .bracket{
+  position:relative;               /* per il layer dei connettori */
   display:grid;
   grid-template-columns:minmax(360px,max-content) 240px minmax(360px,max-content); /* left | finals | right */
   gap:20px; align-items:start; width:max-content; justify-content:start;
 }
 
-/* colonne conference affiancate; destra invertita (Semifinali vicino alle Finals) */
+/* colonne conference affiancate; destra invertita (semi vicino alle Finals) */
 .conference{ display:flex; gap:24px; align-items:flex-start; }
 .conference.right{ flex-direction:row-reverse; }
 
-/* nascondi “Conference (Left/Right)” e il titolo di sezione Finals */
+/* titoli macro non servono */
 .conf-title{ display:none !important; }
 
-/* colonne-ROUND verticali + titolo sopra */
+/* round “standard” (poi la conference li sovrascrive a griglia) */
 .round{ position:relative; display:flex; flex-direction:column; gap:14px; align-items:flex-start; }
 .round::before{
   display:block; margin:0 0 8px; font-weight:700; color:var(--nav);
@@ -58,15 +63,15 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 #left-round-3::before,  #right-round-3::before  { content:"Semifinali"; }
 #nbafinals::before                               { content:"Finals"; }
 
-/* === Match card compatta === */
+/* === Match card === */
 .match{
   background:var(--card); border:1px solid var(--line); border-radius:14px;
   box-shadow:0 2px 6px rgba(0,0,0,.06);
   width:max-content; padding:10px 12px;
-  display:flex; flex-direction:column; gap:20px;    /* spazio tra i 2 team */
+  display:flex; flex-direction:column; gap:20px; /* spazio tra i 2 team */
 }
 
-/* === Riga squadra (Round 1: seed | logo | score) === */
+/* Riga squadra (Round 1: seed | logo | score) */
 .team{ display:grid; grid-template-columns:36px 92px auto; gap:12px; align-items:center; }
 
 /* Seed (solo Round 1) */
@@ -75,13 +80,12 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   display:grid; place-items:center; border-radius:8px; font-weight:800; font-size:.85rem;
 }
 
-/* Logo (solo immagine) */
+/* Logo */
 .logo-wrap{ width:92px; height:92px; display:grid; place-items:center; background:transparent; border:0; border-radius:0; overflow:visible; }
-.logo-wrap .logo{ width:100%; height:100%; object-fit:contain; display:block; }
-.logo-wrap .logo{ max-width:98%; max-height:98%; } /* micro-respiro */
+.logo-wrap .logo{ width:100%; height:100%; object-fit:contain; display:block; max-width:98%; max-height:98%; }
 .logo-wrap.no-logo{ background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 10px,#e2e8f0 10px,#e2e8f0 20px); }
 
-/* Score: numero singolo, compatto, a sinistra */
+/* Punteggio */
 .score-box{
   width:42px; min-height:40px; padding:4px 8px; justify-self:start;
   background:var(--score-red); color:#fff; border:2px solid #8b0f15;
@@ -90,227 +94,73 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 }
 .score-box:empty:before{ content:attr(data-placeholder); opacity:.8; }
 .score-box:focus{ box-shadow:0 0 0 3px rgba(197,22,31,.25); }
-.score-box[contenteditable="false"]{
-  cursor: default;
-  caret-color: transparent;
-  user-select: none;
-}
+.score-box[contenteditable="false"]{ cursor:default; caret-color:transparent; user-select:none; }
 
-/* === Round 2+ : nascondi seed, layout logo | score === */
+/* Round 2+ : niente seed; layout logo|score più stretto */
 #left-round-2 .seed, #left-round-3 .seed,
 #right-round-2 .seed, #right-round-3 .seed,
 #nbafinals .seed{ display:none; }
-
 #left-round-2 .team, #left-round-3 .team,
 #right-round-2 .team, #right-round-3 .team,
 #nbafinals .team{ grid-template-columns:92px auto; gap:12px; }
 
-/* ---- Layout ad "albero" per i round (sinistra e destra) ---- */
-/* Altezza unità verticale: aumenta/diminuisci se serve più/meno spazio */
-/* ---- Layout ad "albero" con titoli fissi sopra ---- */
-/* ===== Bracket ad albero e titoli sopra ===== */
-/* ===== Layout ad albero per le CONFERENCES (Left/Right) ===== */
-:root { --slot: 150px; } /* puoi cambiare l'altezza verticale di uno “step” */
-
-/* Solo le colonne di conference diventano griglie verticali */
+/* ===== Layout “ad albero” per le conference ===== */
 .conference .round{
-  position: relative;
-  display: grid !important;
-  grid-template-rows: repeat(8, var(--slot, 150px));  /* 8 step fissi con fallback */
-  row-gap: 0;
-  min-height: calc(8 * var(--slot, 150px));          /* evita collassi */
+  position:relative;
+  display:grid !important;
+  grid-template-rows:repeat(8, var(--slot));
+  row-gap:0;
+  min-height:calc(8 * var(--slot));
 }
 
-/* Niente margini dalle card: lascia gestire alla griglia */
-.conference .round .match{ margin: 0; }
-
-/* Titoli dei round sopra, fuori flusso (non spingono i match) */
+/* label dei round sopra e fuori flusso */
 .conference .round::before{
-  position: absolute;
-  top: -26px; left: 0;
-  padding-left: 10px;
-  border-left: 4px solid var(--accent);
-  font-weight: 700; color: var(--nav);
-  content: ""; /* riempito sotto */
+  position:absolute; top:-26px; left:0;
+  padding-left:10px; border-left:4px solid var(--accent);
+  font-weight:700; color:var(--nav);
 }
-
-/* Testi dei round */
-#left-round-1::before,  #right-round-1::before  { content: "1° turno"; }
-#left-round-2::before,  #right-round-2::before  { content: "2° turno"; }
-#left-round-3::before,  #right-round-3::before  { content: "Semifinali"; }
 
 /* Posizionamento ad albero — LEFT */
-#left-round-1 .match:nth-of-type(1){ grid-row: 1 / span 2; }
-#left-round-1 .match:nth-of-type(2){ grid-row: 3 / span 2; }
-#left-round-1 .match:nth-of-type(3){ grid-row: 5 / span 2; }
-#left-round-1 .match:nth-of-type(4){ grid-row: 7 / span 2; }
+#left-round-1 .match:nth-of-type(1){ grid-row:1 / span 2; }
+#left-round-1 .match:nth-of-type(2){ grid-row:3 / span 2; }
+#left-round-1 .match:nth-of-type(3){ grid-row:5 / span 2; }
+#left-round-1 .match:nth-of-type(4){ grid-row:7 / span 2; }
+#left-round-2 .match:nth-of-type(1){ grid-row:2 / span 4; }
+#left-round-2 .match:nth-of-type(2){ grid-row:6 / span 4; }
+#left-round-3 .match:nth-of-type(1){ grid-row:4 / span 8; }
 
-#left-round-2 .match:nth-of-type(1){ grid-row: 2 / span 4; }
-#left-round-2 .match:nth-of-type(2){ grid-row: 6 / span 4; }
+/* Posizionamento ad albero — RIGHT */
+#right-round-1 .match:nth-of-type(1){ grid-row:1 / span 2; }
+#right-round-1 .match:nth-of-type(2){ grid-row:3 / span 2; }
+#right-round-1 .match:nth-of-type(3){ grid-row:5 / span 2; }
+#right-round-1 .match:nth-of-type(4){ grid-row:7 / span 2; }
+#right-round-2 .match:nth-of-type(1){ grid-row:2 / span 4; }
+#right-round-2 .match:nth-of-type(2){ grid-row:6 / span 4; }
+#right-round-3 .match:nth-of-type(1){ grid-row:4 / span 8; }
 
-#left-round-3 .match:nth-of-type(1){ grid-row: 4 / span 8; }
+/* Finals: mostra solo il titolo centrale delle Finals */
+.conference > .conf-title{ display:none; }
+.finals     > .conf-title{ display:block; }
 
-/* Posizionamento ad albero — RIGHT (uguale) */
-#right-round-1 .match:nth-of-type(1){ grid-row: 1 / span 2; }
-#right-round-1 .match:nth-of-type(2){ grid-row: 3 / span 2; }
-#right-round-1 .match:nth-of-type(3){ grid-row: 5 / span 2; }
-#right-round-1 .match:nth-of-type(4){ grid-row: 7 / span 2; }
-
-#right-round-2 .match:nth-of-type(1){ grid-row: 2 / span 4; }
-#right-round-2 .match:nth-of-type(2){ grid-row: 6 / span 4; }
-
-#right-round-3 .match:nth-of-type(1){ grid-row: 4 / span 8; }
-
-/* Mostra il titolo centrale delle Finals, nascondi quelli delle conference */
-.conference > .conf-title { display: none; }
-.finals     > .conf-title { display: block; }
-
-/* ===== CONNECTORS (puliti, simmetrici) ===== */
-:root{
-  --slot: 150px;            /* distanza verticale di uno step (già nel tuo CSS) */
-  --conn: 26px;             /* lunghezza delle linee orizzontali */
-  --conn-w: 2px;            /* spessore */
-  --conn-color: #c9d0da;    /* colore */
+/* ===== CONNETTORI (layer disegnato dal JS) ===== */
+.wire-layer{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;               /* sotto le card */
 }
-
-/* i connettori stanno sotto le card */
+.wire-layer .wire{
+  background:#c9d0da;      /* colore linea */
+  border-radius:3px;
+}
 .conference .match,
-#nbafinals .match{ position: relative; z-index: 1; }
-
-/* -------- LEFT CONFERENCE -------- */
-/* R1 → orizzontali verso destra */
-#left-round-1 .match::after{
-  content:""; position:absolute; top:calc(50% - var(--conn-w)/2);
-  right: calc(-1 * var(--conn)); width: var(--conn);
-  border-top: var(--conn-w) solid var(--conn-color); z-index:0;
+#nbafinals .match{
+  position:relative;
+  z-index:1;               /* card sopra i fili */
 }
-/* R1 → verticali che uniscono (1,2) e (3,4) */
-#left-round-1 .match:nth-of-type(1)::before,
-#left-round-1 .match:nth-of-type(3)::before{
-  content:""; position:absolute; top:50%;
-  right: calc(-1 * var(--conn)); height: var(--slot);
-  border-right: var(--conn-w) solid var(--conn-color); z-index:0;
-}
-
-/* R2 → orizzontali sia a sinistra (per chiudere da R1) che a destra (verso R3) */
-#left-round-2 .match::before,
-#left-round-2 .match::after{
-  content:""; position:absolute; top:calc(50% - var(--conn-w)/2); width: var(--conn);
-  border-top: var(--conn-w) solid var(--conn-color); z-index:0;
-}
-#left-round-2 .match::before{ left:  calc(-1 * var(--conn)); } /* verso R1 */
-#left-round-2 .match::after { right: calc(-1 * var(--conn)); } /* verso R3 */
-
-/* R2 → verticale lunga (unisce i due match verso R3) */
-#left-round-2 .match:nth-of-type(1)::marker{}
-#left-round-2 .match:nth-of-type(1)::after{}
-#left-round-2 .match:nth-of-type(1)::before{}
-#left-round-2 .match:nth-of-type(1)::after{}
-#left-round-2 .match:nth-of-type(1)::before{}
-#left-round-2 .match:nth-of-type(1)::after{}
-/* (usiamo ::after già occupato per l’orizzontale a destra, quindi usiamo un terzo layer) */
-#left-round-2 .match:nth-of-type(1)::part(conn){}
-/* workaround: aggiungiamo un ulteriore pseudo con :where() per non toccare markup */
-#left-round-2 .match:nth-of-type(1):where(*)::selection{
-  all: initial; /* neutralizza la selezione per non interferire */
-}
-#left-round-2 .match:nth-of-type(1)::before,
-#left-round-2 .match:nth-of-type(1)::after{}
-/* creo la verticale con un nuovo pseudo (::backdrop non è disponibile qui),
-   quindi la facciamo con un “secondo” before sfruttando :is() per non duplicare codice */
-#left-round-2 .match:nth-of-type(1)::before{
-  /* già usato per l’orizzontale sinistra: lo lasciamo così */
-}
-#left-round-2 .match:nth-of-type(1)::after{
-  /* già usato per l’orizzontale destra: lo lasciamo così */
-}
-/* usiamo ::after del contenitore round per disegnare la verticale tra i due match di R2 */
-#left-round-2::after{
-  content:""; position:absolute;
-  /* ancoriamo in corrispondenza del centro tra i due match di R2 */
-  top: calc(50% - var(--slot));                   /* su di 1 slot dal centro colonna */
-  right: calc(-1 * var(--conn));                  /* tra R2 e R3 */
-  height: calc(var(--slot) * 2);                  /* copre i due centri di R2 */
-  border-right: var(--conn-w) solid var(--conn-color);
-  pointer-events:none; z-index:0;
-}
-
-/* R3 → orizzontale verso sinistra (per chiudere con la verticale da R2) */
-#left-round-3 .match::after{
-  content:""; position:absolute; top:calc(50% - var(--conn-w)/2);
-  left: calc(-1 * var(--conn)); width: var(--conn);
-  border-top: var(--conn-w) solid var(--conn-color); z-index:0;
-}
-
-
-/* -------- RIGHT CONFERENCE (specchio) -------- */
-/* R1 → orizzontali verso sinistra */
-#right-round-1 .match::after{
-  content:""; position:absolute; top:calc(50% - var(--conn-w)/2);
-  left: calc(-1 * var(--conn)); width: var(--conn);
-  border-top: var(--conn-w) solid var(--conn-color); z-index:0;
-}
-/* R1 → verticali che uniscono (1,2) e (3,4) a sinistra */
-#right-round-1 .match:nth-of-type(1)::before,
-#right-round-1 .match:nth-of-type(3)::before{
-  content:""; position:absolute; top:50%;
-  left: calc(-1 * var(--conn)); height: var(--slot);
-  border-left: var(--conn-w) solid var(--conn-color); z-index:0;
-}
-
-/* R2 → orizzontali a destra (verso R3) e a sinistra (per chiudere da R1) */
-#right-round-2 .match::before,
-#right-round-2 .match::after{
-  content:""; position:absolute; top:calc(50% - var(--conn-w)/2); width: var(--conn);
-  border-top: var(--conn-w) solid var(--conn-color); z-index:0;
-}
-#right-round-2 .match::before{ right: calc(-1 * var(--conn)); } /* verso R3 (che è a sinistra visualmente) */
-#right-round-2 .match::after { left:  calc(-1 * var(--conn)); } /* verso R1 */
-
-/* Verticale lunga tra i due match di R2 (lato sinistro, verso R3) */
-#right-round-2::after{
-  content:""; position:absolute;
-  top: calc(50% - var(--slot));
-  left: calc(-1 * var(--conn));
-  height: calc(var(--slot) * 2);
-  border-left: var(--conn-w) solid var(--conn-color);
-  pointer-events:none; z-index:0;
-}
-
-/* R3 → orizzontale verso destra (chiude con la verticale di R2) */
-#right-round-3 .match::after{
-  content:""; position:absolute; top:calc(50% - var(--conn-w)/2);
-  right: calc(-1 * var(--conn)); width: var(--conn);
-  border-top: var(--conn-w) solid var(--conn-color); z-index:0;
-}
-
-/* -------- FINALS -------- */
-/* una stanghetta a sinistra e una a destra dal match di Finals */
-#nbafinals .match::before,
-#nbafinals .match::after{
-  content:""; position:absolute; top:calc(50% - var(--conn-w)/2);
-  width: var(--conn); border-top: var(--conn-w) solid var(--conn-color); z-index:0;
-}
-#nbafinals .match::before{ left:  calc(-1 * var(--conn)); }
-#nbafinals .match::after { right: calc(-1 * var(--conn)); }
 
 /* ========== MOBILE ========== */
 .bracket-mobile{ display:none; }
-
-/* layer per i connettori */
-.bracket{ position: relative; }
-#bracket-wires{
-  position: absolute; inset: 0;
-  pointer-events: none;       /* non intercetta il mouse */
-  overflow: visible;
-}
-#bracket-wires polyline{
-  fill: none;
-  stroke: #c9d0da;            /* colore linea */
-  stroke-width: 2;            /* spessore */
-  stroke-linejoin: round;
-}
-
 
 @media (max-width:768px){
   .hamburger{ display:block; }
@@ -326,7 +176,10 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
     margin-bottom:22px; background:var(--card); border:1px solid var(--line);
     border-radius:14px; padding:10px; box-shadow:0 2px 6px rgba(0,0,0,.06);
   }
-  .round-mobile h3{ font-size:1.05rem; color:var(--nav); margin:6px 0 12px; border-left:4px solid var(--accent); padding-left:10px; }
+  .round-mobile h3{
+    font-size:1.05rem; color:var(--nav); margin:6px 0 12px;
+    border-left:4px solid var(--accent); padding-left:10px;
+  }
 
   .match{ padding:10px; gap:12px; display:grid; grid-template-rows:auto auto; row-gap:12px; }
   .team{ grid-template-columns:32px 72px auto; gap:10px; }
@@ -337,3 +190,4 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
 /* ========== MICRO ========== */
 [contenteditable]:empty{ cursor:text; }
+
