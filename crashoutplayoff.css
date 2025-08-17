@@ -246,27 +246,18 @@ nav {
 /* ===== Split desktop: 2 metà + Finals al centro, offset con spacer CSS ===== */
 
 @media (min-width: 1200px){
-  /* 4 colonne: Round1 | Semifinali | Finals | Finali di Conf */
-  .bracket.single{
-    display: grid;
-    grid-template-columns: max-content max-content max-content max-content;
-    column-gap: 36px;
-    align-items: start;
-    justify-content: flex-start;
-  }
-  #round-1{ grid-column: 1; }
-  #round-2{ grid-column: 2; }
-  #round-final{ grid-column: 3; } /* Finals al centro */
-  #round-3{ grid-column: 4; }
 
-  /* Round 1/2/3 a 2 colonne (sinistra|destra) */
+  /* assicura che il grid non “stiri” e riempia correttamente le righe */
   #round-1, #round-2, #round-3{
     display: grid;
     grid-template-columns: max-content max-content;
     column-gap: 28px;
     row-gap: var(--gap-round);
+    grid-auto-flow: row;
+    align-content: start;
   }
-  /* Mappa delle serie sulle colonne */
+
+  /* mappatura serie (già ok, la rimetto per completezza) */
   #round-1 .match[data-series^="L"]{ grid-column: 1; }
   #round-1 .match[data-series^="R"]{ grid-column: 2; }
   #round-2 .match[data-series^="LSF"]{ grid-column: 1; }
@@ -274,20 +265,25 @@ nav {
   #round-3 .match[data-series^="LC"]{ grid-column: 1; }
   #round-3 .match[data-series^="RC"]{ grid-column: 2; }
 
-  /* Cancella ogni padding-top precedente */
-  #round-2, #round-3, #round-final{ padding-top: 0 !important; }
-
-  /* Offset perfetti con spacer */
-  #round-2::before, #round-3::before, #round-final::before{
-    content:""; display:block; width:1px; height:0;
+  /* IMPORTANTISSIMO: lo spacer deve occupare TUTTE le colonne */
+  #round-2::before,
+  #round-3::before{
+    content: "";
+    display: block;
+    grid-column: 1 / -1;   /* <-- span su entrambe le colonne */
+    width: 0;              /* non rubare larghezza */
+    height: 0;             /* lo alziamo sotto */
   }
-  #round-2::before{ height: calc(0.5 * (var(--match-h) + var(--gap-round))); } /* SF tra 1-2 e 3-4 */
-  #round-3::before{ height: calc(1.5 * (var(--match-h) + var(--gap-round))); } /* CF tra le SF */
-  #round-final::before{ height: calc(1.5 * (var(--match-h) + var(--gap-round))); } /* Finals centrali */
 
-  /* Card più strette dai turni successivi */
-  #round-2 .match, #round-3 .match, #round-final .match{
-    width: 200px; padding-right: 10px;
+  /* offset perfetti (usano la tua var --match-v) */
+  #round-2::before{ height: calc(0.5 * var(--match-v)); }   /* SF tra 1–2 e 3–4 */
+  #round-3::before{ height: calc(1.5 * var(--match-v)); }   /* CF tra le SF   */
+
+  /* Finals (singola colonna) – va bene anche senza grid-column */
+  #round-final::before{
+    content: "";
+    display: block;
+    height: calc(1.5 * var(--match-v));
   }
 
   @media (min-width: 1200px){
