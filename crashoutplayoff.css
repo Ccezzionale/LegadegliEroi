@@ -109,47 +109,48 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 /* Altezza unità verticale: aumenta/diminuisci se serve più/meno spazio */
 /* ---- Layout ad "albero" con titoli fissi sopra ---- */
 /* ===== Bracket ad albero e titoli sopra ===== */
-:root{ --slot: 150px; }              /* altezza verticale di uno step */
+/* ===== Layout ad albero per le CONFERENCES (Left/Right) ===== */
+:root { --slot: 150px; } /* puoi cambiare l'altezza verticale di uno “step” */
 
-/* Ogni colonna di round è una grid uniforme */
+/* Solo le colonne di conference diventano griglie verticali */
 .conference .round{
   position: relative;
   display: grid !important;
-  grid-template-rows: repeat(8, var(--slot));   /* 8 “step” totali */
+  grid-template-rows: repeat(8, var(--slot, 150px));  /* 8 step fissi con fallback */
   row-gap: 0;
-  min-height: calc(var(--slot) * 8);            /* evita collassi */
+  min-height: calc(8 * var(--slot, 150px));          /* evita collassi */
 }
 
-/* Titolo del round fissato sopra, fuori dal flusso */
-.conference .round::before{
-  position: absolute;
-  top: -26px;           /* alza/abbassa il titolo se vuoi */
-  left: 0;
-  margin: 0;
-  padding-left: 10px;
-  border-left: 4px solid var(--accent);
-  font-weight: 700;
-  color: var(--nav);
-}
-
-/* Le card non aggiungono margini verticali: decide la grid */
+/* Niente margini dalle card: lascia gestire alla griglia */
 .conference .round .match{ margin: 0; }
 
-/* ===== Posizionamento a “albero” ===== */
-/* LEFT - 1° turno: 4 match (ogni match occupa 2 step) */
+/* Titoli dei round sopra, fuori flusso (non spingono i match) */
+.conference .round::before{
+  position: absolute;
+  top: -26px; left: 0;
+  padding-left: 10px;
+  border-left: 4px solid var(--accent);
+  font-weight: 700; color: var(--nav);
+  content: ""; /* riempito sotto */
+}
+
+/* Testi dei round */
+#left-round-1::before,  #right-round-1::before  { content: "1° turno"; }
+#left-round-2::before,  #right-round-2::before  { content: "2° turno"; }
+#left-round-3::before,  #right-round-3::before  { content: "Semifinali"; }
+
+/* Posizionamento ad albero — LEFT */
 #left-round-1 .match:nth-of-type(1){ grid-row: 1 / span 2; }
 #left-round-1 .match:nth-of-type(2){ grid-row: 3 / span 2; }
 #left-round-1 .match:nth-of-type(3){ grid-row: 5 / span 2; }
 #left-round-1 .match:nth-of-type(4){ grid-row: 7 / span 2; }
 
-/* LEFT - 2° turno: nei “buchi” tra 1&2 e tra 3&4 */
 #left-round-2 .match:nth-of-type(1){ grid-row: 2 / span 4; }
 #left-round-2 .match:nth-of-type(2){ grid-row: 6 / span 4; }
 
-/* LEFT - Semifinale: centrata tra i due del 2° turno */
 #left-round-3 .match:nth-of-type(1){ grid-row: 4 / span 8; }
 
-/* RIGHT - stesso schema */
+/* Posizionamento ad albero — RIGHT (uguale) */
 #right-round-1 .match:nth-of-type(1){ grid-row: 1 / span 2; }
 #right-round-1 .match:nth-of-type(2){ grid-row: 3 / span 2; }
 #right-round-1 .match:nth-of-type(3){ grid-row: 5 / span 2; }
@@ -159,6 +160,11 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 #right-round-2 .match:nth-of-type(2){ grid-row: 6 / span 4; }
 
 #right-round-3 .match:nth-of-type(1){ grid-row: 4 / span 8; }
+
+/* Mostra il titolo centrale delle Finals, nascondi quelli delle conference */
+.conference > .conf-title { display: none; }
+.finals     > .conf-title { display: block; }
+
 
 
 /* ========== MOBILE ========== */
