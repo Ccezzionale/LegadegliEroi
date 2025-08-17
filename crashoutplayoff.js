@@ -237,10 +237,5 @@ async function buildBracket() {
 // Pulsanti
 document.addEventListener("DOMContentLoaded", () => {
   $("#refreshBracket")?.addEventListener("click", buildBracket);
-  buildBracket();
+  buildBracket(); // build iniziale
 });
-
-  // build iniziale
-  buildBracket();
-});
-
