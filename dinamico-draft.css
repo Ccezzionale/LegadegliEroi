@@ -321,35 +321,3 @@ nav {
   .titolo {
     font-size: 1.2rem;
   }
-
-  /* Card più strette dai turni successivi (desktop) */
-@media (min-width: 769px){
-  /* Round 2, Round 3, Finals */
-  #round-2 .match,
-  #round-3 .match,
-  #round-final .match{
-    width: 200px;          /* prova 190–210 finché ti piace */
-    padding-right: 10px;   /* un filo meno padding a destra */
-  }
-
-  /* Assicura che la riga squadra non “spinga” oltre */
-  #round-2 .team,
-  #round-3 .team,
-  #round-final .team{
-    grid-template-columns: var(--logo) var(--score); /* logo + punteggio */
-    justify-content: start;
-  }
-}
-
-/* (Opzionale) se vuoi farle adattare automaticamente al contenuto */
-@supports (width: fit-content){
-  @media (min-width: 769px){
-    #round-2 .match,
-    #round-3 .match,
-    #round-final .match{
-      width: fit-content;  /* niente spazio vuoto a destra */
-    }
-  }
-
-
-}
