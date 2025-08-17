@@ -109,9 +109,11 @@ function clearBracket() {
   [
     "left-round-1","left-round-2","left-round-3",
     "right-round-1","right-round-2","right-round-3",
-    "nbafinals","bracket-mobile"
+    "finals-top","finals-bottom",      // <— aggiunti
+    "bracket-mobile"
   ].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ""; });
 }
+
 
 function applyScoresToNode(node, seriesId){
   const [homeBox, awayBox] = node.querySelectorAll(".score-box");
@@ -142,6 +144,29 @@ function createMatchElement(match) {
   homeEl.title = match.home.team;  awayEl.title = match.away.team;
 
   applyScoresToNode(node, match.id);
+  return node;
+}
+
+function createFinalSide(teamObj, side /* 'home' | 'away' */, seriesId){
+  // Parto dalla card standard così ho gli stessi stili
+  const node = createMatchElement({
+    id: seriesId,
+    home: side === 'home' ? teamObj : { seed:"", team:"TBD" },
+    away: side === 'away' ? teamObj : { seed:"", team:"TBD" },
+  });
+
+  // tengo solo la riga della squadra giusta
+  const rows = node.querySelectorAll('.team');
+  if (side === 'home') rows[1]?.remove();
+  else rows[0]?.remove();
+
+  node.classList.add('one-team');
+
+  // sistema il punteggio: prendi solo quello del lato giusto
+  const s = getScoreFor(seriesId);
+  const scoreBox = node.querySelector('.score-box');
+  scoreBox.textContent = String(side === 'home' ? s.home : s.away);
+
   return node;
 }
 
@@ -300,9 +325,10 @@ function drawWires() {
     {from:'#right-round-2 .match:nth-of-type(1)', to:'#right-round-3 .match:nth-of-type(1)', nearTo:true},
     {from:'#right-round-2 .match:nth-of-type(2)', to:'#right-round-3 .match:nth-of-type(1)', nearTo:true},
 
-    // FINALS
-    {from:'#left-round-3  .match:nth-of-type(1)', to:'#nbafinals .match:nth-of-type(1)'},
-    {from:'#right-round-3 .match:nth-of-type(1)', to:'#nbafinals .match:nth-of-type(1)'},
+   // FINALS
+{from:'#left-round-3  .match:nth-of-type(1)', to:'#finals-top .match:nth-of-type(1)'},    // Ovest -> top
+{from:'#right-round-3 .match:nth-of-type(1)', to:'#finals-bottom .match:nth-of-type(1)'}  // Est -> bottom
+
   ];
 
   MAP.forEach(({from, to, nearTo}) => {
@@ -370,33 +396,30 @@ async function buildBracket() {
     const bracket = makeBracketStructure(seeds);
     propagateWinners(bracket);
 
-    // Render
+    // --- Round 1 / 2 / 3 ---
     renderRound("left-round-1",  bracket.r1.left);
     renderRound("right-round-1", bracket.r1.right);
     renderRound("left-round-2",  bracket.leftSF);
     renderRound("right-round-2", bracket.rightSF);
     renderRound("left-round-3",  bracket.leftCF);
     renderRound("right-round-3", bracket.rightCF);
-    renderRound("nbafinals",     bracket.finals);
 
+    // --- Finals "split" (STEP 3.c) ---
+    const f = bracket.finals[0];           // { id:'F', home:…, away:… }
+    document.getElementById("finals-top")
+      .appendChild(createFinalSide(f.home, "home", "F"));
+    document.getElementById("finals-bottom")
+      .appendChild(createFinalSide(f.away, "away", "F"));
+
+    // Mobile
     renderMobileList(bracket);
 
-    // Disegna i connettori dopo che il DOM è stato aggiornato
+    // Connettori
     requestAnimationFrame(() => {
       drawWires();
-      // secondo pass rapidissimo (immagini che finiscono di caricarsi)
       setTimeout(drawWires, 0);
     });
   } catch (err) {
     console.error("Errore costruzione bracket:", err);
   }
 }
-
-// ridisegna i fili al resize
-window.addEventListener('resize', () => requestAnimationFrame(drawWires));
-
-// boot
-document.addEventListener("DOMContentLoaded", () => {
-  $("#refreshBracket")?.addEventListener("click", buildBracket);
-  buildBracket();
-});
