@@ -7,7 +7,7 @@ const BEST_OF = 5;
 const WINS_NEEDED = Math.floor(BEST_OF / 2) + 1; // 3
 const RESULTS = {
   // Round 1
-  L1:[0,0], L2:[0,0], L3:[0,0], L4:[0,0],
+  L1:[3,0], L2:[1,3], L3:[2,2], L4:[0,0],
   R1:[0,0], R2:[0,0], R3:[0,0], R4:[0,0],
 
   // Semifinali di Conference
