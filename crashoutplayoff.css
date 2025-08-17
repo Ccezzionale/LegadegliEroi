@@ -104,6 +104,25 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 #right-round-2 .team, #right-round-3 .team,
 #nbafinals .team{ grid-template-columns:76px auto; }
 
+.conference{
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(3, max-content);
+  align-items: start;
+  column-gap: 24px;   /* spazio tra i round */
+}
+
+/* ogni .round resta una colonna verticale di match */
+.conference .round{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* opzionale: larghezza delle card rotonda/compatta */
+.round .match{ width: 280px; }
+.finals .round-final .match{ width: 300px; }
+
 /* ========== MOBILE (non prioritario, ma coerente) ========== */
 .bracket-mobile{ display:none; }
 
