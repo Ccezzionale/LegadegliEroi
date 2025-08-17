@@ -104,24 +104,35 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 #right-round-2 .team, #right-round-3 .team,
 #nbafinals .team{ grid-template-columns:76px auto; }
 
+/* Colonne dei round affiancate */
 .conference{
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-columns: repeat(3, max-content);
-  align-items: start;
-  column-gap: 24px;   /* spazio tra i round */
+  display:flex;
+  gap:24px;
+  align-items:flex-start;
 }
 
-/* ogni .round resta una colonna verticale di match */
-.conference .round{
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+/* Solo la conference di destra scorre da destra verso sinistra */
+.conference.right{ flex-direction: row-reverse; }
+
+/* Ogni colonna resta verticale (già definita .round) */
+.round .match{ width: max-content; }               /* niente larghezza fissa */
+.finals .round-final .match{ width: max-content; } /* idem per le Finals */
+
+.round{ position: relative; }
+.round::before{
+  display:block;
+  margin:0 0 8px 0;
+  font-weight:700;
+  color:var(--nav);
+  border-left:4px solid var(--accent);
+  padding-left:10px;
 }
 
-/* opzionale: larghezza delle card rotonda/compatta */
-.round .match{ width: 280px; }
-.finals .round-final .match{ width: 300px; }
+/* 1° turno / 2° turno / Semifinali / Finals */
+#left-round-1::before,  #right-round-1::before  { content:"1° turno"; }
+#left-round-2::before,  #right-round-2::before  { content:"2° turno"; }
+#left-round-3::before,  #right-round-3::before  { content:"Semifinali"; }
+#nbafinals::before                               { content:"Finals"; }
 
 /* ========== MOBILE (non prioritario, ma coerente) ========== */
 .bracket-mobile{ display:none; }
