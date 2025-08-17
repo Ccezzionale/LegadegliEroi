@@ -282,29 +282,6 @@ function armOffsetRecalc() {
   requestAnimationFrame(computeRoundOffsets);
 }
 
-
-function setupOffsetRecalc() {
-  // se hai vecchi transform nel CSS, neutralizzali (nel dubbio)
-  const maybeCols = document.querySelectorAll('.bracket.single .round-col:nth-child(2), .bracket.single .round-col:nth-child(3), .bracket.single .round-col:nth-child(4)');
-  maybeCols.forEach(el => { el.style.transform = "none"; });
-
-  // ricalcola quando caricano i loghi (appena creati adesso)
-  document
-    .querySelectorAll("#round-1 img.logo, #round-2 img.logo, #round-3 img.logo, #round-final img.logo")
-    .forEach(img => {
-      if (!img.complete) img.addEventListener("load", computeRoundOffsets, { once: true });
-    });
-
-  // ricalcola al resize (una sola volta)
-  if (!_resizeHooked) {
-    window.addEventListener("resize", computeRoundOffsets, { passive: true });
-    _resizeHooked = true;
-  }
-
-  // ricalcola al prossimo frame quando il layout è pronto
-  requestAnimationFrame(computeRoundOffsets);
-}
-
 // ======== BUILD & ACTIONS ========
 async function buildBracket() {
   try {
