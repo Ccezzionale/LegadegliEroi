@@ -169,7 +169,7 @@ nav {
 /* una “riga squadra”: seed rosso | logo cerchio | box risultato rosso */
 .team{
   display: grid;
-  grid-template-columns: 42px 90px 1fr;
+  grid-template-columns: 42px 60px auto;  /* seed | logo | score */
   align-items: center;
   gap: 10px;
 }
@@ -187,43 +187,56 @@ nav {
   font-size: 1rem;
 }
 
-/* logo cerchio pieno (riempie tutto) */
+/* === Round 2+ : niente seed, solo logo + punteggio === */
+#left-round-2 .seed, #left-round-3 .seed,
+#right-round-2 .seed, #right-round-3 .seed,
+#nbafinals .seed { 
+  display: none; 
+}
+
+#left-round-2 .team, #left-round-3 .team,
+#right-round-2 .team, #right-round-3 .team,
+#nbafinals .team {
+  /* logo | score */
+  grid-template-columns: 60px auto;
+}
+
+
+/* prima era un cerchio: ora solo il logo, quadrato/trasparente */
 .logo-wrap{
-  width: 90px;
-  height: 90px;
-  border-radius: 999px;
-  overflow: hidden;
-  border: 3px solid #111;
+  width: 60px;
+  height: 60px;
+  border-radius: 0;
+  border: 0;
+  overflow: visible;
+  background: transparent;
   display: grid;
   place-items: center;
-  background: #fff;
 }
 .logo-wrap .logo{
   width: 100%;
   height: 100%;
-  object-fit: cover; /* riempie il cerchio */
-  display: block;
+  object-fit: contain;  /* niente crop */
 }
 .logo-wrap.no-logo{
-  background: repeating-linear-gradient(45deg, #f1f5f9, #f1f5f9 10px, #e2e8f0 10px, #e2e8f0 20px);
+  background: repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 10px,#e2e8f0 10px,#e2e8f0 20px);
 }
-.logo.hidden{ display:none; }
 
 /* box risultato rosso (contenteditable) */
 .score-box{
-  min-height: 58px;
+  min-height: 44px;
+  width: 64px;                 /* compatto */
+  justify-self: start;         /* non allargarti */
+  text-align: left;            /* numero a sinistra */
+  padding: 6px 10px;           /* spazio per il numero */
   background: var(--score-red);
-  border-radius: 12px;
+  border-radius: 10px;
   color: #fff;
   font-weight: 800;
-  font-size: 1.3rem;
-  letter-spacing: .5px;
-  display: grid;
-  place-items: center;
-  outline: none;
+  font-size: 1.2rem;
   border: 2px solid #8b0f15;
-  user-select: text;
-  padding: 6px 10px;
+  display: grid;
+  align-items: center;
 }
 .score-box:empty:before{
   content: attr(data-placeholder);
