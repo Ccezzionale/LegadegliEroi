@@ -127,9 +127,9 @@ function createMatchElement(match) {
   const node = tpl.content.firstElementChild.cloneNode(true);
   node.dataset.series = match.id;
 
-  const [homeEl, awayEl]             = node.querySelectorAll(".team");
-  const [homeSeed, awaySeed]         = node.querySelectorAll(".seed");
-  const [homeLogo, awayLogo]         = node.querySelectorAll(".logo");
+  const [homeEl, awayEl]     = node.querySelectorAll(".team");
+  const [homeSeed, awaySeed] = node.querySelectorAll(".seed");
+  const [homeLogo, awayLogo] = node.querySelectorAll(".logo");
 
   homeSeed.textContent = match.home.seed || "";
   awaySeed.textContent = match.away.seed || "";
@@ -141,23 +141,21 @@ function createMatchElement(match) {
   awayLogo.onerror = () => { awayLogo.classList.add("hidden"); awayLogo.parentElement.classList.add("no-logo"); };
   homeEl.title = match.home.team;  awayEl.title = match.away.team;
 
-  // scrivi punteggi visibili
   applyScoresToNode(node, match.id);
   return node;
 }
 
-// --- SVG wires -------------------------------------------------
+// ======== WIRES (connettori) ========
+
 // Crea (una volta sola) il layer dove disegnare i fili e lo ripulisce
 function ensureWireLayer(clear = false) {
   const bracket = document.querySelector('.bracket');
   if (!bracket) return null;
 
-  // il contenitore deve essere relativo
   if (getComputedStyle(bracket).position === 'static') {
     bracket.style.position = 'relative';
   }
 
-  // elimina eventuali layer legacy duplicati
   const layers = bracket.querySelectorAll('.wire-layer');
   layers.forEach((n, i) => { if (i > 0) n.remove(); });
 
@@ -174,11 +172,11 @@ function ensureWireLayer(clear = false) {
     bracket.appendChild(layer);
   }
 
-  if (clear) layer.replaceChildren(); // svuota tutto
+  if (clear) layer.replaceChildren();
   return layer;
 }
 
-// Helpers per creare i segmenti
+// Aggiunge un segmento (div) al layer
 function addSeg(layer, x, y, w, h) {
   const d = document.createElement('div');
   d.className = 'wire';
@@ -194,99 +192,101 @@ function addSeg(layer, x, y, w, h) {
   layer.appendChild(d);
 }
 
-// Punto medio del bordo destro/sinistro di una card
-const midRight = el => {
-  const r = el.getBoundingClientRect();
+// helper posizioni
+const rectOf = el => el.getBoundingClientRect();
+const relToBracket = pt => {
   const p = document.querySelector('.bracket').getBoundingClientRect();
-  return { x: r.right - p.left, y: r.top - p.top + r.height / 2 };
-};
-const midLeft = el => {
-  const r = el.getBoundingClientRect();
-  const p = document.querySelector('.bracket').getBoundingClientRect();
-  return { x: r.left - p.left, y: r.top - p.top + r.height / 2 };
+  return { x: pt.x - p.left, y: pt.y - p.top };
 };
 
-// Disegno dei fili (ripulisce SEMPRE prima)
-function drawWires() {
-  const layer = ensureWireLayer(true);      // <-- qui puliamo
-  if (!layer) return;
+// ridisegna tutti i connettori con ancore stabili
+function drawWires(){
+  const layer = ensureWireLayer(true);
+  if(!layer) return;
 
-  // Mappa “da → a” (aggiungi/ritocca a piacere)
-  const WIRE_MAP = [
-    // LEFT: R1 → R2
-    ['#left-round-1 .match:nth-of-type(1)', '#left-round-2 .match:nth-of-type(1)'],
-    ['#left-round-1 .match:nth-of-type(2)', '#left-round-2 .match:nth-of-type(1)'],
-    ['#left-round-1 .match:nth-of-type(3)', '#left-round-2 .match:nth-of-type(2)'],
-    ['#left-round-1 .match:nth-of-type(4)', '#left-round-2 .match:nth-of-type(2)'],
-    // LEFT: R2 → R3
-    ['#left-round-2 .match:nth-of-type(1)', '#left-round-3 .match:nth-of-type(1)'],
-    ['#left-round-2 .match:nth-of-type(2)', '#left-round-3 .match:nth-of-type(1)'],
+  const STROKE = 2;
+  const PAD    = 12;
 
-    // RIGHT: R1 → R2
-    ['#right-round-1 .match:nth-of-type(1)', '#right-round-2 .match:nth-of-type(1)'],
-    ['#right-round-1 .match:nth-of-type(2)', '#right-round-2 .match:nth-of-type(1)'],
-    ['#right-round-1 .match:nth-of-type(3)', '#right-round-2 .match:nth-of-type(2)'],
-    ['#right-round-1 .match:nth-of-type(4)', '#right-round-2 .match:nth-of-type(2)'],
-    // RIGHT: R2 → R3
-    ['#right-round-2 .match:nth-of-type(1)', '#right-round-3 .match:nth-of-type(1)'],
-    ['#right-round-2 .match:nth-of-type(2)', '#right-round-3 .match:nth-of-type(1)'],
+  const fromMidRight = el => {
+    const r = rectOf(el);
+    return relToBracket({ x: r.right, y: r.top + r.height/2 });
+  };
+  const toMidLeft = el => {
+    const r = rectOf(el);
+    return relToBracket({ x: r.left, y: r.top + r.height/2 });
+  };
+  const toMidRight = el => {
+    const r = rectOf(el);
+    return relToBracket({ x: r.right, y: r.top + r.height/2 });
+  };
 
-    // FINALS: LCF → F e RCF → F
-    ['#left-round-3  .match:nth-of-type(1)', '#nbafinals .match:nth-of-type(1)'],
-    ['#right-round-3 .match:nth-of-type(1)', '#nbafinals .match:nth-of-type(1)'],
+  const finals = document.querySelector('#nbafinals .match:nth-of-type(1)');
+  const finalsRect = finals?.getBoundingClientRect();
+
+  // gomito con x-àncora fissa
+  const elbow = (fromEl, toEl, anchorX, side='left') => {
+    if(!fromEl || !toEl) return;
+    const a = fromMidRight(fromEl);
+    const b = side === 'left' ? toMidLeft(toEl) : toMidRight(toEl);
+
+    const midX = anchorX;
+
+    // orizzontale A -> midX
+    addSeg(layer, Math.min(a.x, midX), a.y - STROKE/2, Math.abs(midX - a.x), STROKE);
+    // verticale a midX tra yA e yB
+    addSeg(layer, midX - STROKE/2, Math.min(a.y, b.y), STROKE, Math.abs(b.y - a.y));
+    // orizzontale midX -> B
+    addSeg(layer, Math.min(midX, b.x), b.y - STROKE/2, Math.abs(b.x - midX), STROKE);
+  };
+
+  // calcolo ancore
+  const bRect   = document.querySelector('.bracket').getBoundingClientRect();
+  const leftR2  = document.querySelector('#left-round-2');
+  const rightR2 = document.querySelector('#right-round-2');
+
+  const r2LRect = leftR2?.getBoundingClientRect();
+  const r2RRect = rightR2?.getBoundingClientRect();
+
+  const midXLeft  = r2LRect ? ((r2LRect.left + r2LRect.right) / 2) - bRect.left : null;
+  const midXRight = r2RRect ? ((r2RRect.left + r2RRect.right) / 2) - bRect.left : null;
+
+  const finalsLeftX  = finalsRect ? (finalsRect.left  - PAD) - bRect.left : null;
+  const finalsRightX = finalsRect ? (finalsRect.right + PAD) - bRect.left : null;
+
+  // mappa collegamenti (from -> to, anchorX, side)
+  const links = [
+    // LEFT: R1 -> R2
+    ['#left-round-1 .match:nth-of-type(1)', '#left-round-2 .match:nth-of-type(1)', midXLeft,  'left'],
+    ['#left-round-1 .match:nth-of-type(2)', '#left-round-2 .match:nth-of-type(1)', midXLeft,  'left'],
+    ['#left-round-1 .match:nth-of-type(3)', '#left-round-2 .match:nth-of-type(2)', midXLeft,  'left'],
+    ['#left-round-1 .match:nth-of-type(4)', '#left-round-2 .match:nth-of-type(2)', midXLeft,  'left'],
+    // LEFT: R2 -> R3
+    ['#left-round-2 .match:nth-of-type(1)', '#left-round-3 .match:nth-of-type(1)', midXLeft,  'left'],
+    ['#left-round-2 .match:nth-of-type(2)', '#left-round-3 .match:nth-of-type(1)', midXLeft,  'left'],
+
+    // RIGHT: R1 -> R2
+    ['#right-round-1 .match:nth-of-type(1)', '#right-round-2 .match:nth-of-type(1)', midXRight, 'right'],
+    ['#right-round-1 .match:nth-of-type(2)', '#right-round-2 .match:nth-of-type(1)', midXRight, 'right'],
+    ['#right-round-1 .match:nth-of-type(3)', '#right-round-2 .match:nth-of-type(2)', midXRight, 'right'],
+    ['#right-round-1 .match:nth-of-type(4)', '#right-round-2 .match:nth-of-type(2)', midXRight, 'right'],
+    // RIGHT: R2 -> R3
+    ['#right-round-2 .match:nth-of-type(1)', '#right-round-3 .match:nth-of-type(1)', midXRight,'right'],
+    ['#right-round-2 .match:nth-of-type(2)', '#right-round-3 .match:nth-of-type(1)', midXRight,'right'],
+
+    // FINALS
+    ['#left-round-3  .match:nth-of-type(1)', '#nbafinals .match:nth-of-type(1)', finalsLeftX,  'left'],
+    ['#right-round-3 .match:nth-of-type(1)', '#nbafinals .match:nth-of-type(1)', finalsRightX, 'right'],
   ];
 
-  const H_PAD = 14;     // orizzontale della “spalletta”
-  const STROKE = 2;     // spessore linea
-
-  WIRE_MAP.forEach(([fromSel, toSel]) => {
+  links.forEach(([fromSel, toSel, anchorX, side]) => {
+    if (anchorX == null) return;
     const from = document.querySelector(fromSel);
     const to   = document.querySelector(toSel);
-    if (!from || !to) return;
-
-    const a = midRight(from);
-    const b = midLeft(to);
-
-    // elbow └─: orizzontale poi verticale
-    const x1 = a.x, y1 = a.y;
-    const x2 = b.x, y2 = b.y;
-    const midX = Math.min(x1, x2) + Math.abs(x2 - x1) / 2;
-
-    // orizzontale a metà
-    addSeg(layer, x1, y1 - STROKE/2, Math.max(1, midX - x1), STROKE);
-    // verticale a metà
-    const top = Math.min(y1, y2);
-    addSeg(layer, midX - STROKE/2, top, STROKE, Math.max(1, Math.abs(y2 - y1)));
-    // orizzontale fino al target
-    addSeg(layer, midX, y2 - STROKE/2, Math.max(1, x2 - midX), STROKE);
+    elbow(from, to, anchorX, side);
   });
 }
 
-function renderRound(containerId, matches){
-  const container = document.getElementById(containerId);
-  matches.forEach(m => container.appendChild(createMatchElement(m)));
-}
-
-function renderMobileList(bracket){
-  const mob = document.getElementById("bracket-mobile");
-  const makeGroup = (title, matches) => {
-    const wrp = document.createElement("section");
-    wrp.className = "round-mobile";
-    wrp.innerHTML = `<h3>${title}</h3>`;
-    matches.forEach(m => wrp.appendChild(createMatchElement(m)));
-    mob.appendChild(wrp);
-  };
-  mob.innerHTML = "";
-  makeGroup("Round 1 — Left",  bracket.r1.left);
-  makeGroup("Round 1 — Right", bracket.r1.right);
-  makeGroup("Semifinali — Left",  bracket.leftSF);
-  makeGroup("Semifinali — Right", bracket.rightSF);
-  makeGroup("Finale Conference — Left", bracket.leftCF);
-  makeGroup("Finale Conference — Right", bracket.rightCF);
-  makeGroup("Finals", bracket.finals);
-}
-
-// --- helper punteggi / avanzamento ---
+// ======== BUILD & ACTIONS ========
 function clamp03(n){ n = Number(n||0); return Math.max(0, Math.min(3, n)); }
 function getScoreFor(seriesId){
   const s = SCORES?.[seriesId] || {};
@@ -333,7 +333,6 @@ function propagateWinners(bracket){
   bracket.finals[0].away = wRCF || TBD;
 }
 
-// ======== BUILD & ACTIONS ========
 async function buildBracket() {
   try {
     clearBracket();
@@ -357,7 +356,7 @@ async function buildBracket() {
     // Disegna i connettori dopo che il DOM è stato aggiornato
     requestAnimationFrame(() => {
       drawWires();
-      // piccolo “second pass” per quando i loghi finiscono di caricare
+      // secondo pass rapidissimo (immagini che finiscono di caricarsi)
       setTimeout(drawWires, 0);
     });
   } catch (err) {
@@ -365,10 +364,10 @@ async function buildBracket() {
   }
 }
 
-// UNA SOLA VOLTA, fuori da buildBracket:
+// ridisegna i fili al resize
 window.addEventListener('resize', () => requestAnimationFrame(drawWires));
 
-
+// boot
 document.addEventListener("DOMContentLoaded", () => {
   $("#refreshBracket")?.addEventListener("click", buildBracket);
   buildBracket();
