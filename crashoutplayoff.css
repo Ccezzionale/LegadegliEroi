@@ -102,7 +102,50 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 #nbafinals .team{ grid-template-columns:76px auto; }
 
 .conf-title{ display:none !important; }
+/* ===== DESKTOP: loghi/riquadri più grandi + più spazio tra le squadre ===== */
+@media (min-width: 769px){
 
+  /* Card un filo più grande e con spazio verticale tra i due team */
+  .match{
+    padding: 10px 12px;
+    gap: 18px;                 /* spazio tra le due righe squadra */
+  }
+  /* azzera eventuale margine precedente e usa solo il gap */
+  .match .team + .team{ margin-top: 0; }
+
+  /* Round 1: seed | logo | score (tutto più grande) */
+  .team{
+    grid-template-columns: 36px 92px auto;  /* seed + logo più ampi */
+    gap: 12px;
+    align-items: center;
+  }
+  .seed{
+    width: 36px;
+    height: 36px;
+    font-size: .9rem;
+    border-radius: 8px;
+  }
+  .logo-wrap{
+    width: 92px;               /* loghi più grandi */
+    height: 92px;
+  }
+
+  /* Score resta compatto ma proporzionato */
+  .score-box{
+    width: 42px;               /* ancora corto */
+    min-height: 40px;
+    padding: 4px 8px;
+    font-size: 1.15rem;
+  }
+
+  /* Round 2+ (niente seed): solo logo | score con le nuove misure */
+  #left-round-2 .team, #left-round-3 .team,
+  #right-round-2 .team, #right-round-3 .team,
+  #nbafinals .team{
+    grid-template-columns: 92px auto;
+    gap: 12px;
+  }
+}
 /* ========== MOBILE ========== */
 .bracket-mobile{ display:none; }
 
