@@ -293,3 +293,129 @@ nav {
 
 /* ========== MICRO MIGLIORIE ========== */
 [contenteditable]:empty { cursor: text; }
+
+/* ================== CONNETTORI STILE NBA ==================
+   NOTE:
+   - Funziona con round verticali e card con altezza simile.
+   - Usa pseudo-elementi per disegnare linee orizzontali e verticali.
+   - Sinistra e destra sono specchiate. Le Finals prendono da entrambe.
+*/
+
+/* Geometria base: stessa altezza per card e gap costante */
+.round .match{
+  position: relative;
+  min-height: 190px;          /* regola se vuoi card più alte */
+}
+.round{ gap: 18px; }          /* spazio coerente tra match */
+
+/* ── linee che escono dai match di Round 1 verso la colonna successiva */
+.conference.left .round-1 .match::after,
+.conference.right .round-1 .match::after{
+  content: "";
+  position: absolute;
+  top: 50%;
+  height: 2px;
+  width: 24px;
+  background: #0b1f3f33;      /* blu trasparente */
+}
+.conference.left .round-1 .match::after{
+  right: -24px;               /* esce a destra */
+}
+.conference.right .round-1 .match::after{
+  left: -24px;                /* esce a sinistra (specchio) */
+}
+
+/* ── ricezione in Semifinali di Conference (linea orizzontale + montante) */
+.conference.left .round-2 .match::before,
+.conference.right .round-2 .match::before,
+.conference.left .round-2 .match::after,
+.conference.right .round-2 .match::after{
+  content: "";
+  position: absolute;
+  background: #0b1f3f33;
+}
+
+/* orizzontale che entra nella card semifinale */
+.conference.left .round-2 .match::before{
+  left: -24px; top: 50%; height: 2px; width: 24px;
+}
+.conference.right .round-2 .match::before{
+  right: -24px; top: 50%; height: 2px; width: 24px;
+}
+
+/* montante che collega le due partite del turno precedente */
+.conference.left .round-2 .match::after{
+  left: -24px; width: 2px;
+}
+.conference.right .round-2 .match::after{
+  right: -24px; width: 2px;
+}
+
+/* Calcolo dell’altezza del montante: somma di metà card sopra + gap + metà card sotto.
+   Con min-height:190 e gap:18 → (190/2) + 18 + (190/2) = 208px
+   La posizioniamo centrata rispetto alla semifinale.
+*/
+.conference.left .round-2 .match::after,
+.conference.right .round-2 .match::after{
+  height: 208px;
+  top: calc(50% - 104px);   /* 208/2 */
+  border-radius: 1px;
+}
+
+/* ── linee verso le Finali di Conference (round-3) */
+.conference.left .round-3 .match::before,
+.conference.right .round-3 .match::before,
+.conference.left .round-3 .match::after,
+.conference.right .round-3 .match::after{
+  content: "";
+  position: absolute;
+  background: #0b1f3f33;
+}
+
+/* orizzontale che esce da semifinale e va alla finale di conference */
+.conference.left .round-2 .match::after,
+.conference.right .round-2 .match::after{ z-index: 0; }
+.conference.left .round-2 .match,
+.conference.right .round-2 .match{ z-index: 1; }
+
+.conference.left .round-3 .match::before{
+  left: -28px; top: 50%; height: 2px; width: 28px;
+}
+.conference.right .round-3 .match::before{
+  right: -28px; top: 50%; height: 2px; width: 28px;
+}
+
+/* montante tra le due semifinali verso la finale di conference */
+.conference.left .round-3 .match::after{
+  left: -28px; width: 2px; height: 208px; top: calc(50% - 104px);
+}
+.conference.right .round-3 .match::after{
+  right: -28px; width: 2px; height: 208px; top: calc(50% - 104px);
+}
+
+/* ── collegamento Finali di Conference → Finals (centro) */
+.finals .round-final .match{ position: relative; }
+
+/* orizzontali che entrano nella Finals dal left/right */
+.finals .round-final .match::before,
+.finals .round-final .match::after{
+  content: "";
+  position: absolute;
+  top: 50%;
+  height: 2px; width: 34px;
+  background: #0b1f3f33;
+}
+.finals .round-final .match::before{ left: -34px; }
+.finals .round-final .match::after{ right: -34px; }
+
+/* montanti che arrivano dalle due Conference Finals */
+.finals .round-final .match > .connector-left,
+.finals .round-final .match > .connector-right{
+  display: none; /* placeholder, non usato ora (nessun extra HTML) */
+}
+
+/* ========== Rafforza il colore delle linee al passaggio (effetto “vivo”) ========== */
+.round .match:hover::after,
+.round .match:hover::before{
+  background: #001f3f55;
+}
