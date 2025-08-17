@@ -98,14 +98,8 @@ function makeBracketStructure(seeds) {
 
 // ======== RENDER ========
 function clearBracket() {
-  [
-    "left-round-1","left-round-2","left-round-3",
-    "right-round-1","right-round-2","right-round-3",
-    "nbafinals","bracket-mobile"
-  ].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = "";
-  });
+  ["round-1","round-2","round-3","round-final","bracket-mobile"]
+    .forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ""; });
 }
 
 function createMatchElement(match) {
@@ -203,23 +197,21 @@ async function buildBracket() {
     }
     const bracket = makeBracketStructure(seeds);
 
-    // Round 1
-    renderRound("left-round-1", bracket.r1.left);
-    renderRound("right-round-1", bracket.r1.right);
+// Round 1 (8 serie): unisco left+right
+renderRound("round-1", [...bracket.r1.left, ...bracket.r1.right]);
 
-    // Semifinali (slot placeholder)
-    renderRound("left-round-2", bracket.leftSF);
-    renderRound("right-round-2", bracket.rightSF);
+// Round 2 (4 serie): unisco le due semifinali di conference
+renderRound("round-2", [...bracket.leftSF, ...bracket.rightSF]);
 
-    // Finali Conference (slot placeholder)
-    renderRound("left-round-3", bracket.leftCF);
-    renderRound("right-round-3", bracket.rightCF);
+// Round 3 (2 serie): finali di conference
+renderRound("round-3", [...bracket.leftCF, ...bracket.rightCF]);
 
-    // Finals
-    renderRound("nbafinals", bracket.finals);
+// Finals (1 serie)
+renderRound("round-final", bracket.finals);
 
-    // Mobile
-    renderMobileList(bracket);
+// Mobile (puoi anche lasciarlo uguale)
+renderMobileList(bracket);
+
   } catch (err) {
     console.error("Errore costruzione bracket:", err);
   }
