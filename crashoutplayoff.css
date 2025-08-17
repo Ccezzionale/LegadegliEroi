@@ -143,6 +143,10 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .finals     > .conf-title{ display:block; }
 
 /* ===== CONNETTORI (layer disegnato dal JS) ===== */
+
+:root{
+  --wire-color: #10b981; /* emerald */
+  
 .wire-layer{
   position:absolute;
   inset:0;
@@ -150,8 +154,12 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   z-index:0;               /* sotto le card */
 }
 .wire-layer .wire{
-  background:#c9d0da;      /* colore linea */
+   background: var(--wire-color) !important;      /* colore linea */
   border-radius:3px;
+}
+
+  #bracket-wires polyline{
+  stroke: var(--wire-color);
 }
 .conference .match,
 #nbafinals .match{
