@@ -87,7 +87,6 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 #left-round-1::before,  #right-round-1::before  { content:"1° turno"; }
 #left-round-2::before,  #right-round-2::before  { content:"2° turno"; }
 #left-round-3::before,  #right-round-3::before  { content:"Semifinali"; }
-#nbafinals::before                               { content:"Finals"; }
 
 /* === Match card === */
 .match{
@@ -125,10 +124,12 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 /* Round 2+ : niente seed; layout logo|score più stretto */
 #left-round-2 .seed, #left-round-3 .seed,
 #right-round-2 .seed, #right-round-3 .seed,
-#nbafinals .seed{ display:none; }
+.finals-split .seed{ display:none; }
+
 #left-round-2 .team, #left-round-3 .team,
 #right-round-2 .team, #right-round-3 .team,
-#nbafinals .team{ grid-template-columns:92px auto; gap:12px; }
+.finals-split .team{ grid-template-columns:92px auto; gap:12px; }
+
 
 /* ===== Layout “ad albero” per le conference ===== */
 .conference .round{
@@ -169,8 +170,7 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .finals     > .conf-title{ display:block; }
 
 /* ===== CONNETTORI (layer disegnato dal JS) ===== */
- /* ===== CONNETTORI (layer disegnato dal JS) ===== */
-:root { 
+:root {
   --wire-color: #ff1a1a; /* rosso acceso */
 }
 
@@ -185,14 +185,14 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   border-radius: 3px;
 }
 
-/* (se usi ancora lo <svg> legacy) */
+/* (legacy SVG, se presente) */
 #bracket-wires polyline{
   stroke: var(--wire-color);
 }
 
 /* le card stanno sopra ai fili */
 .conference .match,
-.finals-split .match{       /* <-- al posto di #nbafinals */
+.finals-split .match{
   position: relative;
   z-index: 1;
 }
