@@ -427,3 +427,33 @@ nav {
 .round .match:hover::before{
   background: #001f3f55;
 }
+
+/* --- CONFERENCE a 3 colonne (round affiancati) --- */
+.conference{
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(3, max-content);
+  align-items: start;
+  column-gap: 24px;   /* spazio tra i round */
+}
+
+/* ogni .round resta una colonna verticale di match */
+.conference .round{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* opzionale: larghezza delle card rotonda/compatta */
+.round .match{ width: 280px; }
+.finals .round-final .match{ width: 300px; }
+
+/* mappa colonne per chiarezza */
+.conference.left  .round-1 { grid-column: 1; }
+.conference.left  .round-2 { grid-column: 2; }
+.conference.left  .round-3 { grid-column: 3; }
+
+.conference.right .round-1 { grid-column: 3; } /* se preferisci invertire l’ordine a destra */
+.conference.right .round-2 { grid-column: 2; }
+.conference.right .round-3 { grid-column: 1; }
+
