@@ -109,5 +109,34 @@
   <!-- ===== JS della pagina (lo scrivo nel prossimo messaggio) ===== -->
   <script src="crashoutplayoff.js" defer></script>
 
+  <script>
+(function () {
+  function setStepVar() {
+    // prendo la prima card del Round 1 sinistro (tutte hanno la stessa altezza)
+    const first = document.querySelector('#left-round-1 .match');
+    if (!first) return false;
+
+    // altezza reale card + gap (preso dallo stile del contenitore round)
+    const h = first.getBoundingClientRect().height;
+    const roundEl = document.getElementById('left-round-1');
+    const gap = parseFloat(getComputedStyle(roundEl).gap) || 14;
+
+    const step = Math.round(h + gap);
+    document.documentElement.style.setProperty('--step', step + 'px');
+    return true;
+  }
+
+  // prova subito; se non ci sono ancora le card, osserva il DOM finché compaiono
+  if (!setStepVar()) {
+    const target = document.getElementById('left-round-1') || document.body;
+    const obs = new MutationObserver(() => { if (setStepVar()) obs.disconnect(); });
+    obs.observe(target, { childList: true, subtree: true });
+  }
+
+  // ricalcola se cambia la dimensione della pagina (logo load/resize)
+  window.addEventListener('resize', setStepVar, { passive: true });
+})();
+</script>
+
 </body>
 </html>
