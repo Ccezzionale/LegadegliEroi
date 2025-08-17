@@ -7,6 +7,7 @@
   --subnav: #003366;
   --accent: #ffcc00;
 
+
   --card: #ffffff;
   --muted: #6b7280;
   --line: #e5e7eb;
@@ -22,7 +23,7 @@
 
   /* geometria match (per offset colonne) */
   --match-h: 190px;                      /* altezza contenuto della card */
-  --match-v: calc(var(--match-h) + 18px);/* + padding (8+8) + border (1+1) = 18px */
+   --match-v: calc(var(--match-h) + var(--gap-round));
   --round2-tweak: 16px;                  /* micro-aggiustamento Semifinali */
 }
 
@@ -243,13 +244,6 @@ nav {
 /* ====== DESKTOP: split in 2 metà + Finals al centro ====== */
 /* === HOTFIX: split desktop in 2 metà + finals al centro === */
 /* ===== Split desktop: 2 metà + Finals al centro, offset con spacer CSS ===== */
-:root{
-  /* altezza “verticale” di una card + gap.
-     Se la tua card è 190px di min-height e il gap è 18px -> 208px */
-  --match-h: 190px;
-  --gap-round: 18px;
-  --match-v: calc(var(--match-h) + var(--gap-round));
-}
 
 @media (min-width: 1200px){
   /* 4 colonne: Round1 | Semifinali | Finals | Finali di Conf */
@@ -295,4 +289,8 @@ nav {
   #round-2 .match, #round-3 .match, #round-final .match{
     width: 200px; padding-right: 10px;
   }
+
+  @media (min-width: 1200px){
+  #round-1, #round-2, #round-3 { align-content: start; }
+}
 }
