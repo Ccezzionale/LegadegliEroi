@@ -35,47 +35,13 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 /* ========== BRACKET DESKTOP ========== */
 .cup-container{ max-width:none; margin:10px 16px 48px; padding-right:16px; overflow-x:auto; }
 .bracket{
-  grid-template-columns: max-content max-content max-content; /* left | finals | right */
-  column-gap: 36px;
-  justify-content: flex-start;
+  display:grid;
+  grid-template-columns: minmax(360px,max-content) 240px minmax(360px,max-content);
+  gap:20px; align-items:start; width:max-content; justify-content:start;
 }
-.conference, .finals { width: max-content; } /* evita che si allarghino */
-/* Sezioni con header sopra e round sotto */
-.conference,
-.finals{
-  display: grid;
-  grid-template-columns: repeat(3, max-content); /* 3 colonne: R1, R2, R3   (per finals useremo solo la 2ª) */
-  grid-template-rows: auto 1fr;                  /* riga titolo, riga contenuto */
-  align-items: start;
-  column-gap: 24px;
-}
-
-/* Titolo sopra che occupa tutte le colonne */
-.conference .conf-title,
-.finals .conf-title{
-  grid-column: 1 / -1;
-  grid-row: 1;
-  margin: 0 0 8px 0;
-}
-
-/* I round nella seconda riga */
-.conference .round,
-.finals .round{
-  grid-row: 2;
-}
-
-/* Colonne left: R1 | R2 | R3 */
-.conference.left  .round-1 { grid-column: 1; }
-.conference.left  .round-2 { grid-column: 2; }
-.conference.left  .round-3 { grid-column: 3; }
-
-/* Colonne right: R3 | R2 | R1 (specchiato) */
-.conference.right .round-1 { grid-column: 3; }
-.conference.right .round-2 { grid-column: 2; }
-.conference.right .round-3 { grid-column: 1; }
-
-/* Finals: mettiamo la serie centrale in colonna 2 */
-.finals .round-final { grid-column: 2; }
+.conference,.finals{ display:flex; flex-direction:column; gap:14px; }
+.conf-title{ margin:0; font-size:1.05rem; color:var(--nav); border-left:4px solid var(--accent); padding-left:10px; }
+.round{ display:flex; flex-direction:column; gap:14px; align-items:flex-start; }
 
 /* === Match card compatta === */
 .match{
