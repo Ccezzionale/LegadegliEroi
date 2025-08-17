@@ -146,6 +146,90 @@ function createMatchElement(match) {
   return node;
 }
 
+// --- SVG wires -------------------------------------------------
+function ensureWireLayer(){
+  const br = document.querySelector('.bracket');
+  let svg = document.getElementById('bracket-wires');
+  if (!svg){
+    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.id = 'bracket-wires';
+    br.appendChild(svg);
+  }
+  // dimensioni reali
+  const r = br.getBoundingClientRect();
+  svg.setAttribute('width', r.width);
+  svg.setAttribute('height', r.height);
+  svg.style.width = r.width + 'px';
+  svg.style.height = r.height + 'px';
+  // pulisci
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  return { svg, brRect: r };
+}
+
+function midLeft(el, brRect){
+  const r = el.getBoundingClientRect();
+  return { x: r.left - brRect.left, y: r.top - brRect.top + r.height/2 };
+}
+function midRight(el, brRect){
+  const r = el.getBoundingClientRect();
+  return { x: r.right - brRect.left, y: r.top - brRect.top + r.height/2 };
+}
+
+// disegna un gomito: orizzontale -> verticale -> orizzontale
+function addElbow(svg, p1, p2){
+  // giunto a metà strada tra x1 e x2
+  const jx = (p1.x + p2.x) / 2;
+  const pts = `${p1.x},${p1.y} ${jx},${p1.y} ${jx},${p2.y} ${p2.x},${p2.y}`;
+  const pl = document.createElementNS('http://www.w3.org/2000/svg','polyline');
+  pl.setAttribute('points', pts);
+  svg.appendChild(pl);
+}
+
+// mappa dei collegamenti sorgente -> destinazione (ID serie = data-series)
+const WIRE_MAP = [
+  // LEFT: R1 -> semi
+  ['L1','LSF1'], ['L2','LSF1'],
+  ['L3','LSF2'], ['L4','LSF2'],
+  // LEFT: semi -> conf final
+  ['LSF1','LCF'], ['LSF2','LCF'],
+
+  // RIGHT: R1 -> semi
+  ['R1','RSF1'], ['R2','RSF1'],
+  ['R3','RSF2'], ['R4','RSF2'],
+  // RIGHT: semi -> conf final
+  ['RSF1','RCF'], ['RSF2','RCF'],
+
+  // FINALS
+  ['LCF','F'], ['RCF','F']
+];
+
+function drawWires(){
+  const { svg, brRect } = ensureWireLayer();
+
+  WIRE_MAP.forEach(([fromId,toId])=>{
+    const fromEl = document.querySelector(`.match[data-series="${fromId}"]`);
+    const toEl   = document.querySelector(`.match[data-series="${toId}"]`);
+    if (!fromEl || !toEl) return;
+
+    // direzione automatica: se il target è a destra uso right->left, altrimenti left->right
+    const fRect = fromEl.getBoundingClientRect();
+    const tRect = toEl.getBoundingClientRect();
+
+    let p1, p2;
+    if (fRect.left < tRect.left){
+      // da sinistra verso destra
+      p1 = midRight(fromEl, brRect);
+      p2 = midLeft(toEl, brRect);
+    } else {
+      // da destra verso sinistra (colonna right che “va verso le finals”)
+      p1 = midLeft(fromEl, brRect);
+      p2 = midRight(toEl, brRect);
+    }
+    addElbow(svg, p1, p2);
+  });
+}
+
+
 function renderRound(containerId, matches){
   const container = document.getElementById(containerId);
   matches.forEach(m => container.appendChild(createMatchElement(m)));
