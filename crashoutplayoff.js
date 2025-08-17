@@ -422,4 +422,14 @@ async function buildBracket() {
   } catch (err) {
     console.error("Errore costruzione bracket:", err);
   }
-}
+} // <-- chiude buildBracket
+
+// ridisegna i fili al resize (una volta sola)
+window.addEventListener('resize', () => requestAnimationFrame(drawWires));
+
+// avvio pagina
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('refreshBracket')?.addEventListener('click', buildBracket);
+  buildBracket();
+});
+
