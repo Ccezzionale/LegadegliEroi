@@ -7,17 +7,17 @@ const BEST_OF = 5;
 const WINS_NEEDED = Math.floor(BEST_OF / 2) + 1; // 3
 const RESULTS = {
   // Round 1
-  L1:[0,0], L2:[0,0], L3:[0,0], L4:[0,0],
-  R1:[0,0], R2:[0,0], R3:[0,0], R4:[0,0],
+  L1:[3,0], L2:[0,3], L3:[0,3], L4:[0,3],
+  R1:[3,0], R2:[0,3], R3:[3,0], R4:[3,0],
 
   // Semifinali di Conference
-  LSF1:[0,0], LSF2:[0,0], RSF1:[0,0], RSF2:[0,0],
+  LSF1:[0,3], LSF2:[3,0], RSF1:[3,0], RSF2:[0,3],
 
   // Finali di Conference
-  LCF:[0,0], RCF:[0,0],
+  LCF:[3,0], RCF:[0,3],
 
   // Finals
-  F:[0,0],
+  F:[3,0],
 };
 
 // ======== UTILS ========
