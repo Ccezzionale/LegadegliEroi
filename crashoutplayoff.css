@@ -108,21 +108,22 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 /* ---- Layout ad "albero" per i round (sinistra e destra) ---- */
 /* Altezza unità verticale: aumenta/diminuisci se serve più/meno spazio */
 /* ---- Layout ad "albero" con titoli fissi sopra ---- */
-:root{ --slot: 150px; }  /* altezza di uno "scalino" verticale */
+/* ===== Bracket ad albero e titoli sopra ===== */
+:root{ --slot: 150px; }              /* altezza verticale di uno step */
 
-/* ogni round = griglia con altezza uniforme */
+/* Ogni colonna di round è una grid uniforme */
 .conference .round{
   position: relative;
   display: grid !important;
-  grid-template-rows: repeat(12, var(--slot)); /* stesse righe per tutti */
+  grid-template-rows: repeat(8, var(--slot));   /* 8 “step” totali */
   row-gap: 0;
-  padding-top: 0;  /* niente spazio extra: il titolo è assoluto */
+  min-height: calc(var(--slot) * 8);            /* evita collassi */
 }
 
-/* Titolo del round fuori dal flusso, non spinge i match in basso */
+/* Titolo del round fissato sopra, fuori dal flusso */
 .conference .round::before{
   position: absolute;
-  top: -26px;     /* alza/abbassa il titolo a gusto */
+  top: -26px;           /* alza/abbassa il titolo se vuoi */
   left: 0;
   margin: 0;
   padding-left: 10px;
@@ -131,30 +132,33 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   color: var(--nav);
 }
 
-/* Le card non mettono margini: la griglia gestisce tutto */
+/* Le card non aggiungono margini verticali: decide la grid */
 .conference .round .match{ margin: 0; }
 
-/* ---------- LEFT ---------- */
-#left-round-1 .match:nth-child(1){ grid-row: 1 / span 2; }
-#left-round-1 .match:nth-child(2){ grid-row: 3 / span 2; }
-#left-round-1 .match:nth-child(3){ grid-row: 5 / span 2; }
-#left-round-1 .match:nth-child(4){ grid-row: 7 / span 2; }
+/* ===== Posizionamento a “albero” ===== */
+/* LEFT - 1° turno: 4 match (ogni match occupa 2 step) */
+#left-round-1 .match:nth-of-type(1){ grid-row: 1 / span 2; }
+#left-round-1 .match:nth-of-type(2){ grid-row: 3 / span 2; }
+#left-round-1 .match:nth-of-type(3){ grid-row: 5 / span 2; }
+#left-round-1 .match:nth-of-type(4){ grid-row: 7 / span 2; }
 
-#left-round-2 .match:nth-child(1){ grid-row: 2 / span 4; }
-#left-round-2 .match:nth-child(2){ grid-row: 6 / span 4; }
+/* LEFT - 2° turno: nei “buchi” tra 1&2 e tra 3&4 */
+#left-round-2 .match:nth-of-type(1){ grid-row: 2 / span 4; }
+#left-round-2 .match:nth-of-type(2){ grid-row: 6 / span 4; }
 
-#left-round-3 .match:nth-child(1){ grid-row: 4 / span 8; }
+/* LEFT - Semifinale: centrata tra i due del 2° turno */
+#left-round-3 .match:nth-of-type(1){ grid-row: 4 / span 8; }
 
-/* ---------- RIGHT ---------- */
-#right-round-1 .match:nth-child(1){ grid-row: 1 / span 2; }
-#right-round-1 .match:nth-child(2){ grid-row: 3 / span 2; }
-#right-round-1 .match:nth-child(3){ grid-row: 5 / span 2; }
-#right-round-1 .match:nth-child(4){ grid-row: 7 / span 2; }
+/* RIGHT - stesso schema */
+#right-round-1 .match:nth-of-type(1){ grid-row: 1 / span 2; }
+#right-round-1 .match:nth-of-type(2){ grid-row: 3 / span 2; }
+#right-round-1 .match:nth-of-type(3){ grid-row: 5 / span 2; }
+#right-round-1 .match:nth-of-type(4){ grid-row: 7 / span 2; }
 
-#right-round-2 .match:nth-child(1){ grid-row: 2 / span 4; }
-#right-round-2 .match:nth-child(2){ grid-row: 6 / span 4; }
+#right-round-2 .match:nth-of-type(1){ grid-row: 2 / span 4; }
+#right-round-2 .match:nth-of-type(2){ grid-row: 6 / span 4; }
 
-#right-round-3 .match:nth-child(1){ grid-row: 4 / span 8; }
+#right-round-3 .match:nth-of-type(1){ grid-row: 4 / span 8; }
 
 
 /* ========== MOBILE ========== */
