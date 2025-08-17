@@ -250,43 +250,52 @@ nav {
 /* === HOTFIX: split desktop in 2 metà + finals al centro === */
 /* ===== Split desktop: 2 metà + Finals al centro, offset con spacer CSS ===== */
 
+/* ===== DESKTOP SPLIT: 2 metà + finals al centro (forzato) ===== */
 @media (min-width: 1200px){
-  /* 2 colonne per Round 1/2/3 */
-  #round-1, #round-2, #round-3{
+  /* 4 colonne: Round1 | Semifinali | Finals | Finali Conf */
+  .bracket.single{
     display: grid;
-    grid-template-columns: max-content max-content;
-    column-gap: 28px;
-    row-gap: var(--gap-round);
+    grid-template-columns: max-content max-content max-content max-content;
+    column-gap: 36px;
+    align-items: start;
+    justify-content: flex-start;
+  }
+
+  /* ogni round a 2 colonne (sinistra|destra) */
+  #round-1, #round-2, #round-3{
+    display: grid !important;
+    grid-template-columns: max-content max-content !important;
+    column-gap: 28px !important;
+    row-gap: var(--gap-round) !important;
     grid-auto-flow: row;
     align-content: start;
+    padding-top: 0 !important; /* niente padding-top: useremo gli spacer */
   }
 
-  /* mappature L/R */
+  /* Finals: può rimanere blocco singolo, ma togliamo ogni padding-top */
+  #round-final{ padding-top: 0 !important; }
+
+  /* mapping L/R */
   #round-1 .match[data-series^="L"]{ grid-column: 1; }
   #round-1 .match[data-series^="R"]{ grid-column: 2; }
+
   #round-2 .match[data-series^="LSF"]{ grid-column: 1; }
   #round-2 .match[data-series^="RSF"]{ grid-column: 2; }
-  #round-3 .match[data-series^="LC"]{  grid-column: 1; }
-  #round-3 .match[data-series^="RC"]{  grid-column: 2; }
 
-  /* IMPORTANTISSIMO: togli il padding del fallback */
-  #round-2, #round-3, #round-final{ padding-top: 0 !important; }
+  #round-3 .match[data-series^="LC"]{ grid-column: 1; }
+  #round-3 .match[data-series^="RC"]{ grid-column: 2; }
 
-  /* Spacer che spinge giù le colonne (prende la larghezza di entrambe) */
-  #round-2::before,
-  #round-3::before{
+  /* spacer: DEVONO span-nare entrambe le colonne */
+  #round-2::before, #round-3::before{
     content: "";
     display: block;
-    grid-column: 1 / -1;
+    grid-column: 1 / -1; /* importantissimo */
     height: 0;
-    width: 0;
   }
-  /* Semifinali tra 1–2 e 3–4 di R1 */
-  #round-2::before{ height: calc(0.5 * var(--match-v)); }
-  /* Finali di conference tra le semifinali */
-  #round-3::before{ height: calc(1.5 * var(--match-v)); }
+  #round-2::before{ height: calc(0.5 * var(--match-v)); }  /* SF tra 1–2 e 3–4 */
+  #round-3::before{ height: calc(1.5 * var(--match-v)); }  /* CF tra le SF     */
 
-  /* Finals centrali (è una colonna sola, basta lo spacer semplice) */
+  /* Finals al centro tra le due CF */
   #round-final::before{
     content: "";
     display: block;
