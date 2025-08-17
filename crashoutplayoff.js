@@ -2,7 +2,7 @@
 const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1pXJCNLgchygyLnGbDEsnIV3QAdPUiLcmgzMAhlzYRivXV4fnoSBW5VwiopwXEMfwk32mvdF3gWZC/pub?output=csv";
 const LOGO_BASE_PATH = "img/";       // cambia se necessario
 const LOGO_EXT = ".png";               // .png o .jpg in base ai tuoi file
-const SCORE_DEFAULT = "0-0";
+const SCORE_DEFAULT = "0";
 
 // ======== UTILS ========
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -128,12 +128,8 @@ function createMatchElement(match) {
   awayLogo.alt = match.away.team;
 
   // sorgenti logo
-  if (match.home.team && match.home.team !== "TBD") {
-    homeLogo.src = logoSrc(match.home.team);
-  }
-  if (match.away.team && match.away.team !== "TBD") {
-    awayLogo.src = logoSrc(match.away.team);
-  }
+  if (match.home.team && match.home.team !== "TBD") homeLogo.src = logoSrc(match.home.team);
+  if (match.away.team && match.away.team !== "TBD") awayLogo.src = logoSrc(match.away.team);
 
   // fallback se logo mancante
   homeLogo.onerror = () => { homeLogo.classList.add("hidden"); homeLogo.parentElement.classList.add("no-logo"); };
@@ -143,22 +139,30 @@ function createMatchElement(match) {
   homeEl.title = match.home.team;
   awayEl.title = match.away.team;
 
-  // SCORE (sincronizzati e memorizzati per serie)
-// SCORE (sincronizzati e memorizzati per serie)
-// SCORE (ogni squadra ha il suo box)
-scoreBoxes.forEach((b, idx) => {
-  const key = `seriesScore:${match.id}:${idx}`; // es: R1:0 (home), R1:1 (away)
-  const saved = localStorage.getItem(key) || "0";
-  b.textContent = saved;
+  // SCORE (ogni squadra ha il suo box)
+  scoreBoxes.forEach((b, idx) => {
+    const key = `seriesScore:${match.id}:${idx}`; // es: R1:0 (home), R1:1 (away)
+    const saved = localStorage.getItem(key) || SCORE_DEFAULT;
+    b.textContent = saved;
 
-  b.addEventListener("input", () => {
-    const val = b.textContent.trim() || "0";
-    localStorage.setItem(key, val);
+    b.addEventListener("input", () => {
+      let val = b.textContent.trim();
+      // tieni solo cifre e limita a 0–3 (best of 5)
+      val = val.replace(/\D+/g, "");
+      if (val === "") val = SCORE_DEFAULT;
+      const num = Math.max(0, Math.min(3, parseInt(val, 10)));
+      b.textContent = String(isNaN(num) ? SCORE_DEFAULT : num);
+      localStorage.setItem(key, b.textContent);
+    });
+
+    b.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); b.blur(); }
+    });
   });
-  b.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") { e.preventDefault(); b.blur(); }
-  });
-});
+
+  return node;                  // <-- mancava
+}                               // <-- mancava
+
 
 
 function renderRound(containerId, matches){
@@ -222,14 +226,6 @@ async function buildBracket() {
 document.addEventListener("DOMContentLoaded", () => {
   $("#refreshBracket")?.addEventListener("click", buildBracket);
 
-  $("#resetScores")?.addEventListener("click", () => {
-    // cancella tutti i seriesScore
-    Object.keys(localStorage).forEach(k => {
-      if (k.startsWith("seriesScore:")) localStorage.removeItem(k);
-    });
-    // reset visivo
-    $$(".score-box").forEach(b => b.textContent = SCORE_DEFAULT);
-  });
 
   // build iniziale
   buildBracket();
