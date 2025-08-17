@@ -48,51 +48,81 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   justify-content:start;
 }
 
-/* STEP verticale per l’albero */
-:root{ --step: 140px; } /* aumenta/riduci per più/meno spazio */
-
-/* --- Colonne conference affiancate in 3 colonne (1° | 2° | Semi) --- */
+/* ================== LAYOUT CONFERENCES ================== */
+/* tre colonne: 1° turno | 2° turno | Semifinali */
 .conference{
-  display: grid;
+  display:grid;
   grid-template-columns: repeat(3, max-content);
-  column-gap: 28px;
-  align-items: start;
+  column-gap:28px;
+  align-items:start;
 }
 
-/* Destra: inverti l’ordine (Semi vicino alle Finals) */
+/* lato destro invertito (semi vicino alle Finals) */
 .conference.right > #right-round-1 { grid-column: 3; }
 .conference.right > #right-round-2 { grid-column: 2; }
 .conference.right > #right-round-3 { grid-column: 1; }
 
-/* titoli “Conference (Left/Right)” nascosti, Finals visibile */
-.conference > .conf-title { display: none; }
-.finals     > .conf-title { display: block; }
+/* altezze “a scalini” dello schema */
+:root{ --slot: 150px; } /* regola qui lo step verticale */
 
-/* titoli round sopra le colonne, non spingono i match */
-.conference .round{ position: relative; }
-.conference .round::before{
-  position: absolute; top: -26px; left: 0;
-  padding-left: 10px; border-left: 4px solid var(--accent);
-  font-weight: 700; color: var(--nav); content: "";
+.conference .round{
+  position:relative;
+  display:grid;
+  grid-template-rows: repeat(8, var(--slot));
+  row-gap:0;
+  min-height: calc(8 * var(--slot)); /* evita collassi */
 }
-#left-round-1::before,  #right-round-1::before  { content: "1° turno"; }
-#left-round-2::before,  #right-round-2::before  { content: "2° turno"; }
-#left-round-3::before,  #right-round-3::before  { content: "Semifinali"; }
 
-/* --- Albero con margini (robusto, niente grid-rows che possono collassare) --- */
-/* 1° turno: 4 match “a gradini” */
-#left-round-1  .match,
-#right-round-1 .match{ margin-bottom: var(--step); }
+/* i match dentro i round non aggiungono margini propri */
+.conference .round .match{ margin:0; }
 
-/* 2° turno: centrato tra i blocchi del 1° turno */
-#left-round-2,  #right-round-2  { margin-top: calc(var(--step) / 2); }
-#left-round-2  .match,
-#right-round-2 .match{ margin-bottom: calc(var(--step) * 2); }
+/* titoli dei round sopra (non spingono i match) */
+.conference .round::before{
+  position:absolute; top:-26px; left:0;
+  padding-left:10px; border-left:4px solid var(--accent);
+  font-weight:700; color:var(--nav);
+  content:"";
+}
+#left-round-1::before,  #right-round-1::before  { content:"1° turno"; }
+#left-round-2::before,  #right-round-2::before  { content:"2° turno"; }
+#left-round-3::before,  #right-round-3::before  { content:"Semifinali"; }
 
-/* Semifinale: centrata tra i due del 2° turno */
-#left-round-3,  #right-round-3 { margin-top: calc(var(--step) * 1.5); }
+/* posizionamento “ad albero” — LEFT */
+#left-round-1 .match:nth-of-type(1){ grid-row: 1 / span 2; }
+#left-round-1 .match:nth-of-type(2){ grid-row: 3 / span 2; }
+#left-round-1 .match:nth-of-type(3){ grid-row: 5 / span 2; }
+#left-round-1 .match:nth-of-type(4){ grid-row: 7 / span 2; }
 
-/* Match card */
+#left-round-2 .match:nth-of-type(1){ grid-row: 2 / span 4; }
+#left-round-2 .match:nth-of-type(2){ grid-row: 6 / span 4; }
+
+#left-round-3 .match:nth-of-type(1){ grid-row: 4 / span 8; }
+
+/* posizionamento “ad albero” — RIGHT */
+#right-round-1 .match:nth-of-type(1){ grid-row: 1 / span 2; }
+#right-round-1 .match:nth-of-type(2){ grid-row: 3 / span 2; }
+#right-round-1 .match:nth-of-type(3){ grid-row: 5 / span 2; }
+#right-round-1 .match:nth-of-type(4){ grid-row: 7 / span 2; }
+
+#right-round-2 .match:nth-of-type(1){ grid-row: 2 / span 4; }
+#right-round-2 .match:nth-of-type(2){ grid-row: 6 / span 4; }
+
+#right-round-3 .match:nth-of-type(1){ grid-row: 4 / span 8; }
+
+/* mostra solo il titolo centrale delle Finals */
+.conference > .conf-title { display:none; }
+.finals     > .conf-title { display:block; }
+
+/* “Finals” sopra al blocco centrale */
+#nbafinals{ position:relative; }
+#nbafinals::before{
+  position:absolute; top:-26px; left:0;
+  padding-left:10px; border-left:4px solid var(--accent);
+  font-weight:700; color:var(--nav);
+  content:"Finals";
+}
+
+/* ================== MATCH CARD & RIGHE ================== */
 .match{
   background:var(--card);
   border:1px solid var(--line);
@@ -102,35 +132,33 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   padding:10px 12px;
   display:flex;
   flex-direction:column;
-  gap:20px;   /* spazio tra le due righe squadra */
+  gap:20px; /* spazio tra le due squadre */
 }
 
-/* Riga squadra (Round 1: seed | logo | score) */
 .team{ display:grid; grid-template-columns:36px 92px auto; gap:12px; align-items:center; }
 
-/* Seed (solo Round 1) */
 .seed{
-  width:28px; height:28px; background:var(--seed-red); color:#fff;
-  display:grid; place-items:center; border-radius:8px; font-weight:800; font-size:.85rem;
+  width:28px; height:28px;
+  background:var(--seed-red); color:#fff;
+  display:grid; place-items:center;
+  border-radius:8px; font-weight:800; font-size:.85rem;
 }
 
-/* Logo */
 .logo-wrap{ width:92px; height:92px; display:grid; place-items:center; background:transparent; border:0; border-radius:0; overflow:visible; }
 .logo-wrap .logo{ width:100%; height:100%; max-width:98%; max-height:98%; object-fit:contain; display:block; }
 .logo-wrap.no-logo{ background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 10px,#e2e8f0 10px,#e2e8f0 20px); }
 
-/* Score: numero singolo, compatto, a sinistra */
 .score-box{
   width:42px; min-height:40px; padding:4px 8px; justify-self:start;
   background:var(--score-red); color:#fff; border:2px solid #8b0f15;
   border-radius:8px; font-weight:800; font-size:1.15rem; letter-spacing:0;
   display:grid; align-items:center; text-align:left; outline:none; user-select:text;
 }
-.score-box[contenteditable="false"]{ cursor:default; caret-color:transparent; user-select:none; }
 .score-box:empty:before{ content:attr(data-placeholder); opacity:.8; }
 .score-box:focus{ box-shadow:0 0 0 3px rgba(197,22,31,.25); }
+.score-box[contenteditable="false"]{ cursor:default; caret-color:transparent; user-select:none; }
 
-/* Round 2+ : niente seed, solo logo | score */
+/* Round 2+ : niente seed, layout logo | score */
 #left-round-2 .seed, #left-round-3 .seed,
 #right-round-2 .seed, #right-round-3 .seed,
 #nbafinals .seed{ display:none; }
