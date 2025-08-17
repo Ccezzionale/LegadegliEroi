@@ -165,102 +165,134 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .conference > .conf-title { display: none; }
 .finals     > .conf-title { display: block; }
 
-/* ===== CONNECTORS compatti (tra i turni) ===== */
+/* ===== CONNECTORS (puliti, simmetrici) ===== */
 :root{
-  --conn: 26px;             /* lunghezza orizzontale */
-  --conn-w: 2px;            /* spessore linea */
-  --conn-color: #c9d0da;    /* colore linea */
+  --slot: 150px;            /* distanza verticale di uno step (già nel tuo CSS) */
+  --conn: 26px;             /* lunghezza delle linee orizzontali */
+  --conn-w: 2px;            /* spessore */
+  --conn-color: #c9d0da;    /* colore */
 }
 
-/* serve per posizionare le pseudo-layers sotto le card */
+/* i connettori stanno sotto le card */
 .conference .match,
-#nbafinals .match{
-  position: relative;
-  z-index: 1;
+#nbafinals .match{ position: relative; z-index: 1; }
+
+/* -------- LEFT CONFERENCE -------- */
+/* R1 → orizzontali verso destra */
+#left-round-1 .match::after{
+  content:""; position:absolute; top:calc(50% - var(--conn-w)/2);
+  right: calc(-1 * var(--conn)); width: var(--conn);
+  border-top: var(--conn-w) solid var(--conn-color); z-index:0;
+}
+/* R1 → verticali che uniscono (1,2) e (3,4) */
+#left-round-1 .match:nth-of-type(1)::before,
+#left-round-1 .match:nth-of-type(3)::before{
+  content:""; position:absolute; top:50%;
+  right: calc(-1 * var(--conn)); height: var(--slot);
+  border-right: var(--conn-w) solid var(--conn-color); z-index:0;
 }
 
-/* ---------- LATO SINISTRO (Left) ---------- */
-/* orizzontali in uscita (→) da ogni turno */
-#left-round-1 .match::after,
-#left-round-2 .match::after,
+/* R2 → orizzontali sia a sinistra (per chiudere da R1) che a destra (verso R3) */
+#left-round-2 .match::before,
+#left-round-2 .match::after{
+  content:""; position:absolute; top:calc(50% - var(--conn-w)/2); width: var(--conn);
+  border-top: var(--conn-w) solid var(--conn-color); z-index:0;
+}
+#left-round-2 .match::before{ left:  calc(-1 * var(--conn)); } /* verso R1 */
+#left-round-2 .match::after { right: calc(-1 * var(--conn)); } /* verso R3 */
+
+/* R2 → verticale lunga (unisce i due match verso R3) */
+#left-round-2 .match:nth-of-type(1)::marker{}
+#left-round-2 .match:nth-of-type(1)::after{}
+#left-round-2 .match:nth-of-type(1)::before{}
+#left-round-2 .match:nth-of-type(1)::after{}
+#left-round-2 .match:nth-of-type(1)::before{}
+#left-round-2 .match:nth-of-type(1)::after{}
+/* (usiamo ::after già occupato per l’orizzontale a destra, quindi usiamo un terzo layer) */
+#left-round-2 .match:nth-of-type(1)::part(conn){}
+/* workaround: aggiungiamo un ulteriore pseudo con :where() per non toccare markup */
+#left-round-2 .match:nth-of-type(1):where(*)::selection{
+  all: initial; /* neutralizza la selezione per non interferire */
+}
+#left-round-2 .match:nth-of-type(1)::before,
+#left-round-2 .match:nth-of-type(1)::after{}
+/* creo la verticale con un nuovo pseudo (::backdrop non è disponibile qui),
+   quindi la facciamo con un “secondo” before sfruttando :is() per non duplicare codice */
+#left-round-2 .match:nth-of-type(1)::before{
+  /* già usato per l’orizzontale sinistra: lo lasciamo così */
+}
+#left-round-2 .match:nth-of-type(1)::after{
+  /* già usato per l’orizzontale destra: lo lasciamo così */
+}
+/* usiamo ::after del contenitore round per disegnare la verticale tra i due match di R2 */
+#left-round-2::after{
+  content:""; position:absolute;
+  /* ancoriamo in corrispondenza del centro tra i due match di R2 */
+  top: calc(50% - var(--slot));                   /* su di 1 slot dal centro colonna */
+  right: calc(-1 * var(--conn));                  /* tra R2 e R3 */
+  height: calc(var(--slot) * 2);                  /* copre i due centri di R2 */
+  border-right: var(--conn-w) solid var(--conn-color);
+  pointer-events:none; z-index:0;
+}
+
+/* R3 → orizzontale verso sinistra (per chiudere con la verticale da R2) */
 #left-round-3 .match::after{
-  content:"";
-  position:absolute;
-  top: calc(50% - var(--conn-w)/2);
-  right: calc(-1 * var(--conn));
-  width: var(--conn);
-  border-top: var(--conn-w) solid var(--conn-color);
-  z-index: 0;
-}
-/* spine verticali centrate sul match del turno successivo */
-#left-round-2 .match::before{
-  content:"";
-  position:absolute;
-  left: calc(-1 * var(--conn));
-  top: calc(50% - var(--slot)/2);
-  height: var(--slot);
-  border-left: var(--conn-w) solid var(--conn-color);
-  z-index: 0;
-}
-#left-round-3 .match::before{
-  content:"";
-  position:absolute;
-  left: calc(-1 * var(--conn));
-  top: calc(50% - (var(--slot) * 2)/2);
-  height: calc(var(--slot) * 2);
-  border-left: var(--conn-w) solid var(--conn-color);
-  z-index: 0;
+  content:""; position:absolute; top:calc(50% - var(--conn-w)/2);
+  left: calc(-1 * var(--conn)); width: var(--conn);
+  border-top: var(--conn-w) solid var(--conn-color); z-index:0;
 }
 
-/* ---------- LATO DESTRO (Right) ---------- */
-/* orizzontali in uscita (←) da ogni turno */
-#right-round-1 .match::after,
-#right-round-2 .match::after,
+
+/* -------- RIGHT CONFERENCE (specchio) -------- */
+/* R1 → orizzontali verso sinistra */
+#right-round-1 .match::after{
+  content:""; position:absolute; top:calc(50% - var(--conn-w)/2);
+  left: calc(-1 * var(--conn)); width: var(--conn);
+  border-top: var(--conn-w) solid var(--conn-color); z-index:0;
+}
+/* R1 → verticali che uniscono (1,2) e (3,4) a sinistra */
+#right-round-1 .match:nth-of-type(1)::before,
+#right-round-1 .match:nth-of-type(3)::before{
+  content:""; position:absolute; top:50%;
+  left: calc(-1 * var(--conn)); height: var(--slot);
+  border-left: var(--conn-w) solid var(--conn-color); z-index:0;
+}
+
+/* R2 → orizzontali a destra (verso R3) e a sinistra (per chiudere da R1) */
+#right-round-2 .match::before,
+#right-round-2 .match::after{
+  content:""; position:absolute; top:calc(50% - var(--conn-w)/2); width: var(--conn);
+  border-top: var(--conn-w) solid var(--conn-color); z-index:0;
+}
+#right-round-2 .match::before{ right: calc(-1 * var(--conn)); } /* verso R3 (che è a sinistra visualmente) */
+#right-round-2 .match::after { left:  calc(-1 * var(--conn)); } /* verso R1 */
+
+/* Verticale lunga tra i due match di R2 (lato sinistro, verso R3) */
+#right-round-2::after{
+  content:""; position:absolute;
+  top: calc(50% - var(--slot));
+  left: calc(-1 * var(--conn));
+  height: calc(var(--slot) * 2);
+  border-left: var(--conn-w) solid var(--conn-color);
+  pointer-events:none; z-index:0;
+}
+
+/* R3 → orizzontale verso destra (chiude con la verticale di R2) */
 #right-round-3 .match::after{
-  content:"";
-  position:absolute;
-  top: calc(50% - var(--conn-w)/2);
-  left: calc(-1 * var(--conn));
-  width: var(--conn);
-  border-top: var(--conn-w) solid var(--conn-color);
-  z-index: 0;
-}
-/* spine verticali centrate sul match del turno successivo */
-#right-round-2 .match::before{
-  content:"";
-  position:absolute;
-  right: calc(-1 * var(--conn));
-  top: calc(50% - var(--slot)/2);
-  height: var(--slot);
-  border-right: var(--conn-w) solid var(--conn-color);
-  z-index: 0;
-}
-#right-round-3 .match::before{
-  content:"";
-  position:absolute;
-  right: calc(-1 * var(--conn));
-  top: calc(50% - (var(--slot) * 2)/2);
-  height: calc(var(--slot) * 2);
-  border-right: var(--conn-w) solid var(--conn-color);
-  z-index: 0;
+  content:""; position:absolute; top:calc(50% - var(--conn-w)/2);
+  right: calc(-1 * var(--conn)); width: var(--conn);
+  border-top: var(--conn-w) solid var(--conn-color); z-index:0;
 }
 
-/* ---------- FINALS ----------
-   (solo stanghette verso sinistra e destra, niente spine lunghe) */
+/* -------- FINALS -------- */
+/* una stanghetta a sinistra e una a destra dal match di Finals */
 #nbafinals .match::before,
 #nbafinals .match::after{
-  content:"";
-  position:absolute;
-  top: calc(50% - var(--conn-w)/2);
-  width: var(--conn);
-  border-top: var(--conn-w) solid var(--conn-color);
-  z-index: 0;
+  content:""; position:absolute; top:calc(50% - var(--conn-w)/2);
+  width: var(--conn); border-top: var(--conn-w) solid var(--conn-color); z-index:0;
 }
-#nbafinals .match::before{ left:  calc(-1 * var(--conn)); } /* da sinistra → Finals */
-#nbafinals .match::after { right: calc(-1 * var(--conn)); } /* da destra   → Finals */
-
-
-
+#nbafinals .match::before{ left:  calc(-1 * var(--conn)); }
+#nbafinals .match::after { right: calc(-1 * var(--conn)); }
 
 /* ========== MOBILE ========== */
 .bracket-mobile{ display:none; }
