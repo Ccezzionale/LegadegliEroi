@@ -73,7 +73,7 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
 /* Seed (solo Round 1) */
 .seed{
-  width:32px; height:32px; background:var(--seed-red); color:#fff;
+  width:28px; height:28px; background:var(--seed-red); color:#fff;
   display:grid; place-items:center; border-radius:8px; font-weight:800; font-size:.85rem;
 }
 
@@ -120,8 +120,8 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
     align-items: center;
   }
   .seed{
-    width: 36px;
-    height: 36px;
+    width: 28px;
+    height: 28px;
     font-size: .9rem;
     border-radius: 8px;
   }
