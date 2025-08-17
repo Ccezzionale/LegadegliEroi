@@ -92,21 +92,21 @@
   </main>
 
   <!-- ===== TEMPLATE (clonati dal JS) ===== -->
-  <template id="match-template">
-    <!-- Ogni match ha: seed rosso, logo grande, box rosso per il risultato (modificabile) -->
-    <article class="match" data-series="">
-      <div class="team home">
-        <span class="seed"></span>
-        <div class="logo-wrap"><img class="logo" alt="Logo squadra"></div>
-        <div class="score-box" contenteditable="true" spellcheck="false" data-placeholder="0–0"></div>
-      </div>
-      <div class="team away">
-        <span class="seed"></span>
-        <div class="logo-wrap"><img class="logo" alt="Logo squadra"></div>
-        <div class="score-box" contenteditable="true" spellcheck="false" data-placeholder="0–0"></div>
-      </div>
-    </article>
-  </template>
+<template id="match-template">
+  <article class="match" data-series="">
+    <div class="team home">
+      <span class="seed"></span>
+      <div class="logo-wrap"><img class="logo" alt="Logo squadra"></div>
+      <div class="score-box" contenteditable="true" spellcheck="false" data-placeholder="0"></div>
+    </div>
+    <div class="team away">
+      <span class="seed"></span>
+      <div class="logo-wrap"><img class="logo" alt="Logo squadra"></div>
+      <div class="score-box" contenteditable="true" spellcheck="false" data-placeholder="0"></div>
+    </div>
+  </article>
+</template>
+
 
   <!-- ===== JS della pagina (lo scrivo nel prossimo messaggio) ===== -->
   <script src="crashoutplayoff.js" defer></script>
