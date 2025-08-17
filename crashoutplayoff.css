@@ -169,28 +169,34 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .finals     > .conf-title{ display:block; }
 
 /* ===== CONNETTORI (layer disegnato dal JS) ===== */
-  :root{
+ /* ===== CONNETTORI (layer disegnato dal JS) ===== */
+:root { 
   --wire-color: #ff1a1a; /* rosso acceso */
-  
-.wire-layer{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  z-index:0;               /* sotto le card */
-}
-.wire-layer .wire{
-   background: var(--wire-color) !important;      /* colore linea */
-  border-radius:3px;
 }
 
-  #bracket-wires polyline{
+.wire-layer{
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;              /* sotto le card */
+}
+.wire-layer .wire{
+  background: var(--wire-color) !important;  /* colore linea */
+  border-radius: 3px;
+}
+
+/* (se usi ancora lo <svg> legacy) */
+#bracket-wires polyline{
   stroke: var(--wire-color);
 }
+
+/* le card stanno sopra ai fili */
 .conference .match,
-#nbafinals .match{
-  position:relative;
-  z-index:1;               /* card sopra i fili */
+.finals-split .match{       /* <-- al posto di #nbafinals */
+  position: relative;
+  z-index: 1;
 }
+
 
 /* ========== MOBILE ========== */
 .bracket-mobile{ display:none; }
