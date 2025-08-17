@@ -431,6 +431,17 @@ nav {
 #round-final .team{ grid-template-columns: 104px var(--score); }
 #round-final .logo-wrap{ width:104px; height:104px; }
 
+/* Offset verticale delle colonne per centrare i turni successivi */
+.bracket.single .round-col:nth-child(2){ /* Semifinali */
+  margin-top: calc(var(--match-h) / 2 + var(--gap-round) / 2);
+}
+.bracket.single .round-col:nth-child(3){ /* Finali di Conference */
+  margin-top: calc(var(--match-h) / 2 + var(--gap-round));
+}
+.bracket.single .round-col:nth-child(4){ /* Finals */
+  margin-top: calc(var(--match-h) / 2 + var(--gap-round) * 1.5);
+}
+
 
 /* ========== MOBILE ========== */
 .bracket-mobile{ display: none; }
