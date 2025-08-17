@@ -39,11 +39,37 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .cup-container{ max-width:none; margin:10px 16px 48px; padding-right:16px; overflow-x:auto; }
 
 .bracket{
-  position:relative;               /* per il layer dei connettori */
   display:grid;
-  grid-template-columns:minmax(360px,max-content) 240px minmax(360px,max-content); /* left | finals | right */
-  gap:20px; align-items:start; width:max-content; justify-content:start;
+  grid-template-columns:minmax(360px,max-content) 180px minmax(360px,max-content); /* 240 -> 180 */
+  gap:16px; /* 20 -> 16 se vuoi stringere un filo anche lo spazio */
 }
+
+.finals-split{
+  display:grid;
+  grid-template-rows: 1fr auto 1fr;
+  align-items:center;
+  justify-items:center;
+  min-height: calc(var(--slot) * 8); /* stessa altezza delle altre colonne */
+  position: relative;
+}
+
+.finals .round::before{ content:none; }
+
+/* la coppa al centro */
+.trophy{
+  width: 120px; height: 120px;
+  background: url("img/cup.png") center/contain no-repeat; /* metti il tuo file */
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.2));
+}
+
+/* card “una sola squadra” per le finals */
+.match.one-team{
+  padding: 8px 12px;
+}
+.match.one-team .team{
+  grid-template-columns: 92px auto; /* solo logo + score */
+}
+.match.one-team .seed{ display:none; }
 
 /* colonne conference affiancate; destra invertita (semi vicino alle Finals) */
 .conference{ display:flex; gap:24px; align-items:flex-start; }
