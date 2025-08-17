@@ -170,7 +170,7 @@ nav {
 /* ========== MOBILE ========== */
 .bracket-mobile{ display: none; }
 
-@media (max-width: 768px){
+@media (max-width: 479){
   .hamburger { display: block; }
   .navbar {
     display: none; flex-direction: column; width: 100%; background-color: var(--nav); margin-top: 10px;
@@ -251,7 +251,7 @@ nav {
 /* ===== Split desktop: 2 metà + Finals al centro, offset con spacer CSS ===== */
 
 /* ===== DESKTOP SPLIT: 2 metà + finals al centro (forzato) ===== */
-@media (min-width: 1200px){
+@media (min-width: 480px){
   /* 4 colonne: Round1 | Semifinali | Finals | Finali Conf */
   .bracket.single{
     display: grid;
