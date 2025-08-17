@@ -105,6 +105,45 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 #right-round-2 .team, #right-round-3 .team,
 #nbafinals .team{ grid-template-columns:92px auto; gap:12px; }
 
+/* ---- Layout ad "albero" per i round (sinistra e destra) ---- */
+/* Altezza unità verticale: aumenta/diminuisci se serve più/meno spazio */
+:root{ --slot: 150px; }
+
+/* ogni colonna di round diventa una griglia verticale */
+.conference .round{
+  display: grid !important;
+  grid-auto-rows: var(--slot);
+  row-gap: 0;
+}
+.conference .round .match{ margin: 0; } /* lasciamo gestire gli spazi alla griglia */
+
+/* ---------- LEFT ---------- */
+/* 1° turno (4 match): occupano 2 "slot" ciascuno */
+#left-round-1 .match:nth-child(1){ grid-row: 1 / span 2; }
+#left-round-1 .match:nth-child(2){ grid-row: 3 / span 2; }
+#left-round-1 .match:nth-child(3){ grid-row: 5 / span 2; }
+#left-round-1 .match:nth-child(4){ grid-row: 7 / span 2; }
+
+/* 2° turno (2 match): tra 1&2 e tra 3&4 */
+#left-round-2 .match:nth-child(1){ grid-row: 2 / span 4; }
+#left-round-2 .match:nth-child(2){ grid-row: 6 / span 4; }
+
+/* Semifinale: centrata tra i due del 2° turno */
+#left-round-3 .match:nth-child(1){ grid-row: 4 / span 8; }
+
+/* ---------- RIGHT ---------- */
+/* schema identico, vale per la conference destra */
+#right-round-1 .match:nth-child(1){ grid-row: 1 / span 2; }
+#right-round-1 .match:nth-child(2){ grid-row: 3 / span 2; }
+#right-round-1 .match:nth-child(3){ grid-row: 5 / span 2; }
+#right-round-1 .match:nth-child(4){ grid-row: 7 / span 2; }
+
+#right-round-2 .match:nth-child(1){ grid-row: 2 / span 4; }
+#right-round-2 .match:nth-child(2){ grid-row: 6 / span 4; }
+
+#right-round-3 .match:nth-child(1){ grid-row: 4 / span 8; }
+
+
 /* ========== MOBILE ========== */
 .bracket-mobile{ display:none; }
 
