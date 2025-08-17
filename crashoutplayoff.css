@@ -147,7 +147,6 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 :root{
   :root{
   --wire-color: #ff1a1a; /* rosso acceso */
-}
   
 .wire-layer{
   position:absolute;
