@@ -254,18 +254,42 @@ function computeRoundOffsets() {
   const rf = document.getElementById("round-final");
   if (!r1 || !r2 || !r3 || !rf) return;
 
-  const m = r1.querySelector(".match");
-  if (!m) return;
+  const firstMatch = r1.querySelector(".match");
+  if (!firstMatch) return;
 
-  // Altezza card e gap reale tra le card
-  const H = m.getBoundingClientRect().height;
-  const G = parseFloat(getComputedStyle(r1).gap) || 18;
+  // Altezza card e gap verticale reale
+  const H = firstMatch.getBoundingClientRect().height;
 
-  // *** FORMULE ESATTE ***
-  r2.style.paddingTop = `${2 * (H + G)}px`;    // Semifinali allineate 3°→6° di R1
-  r3.style.paddingTop = `${3 * (H + G)}px`;    // Conference Finals allineate 2°→3° di R2
-  rf.style.paddingTop = `${3.5 * (H + G)}px`;  // Finals nel mezzo fra CF1 e CF2
+  const cs = getComputedStyle(r1);
+  // su Grid "gap" può essere "row col"; prendo la prima cifra (= row-gap)
+  const gapToken = (cs.rowGap && cs.rowGap !== "normal") ? cs.rowGap : cs.gap;
+  const G = parseFloat(gapToken) || 18;
+
+  // Siamo in layout split se #round-1 ha 2 colonne in grid
+  const cols = (getComputedStyle(r1).gridTemplateColumns || "").split(" ").filter(Boolean).length;
+  const isSplit = cols >= 2;
+
+  if (isSplit) {
+    /* 2 colonne in R1:
+       - Semifinali: in mezzo tra (1° e 2°) e (3° e 4°) → offset = 0.5*(H+G)
+       - Finali di Conf.: in mezzo tra le 2 semifinali → offset = 1.5*(H+G)
+       - Finals: allineate verticalmente al centro delle CF → uso stesso offset
+    */
+    r2.style.paddingTop = `${0.5 * (H + G)}px`;
+    r3.style.paddingTop = `${1.5 * (H + G)}px`;
+    rf.style.paddingTop = `${1.5 * (H + G)}px`;
+  } else {
+    /* layout a 1 colonna (fallback):
+       Semifinali dal 3° al 6° riquadro → 2*(H+G)
+       Finali Conf. in mezzo alle semifinali → 3*(H+G)
+       Finals tra le Conference Finals → 3.5*(H+G)
+    */
+    r2.style.paddingTop = `${2 * (H + G)}px`;
+    r3.style.paddingTop = `${3 * (H + G)}px`;
+    rf.style.paddingTop = `${3.5 * (H + G)}px`;
+  }
 }
+
 
 // Ricalcola quando serve
 function armOffsetRecalc() {
