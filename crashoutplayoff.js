@@ -223,8 +223,65 @@ function renderMobileList(bracket){
   makeGroup("Finals", bracket.finals);
 }
 
+// --- helper punteggi ---
+function clamp03(n){ n = Number(n||0); return Math.max(0, Math.min(3, n)); }
+function getScoreFor(seriesId){
+  const s = SCORES?.[seriesId] || {};
+  return { home: clamp03(s.home), away: clamp03(s.away) };
+}
+
+// Ritorna l'oggetto team vincitore della serie (o null se non definitivo)
+function winnerOf(match, seriesId){
+  const s = getScoreFor(seriesId);
+  if (s.home >= 3 && s.home > s.away) return match.home;
+  if (s.away >= 3 && s.away > s.home) return match.away;
+  return null;
+}
+
+const TBD = { seed: "", team: "TBD" };
+
+function propagateWinners(bracket){
+  // round 1
+  const [L1m,L2m,L3m,L4m] = bracket.r1.left;
+  const [R1m,R2m,R3m,R4m] = bracket.r1.right;
+
+  // semifinali (left)
+  const wL1 = winnerOf(L1m, 'L1'); const wL2 = winnerOf(L2m, 'L2');
+  const wL3 = winnerOf(L3m, 'L3'); const wL4 = winnerOf(L4m, 'L4');
+  bracket.leftSF[0].home = wL1 || TBD;  // LSF1: L1 vs L2
+  bracket.leftSF[0].away = wL2 || TBD;
+  bracket.leftSF[1].home = wL3 || TBD;  // LSF2: L3 vs L4
+  bracket.leftSF[1].away = wL4 || TBD;
+
+  // semifinali (right)
+  const wR1 = winnerOf(R1m, 'R1'); const wR2 = winnerOf(R2m, 'R2');
+  const wR3 = winnerOf(R3m, 'R3'); const wR4 = winnerOf(R4m, 'R4');
+  bracket.rightSF[0].home = wR1 || TBD; // RSF1: R1 vs R2
+  bracket.rightSF[0].away = wR2 || TBD;
+  bracket.rightSF[1].home = wR3 || TBD; // RSF2: R3 vs R4
+  bracket.rightSF[1].away = wR4 || TBD;
+
+  // finali di conference
+  const wLSF1 = winnerOf(bracket.leftSF[0],  'LSF1');
+  const wLSF2 = winnerOf(bracket.leftSF[1],  'LSF2');
+  bracket.leftCF[0].home = wLSF1 || TBD;     // LCF: LSF1 vs LSF2
+  bracket.leftCF[0].away = wLSF2 || TBD;
+
+  const wRSF1 = winnerOf(bracket.rightSF[0], 'RSF1');
+  const wRSF2 = winnerOf(bracket.rightSF[1], 'RSF2');
+  bracket.rightCF[0].home = wRSF1 || TBD;    // RCF: RSF1 vs RSF2
+  bracket.rightCF[0].away = wRSF2 || TBD;
+
+  // finals
+  const wLCF = winnerOf(bracket.leftCF[0],  'LCF');
+  const wRCF = winnerOf(bracket.rightCF[0], 'RCF');
+  bracket.finals[0].home = wLCF || TBD;      // F: LCF vs RCF
+  bracket.finals[0].away = wRCF || TBD;
+}
+
+
 // ======== BUILD & ACTIONS ========
-async function buildBracket() {
+aasync function buildBracket() {
   try {
     clearBracket();
     const seeds = await loadStandings();
@@ -233,15 +290,18 @@ async function buildBracket() {
     }
     const bracket = makeBracketStructure(seeds);
 
+    // ==> NUOVO: propaga i vincitori in base ai punteggi correnti
+    propagateWinners(bracket);
+
     // Round 1
     renderRound("left-round-1", bracket.r1.left);
     renderRound("right-round-1", bracket.r1.right);
 
-    // Semifinali (slot vuoti)
+    // Semifinali
     renderRound("left-round-2", bracket.leftSF);
     renderRound("right-round-2", bracket.rightSF);
 
-    // Finali Conference (slot vuoti)
+    // Finali Conference
     renderRound("left-round-3", bracket.leftCF);
     renderRound("right-round-3", bracket.rightCF);
 
@@ -255,6 +315,7 @@ async function buildBracket() {
     console.error("Errore costruzione bracket:", err);
   }
 }
+
 
 // Pulsanti
 document.addEventListener("DOMContentLoaded", () => {
