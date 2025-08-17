@@ -144,19 +144,22 @@ function createMatchElement(match) {
   awayEl.title = match.away.team;
 
   // SCORE (sincronizzati e memorizzati per serie)
-  const seriesKey = `seriesScore:${match.id}`;
-  const saved = localStorage.getItem(seriesKey) || SCORE_DEFAULT;
-  scoreBoxes.forEach(b => { b.textContent = saved; });
+// SCORE (sincronizzati e memorizzati per serie)
+const seriesKey = `seriesScore:${match.id}`;
+const saved = localStorage.getItem(seriesKey) || SCORE_DEFAULT;
+scoreBoxes.forEach(b => { b.textContent = saved; });
 
-  // sincronizza i due box
-  scoreBoxes.forEach(b => {
-    b.addEventListener("input", () => {
-      const val = b.textContent.trim() || SCORE_DEFAULT;
-      scoreBoxes.forEach(other => {
-        if (other !== b) other.textContent = val;
-      });
-      localStorage.setItem(seriesKey, val);
+// sincronizza i due box
+scoreBoxes.forEach(b => {
+  b.addEventListener("input", () => {
+    const val = b.textContent.trim() || SCORE_DEFAULT;
+    scoreBoxes.forEach(other => {
+      if (other !== b) other.textContent = val;
     });
+    localStorage.setItem(seriesKey, val);
+  });
+});
+
     // evita invii/paste formattati strani
     b.addEventListener("keydown", (e) => {
       if (e.key === "Enter") { e.preventDefault(); b.blur(); }
