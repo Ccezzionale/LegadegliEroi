@@ -56,32 +56,34 @@
   <!-- ===== TOOLBAR (opzionale) ===== -->
   <section class="cup-toolbar">
     <button class="btn" id="refreshBracket" type="button">🔄 Aggiorna da Classifica</button>
+    <button class="btn" id="resetScores" type="button">♻️ Azzera risultati</button>
   </section>
 
   <!-- ===== BRACKET WRAPPER ===== -->
   <main class="cup-container">
-   <div id="bracket" class="bracket single">
-  <section class="round-col">
-    <h2 class="conf-title">Round 1</h2>
-    <div class="round" id="round-1"></div>
-  </section>
+    <div id="bracket" class="bracket">
+      <!-- Colonna sinistra: Round 1, Semifinali Conf, Finali Conf (Ovest) -->
+      <section class="conference left">
+        <h2 class="conf-title">Conference (Left)</h2>
+        <div class="round round-1" id="left-round-1" aria-label="Left Round 1"></div>
+        <div class="round round-2" id="left-round-2" aria-label="Left Semifinals"></div>
+        <div class="round round-3" id="left-round-3" aria-label="Left Conference Finals"></div>
+      </section>
 
-  <section class="round-col">
-    <h2 class="conf-title">Semifinali</h2>
-    <div class="round" id="round-2"></div>
-  </section>
+      <!-- Centro: Finals -->
+      <section class="finals" aria-label="NBA Finals">
+        <h2 class="conf-title">Finals</h2>
+        <div class="round round-final" id="nbafinals"></div>
+      </section>
 
-  <section class="round-col">
-    <h2 class="conf-title">Finale di Conference</h2>
-    <div class="round" id="round-3"></div>
-  </section>
-
-  <section class="round-col">
-    <h2 class="conf-title">Finals</h2>
-    <div class="round" id="round-final"></div>
-  </section>
-</div>
-
+      <!-- Colonna destra: Round 1, Semifinali Conf, Finali Conf (Est) -->
+      <section class="conference right">
+        <h2 class="conf-title">Conference (Right)</h2>
+        <div class="round round-1" id="right-round-1" aria-label="Right Round 1"></div>
+        <div class="round round-2" id="right-round-2" aria-label="Right Semifinals"></div>
+        <div class="round round-3" id="right-round-3" aria-label="Right Conference Finals"></div>
+      </section>
+    </div>
 
     <!-- Mobile stack -->
     <div id="bracket-mobile" class="bracket-mobile" aria-label="Bracket mobile">
@@ -90,53 +92,24 @@
   </main>
 
   <!-- ===== TEMPLATE (clonati dal JS) ===== -->
-<template id="match-template">
-  <article class="match" data-series="">
-    <div class="team home">
-      <span class="seed"></span>
-      <div class="logo-wrap"><img class="logo" alt="Logo squadra"></div>
-      <div class="score-box" contenteditable="true" spellcheck="false" data-placeholder="0"></div>
-    </div>
-    <div class="team away">
-      <span class="seed"></span>
-      <div class="logo-wrap"><img class="logo" alt="Logo squadra"></div>
-      <div class="score-box" contenteditable="true" spellcheck="false" data-placeholder="0"></div>
-    </div>
-  </article>
-</template>
-
+  <template id="match-template">
+    <!-- Ogni match ha: seed rosso, logo grande, box rosso per il risultato (modificabile) -->
+    <article class="match" data-series="">
+      <div class="team home">
+        <span class="seed"></span>
+        <div class="logo-wrap"><img class="logo" alt="Logo squadra"></div>
+        <div class="score-box" contenteditable="true" spellcheck="false" data-placeholder="0–0"></div>
+      </div>
+      <div class="team away">
+        <span class="seed"></span>
+        <div class="logo-wrap"><img class="logo" alt="Logo squadra"></div>
+        <div class="score-box" contenteditable="true" spellcheck="false" data-placeholder="0–0"></div>
+      </div>
+    </article>
+  </template>
 
   <!-- ===== JS della pagina (lo scrivo nel prossimo messaggio) ===== -->
   <script src="crashoutplayoff.js" defer></script>
-
-  <script>
-(function () {
-  function setStepVar() {
-    // prendo la prima card del Round 1 sinistro (tutte hanno la stessa altezza)
-    const first = document.querySelector('#left-round-1 .match');
-    if (!first) return false;
-
-    // altezza reale card + gap (preso dallo stile del contenitore round)
-    const h = first.getBoundingClientRect().height;
-    const roundEl = document.getElementById('left-round-1');
-    const gap = parseFloat(getComputedStyle(roundEl).gap) || 14;
-
-    const step = Math.round(h + gap);
-    document.documentElement.style.setProperty('--step', step + 'px');
-    return true;
-  }
-
-  // prova subito; se non ci sono ancora le card, osserva il DOM finché compaiono
-  if (!setStepVar()) {
-    const target = document.getElementById('left-round-1') || document.body;
-    const obs = new MutationObserver(() => { if (setStepVar()) obs.disconnect(); });
-    obs.observe(target, { childList: true, subtree: true });
-  }
-
-  // ricalcola se cambia la dimensione della pagina (logo load/resize)
-  window.addEventListener('resize', setStepVar, { passive: true });
-})();
-</script>
-
 </body>
 </html>
+
