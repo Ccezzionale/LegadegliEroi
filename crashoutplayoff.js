@@ -309,8 +309,6 @@ async function buildBracket() {
     if (seeds.length < 16) console.warn("Trovate meno di 16 squadre. Ne servono 16.");
 
     const bracket = makeBracketStructure(seeds);
-
-    // Propaga i vincitori in base a SCORES
     propagateWinners(bracket);
 
     // Render
@@ -322,12 +320,22 @@ async function buildBracket() {
     renderRound("right-round-3", bracket.rightCF);
     renderRound("nbafinals",     bracket.finals);
 
-    // Mobile
     renderMobileList(bracket);
+
+    // Disegna i connettori dopo che il DOM è stato aggiornato
+    requestAnimationFrame(() => {
+      drawWires();
+      // piccolo “second pass” per quando i loghi finiscono di caricare
+      setTimeout(drawWires, 0);
+    });
   } catch (err) {
     console.error("Errore costruzione bracket:", err);
   }
 }
+
+// UNA SOLA VOLTA, fuori da buildBracket:
+window.addEventListener('resize', () => requestAnimationFrame(drawWires));
+
 
 document.addEventListener("DOMContentLoaded", () => {
   $("#refreshBracket")?.addEventListener("click", buildBracket);
