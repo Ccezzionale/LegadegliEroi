@@ -168,24 +168,26 @@ function renderRound(containerId, matches) {
   matches.forEach(m => container.appendChild(createMatchElement(m)));
 }
 
-function renderMobileList(bracket) {
+function renderMobileList(bracket){
   const mob = document.getElementById("bracket-mobile");
-  const makeGroup = (title, matches) => {
+  mob.innerHTML = "";
+
+  const add = (title, roundKey, arr) => {
     const wrp = document.createElement("section");
     wrp.className = "round-mobile";
+    wrp.dataset.round = roundKey; // r1, r2, r3, rf (serve al CSS)
     wrp.innerHTML = `<h3>${title}</h3>`;
-    matches.forEach(m => wrp.appendChild(createMatchElement(m)));
+    arr.forEach(m => wrp.appendChild(createMatchElement(m)));
     mob.appendChild(wrp);
   };
-  mob.innerHTML = "";
-  makeGroup("Round 1 — Left", bracket.r1.left);
-  makeGroup("Round 1 — Right", bracket.r1.right);
-  makeGroup("Semifinali — Left", bracket.leftSF);
-  makeGroup("Semifinali — Right", bracket.rightSF);
-  makeGroup("Finale Conference — Left", bracket.leftCF);
-  makeGroup("Finale Conference — Right", bracket.rightCF);
-  makeGroup("Finals", bracket.finals);
+
+  // Unisco left+right per ogni round
+  add("Round 1", "r1", [...bracket.r1.left, ...bracket.r1.right]);
+  add("Semifinali", "r2", [...bracket.leftSF, ...bracket.rightSF]);
+  add("Finale di Conference", "r3", [...bracket.leftCF, ...bracket.rightCF]);
+  add("Finals", "rf", bracket.finals);
 }
+
 
 // ======== BUILD & ACTIONS ========
 async function buildBracket() {
