@@ -1,393 +1,241 @@
-// ========== CRASH OUT CUP – BRACKET ==========
-/*
-- Legge la classifica pubblicata in CSV e costruisce il seeding Top 16.
-- Intestazione trovata in modo dinamico (cerca "Pos" e "Squadra/Team").
-- Evita ReferenceError se alcuni elementi non esistono (bottoni, ecc.).
-- Supporto opzionale ai risultati da un secondo CSV (URL_RESULTS).
-*/
-
 // ======== CONFIG ========
 const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1pXJCNLgchygyLnGbDEsnIV3QAdPUiLcmgzMAhlzYRivXV4fnoSBW5VwiopwXEMfwk32mvdF3gWZC/pub?output=csv";
-const URL_RESULTS   = ""; // opzionale: CSV con risultati; lascia vuoto se non lo usi
-
-// === Colori anello per-team (facoltativo) ===
-const TEAM_COLORS = {
-  "Riverfilo": "#04532d",
-  "Lokomotiv Lipsia": "#8b5cf6",
-  "Golden Knights": "#0b1220",
-  "Athletic Pongao": "#60a5fa",
-  "Rubinkebab": "#ef4444",
-  "Team Bartowski": "#991b1b",
-  "Bayern Christiansen": "#7f1d1d",
-  "Ibla": "#86efac",
-  "Minnesode Timberland": "#f97316",
-  "PokerMantra": "#4c1d95",
-  "Wildboys 78": "#facc15",
-  "Eintracht Franco 126": "#fb923c",
-  "Desperados": "#9f1239",
-  "Pandinicoccolosini": "#22c55e",
-  "MinneSota Snakes": "#10b981",
-  "Fc Disoneste": "#3b82f6",
-};
-const ringColor = (name)=> TEAM_COLORS?.[name] || "var(--primary)";
-
-
-// Se true, il seeding resta fisso (non rilegge la classifica)
-let LOCK_SEEDING = false;
-
-// Stato testuale per serie (facoltativo)
-const SERIES_STATUS = {
-  "R16-1": "Serie in parità 0-0",
-  "R16-2": "Serie in parità 0-0",
-  "R16-3": "Serie in parità 0-0",
-  "R16-4": "Serie in parità 0-0",
-  "R16-5": "Serie in parità 0-0",
-  "R16-6": "Serie in parità 0-0",
-  "R16-7": "Serie in parità 0-0",
-  "R16-8": "Serie in parità 0-0",  
-  // aggiungi altri se vuoi...
-};
-
-// ======== STATE ========
-let seeds = []; // [{seed:1, team:"..."}, ...]
-const BRACKET = { R16: [], QF: [], SF: [], F: [] };
+const LOGO_BASE_PATH = "img/";       // cambia se necessario
+const LOGO_EXT = ".png";               // .png o .jpg in base ai tuoi file
+const SCORE_DEFAULT = "0-0";
 
 // ======== UTILS ========
-const $ = (sel)=>document.querySelector(sel);
-const statusEl   = $('#status');
-const errorsEl   = $('#errors');
-const bracketEl  = $('#bracket');
-const seedStateEl= $('#seedState');
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-$('#refreshBtn')?.addEventListener('click', ()=> init(true));
-$('#lockBtn')?.addEventListener('click', ()=> { LOCK_SEEDING = !LOCK_SEEDING; render(); });
-
-function setStatus(msg){ if(statusEl) statusEl.textContent = msg; }
-function setError(msg){ if(errorsEl) errorsEl.innerHTML = msg ? `<div class="error">${msg}</div>` : ''; }
-
-// CSV parser che gestisce virgolette e virgole all’interno di campi
-function parseCSV(text) {
-  const rows = [];
-  let cur = '', cell = [], inQuotes = false;
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-    if (ch === '"') {
-      if (inQuotes && text[i + 1] === '"') { cur += '"'; i++; }
-      else { inQuotes = !inQuotes; }
-    } else if (ch === ',' && !inQuotes) {
-      cell.push(cur); cur = '';
-    } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
-      if (cur !== '' || cell.length) { cell.push(cur); rows.push(cell); cell = []; cur = ''; }
-    } else {
-      cur += ch;
-    }
-  }
-  if (cur !== '' || cell.length) { cell.push(cur); rows.push(cell); }
-  // rimuovi eventuali righe completamente vuote
-  return rows.filter(r => r.some(x => String(x).trim() !== ''));
+function urlNoCache(url) {
+  const sep = url.includes("?") ? "&" : "?";
+  return `${url}${sep}_cb=${Date.now()}`;
+}
+function isNumeric(v){ return /^\d+$/.test((v ?? "").toString().trim()); }
+function logoSrc(team){
+  const file = `${LOGO_BASE_PATH}${team}${LOGO_EXT}`;
+  return encodeURI(file);
 }
 
-async function fetchCSV(url){
-  if(!url) return null;
-  const res = await fetch(url, { cache: 'no-store' });
-  if(!res.ok) throw new Error('Impossibile caricare: '+url);
-  return parseCSV(await res.text());
-}
+// ======== NAVBAR (identico comportamento del tuo index) ========
+document.addEventListener("DOMContentLoaded", () => {
+  const hamburger = $("#hamburger");
+  const mainMenu = $("#mainMenu");
+  const submenuToggles = $$(".toggle-submenu");
 
-function findTeamColumn(header){
-  const lower = header.map(h=> (h||'').toLowerCase().trim());
-  let idx = lower.findIndex(h => h.includes('squadra'));
-  if(idx===-1) idx = lower.findIndex(h => h.includes('team'));
-  if(idx===-1) idx = lower.findIndex(h => h.includes('nome'));
-  if(idx===-1) idx = 0;
-  return idx;
-}
-
-// ======== STANDINGS -> SEEDS ========
-function buildSeedsFromStandings(rows){
-  if(!rows || !rows.length) throw new Error('CSV classifica vuoto.');
-
-  // Trova dinamicamente la riga intestazione (ha "pos" e "squadra"/"team")
-  const headerIdx = rows.findIndex(r => {
-    const cells = r.map(c => String(c).trim().toLowerCase());
-    return cells.includes('pos') && (cells.includes('squadra') || cells.includes('team'));
+  hamburger?.addEventListener("click", () => {
+    mainMenu.classList.toggle("show");
   });
-  if (headerIdx === -1) throw new Error("Intestazione non trovata (serve 'Pos' e 'Squadra').");
 
-  const header  = rows[headerIdx];
-  const teamCol = findTeamColumn(header);
-
-  // Dati effettivi dalla riga successiva all'header
-  const data = rows.slice(headerIdx + 1).filter(r => (r[teamCol]||'').trim());
-
-  // Prendi le prime 16 squadre
-  const top16 = data.slice(0,16).map((r,i)=> ({
-    seed: i+1,
-    team: r[teamCol].trim()
-  }));
-
-  if(top16.length<16) throw new Error('Servono almeno 16 squadre nella classifica per comporre il tabellone.');
-  return top16;
-}
-
-// ======== BRACKET BUILDING ========
-function defaultPairing(seeds){
-  // Classico: 1v16, 8v9, 5v12, 4v13 | 3v14, 6v11, 7v10, 2v15
-  const order = [ [1,16],[8,9],[5,12],[4,13], [3,14],[6,11],[7,10],[2,15] ];
-  const bySeed = Object.fromEntries(seeds.map(s=>[s.seed,s]));
-  return order.map((pair, idx)=> ({ id: 'R16-'+(idx+1), a: bySeed[pair[0]], b: bySeed[pair[1]], winner: null }));
-}
-
-function linkNextRound(){
-  BRACKET.QF = [0,1,2,3].map(i=> ({ id:'QF-'+(i+1), a:null, b:null, winner:null }));
-  BRACKET.SF = [0,1].map(i=> ({ id:'SF-'+(i+1), a:null, b:null, winner:null }));
-  BRACKET.F  = [{ id:'F-1', a:null, b:null, winner:null }];
-}
-
-function advanceWinnersFrom(roundFrom, roundTo){
-  const pairs = [];
-  for(let i=0;i<BRACKET[roundFrom].length;i+=2){ pairs.push([BRACKET[roundFrom][i], BRACKET[roundFrom][i+1]]); }
-  BRACKET[roundTo].forEach((m, idx)=>{
-    const [m1, m2] = pairs[idx] || [];
-    m.a = m1?.winner || null; m.b = m2?.winner || null;
+  submenuToggles.forEach(toggle => {
+    toggle.addEventListener("click", function (e) {
+      e.preventDefault();
+      const parent = this.closest(".dropdown");
+      parent.classList.toggle("show");
+    });
   });
+});
+
+// ======== PARSE CSV (prende solo A=posizione, B=nome) ========
+async function loadStandings() {
+  const res = await fetch(urlNoCache(URL_STANDINGS));
+  const text = await res.text();
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+
+  const entries = [];
+  for (const line of lines) {
+    const cells = line.split(","); // CSV semplice senza virgole nei nomi
+    const pos = cells[0]?.trim();
+    const name = cells[1]?.trim();
+
+    if (!isNumeric(pos)) continue;         // salta header o righe sporche
+    if (!name) continue;
+
+    entries.push({ seed: Number(pos), team: name });
+  }
+
+  // ordina per seed crescente e prendi i primi 16
+  entries.sort((a, b) => a.seed - b.seed);
+  return entries.slice(0, 16);
 }
 
-function clearWinners(){ ['R16','QF','SF','F'].forEach(r=> BRACKET[r].forEach(m=> m.winner=null)); }
-function ensureStructure(){ if(!BRACKET.R16.length) BRACKET.R16 = defaultPairing(seeds); if(!BRACKET.QF.length || !BRACKET.SF.length || !BRACKET.F.length) linkNextRound(); }
+// ======== BRACKET MODEL ========
+// Mappatura stile NBA su due colonne (sinistra/destra) con 1–16, 8–9, 5–12, 4–13 | 3–14, 6–11, 7–10, 2–15
+function makeRound1Pairs(seeds) {
+  // seeds è array ordinato per seed (1..16)
+  const bySeed = Object.fromEntries(seeds.map(x => [x.seed, x]));
 
-function selectWinner(round, matchId, winnerObj){
-  const match = BRACKET[round].find(m=>m.id===matchId);
-  if(!match) return;
-  match.winner = winnerObj;
+  return {
+    left: [
+      { id: "L1", home: bySeed[1],  away: bySeed[16] },
+      { id: "L2", home: bySeed[8],  away: bySeed[9]  },
+      { id: "L3", home: bySeed[5],  away: bySeed[12] },
+      { id: "L4", home: bySeed[4],  away: bySeed[13] },
+    ],
+    right: [
+      { id: "R1", home: bySeed[3],  away: bySeed[14] },
+      { id: "R2", home: bySeed[6],  away: bySeed[11] },
+      { id: "R3", home: bySeed[7],  away: bySeed[10] },
+      { id: "R4", home: bySeed[2],  away: bySeed[15] },
+    ]
+  };
+}
 
-  if(round==='R16'){
-    advanceWinnersFrom('R16','QF'); BRACKET.SF.forEach(m=> m.winner=null); BRACKET.F[0].winner=null;
-    advanceWinnersFrom('QF','SF');  advanceWinnersFrom('SF','F');
-  } else if(round==='QF'){
-    BRACKET.SF.forEach(m=> m.winner=null); BRACKET.F[0].winner=null;
-    advanceWinnersFrom('QF','SF');  advanceWinnersFrom('SF','F');
-  } else if(round==='SF'){
-    BRACKET.F[0].winner=null;       advanceWinnersFrom('SF','F');
-  }
-  render();
+function makeEmptyMatch(id){
+  return { id, home: { seed: "", team: "TBD" }, away: { seed: "", team: "TBD" } };
+}
+
+function makeBracketStructure(seeds){
+  const r1 = makeRound1Pairs(seeds);
+
+  // Semifinali (winners: L1 vs L2, L3 vs L4 | R1 vs R2, R3 vs R4)
+  const leftSF  = [ makeEmptyMatch("LSF1"), makeEmptyMatch("LSF2") ];
+  const rightSF = [ makeEmptyMatch("RSF1"), makeEmptyMatch("RSF2") ];
+
+  // Finali di Conference (winners: LSF1 vs LSF2 | RSF1 vs RSF2)
+  const leftCF = [ makeEmptyMatch("LCF") ];
+  const rightCF = [ makeEmptyMatch("RCF") ];
+
+  // Finals (LCF vs RCF)
+  const finals = [ makeEmptyMatch("F") ];
+
+  return { r1, leftSF, rightSF, leftCF, rightCF, finals };
 }
 
 // ======== RENDER ========
+function clearBracket() {
+  ["left-round-1","left-round-2","left-round-3","right-round-1","right-round-2","right-round-3","nbafinals","bracket-mobile"]
+    .forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ""; });
+}
 
-function tileNode(t, round, matchId){
-  const tile = document.createElement('div');
-  tile.className = 'tile';
+function createMatchElement(match) {
+  const tpl = document.getElementById("match-template");
+  const node = tpl.content.firstElementChild.cloneNode(true);
+  node.dataset.series = match.id;
 
-  const seed = document.createElement('div');
-  seed.className = 'seed-strip';
-  seed.textContent = t?.seed ?? '–';
+  const [homeEl, awayEl] = $$(".team", node);
+  const [homeSeed, awaySeed] = $$(".seed", node);
+  const [homeLogo, awayLogo] = $$(".logo", node);
+  const scoreBoxes = $$(".score-box", node);
 
-  const box = document.createElement('div');
-  box.className = 'logo-box';
+  // dati
+  homeSeed.textContent = match.home.seed || "";
+  awaySeed.textContent = match.away.seed || "";
 
-  if (t && t.team) {
-    tile.addEventListener('click', ()=> selectWinner(round, matchId, t));
-    const img = document.createElement('img');
-    img.alt = t.team;
-    img.src = `img/${t.team}.png`;
-    img.onerror = function(){ this.remove(); box.classList.add('empty'); };
-    box.appendChild(img);
-  } else {
-    box.classList.add('empty');  // nessuna img -> niente icona rotta
+  // logo + alt
+  homeLogo.alt = match.home.team;
+  awayLogo.alt = match.away.team;
+
+  // sorgenti logo
+  if (match.home.team && match.home.team !== "TBD") {
+    homeLogo.src = logoSrc(match.home.team);
+  }
+  if (match.away.team && match.away.team !== "TBD") {
+    awayLogo.src = logoSrc(match.away.team);
   }
 
-  tile.append(seed, box);
-  return tile;
+  // fallback se logo mancante
+  homeLogo.onerror = () => { homeLogo.classList.add("hidden"); homeLogo.parentElement.classList.add("no-logo"); };
+  awayLogo.onerror = () => { awayLogo.classList.add("hidden"); awayLogo.parentElement.classList.add("no-logo"); };
+
+  // title tooltip
+  homeEl.title = match.home.team;
+  awayEl.title = match.away.team;
+
+  // SCORE (sincronizzati e memorizzati per serie)
+  const seriesKey = `seriesScore:${match.id}`;
+  const saved = localStorage.getItem(seriesKey) || SCORE_DEFAULT;
+  scoreBoxes.forEach(b => { b.textContent = saved; });
+
+  // sincronizza i due box
+  scoreBoxes.forEach(b => {
+    b.addEventListener("input", () => {
+      const val = b.textContent.trim() || SCORE_DEFAULT;
+      scoreBoxes.forEach(other => {
+        if (other !== b) other.textContent = val;
+      });
+      localStorage.setItem(seriesKey, val);
+    });
+    // evita invii/paste formattati strani
+    b.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); b.blur(); }
+    });
+  });
+
+  return node;
 }
 
-
-
-function teamNode(t, round, matchId){  // compat: non più usata direttamente
-  return tileNode(t, round, matchId);
+function renderRound(containerId, matches){
+  const container = document.getElementById(containerId);
+  matches.forEach(m => container.appendChild(createMatchElement(m)));
 }
 
-function matchNode(m, round, withConnector){
-  const card = document.createElement('div');
-  card.className = 'match';
-
-  const stack = document.createElement('div');
-  stack.className = 'series-stack';
-
-  const a = tileNode(m.a, round, m.id);
-  const b = tileNode(m.b, round, m.id);
-
-  if (m.winner){
-    const aWin = m.a && m.winner.team === m.a.team;
-    a.classList.toggle('win', aWin);
-    b.classList.toggle('loss', aWin);
-    b.classList.toggle('win', !aWin);
-    a.classList.toggle('loss', !aWin);
-  }
-
-  stack.append(a,b);
-  card.appendChild(stack);
-
-  const s = document.createElement('div');
-  s.className = 'series-status';
-  s.textContent = SERIES_STATUS[m.id] || 'In attesa';
-  card.appendChild(s);
-
-  if (withConnector){
-    const c = document.createElement('div');
-    c.className = 'connector';
-    card.appendChild(c);
-  }
-
-  return card;
-}
-
-
-function col(title, nodes, extraClass=''){
-  const div = document.createElement('div');
-  div.className = 'round-col ' + extraClass;
-  const h = document.createElement('div');
-  h.className = 'round-title'; h.textContent = title;
-  div.appendChild(h);
-  nodes.forEach(n=> div.appendChild(n));
-  return div;
-}
-
-function render(){
-  if (seedStateEl) seedStateEl.textContent = `Seeding: ${LOCK_SEEDING ? 'bloccato' : 'attivo'}`;
-  if (!bracketEl) return;
-  bracketEl.innerHTML = '';
-
-  const r16Nodes = BRACKET.R16.map(m => matchNode(m, 'R16', true));
-  advanceWinnersFrom('R16', 'QF');
-
-  const qfNodes  = BRACKET.QF.map(m  => matchNode(m, 'QF',  true));
-  advanceWinnersFrom('QF',  'SF');
-
-  const sfNodes  = BRACKET.SF.map(m  => matchNode(m, 'SF',  true));
-  advanceWinnersFrom('SF',  'F');
-
-  const fNodes   = BRACKET.F.map(m   => matchNode(m, 'F',   false));
-
-  // Colonne con etichette di conference (prime due = west, ultime due = east) — regola come preferisci
-  bracketEl.appendChild(col('Ottavi (R16)', r16Nodes.slice(0,4), 'west'));
-  bracketEl.appendChild(col('Quarti',        qfNodes.slice(0,2),  'west'));
-  bracketEl.appendChild(col('Semifinali',    sfNodes.slice(0,1),  'west'));
-  const finalCol = col('Finale',             fNodes,              'final');
-  bracketEl.appendChild(finalCol);
-  bracketEl.appendChild(col('Semifinali',    sfNodes.slice(1),    'east'));
-  bracketEl.appendChild(col('Quarti',        qfNodes.slice(2),    'east'));
-  bracketEl.appendChild(col('Ottavi (R16)',  r16Nodes.slice(4),   'east'));
-}
-
-
-// ======== RISULTATI (opzionali) ========
-function applyResults(resultsRows){
-  const header = resultsRows[0].map(h=> (h||'').toLowerCase());
-  const idx = {
-    round:  header.findIndex(h=>h==='round'),
-    match:  header.findIndex(h=>h==='match'),
-    home:   header.findIndex(h=>h==='home'),
-    away:   header.findIndex(h=>h==='away'),
-    homePts:header.findIndex(h=>h==='homepts'),
-    awayPts:header.findIndex(h=>h==='awaypts'),
-    winner: header.findIndex(h=>h==='winner'),
+function renderMobileList(bracket){
+  const mob = document.getElementById("bracket-mobile");
+  const makeGroup = (title, matches) => {
+    const wrp = document.createElement("section");
+    wrp.className = "round-mobile";
+    wrp.innerHTML = `<h3>${title}</h3>`;
+    matches.forEach(m => wrp.appendChild(createMatchElement(m)));
+    mob.appendChild(wrp);
   };
-  const rows = resultsRows.slice(1);
-  const groups = { R16:[], QF:[], SF:[], F:[] };
-
-  rows.forEach(r=>{
-    const round = (r[idx.round]||'').toUpperCase();
-    if(!groups[round]) return;
-    groups[round].push({
-      round, match: r[idx.match], home: r[idx.home], away: r[idx.away],
-      homePts: Number(r[idx.homePts]), awayPts: Number(r[idx.awayPts]),
-      winner: r[idx.winner]
-    });
-  });
-
-  const setWinnerByName = (round, matchId, name)=>{
-    const match = BRACKET[round].find(m=>m.id.toLowerCase()===String(matchId).toLowerCase());
-    if(!match) return;
-    const cand = [match.a, match.b].find(t=> t && t.team.toLowerCase()===String(name||'').toLowerCase());
-    if(cand) match.winner = cand;
-  };
-
-  ['R16','QF','SF','F'].forEach(round=>{
-    const arr = groups[round]; if(!arr || !arr.length) return;
-    arr.forEach(entry=>{
-      const id = `${round}-${String(entry.match).replace(/\s+/g,'')}`;
-      let chosen = entry.winner;
-      if(!chosen && Number.isFinite(entry.homePts) && Number.isFinite(entry.awayPts)){
-        if(entry.homePts>entry.awayPts) chosen = entry.home;
-        else if(entry.awayPts>entry.homePts) chosen = entry.away;
-      }
-      if(chosen) setWinnerByName(round, id, chosen);
-    });
-    if(round==='R16') advanceWinnersFrom('R16','QF');
-    if(round==='QF')  advanceWinnersFrom('QF','SF');
-    if(round==='SF')  advanceWinnersFrom('SF','F');
-  });
+  mob.innerHTML = "";
+  makeGroup("Round 1 — Left",  bracket.r1.left);
+  makeGroup("Round 1 — Right", bracket.r1.right);
+  makeGroup("Semifinali — Left",  bracket.leftSF);
+  makeGroup("Semifinali — Right", bracket.rightSF);
+  makeGroup("Finale Conference — Left", bracket.leftCF);
+  makeGroup("Finale Conference — Right", bracket.rightCF);
+  makeGroup("Finals", bracket.finals);
 }
 
-// ======== INIT ========
-async function init(force=false){
-  setError('');
-  try{
-    setStatus('Caricamento…');
-
-    if(!LOCK_SEEDING || force){
-      if(URL_STANDINGS){
-        const rows = await fetchCSV(URL_STANDINGS);
-        seeds = buildSeedsFromStandings(rows);
-      } else if(!seeds.length){
-        seeds = Array.from({length:16}, (_,i)=>({seed:i+1, team:`Squadra ${i+1}`}));
-      }
-      BRACKET.R16 = defaultPairing(seeds);
-      linkNextRound();
-      clearWinners();
-    } else {
-      ensureStructure();
+// ======== BUILD & ACTIONS ========
+async function buildBracket() {
+  try {
+    clearBracket();
+    const seeds = await loadStandings();
+    if (seeds.length < 16) {
+      console.warn("Trovate meno di 16 squadre. Ne servono 16.");
     }
+    const bracket = makeBracketStructure(seeds);
 
-    if(URL_RESULTS){
-      const resRows = await fetchCSV(URL_RESULTS);
-      if(resRows && resRows.length) applyResults(resRows);
-    }
+    // Round 1
+    renderRound("left-round-1", bracket.r1.left);
+    renderRound("right-round-1", bracket.r1.right);
 
-    render();
-    const ts = new Date();
-    setStatus(`Aggiornato alle ${ts.toLocaleTimeString()} · ${LOCK_SEEDING? 'Seeding bloccato' : 'Seeding attivo'}`);
-  } catch(err){
-    console.error(err);
-    setError(err.message || String(err));
-    render();
-    setStatus('');
+    // Semifinali (slot vuoti)
+    renderRound("left-round-2", bracket.leftSF);
+    renderRound("right-round-2", bracket.rightSF);
+
+    // Finali Conference (slot vuoti)
+    renderRound("left-round-3", bracket.leftCF);
+    renderRound("right-round-3", bracket.rightCF);
+
+    // Finals
+    renderRound("nbafinals", bracket.finals);
+
+    // Mobile
+    renderMobileList(bracket);
+
+  } catch (err) {
+    console.error("Errore costruzione bracket:", err);
   }
 }
 
-// ======== NAVBAR (mobile) ========
-function setupNav(){
-  const burger = document.getElementById('hamburger');
-  const menu   = document.getElementById('mainMenu');
-  const ddBtns = document.querySelectorAll('.toggle-submenu');
+// Pulsanti
+document.addEventListener("DOMContentLoaded", () => {
+  $("#refreshBracket")?.addEventListener("click", buildBracket);
 
-  burger?.addEventListener('click', ()=>{
-    const open = menu?.classList.toggle('open');
-    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
-
-  ddBtns.forEach(btn=>{
-    btn.addEventListener('click', (e)=>{
-      e.preventDefault();
-      const li = btn.closest('.dropdown');
-      li?.classList.toggle('open');
-      const exp = li?.classList.contains('open');
-      btn.setAttribute('aria-expanded', exp ? 'true' : 'false');
+  $("#resetScores")?.addEventListener("click", () => {
+    // cancella tutti i seriesScore
+    Object.keys(localStorage).forEach(k => {
+      if (k.startsWith("seriesScore:")) localStorage.removeItem(k);
     });
+    // reset visivo
+    $$(".score-box").forEach(b => b.textContent = SCORE_DEFAULT);
   });
-}
 
-// Auto init
-setupNav();
-init();
+  // build iniziale
+  buildBracket();
+});
