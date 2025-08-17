@@ -117,50 +117,61 @@ function createMatchElement(match) {
   const [homeEl, awayEl] = $$(".team", node);
   const [homeSeed, awaySeed] = $$(".seed", node);
   const [homeLogo, awayLogo] = $$(".logo", node);
-  const scoreBoxes = $$(".score-box", node);
+  const [homeBox, awayBox]   = $$(".score-box", node);
 
-  // dati
+  // dati base
   homeSeed.textContent = match.home.seed || "";
   awaySeed.textContent = match.away.seed || "";
 
-  // logo + alt
   homeLogo.alt = match.home.team;
   awayLogo.alt = match.away.team;
 
-  // sorgenti logo
-  if (match.home.team && match.home.team !== "TBD") {
-    homeLogo.src = logoSrc(match.home.team);
-  }
-  if (match.away.team && match.away.team !== "TBD") {
-    awayLogo.src = logoSrc(match.away.team);
-  }
+  if (match.home.team && match.home.team !== "TBD") homeLogo.src = logoSrc(match.home.team);
+  if (match.away.team && match.away.team !== "TBD") awayLogo.src = logoSrc(match.away.team);
 
-  // fallback se logo mancante
   homeLogo.onerror = () => { homeLogo.classList.add("hidden"); homeLogo.parentElement.classList.add("no-logo"); };
   awayLogo.onerror = () => { awayLogo.classList.add("hidden"); awayLogo.parentElement.classList.add("no-logo"); };
 
-  // title tooltip
   homeEl.title = match.home.team;
   awayEl.title = match.away.team;
 
-  // SCORE (sincronizzati e memorizzati per serie)
-  const seriesKey = `seriesScore:${match.id}`;
-  const saved = localStorage.getItem(seriesKey) || SCORE_DEFAULT;
-  scoreBoxes.forEach(b => { b.textContent = saved; });
+  // ===== punteggio singolo per box (0..3) =====
+  const keyHome   = `seriesScore:${match.id}:home`;
+  const keyAway   = `seriesScore:${match.id}:away`;
+  const legacyKey = `seriesScore:${match.id}`; // per retrocompatibilità "0-0"
 
-  // sincronizza i due box
-  scoreBoxes.forEach(b => {
-    b.addEventListener("input", () => {
-      const val = b.textContent.trim() || SCORE_DEFAULT;
-      scoreBoxes.forEach(other => {
-        if (other !== b) other.textContent = val;
-      });
-      localStorage.setItem(seriesKey, val);
-    });
-    // evita invii/paste formattati strani
-    b.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") { e.preventDefault(); b.blur(); }
-    });
+  function clamp03(v){
+    const n = parseInt(String(v).replace(/\D/g,""), 10);
+    if (isNaN(n)) return "0";
+    return String(Math.max(0, Math.min(3, n)));
+  }
+
+  // carica (prima chiavi nuove, poi fallback al legacy "h-a")
+  let hVal = localStorage.getItem(keyHome);
+  let aVal = localStorage.getItem(keyAway);
+
+  if (hVal == null || aVal == null) {
+    const legacy = localStorage.getItem(legacyKey);
+    if (legacy && legacy.includes("-")) {
+      const [h,a] = legacy.split("-").map(clamp03);
+      if (hVal == null) hVal = h;
+      if (aVal == null) aVal = a;
+    }
+  }
+
+  homeBox.textContent = clamp03(hVal ?? SCORE_DEFAULT);
+  awayBox.textContent = clamp03(aVal ?? SCORE_DEFAULT);
+
+  function saveSide(box, key){
+    const val = clamp03(box.textContent);
+    box.textContent = val;                 // normalizza subito
+    localStorage.setItem(key, val);        // salva singolo numero
+  }
+
+  [[homeBox, keyHome], [awayBox, keyAway]].forEach(([box, key]) => {
+    box.addEventListener("input", () => saveSide(box, key));
+    box.addEventListener("blur",  () => saveSide(box, key));
+    box.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); box.blur(); } });
   });
 
   return node;
@@ -226,15 +237,8 @@ async function buildBracket() {
 // Pulsanti
 document.addEventListener("DOMContentLoaded", () => {
   $("#refreshBracket")?.addEventListener("click", buildBracket);
-
-  $("#resetScores")?.addEventListener("click", () => {
-    // cancella tutti i seriesScore
-    Object.keys(localStorage).forEach(k => {
-      if (k.startsWith("seriesScore:")) localStorage.removeItem(k);
-    });
-    // reset visivo
-    $$(".score-box").forEach(b => b.textContent = SCORE_DEFAULT);
-  });
+  buildBracket();
+});
 
   // build iniziale
   buildBracket();
