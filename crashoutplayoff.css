@@ -446,6 +446,17 @@ nav {
   transform: translateY(calc(1.5 * var(--match-v) + 1.5 * var(--gap-round)));
 }
 
+/* micro-tweak: abbassa un po' le Semifinali */
+:root{
+  --col2-tweak: 12px; /* prova 10–14px finché è perfetto sul tuo schermo */
+}
+
+.bracket.single .round-col:nth-child(2){ /* Semifinali */
+  transform: translateY(
+    calc(0.5 * var(--match-v) + 0.5 * var(--gap-round) + var(--col2-tweak))
+  );
+}
+
 
 /* ========== MOBILE ========== */
 .bracket-mobile{ display: none; }
