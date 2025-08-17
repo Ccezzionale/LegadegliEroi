@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (hamburger) {
     hamburger.addEventListener("click", function () {
-      mainMenu && mainMenu.classList.toggle("show");
+      if (mainMenu) mainMenu.classList.toggle("show");
     });
   }
 
@@ -52,10 +52,8 @@ async function loadStandings() {
     const cells = line.split(",");
     const pos = cells[0] ? cells[0].trim() : "";
     const name = cells[1] ? cells[1].trim() : "";
-
     if (!isNumeric(pos)) continue;
     if (!name) continue;
-
     entries.push({ seed: Number(pos), team: name });
   }
 
@@ -81,18 +79,16 @@ function makeRound1Pairs(seeds) {
     ]
   };
 }
-
 function makeEmptyMatch(id) {
   return { id, home: { seed: "", team: "TBD" }, away: { seed: "", team: "TBD" } };
 }
-
 function makeBracketStructure(seeds) {
   const r1 = makeRound1Pairs(seeds);
-  const leftSF = [ makeEmptyMatch("LSF1"), makeEmptyMatch("LSF2") ];
+  const leftSF  = [ makeEmptyMatch("LSF1"), makeEmptyMatch("LSF2") ];
   const rightSF = [ makeEmptyMatch("RSF1"), makeEmptyMatch("RSF2") ];
-  const leftCF = [ makeEmptyMatch("LCF") ];
+  const leftCF  = [ makeEmptyMatch("LCF") ];
   const rightCF = [ makeEmptyMatch("RCF") ];
-  const finals = [ makeEmptyMatch("F") ];
+  const finals  = [ makeEmptyMatch("F") ];
   return { r1, leftSF, rightSF, leftCF, rightCF, finals };
 }
 
@@ -107,39 +103,32 @@ function createMatchElement(match) {
   const node = tpl.content.firstElementChild.cloneNode(true);
   node.dataset.series = match.id;
 
-  const teamsEls = $$(".team", node);
-  const seedEls = $$(".seed", node);
-  const logoEls = $$(".logo", node);
-  const scoreBoxes = $$(".score-box", node);
+  const teamsEls  = $$(".team", node);
+  const seedEls   = $$(".seed", node);
+  const logoEls   = $$(".logo", node);
+  const scoreBoxes= $$(".score-box", node);
 
-  // dati
-  seedEls[0].textContent = match.home.seed || "";
-  seedEls[1].textContent = match.away.seed || "";
+  // dati seed
+  if (seedEls[0]) seedEls[0].textContent = match.home.seed || "";
+  if (seedEls[1]) seedEls[1].textContent = match.away.seed || "";
 
   // logo + alt
-  logoEls[0].alt = match.home.team;
-  logoEls[1].alt = match.away.team;
-
-  if (match.home.team && match.home.team !== "TBD") {
-    logoEls[0].src = logoSrc(match.home.team);
+  if (logoEls[0]) {
+    logoEls[0].alt = match.home.team;
+    if (match.home.team && match.home.team !== "TBD") logoEls[0].src = logoSrc(match.home.team);
+    else logoEls[0].classList.add("hidden");
+    logoEls[0].onerror = function(){ this.classList.add("hidden"); this.parentElement.classList.add("no-logo"); };
   }
-  if (match.away.team && match.away.team !== "TBD") {
-    logoEls[1].src = logoSrc(match.away.team);
+  if (logoEls[1]) {
+    logoEls[1].alt = match.away.team;
+    if (match.away.team && match.away.team !== "TBD") logoEls[1].src = logoSrc(match.away.team);
+    else logoEls[1].classList.add("hidden");
+    logoEls[1].onerror = function(){ this.classList.add("hidden"); this.parentElement.classList.add("no-logo"); };
   }
-
-  // fallback logo
-  logoEls[0].onerror = function () {
-    this.classList.add("hidden");
-    this.parentElement.classList.add("no-logo");
-  };
-  logoEls[1].onerror = function () {
-    this.classList.add("hidden");
-    this.parentElement.classList.add("no-logo");
-  };
 
   // title tooltip
-  teamsEls[0].title = match.home.team;
-  teamsEls[1].title = match.away.team;
+  if (teamsEls[0]) teamsEls[0].title = match.home.team;
+  if (teamsEls[1]) teamsEls[1].title = match.away.team;
 
   // SCORE (un box per squadra, salvato in localStorage)
   scoreBoxes.forEach((b, idx) => {
@@ -153,11 +142,18 @@ function createMatchElement(match) {
       const num = Math.max(0, Math.min(3, parseInt(val, 10)));
       b.textContent = String(isNaN(num) ? SCORE_DEFAULT : num);
       localStorage.setItem(key, b.textContent);
+      // se cambi il punteggio, riallineo (in caso l'altezza cambi)
+      requestAnimationFrame(computeRoundOffsets);
     });
 
     b.addEventListener("keydown", (e) => {
       if (e.key === "Enter") { e.preventDefault(); b.blur(); }
     });
+  });
+
+  // quando i loghi finiscono di caricare, ricalcola offsets
+  logoEls.forEach(img => {
+    if (img && !img.complete) img.addEventListener("load", computeRoundOffsets, { once: true });
   });
 
   return node;
@@ -175,19 +171,65 @@ function renderMobileList(bracket){
   const add = (title, roundKey, arr) => {
     const wrp = document.createElement("section");
     wrp.className = "round-mobile";
-    wrp.dataset.round = roundKey; // r1, r2, r3, rf (serve al CSS)
+    wrp.dataset.round = roundKey; // r1, r2, r3, rf
     wrp.innerHTML = `<h3>${title}</h3>`;
     arr.forEach(m => wrp.appendChild(createMatchElement(m)));
     mob.appendChild(wrp);
   };
 
-  // Unisco left+right per ogni round
   add("Round 1", "r1", [...bracket.r1.left, ...bracket.r1.right]);
   add("Semifinali", "r2", [...bracket.leftSF, ...bracket.rightSF]);
   add("Finale di Conference", "r3", [...bracket.leftCF, ...bracket.rightCF]);
   add("Finals", "rf", bracket.finals);
 }
 
+// ======== OFFSETS DINAMICI (R1 → SF → CF → Finals) ========
+let _resizeHooked = false;
+
+function computeRoundOffsets() {
+  const r1 = document.querySelector("#round-1 .match");
+  const r2 = document.getElementById("round-2");
+  const r3 = document.getElementById("round-3");
+  const rf = document.getElementById("round-final");
+  if (!r1 || !r2 || !r3 || !rf) return;
+
+  // altezza reale della card (padding + bordo inclusi)
+  const h = Math.round(r1.getBoundingClientRect().height);
+
+  // leggo il gap dai CSS custom props (fallback 18)
+  const rootStyle = getComputedStyle(document.documentElement);
+  const gap = parseFloat(rootStyle.getPropertyValue("--gap-round")) || 18;
+
+  // micro-aggiustamento per centrare al pixel le Semifinali
+  const tweak = 16; // prova 12–20 per rifinire
+
+  // Applica offsets come paddingTop (inline)
+  r2.style.paddingTop = `${(h + gap) / 2 + tweak}px`;
+  r3.style.paddingTop = `${(h + gap)}px`;
+  rf.style.paddingTop = `${1.5 * (h + gap)}px`;
+}
+
+function setupOffsetRecalc() {
+  // se hai vecchi transform nel CSS, neutralizzali (nel dubbio)
+  const maybeCols = document.querySelectorAll('.bracket.single .round-col:nth-child(2), .bracket.single .round-col:nth-child(3), .bracket.single .round-col:nth-child(4)');
+  maybeCols.forEach(el => { el.style.transform = "none"; });
+
+  // ricalcola quando caricano i loghi (appena creati adesso)
+  document
+    .querySelectorAll("#round-1 img.logo, #round-2 img.logo, #round-3 img.logo, #round-final img.logo")
+    .forEach(img => {
+      if (!img.complete) img.addEventListener("load", computeRoundOffsets, { once: true });
+    });
+
+  // ricalcola al resize (una sola volta)
+  if (!_resizeHooked) {
+    window.addEventListener("resize", computeRoundOffsets, { passive: true });
+    _resizeHooked = true;
+  }
+
+  // ricalcola al prossimo frame quando il layout è pronto
+  requestAnimationFrame(computeRoundOffsets);
+}
 
 // ======== BUILD & ACTIONS ========
 async function buildBracket() {
@@ -199,27 +241,27 @@ async function buildBracket() {
     }
     const bracket = makeBracketStructure(seeds);
 
-// Round 1 (8 serie): unisco left+right
-renderRound("round-1", [...bracket.r1.left, ...bracket.r1.right]);
+    // Round 1 (8 serie)
+    renderRound("round-1", [...bracket.r1.left, ...bracket.r1.right]);
+    // Round 2 (4 serie)
+    renderRound("round-2", [...bracket.leftSF, ...bracket.rightSF]);
+    // Round 3 (2 serie)
+    renderRound("round-3", [...bracket.leftCF, ...bracket.rightCF]);
+    // Finals (1 serie)
+    renderRound("round-final", bracket.finals);
 
-// Round 2 (4 serie): unisco le due semifinali di conference
-renderRound("round-2", [...bracket.leftSF, ...bracket.rightSF]);
+    // Mobile
+    renderMobileList(bracket);
 
-// Round 3 (2 serie): finali di conference
-renderRound("round-3", [...bracket.leftCF, ...bracket.rightCF]);
-
-// Finals (1 serie)
-renderRound("round-final", bracket.finals);
-
-// Mobile (puoi anche lasciarlo uguale)
-renderMobileList(bracket);
+    // DOPO il render → calcola offset
+    setupOffsetRecalc();
 
   } catch (err) {
     console.error("Errore costruzione bracket:", err);
   }
 }
 
-// Pulsanti
+// Pulsanti & init
 document.addEventListener("DOMContentLoaded", function () {
   const refreshBtn = $("#refreshBracket");
   if (refreshBtn) refreshBtn.addEventListener("click", buildBracket);
