@@ -143,8 +143,6 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .finals     > .conf-title{ display:block; }
 
 /* ===== CONNETTORI (layer disegnato dal JS) ===== */
-
-:root{
   :root{
   --wire-color: #ff1a1a; /* rosso acceso */
   
