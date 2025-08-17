@@ -375,6 +375,62 @@ nav {
   border-radius: 0;
 }
 
+/* ===== Bracket a colonne di round ===== */
+.bracket.single{
+  grid-template-columns: repeat(4, max-content);
+  column-gap: 28px;
+  justify-content: flex-start;
+}
+.round-col{
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-round);
+  width: max-content;
+}
+
+/* Titoli sopra ad ogni colonna */
+.round-col .conf-title{
+  margin: 0 0 8px 0;
+  font-size: 1.05rem;
+  color: var(--nav);
+  border-left: 4px solid var(--accent);
+  padding-left: 10px;
+}
+
+/* Solo Round 1 mostra il seed; dagli altri turni sparisce */
+#round-2 .seed,
+#round-3 .seed,
+#round-final .seed { display: none; }
+
+/* Quando non c'è il seed → riga squadra: logo + punteggio */
+#round-2 .team,
+#round-3 .team,
+#round-final .team{
+  grid-template-columns: var(--logo) var(--score);
+}
+
+/* Loghi senza cerchio (vale ovunque) */
+.logo-wrap{
+  width: var(--logo);
+  height: var(--logo);
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+  display: grid;
+  place-items: center;
+}
+.logo-wrap .logo{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: transparent;
+}
+
+/* Finals: loghi un filo più grandi */
+#round-final .team{ grid-template-columns: 104px var(--score); }
+#round-final .logo-wrap{ width:104px; height:104px; }
+
 
 /* ========== MOBILE ========== */
 .bracket-mobile{ display: none; }
