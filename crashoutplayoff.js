@@ -198,14 +198,9 @@ function computeRoundOffsets() {
   const rootStyle = getComputedStyle(document.documentElement);
   const gap = parseFloat(rootStyle.getPropertyValue("--gap-round")) || 18;
 
-  // Semifinali: allinea dal 3° al 6° match del Round 1
-  r2.style.paddingTop = `${2 * (h + gap)}px`;      // 2*(h+gap) = inizio al R1 #3
-
-  // Finale di Conference: in mezzo alle semifinali (tra R1 #3 e #4)
-  r3.style.paddingTop = `${2.5 * (h + gap)}px`;    // 2.5*(h+gap)
-
-  // Finals: in mezzo alle due Conference Finals
-  rf.style.paddingTop = `${3 * (h + gap)}px`;      // 3*(h+gap)
+  r2.style.paddingTop = `${2   * (h + gap) + up}px`;
+  r3.style.paddingTop = `${2.5 * (h + gap) + up}px`;
+  rf.style.paddingTop = `${3   * (h + gap) + up}px`;
 }
 
 function setupOffsetRecalc() {
