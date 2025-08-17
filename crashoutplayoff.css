@@ -63,6 +63,9 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   filter: drop-shadow(0 2px 4px rgba(0,0,0,.2));
 }
 
+.trophy{ pointer-events:none; }
+
+
 /* card “una sola squadra” per le finals */
 .match.one-team{
   padding: 8px 12px;
