@@ -145,6 +145,16 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
     grid-template-columns: 92px auto;
     gap: 12px;
   }
+
+  .logo-wrap{
+  width: 92px;
+  height: 92px;
+  aspect-ratio: 1 / 1;  /* box sempre quadrato */
+  padding: 6px;         /* stacco interno: evita attaccature */
+  overflow: hidden;     /* il logo non esce più dal box */
+  display: grid;
+  place-items: center;
+}
 }
 /* ========== MOBILE ========== */
 .bracket-mobile{ display:none; }
