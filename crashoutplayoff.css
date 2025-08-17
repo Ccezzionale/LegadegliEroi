@@ -90,6 +90,11 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 }
 .score-box:empty:before{ content:attr(data-placeholder); opacity:.8; }
 .score-box:focus{ box-shadow:0 0 0 3px rgba(197,22,31,.25); }
+.score-box[contenteditable="false"]{
+  cursor: default;
+  caret-color: transparent;
+  user-select: none;
+}
 
 /* === Round 2+ : nascondi seed, layout logo | score === */
 #left-round-2 .seed, #left-round-3 .seed,
