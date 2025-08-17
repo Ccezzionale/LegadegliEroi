@@ -230,91 +230,73 @@ const relToBracket = pt => {
 };
 
 // ridisegna tutti i connettori con ancore stabili
-function drawWires(){
+function drawWires() {
   const layer = ensureWireLayer(true);
-  if(!layer) return;
+  if (!layer) return;
 
-  const STROKE = 3;
-  const PAD    = 12;
+  // helper: disegna una curva a gomito con la verticale vicino al target quando serve
+  const H_PAD = 14;       // distanza orizzontale dal target per piazzare la verticale
+  const STROKE = 3;       // spessore linea
 
-  const fromMidRight = el => {
-    const r = rectOf(el);
-    return relToBracket({ x: r.right, y: r.top + r.height/2 });
-  };
-  const toMidLeft = el => {
-    const r = rectOf(el);
-    return relToBracket({ x: r.left, y: r.top + r.height/2 });
-  };
-  const toMidRight = el => {
-    const r = rectOf(el);
-    return relToBracket({ x: r.right, y: r.top + r.height/2 });
-  };
+  function elbow(fromEl, toEl, nearTo = false) {
+    const a = midRight(fromEl);
+    const b = midLeft(toEl);
 
-  const finals = document.querySelector('#nbafinals .match:nth-of-type(1)');
-  const finalsRect = finals?.getBoundingClientRect();
+    const x1 = a.x, y1 = a.y;
+    const x2 = b.x, y2 = b.y;
 
-  // gomito con x-àncora fissa
-  const elbow = (fromEl, toEl, anchorX, side='left') => {
-    if(!fromEl || !toEl) return;
-    const a = fromMidRight(fromEl);
-    const b = side === 'left' ? toMidLeft(toEl) : toMidRight(toEl);
+    // posizione della verticale
+    let xk;
+    if (nearTo) {
+      // piazza la verticale VICINO al target:
+      // se il target è a destra, verticali a x2 - H_PAD, altrimenti a x2 + H_PAD
+      xk = x2 + (x2 > x1 ? -H_PAD : H_PAD);
+    } else {
+      // posizione "centrata" (vecchio comportamento)
+      xk = Math.min(x1, x2) + Math.abs(x2 - x1) / 2;
+    }
 
-    const midX = anchorX;
+    // orizzontale dal from -> xk
+    addSeg(layer, x1, y1 - STROKE / 2, Math.max(1, xk - x1), STROKE);
+    // verticale xk tra y1 e y2
+    const top = Math.min(y1, y2);
+    addSeg(layer, xk - STROKE / 2, top, STROKE, Math.max(1, Math.abs(y2 - y1)));
+    // orizzontale xk -> to
+    addSeg(layer, xk, y2 - STROKE / 2, Math.max(1, x2 - xk), STROKE);
+  }
 
-    // orizzontale A -> midX
-    addSeg(layer, Math.min(a.x, midX), a.y - STROKE/2, Math.abs(midX - a.x), STROKE);
-    // verticale a midX tra yA e yB
-    addSeg(layer, midX - STROKE/2, Math.min(a.y, b.y), STROKE, Math.abs(b.y - a.y));
-    // orizzontale midX -> B
-    addSeg(layer, Math.min(midX, b.x), b.y - STROKE/2, Math.abs(b.x - midX), STROKE);
-  };
+  // mappa connessioni: nearTo=true SOLO per 2° turno → semifinali (evita sovrapposizioni)
+  const MAP = [
+    // LEFT: R1 → R2
+    {from:'#left-round-1 .match:nth-of-type(1)', to:'#left-round-2 .match:nth-of-type(1)'},
+    {from:'#left-round-1 .match:nth-of-type(2)', to:'#left-round-2 .match:nth-of-type(1)'},
+    {from:'#left-round-1 .match:nth-of-type(3)', to:'#left-round-2 .match:nth-of-type(2)'},
+    {from:'#left-round-1 .match:nth-of-type(4)', to:'#left-round-2 .match:nth-of-type(2)'},
+    // LEFT: R2 → R3 (verticale vicino al target)
+    {from:'#left-round-2 .match:nth-of-type(1)', to:'#left-round-3 .match:nth-of-type(1)', nearTo:true},
+    {from:'#left-round-2 .match:nth-of-type(2)', to:'#left-round-3 .match:nth-of-type(1)', nearTo:true},
 
-  // calcolo ancore
-  const bRect   = document.querySelector('.bracket').getBoundingClientRect();
-  const leftR2  = document.querySelector('#left-round-2');
-  const rightR2 = document.querySelector('#right-round-2');
+    // RIGHT: R1 → R2
+    {from:'#right-round-1 .match:nth-of-type(1)', to:'#right-round-2 .match:nth-of-type(1)'},
+    {from:'#right-round-1 .match:nth-of-type(2)', to:'#right-round-2 .match:nth-of-type(1)'},
+    {from:'#right-round-1 .match:nth-of-type(3)', to:'#right-round-2 .match:nth-of-type(2)'},
+    {from:'#right-round-1 .match:nth-of-type(4)', to:'#right-round-2 .match:nth-of-type(2)'},
+    // RIGHT: R2 → R3 (verticale vicino al target)
+    {from:'#right-round-2 .match:nth-of-type(1)', to:'#right-round-3 .match:nth-of-type(1)', nearTo:true},
+    {from:'#right-round-2 .match:nth-of-type(2)', to:'#right-round-3 .match:nth-of-type(1)', nearTo:true},
 
-  const r2LRect = leftR2?.getBoundingClientRect();
-  const r2RRect = rightR2?.getBoundingClientRect();
-
-  const midXLeft  = r2LRect ? ((r2LRect.left + r2LRect.right) / 2) - bRect.left : null;
-  const midXRight = r2RRect ? ((r2RRect.left + r2RRect.right) / 2) - bRect.left : null;
-
-  const finalsLeftX  = finalsRect ? (finalsRect.left  - PAD) - bRect.left : null;
-  const finalsRightX = finalsRect ? (finalsRect.right + PAD) - bRect.left : null;
-
-  // mappa collegamenti (from -> to, anchorX, side)
-  const links = [
-    // LEFT: R1 -> R2
-    ['#left-round-1 .match:nth-of-type(1)', '#left-round-2 .match:nth-of-type(1)', midXLeft,  'left'],
-    ['#left-round-1 .match:nth-of-type(2)', '#left-round-2 .match:nth-of-type(1)', midXLeft,  'left'],
-    ['#left-round-1 .match:nth-of-type(3)', '#left-round-2 .match:nth-of-type(2)', midXLeft,  'left'],
-    ['#left-round-1 .match:nth-of-type(4)', '#left-round-2 .match:nth-of-type(2)', midXLeft,  'left'],
-    // LEFT: R2 -> R3
-    ['#left-round-2 .match:nth-of-type(1)', '#left-round-3 .match:nth-of-type(1)', midXLeft,  'left'],
-    ['#left-round-2 .match:nth-of-type(2)', '#left-round-3 .match:nth-of-type(1)', midXLeft,  'left'],
-
-    // RIGHT: R1 -> R2
-    ['#right-round-1 .match:nth-of-type(1)', '#right-round-2 .match:nth-of-type(1)', midXRight, 'right'],
-    ['#right-round-1 .match:nth-of-type(2)', '#right-round-2 .match:nth-of-type(1)', midXRight, 'right'],
-    ['#right-round-1 .match:nth-of-type(3)', '#right-round-2 .match:nth-of-type(2)', midXRight, 'right'],
-    ['#right-round-1 .match:nth-of-type(4)', '#right-round-2 .match:nth-of-type(2)', midXRight, 'right'],
-    // RIGHT: R2 -> R3
-    ['#right-round-2 .match:nth-of-type(1)', '#right-round-3 .match:nth-of-type(1)', midXRight,'right'],
-    ['#right-round-2 .match:nth-of-type(2)', '#right-round-3 .match:nth-of-type(1)', midXRight,'right'],
-
-    // FINALS
-    ['#left-round-3  .match:nth-of-type(1)', '#nbafinals .match:nth-of-type(1)', finalsLeftX,  'left'],
-    ['#right-round-3 .match:nth-of-type(1)', '#nbafinals .match:nth-of-type(1)', finalsRightX, 'right'],
+    // FINALS (può restare centrato)
+    {from:'#left-round-3  .match:nth-of-type(1)', to:'#nbafinals .match:nth-of-type(1)'},
+    {from:'#right-round-3 .match:nth-of-type(1)', to:'#nbafinals .match:nth-of-type(1)'},
   ];
 
-  links.forEach(([fromSel, toSel, anchorX, side]) => {
-    if (anchorX == null) return;
-    const from = document.querySelector(fromSel);
-    const to   = document.querySelector(toSel);
-    elbow(from, to, anchorX, side);
+  MAP.forEach(({from, to, nearTo}) => {
+    const f = document.querySelector(from);
+    const t = document.querySelector(to);
+    if (f && t) elbow(f, t, !!nearTo);
   });
 }
+
 
 // ======== BUILD & ACTIONS ========
 function clamp03(n){ n = Number(n||0); return Math.max(0, Math.min(3, n)); }
