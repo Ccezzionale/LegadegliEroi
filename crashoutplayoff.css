@@ -152,24 +152,19 @@ nav {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  align-items: flex-start;   /* <— importante */
 }
 
 /* ========== MATCH CARD (stile NBA) ========== */
 .match{
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,.06);
-  display: grid;
-  grid-template-rows: auto auto;
-  gap: 10px;
+  width: max-content;        /* <— la card non occupa 100% */
+  padding: 8px;              /* un filo più compatta */
 }
 
 /* una “riga squadra”: seed rosso | logo cerchio | box risultato rosso */
 .team{
   display: grid;
-  grid-template-columns: 42px 60px auto;  /* seed | logo | score */
+  grid-template-columns: 42px 60px auto;  /* prima avevi 42px 90px 1fr */
   align-items: center;
   gap: 10px;
 }
@@ -190,17 +185,13 @@ nav {
 /* === Round 2+ : niente seed, solo logo + punteggio === */
 #left-round-2 .seed, #left-round-3 .seed,
 #right-round-2 .seed, #right-round-3 .seed,
-#nbafinals .seed { 
-  display: none; 
-}
+#nbafinals .seed { display: none; }
 
 #left-round-2 .team, #left-round-3 .team,
 #right-round-2 .team, #right-round-3 .team,
 #nbafinals .team {
-  /* logo | score */
-  grid-template-columns: 60px auto;
+  grid-template-columns: 60px auto;  /* solo logo | score */
 }
-
 
 /* prima era un cerchio: ora solo il logo, quadrato/trasparente */
 .logo-wrap{
@@ -225,10 +216,10 @@ nav {
 /* box risultato rosso (contenteditable) */
 .score-box{
   min-height: 44px;
-  width: 64px;                 /* compatto */
-  justify-self: start;         /* non allargarti */
-  text-align: left;            /* numero a sinistra */
-  padding: 6px 10px;           /* spazio per il numero */
+  width: 64px;               /* compatto */
+  justify-self: start;       /* non allargarti */
+  text-align: left;          /* numero a sinistra */
+  padding: 6px 10px;
   background: var(--score-red);
   border-radius: 10px;
   color: #fff;
@@ -237,6 +228,7 @@ nav {
   border: 2px solid #8b0f15;
   display: grid;
   align-items: center;
+  letter-spacing: 0;
 }
 .score-box:empty:before{
   content: attr(data-placeholder);
@@ -254,24 +246,6 @@ nav {
   width: 104px;
   height: 104px;
 }
-
-.score-box{
-  min-height: 58px;
-  background: var(--score-red);
-  border-radius: 12px;
-  color: #fff;
-  font-weight: 800;
-  font-size: 1.3rem;
-  text-align: center;      /* numero centrato */
-  letter-spacing: 0;       /* niente spaziatura, è un singolo numero */
-  display: grid;
-  place-items: center;
-  outline: none;
-  border: 2px solid #8b0f15;
-  user-select: text;
-  padding: 6px 10px;
-}
-.score-box:empty:before{ content: attr(data-placeholder); opacity: .8; }
 
 
 /* ========== MOBILE ========== */
