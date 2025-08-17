@@ -450,7 +450,7 @@ nav {
 
 /* micro-tweak: abbassa un po' le Semifinali */
 :root{
-  --col2-tweak: 14px; /* prova 10–14px finché è perfetto sul tuo schermo */
+  --col2-tweak: 32px; /* prova 10–14px finché è perfetto sul tuo schermo */
 }
 
 .bracket.single .round-col:nth-child(2){ /* Semifinali */
