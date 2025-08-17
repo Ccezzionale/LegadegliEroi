@@ -55,8 +55,8 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
 /* Seed */
 .seed{
-  width:36px; height:36px; background:var(--seed-red); color:#fff;
-  display:grid; place-items:center; border-radius:8px; font-weight:800; font-size:.9rem;
+  width:32px; height:32px; background:var(--seed-red); color:#fff;
+  display:grid; place-items:center; border-radius:87x; font-weight:800; font-size:.85rem;
 }
 
 /* Logo (solo immagine, niente cerchio) */
@@ -68,7 +68,7 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
 /* Score: numero singolo, compatto, a sinistra */
 .score-box{
-  width:44px; min-height:36px; padding:4px 8px; justify-self:start;
+  width:38px; min-height:36px; padding:3px 6px; justify-self:start;
   background:var(--score-red); color:#fff; border:2px solid #8b0f15;
   border-radius:8px; font-weight:800; font-size:1.05rem; letter-spacing:0;
   display:grid; align-items:center; text-align:left; outline:none; user-select:text;
@@ -104,10 +104,10 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   }
   .round-mobile h3{ font-size:1.05rem; color:var(--nav); margin:6px 0 12px; border-left:4px solid var(--accent); padding-left:10px; }
 
-  .match{ padding:10px; gap:8px; }
+  .match{ padding:10px; gap:8px; display: grid; grid-template-rows: auto auto; row-gap: 10px;  }
   .team{ grid-template-columns:40px 72px 1fr; gap:10px; }
   .seed{ width:40px; height:40px; font-size:.95rem; }
-  .logo-wrap{ width:72px; height:72px; }
+  .logo-wrap{ width:74px; height:74px; }
   .score-box{ min-height:48px; font-size:1.15rem; }
 }
 
