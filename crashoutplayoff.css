@@ -121,17 +121,22 @@ nav {
 .cup-toolbar .btn:hover{ filter: brightness(1.08); }
 
 /* ========== BRACKET DESKTOP ========== */
+/* container agganciato a sinistra */
 .cup-container{
-  max-width: 1200px;
-  margin: 10px auto 48px;
-  padding: 0 16px;
+  max-width: none;               /* niente cap a 1200 */
+  margin: 10px 16px 48px 16px;   /* niente auto centering */
+  padding-right: 16px;
+  overflow-x: auto;              /* sicurezza se stringe */
 }
 
+/* griglia che occupa solo lo spazio necessario e resta a sinistra */
 .bracket{
   display: grid;
-  grid-template-columns: 1fr auto 1fr; /* left | finals | right */
-  gap: 24px;
+  grid-template-columns: minmax(460px, auto) 260px minmax(460px, auto);
+  gap: 20px;
   align-items: start;
+  width: max-content;            /* si stringe al contenuto */
+  justify-content: start;        /* agganciata a sinistra */
 }
 
 .conference, .finals { display: flex; flex-direction: column; gap: 14px; }
@@ -236,6 +241,25 @@ nav {
   width: 104px;
   height: 104px;
 }
+
+.score-box{
+  min-height: 58px;
+  background: var(--score-red);
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.3rem;
+  text-align: center;      /* numero centrato */
+  letter-spacing: 0;       /* niente spaziatura, è un singolo numero */
+  display: grid;
+  place-items: center;
+  outline: none;
+  border: 2px solid #8b0f15;
+  user-select: text;
+  padding: 6px 10px;
+}
+.score-box:empty:before{ content: attr(data-placeholder); opacity: .8; }
+
 
 /* ========== MOBILE ========== */
 .bracket-mobile{ display: none; }
