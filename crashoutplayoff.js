@@ -229,14 +229,26 @@ const relToBracket = pt => {
   return { x: pt.x - p.left, y: pt.y - p.top };
 };
 
+// --- punti medi relativi al contenitore .bracket (serve a drawWires)
+const midRight = (el) => {
+  const r = el.getBoundingClientRect();
+  const p = document.querySelector('.bracket').getBoundingClientRect();
+  return { x: r.right - p.left, y: r.top - p.top + r.height / 2 };
+};
+const midLeft = (el) => {
+  const r = el.getBoundingClientRect();
+  const p = document.querySelector('.bracket').getBoundingClientRect();
+  return { x: r.left - p.left, y: r.top - p.top + r.height / 2 };
+};
+
+
 // ridisegna tutti i connettori con ancore stabili
 function drawWires() {
   const layer = ensureWireLayer(true);
   if (!layer) return;
 
-  // helper: disegna una curva a gomito con la verticale vicino al target quando serve
-  const H_PAD = 14;       // distanza orizzontale dal target per piazzare la verticale
-  const STROKE = 3;       // spessore linea
+  const H_PAD = 14; // quanto vicino al target mettiamo la verticale
+  const STROKE = 3; // spessore linea
 
   function elbow(fromEl, toEl, nearTo = false) {
     const a = midRight(fromEl);
@@ -245,27 +257,20 @@ function drawWires() {
     const x1 = a.x, y1 = a.y;
     const x2 = b.x, y2 = b.y;
 
-    // posizione della verticale
-    let xk;
-    if (nearTo) {
-      // piazza la verticale VICINO al target:
-      // se il target è a destra, verticali a x2 - H_PAD, altrimenti a x2 + H_PAD
-      xk = x2 + (x2 > x1 ? -H_PAD : H_PAD);
-    } else {
-      // posizione "centrata" (vecchio comportamento)
-      xk = Math.min(x1, x2) + Math.abs(x2 - x1) / 2;
-    }
+    // verticale vicino al target solo quando richiesto
+    const xk = nearTo
+      ? x2 + (x2 > x1 ? -H_PAD : H_PAD)
+      : Math.min(x1, x2) + Math.abs(x2 - x1) / 2;
 
-    // orizzontale dal from -> xk
+    // orizzontale from -> xk
     addSeg(layer, x1, y1 - STROKE / 2, Math.max(1, xk - x1), STROKE);
-    // verticale xk tra y1 e y2
+    // verticale xk
     const top = Math.min(y1, y2);
     addSeg(layer, xk - STROKE / 2, top, STROKE, Math.max(1, Math.abs(y2 - y1)));
     // orizzontale xk -> to
     addSeg(layer, xk, y2 - STROKE / 2, Math.max(1, x2 - xk), STROKE);
   }
 
-  // mappa connessioni: nearTo=true SOLO per 2° turno → semifinali (evita sovrapposizioni)
   const MAP = [
     // LEFT: R1 → R2
     {from:'#left-round-1 .match:nth-of-type(1)', to:'#left-round-2 .match:nth-of-type(1)'},
@@ -285,7 +290,7 @@ function drawWires() {
     {from:'#right-round-2 .match:nth-of-type(1)', to:'#right-round-3 .match:nth-of-type(1)', nearTo:true},
     {from:'#right-round-2 .match:nth-of-type(2)', to:'#right-round-3 .match:nth-of-type(1)', nearTo:true},
 
-    // FINALS (può restare centrato)
+    // FINALS
     {from:'#left-round-3  .match:nth-of-type(1)', to:'#nbafinals .match:nth-of-type(1)'},
     {from:'#right-round-3 .match:nth-of-type(1)', to:'#nbafinals .match:nth-of-type(1)'},
   ];
