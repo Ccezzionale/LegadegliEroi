@@ -457,13 +457,19 @@ nav {
 .conference.right .round-2 { grid-column: 2; }
 .conference.right .round-3 { grid-column: 1; }
 
-.cup-container {
-  max-width: 100%;     /* usa tutta la larghezza */
-  margin: 20px 0 40px 40px;  /* margine a sinistra, tolto auto-centratura */
+/* Bracket: colonne a larghezza di contenuto, niente 1fr */
+.bracket{
+  grid-template-columns: max-content  max-content  max-content; /* left | finals | right */
+  column-gap: 36px;   /* distanza tra colonne */
+  justify-content: flex-start; /* attacca tutto a sinistra */
+}
+
+/* Assicurati che le conference non si espandano */
+.conference{ width: max-content; }
+
+/* Un filo di margine a sinistra del contenitore */
+.cup-container{
+  max-width: 100%;
+  margin: 20px 0 40px 24px;
   padding: 0;
 }
-
-.bracket {
-  justify-content: flex-start;  /* attacca a sinistra */
-}
-
