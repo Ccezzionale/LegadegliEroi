@@ -254,27 +254,54 @@ nav {
 /* fallback: se JS non ha ancora calcolato il passo */
 :root{ --step: 208px; } /* ~190 card + 14-18 gap - regolalo se vuoi */
 
+/* ===== Desktop: split in 2 metà + Finals al centro ===== */
 @media (min-width: 1024px){
-  /* gli spacer sono il primo “figlio” dei round */
-  .round::before{
-    content:"";
-    display:block;
-    flex:0 0 auto;   /* non farlo crescere in flex */
-    height:0;
+  /* 3 colonne: sinistra | finals | destra */
+  .bracket{
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    column-gap: 36px;
+    align-items: start;
   }
 
-  /* Semifinali: in mezzo tra (1-2) e (3-4) -> 0.5 * passo */
+  /* ogni round è una colonna verticale con il proprio gap */
+  .round{
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-round, 18px);
+  }
+
+  /* --- Offset perfetti con spacer (::before) --- */
+  /* crea uno “spacer” come primo figlio del round */
   #left-round-2::before,
-  #right-round-2::before{ height: calc(0.5 * var(--step)); }
-
-  /* Finali di conference: in mezzo alle semifinali -> 1.5 * passo */
+  #right-round-2::before,
   #left-round-3::before,
-  #right-round-3::before{ height: calc(1.5 * var(--step)); }
+  #right-round-3::before,
+  #nbafinals::before{
+    content: "";
+    display: block;
+    width: 1px;   /* invisibile, serve solo per l’altezza */
+    height: 0;
+  }
 
-  /* Finals: al centro tra le due CF -> stesso 1.5 * passo */
-  #nbafinals::before{ height: calc(1.5 * var(--step)); }
+  /* Semifinali: centrati tra (1°–2°) e (3°–4°) del Round 1  → 0.5 passo */
+  #left-round-2::before,
+  #right-round-2::before{
+    height: calc(0.5 * (var(--match-h, 190px) + var(--gap-round, 18px)));
+  }
+
+  /* Finali di Conference: a metà tra le semifinali → 1.5 passi */
+  #left-round-3::before,
+  #right-round-3::before{
+    height: calc(1.5 * (var(--match-h, 190px) + var(--gap-round, 18px)));
+  }
+
+  /* Finals: in mezzo alle due Conference Finals → stesso offset */
+  #nbafinals::before{
+    height: calc(1.5 * (var(--match-h, 190px) + var(--gap-round, 18px)));
+  }
 }
 
-body.debug .bracket { display:grid !important; }
-body.debug .bracket-mobile { display:none !important; }
-
+/* (Facoltativo) durante i test, forza il desktop anche su schermi piccoli */
+body.force-desktop .bracket{ display:grid !important; }
+body.force-desktop .bracket-mobile{ display:none !important; }
