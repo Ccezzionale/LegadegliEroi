@@ -274,3 +274,7 @@ nav {
   /* Finals: al centro tra le due CF -> stesso 1.5 * passo */
   #nbafinals::before{ height: calc(1.5 * var(--step)); }
 }
+
+body.debug .bracket { display:grid !important; }
+body.debug .bracket-mobile { display:none !important; }
+
