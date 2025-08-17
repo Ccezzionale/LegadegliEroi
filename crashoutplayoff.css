@@ -301,4 +301,31 @@ nav {
     display: block;
     height: calc(1.5 * var(--match-v));
   }
+
+  /* DEBUG: forza layout desktop anche sotto i 768px */
+body.debug-bracket .bracket { display: grid !important; }
+body.debug-bracket .bracket-mobile { display: none !important; }
+
+/* e forza anche lo split */
+body.debug-bracket #round-1,
+body.debug-bracket #round-2,
+body.debug-bracket #round-3{
+  display: grid !important;
+  grid-template-columns: max-content max-content !important;
+  column-gap: 28px !important;
+  row-gap: var(--gap-round) !important;
+  grid-auto-flow: row;
+  align-content: start;
+  padding-top: 0 !important;
+}
+
+/* spacer per allineamenti */
+body.debug-bracket #round-2::before,
+body.debug-bracket #round-3::before{
+  content:""; display:block; grid-column: 1 / -1; height:0;
+}
+body.debug-bracket #round-2::before{ height: calc(0.5 * var(--match-v)); }
+body.debug-bracket #round-3::before{ height: calc(1.5 * var(--match-v)); }
+body.debug-bracket #round-final::before{ content:""; display:block; height: calc(1.5 * var(--match-v)); }
+
 }
