@@ -216,7 +216,7 @@ function addSeg(layer, x, y, w, h) {
     top: y + 'px',
     width: w + 'px',
     height: h + 'px',
-    background: '#d3d7dd',
+    background: 'var(--wire-color)',   // usa la CSS var (emerald)
     borderRadius: (h <= 2 || w <= 2) ? '1px' : '3px'
   });
   layer.appendChild(d);
@@ -234,7 +234,7 @@ function drawWires(){
   const layer = ensureWireLayer(true);
   if(!layer) return;
 
-  const STROKE = 2;
+  const STROKE = 3;
   const PAD    = 12;
 
   const fromMidRight = el => {
