@@ -101,6 +101,8 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 #right-round-2 .team, #right-round-3 .team,
 #nbafinals .team{ grid-template-columns:76px auto; }
 
+.conf-title{ display:none !important; }
+
 /* ========== MOBILE ========== */
 .bracket-mobile{ display:none; }
 
