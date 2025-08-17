@@ -281,7 +281,7 @@ function propagateWinners(bracket){
 
 
 // ======== BUILD & ACTIONS ========
-aasync function buildBracket() {
+async function buildBracket() {
   try {
     clearBracket();
     const seeds = await loadStandings();
