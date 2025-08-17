@@ -12,7 +12,7 @@ body{
   background:var(--bg); color:var(--text);
 }
 
-/* ========== NAVBAR (come index) ========== */
+/* ========== NAVBAR / HEADER (come index) ========== */
 nav{ background:var(--nav); color:#fff; display:flex; align-items:center; padding:10px 20px; flex-wrap:wrap; }
 .home-icon{ font-size:1.4rem; margin-right:20px; text-decoration:none; color:#fff; }
 .hamburger{ font-size:1.5rem; cursor:pointer; margin-right:20px; display:none; }
@@ -24,7 +24,6 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .submenu a{ font-size:.95rem; }
 .dropdown.show .submenu{ display:flex; }
 
-/* ========== HEADER & TOOLBAR ========== */
 .page-header,.cup-toolbar{ max-width:1200px; margin:28px auto 8px; padding:0 16px; }
 .page-header h1{ color:var(--nav); margin:0 0 6px; font-size:2.1rem; text-shadow:2px 2px 8px var(--accent); }
 .page-header p{ margin:0; color:var(--muted); font-size:1.02rem; }
@@ -34,25 +33,24 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
 /* ========== BRACKET DESKTOP ========== */
 .cup-container{ max-width:none; margin:10px 16px 48px; padding-right:16px; overflow-x:auto; }
+
 .bracket{
   display:grid;
   grid-template-columns:minmax(360px,max-content) 240px minmax(360px,max-content); /* left | finals | right */
   gap:20px; align-items:start; width:max-content; justify-content:start;
 }
 
-/* colonne conference affiancate; destra invertita (R1 a destra, poi R2, poi semifinale vicino alle Finals) */
+/* colonne conference affiancate; destra invertita (Semifinali vicino alle Finals) */
 .conference{ display:flex; gap:24px; align-items:flex-start; }
 .conference.right{ flex-direction:row-reverse; }
 
-.finals{ display:flex; flex-direction:column; gap:14px; }
-.conf-title{ margin:0; font-size:1.05rem; color:var(--nav); border-left:4px solid var(--accent); padding-left:10px; }
+/* nascondi “Conference (Left/Right)” e il titolo di sezione Finals */
+.conf-title{ display:none !important; }
 
-/* ogni colonna di round è verticale e non stira le card */
+/* colonne-ROUND verticali + titolo sopra */
 .round{ position:relative; display:flex; flex-direction:column; gap:14px; align-items:flex-start; }
-
-/* titoli sopra i turni */
 .round::before{
-  display:block; margin:0 0 8px 0; font-weight:700; color:var(--nav);
+  display:block; margin:0 0 8px; font-weight:700; color:var(--nav);
   border-left:4px solid var(--accent); padding-left:10px;
 }
 #left-round-1::before,  #right-round-1::before  { content:"1° turno"; }
@@ -64,12 +62,12 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .match{
   background:var(--card); border:1px solid var(--line); border-radius:14px;
   box-shadow:0 2px 6px rgba(0,0,0,.06);
-  width:max-content; padding:6px;
-  display:flex; flex-direction:column; gap:12px;
+  width:max-content; padding:10px 12px;
+  display:flex; flex-direction:column; gap:20px;    /* spazio tra i 2 team */
 }
 
 /* === Riga squadra (Round 1: seed | logo | score) === */
-.team{ display:grid; grid-template-columns:32px 76px auto; gap:8px; align-items:center; }
+.team{ display:grid; grid-template-columns:36px 92px auto; gap:12px; align-items:center; }
 
 /* Seed (solo Round 1) */
 .seed{
@@ -78,15 +76,16 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 }
 
 /* Logo (solo immagine) */
-.logo-wrap{ width:76px; height:76px; display:grid; place-items:center; background:transparent; border:0; border-radius:0; overflow:visible; }
-.logo-wrap .logo{ width:100%; height:100%; object-fit:contain; }
+.logo-wrap{ width:92px; height:92px; display:grid; place-items:center; background:transparent; border:0; border-radius:0; overflow:visible; }
+.logo-wrap .logo{ width:100%; height:100%; object-fit:contain; display:block; }
+.logo-wrap .logo{ max-width:98%; max-height:98%; } /* micro-respiro */
 .logo-wrap.no-logo{ background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 10px,#e2e8f0 10px,#e2e8f0 20px); }
 
 /* Score: numero singolo, compatto, a sinistra */
 .score-box{
-  width:38px; min-height:36px; padding:3px 6px; justify-self:start;
+  width:42px; min-height:40px; padding:4px 8px; justify-self:start;
   background:var(--score-red); color:#fff; border:2px solid #8b0f15;
-  border-radius:8px; font-weight:800; font-size:1.05rem; letter-spacing:0;
+  border-radius:8px; font-weight:800; font-size:1.15rem; letter-spacing:0;
   display:grid; align-items:center; text-align:left; outline:none; user-select:text;
 }
 .score-box:empty:before{ content:attr(data-placeholder); opacity:.8; }
@@ -99,74 +98,8 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
 #left-round-2 .team, #left-round-3 .team,
 #right-round-2 .team, #right-round-3 .team,
-#nbafinals .team{ grid-template-columns:76px auto; }
+#nbafinals .team{ grid-template-columns:92px auto; gap:12px; }
 
-.conf-title{ display:none !important; }
-/* ===== DESKTOP: loghi/riquadri più grandi + più spazio tra le squadre ===== */
-@media (min-width: 769px){
-
-  /* Card un filo più grande e con spazio verticale tra i due team */
-  .match{
-    padding: 10px 12px;
-    gap: 18px;                 /* spazio tra le due righe squadra */
-  }
-  /* azzera eventuale margine precedente e usa solo il gap */
-  .match .team + .team { margin-top: 18px; }
-
-  /* Round 1: seed | logo | score (tutto più grande) */
-  .team{
-    grid-template-columns: 36px 92px auto;  /* seed + logo più ampi */
-    gap: 12px;
-    align-items: center;
-  }
-  .seed{
-    width: 28px;
-    height: 28px;
-    font-size: .9rem;
-    border-radius: 8px;
-  }
-  .logo-wrap{
-    width: 92px;               /* loghi più grandi */
-    height: 92px;
-  }
-
-  /* Score resta compatto ma proporzionato */
-  .score-box{
-    width: 42px;               /* ancora corto */
-    min-height: 40px;
-    padding: 4px 8px;
-    font-size: 1.15rem;
-  }
-
-  /* Round 2+ (niente seed): solo logo | score con le nuove misure */
-  #left-round-2 .team, #left-round-3 .team,
-  #right-round-2 .team, #right-round-3 .team,
-  #nbafinals .team{
-    grid-template-columns: 92px auto;
-    gap: 12px;
-  }
-
-/* Fix: i loghi non devono uscire e hanno un po' di respiro */
-/* NON tagliare i loghi */
-.logo-wrap{
-  overflow: visible !important;
-  padding: 0 !important;
-}
-
-/* Il logo riempie il box senza deformarsi */
-.logo-wrap .logo{
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
-/* Più spazio verticale tra i due loghi dentro la stessa card */
-.match{
-  gap: 20px;                 /* prova 18–22px a gusto */
-}
-
-  .logo-wrap .logo{ max-width: 98%; max-height: 98%; }
 /* ========== MOBILE ========== */
 .bracket-mobile{ display:none; }
 
@@ -186,13 +119,12 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   }
   .round-mobile h3{ font-size:1.05rem; color:var(--nav); margin:6px 0 12px; border-left:4px solid var(--accent); padding-left:10px; }
 
-  .match{ padding:10px; gap:8px; display:grid; grid-template-rows:auto auto; row-gap:10px; }
-  .team{ grid-template-columns:40px 72px 1fr; gap:10px; }
-  .seed{ width:40px; height:40px; font-size:.95rem; }
-  .logo-wrap{ width:74px; height:74px; }
-  .score-box{ min-height:48px; font-size:1.15rem; }
+  .match{ padding:10px; gap:12px; display:grid; grid-template-rows:auto auto; row-gap:12px; }
+  .team{ grid-template-columns:32px 72px auto; gap:10px; }
+  .seed{ width:32px; height:32px; font-size:.9rem; }
+  .logo-wrap{ width:72px; height:72px; }
+  .score-box{ min-height:44px; font-size:1.05rem; width:40px; padding:4px 8px; }
 }
 
 /* ========== MICRO ========== */
 [contenteditable]:empty{ cursor:text; }
-
