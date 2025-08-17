@@ -1,20 +1,21 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Crash Out Cup – Playoff</title>
-  <link rel="stylesheet" href="crashoutplayoff.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lega degli Eroi – Crash Out Cup • Playoff</title>
+
+  <!-- CSS della pagina -->
+  <link rel="stylesheet" href="crashoutplayoff.css">
 </head>
 <body>
-  <!-- NAVBAR (coerente con il tuo sito: home + hamburger + voci) -->
- <nav>
+
+  <!-- ===== NAVBAR (stessa struttura del tuo index) ===== -->
+  <nav>
     <span id="hamburger" class="hamburger">☰</span>
     <a href="index.html" class="home-icon">🏠</a>
     <ul class="navbar" id="mainMenu">
       <li><a href="rose.html">Rose</a></li>
-
       <li class="dropdown">
         <a href="#" class="toggle-submenu">Draft ▾</a>
         <ul class="submenu">
@@ -23,82 +24,91 @@
           <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
         </ul>
       </li>
-
       <li class="dropdown">
         <a href="#" class="toggle-submenu">Competizioni ▾</a>
         <ul class="submenu">
           <li><a href="classifica.html">📊 Classifiche</a></li>
           <li><a href="playoff.html">🏆 Playoff</a></li>
           <li><a href="arena.html">🏟️ Higlander</a></li>
-       <li><a href="crashoutcup.html">💥 Crash out Cup</a></li>
-        <li><a href="crashoutcup.html">💥 Crash out Cup - Playoff</a></li>
+          <li><a href="crashoutcup.html">💥 Crash out Cup</a></li>
+          <li><a href="crashoutplayoff.html">💥 Crash out Cup - Playoff</a></li>
         </ul>
       </li>
-
       <li><a href="svincolati.html">Svincolati</a></li>
       <li><a href="chiamate.html">Chiamate</a></li>
-
       <li class="dropdown">
         <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
         <ul class="submenu">
           <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
-          <li><a href="albo.html">🏅 Medagliere</a></li>
+          <li><a href="albo.html">🏅  Medagliere</a></li>
         </ul>
       </li>
-
       <li><a href="regolamento.html">Regolamento</a></li>
     </ul>
   </nav>
 
+  <!-- ===== HEADER PAGINA ===== -->
   <header class="page-header">
-    <div class="container">
-      <h1>Crash Out Cup – Playoff</h1>
-      <p class="sub">Tabellone automatico: seeding 1 vs 16, 2 vs 15, … stile NBA fino alla finale.</p>
-      <div class="controls">
-        <button id="refreshBtn" class="btn">🔄 Aggiorna ora</button>
-        <button id="lockBtn" class="btn ghost">🔒 Blocca/Sblocca seeding</button>
-        <span class="chip" id="seedState">Seeding: attivo</span>
-        <span class="legend"><span class="pill win"></span> vincitore · <span class="pill loss"></span> eliminato</span>
-      </div>
-      <div id="status" class="status"></div>
-    </div>
+    <h1>Crash Out Cup — Playoff</h1>
+    <p>Tabellone stile NBA (serie al meglio delle 5). Risultati modificabili manualmente.</p>
   </header>
 
-  <main class="container">
-    <div class="board">
-     <div id="bracket" class="bracket" aria-live="polite">
+  <!-- ===== TOOLBAR (opzionale) ===== -->
+  <section class="cup-toolbar">
+    <button class="btn" id="refreshBracket" type="button">🔄 Aggiorna da Classifica</button>
+    <button class="btn" id="resetScores" type="button">♻️ Azzera risultati</button>
+  </section>
 
-  <div class="match">
-    <div class="team win">
-      <span class="seed-badge">1</span>
-      <div class="puck" style="--ring:#0ea5e9">
-        <img class="logo" src="logos/Team Bartowski.png" alt="Team Bartowski">
-      </div>
+  <!-- ===== BRACKET WRAPPER ===== -->
+  <main class="cup-container">
+    <div id="bracket" class="bracket">
+      <!-- Colonna sinistra: Round 1, Semifinali Conf, Finali Conf (Ovest) -->
+      <section class="conference left">
+        <h2 class="conf-title">Conference (Left)</h2>
+        <div class="round round-1" id="left-round-1" aria-label="Left Round 1"></div>
+        <div class="round round-2" id="left-round-2" aria-label="Left Semifinals"></div>
+        <div class="round round-3" id="left-round-3" aria-label="Left Conference Finals"></div>
+      </section>
+
+      <!-- Centro: Finals -->
+      <section class="finals" aria-label="NBA Finals">
+        <h2 class="conf-title">Finals</h2>
+        <div class="round round-final" id="nbafinals"></div>
+      </section>
+
+      <!-- Colonna destra: Round 1, Semifinali Conf, Finali Conf (Est) -->
+      <section class="conference right">
+        <h2 class="conf-title">Conference (Right)</h2>
+        <div class="round round-1" id="right-round-1" aria-label="Right Round 1"></div>
+        <div class="round round-2" id="right-round-2" aria-label="Right Semifinals"></div>
+        <div class="round round-3" id="right-round-3" aria-label="Right Conference Finals"></div>
+      </section>
     </div>
 
-    <div class="team">
-      <span class="seed-badge">16</span>
-      <div class="puck" style="--ring:#f59e0b">
-        <img class="logo" src="logos/Lokomotiv Lipsia.png" alt="Lokomotiv Lipsia">
-      </div>
+    <!-- Mobile stack -->
+    <div id="bracket-mobile" class="bracket-mobile" aria-label="Bracket mobile">
+      <!-- Il JS genererà qui un elenco verticale dei match per round -->
     </div>
-
-    <div class="series-status">Serie in parità 0-0</div>
-    <span class="connector" aria-hidden="true"></span>
-  </div>
-    </div>
-
-    <div id="errors"></div>
-
-    <details class="details">
-      <summary>⚙️ Config e formato dei CSV</summary>
-      <div class="details-body">
-        <p><strong>STANDINGS CSV</strong>: contiene almeno la colonna del nome squadra. Cerca <em>Squadra</em>, <em>Team</em> o <em>Nome</em> (fallback: prima colonna).</p>
-        <p><strong>RESULTS CSV</strong> (opzionale): <code>round,match,home,away,homePts,awayPts,winner</code>. Round: <code>R16</code>, <code>QF</code>, <code>SF</code>, <code>F</code>. Se <em>winner</em> è vuoto ma i punteggi sono numerici, il sistema calcola il vincitore.</p>
-      </div>
-    </details>
   </main>
 
+  <!-- ===== TEMPLATE (clonati dal JS) ===== -->
+  <template id="match-template">
+    <!-- Ogni match ha: seed rosso, logo grande, box rosso per il risultato (modificabile) -->
+    <article class="match" data-series="">
+      <div class="team home">
+        <span class="seed"></span>
+        <div class="logo-wrap"><img class="logo" alt="Logo squadra"></div>
+        <div class="score-box" contenteditable="true" spellcheck="false" data-placeholder="0–0"></div>
+      </div>
+      <div class="team away">
+        <span class="seed"></span>
+        <div class="logo-wrap"><img class="logo" alt="Logo squadra"></div>
+        <div class="score-box" contenteditable="true" spellcheck="false" data-placeholder="0–0"></div>
+      </div>
+    </article>
+  </template>
+
+  <!-- ===== JS della pagina (lo scrivo nel prossimo messaggio) ===== -->
   <script src="crashoutplayoff.js" defer></script>
 </body>
 </html>
