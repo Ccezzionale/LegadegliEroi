@@ -108,10 +108,10 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   /* Card un filo più grande e con spazio verticale tra i due team */
   .match{
     padding: 10px 12px;
-    gap: 18px;                 /* spazio tra le due righe squadra */
+    gap: 22px;                 /* spazio tra le due righe squadra */
   }
   /* azzera eventuale margine precedente e usa solo il gap */
-  .match .team + .team{ margin-top: 0; }
+  .match .team + .team { margin-top: 22px; }
 
   /* Round 1: seed | logo | score (tutto più grande) */
   .team{
