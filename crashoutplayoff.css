@@ -1,306 +1,116 @@
 /* ========== PALETTE & RESET ========== */
 :root{
-  --bg: #f4f4f4;
-  --text: #222;
-  --nav: #001f3f;
-  --nav-hover: #0074D9;
-  --subnav: #003366;
-  --accent: #ffcc00;
-
-  --card: #ffffff;
-  --muted: #6b7280;
-  --line: #e5e7eb;
-
-  --seed-red: #d61f2a;      /* rosso stile NBA */
-  --score-red: #c5161f;     /* box risultato */
+  --bg:#f4f4f4; --text:#222;
+  --nav:#001f3f; --nav-hover:#0074D9; --subnav:#003366; --accent:#ffcc00;
+  --card:#fff; --muted:#6b7280; --line:#e5e7eb;
+  --seed-red:#d61f2a; --score-red:#c5161f;
+}
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background:var(--bg); color:var(--text);
 }
 
-/* reset piccolo */
-* { box-sizing: border-box; }
-html, body { height: 100%; }
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-}
-
-/* ========== NAVBAR (identico al tuo index) ========== */
-nav {
-  background-color: var(--nav);
-  color: white;
-  display: flex;
-  align-items: center;
-  padding: 10px 20px;
-  flex-wrap: wrap;
-}
-.home-icon {
-  font-size: 1.4rem;
-  margin-right: 20px;
-  text-decoration: none;
-  color: white;
-}
-.hamburger {
-  font-size: 1.5rem;
-  cursor: pointer;
-  margin-right: 20px;
-  display: none;
-}
-.navbar {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: row;
-  gap: 15px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.navbar li { position: relative; }
-.navbar a {
-  text-decoration: none;
-  color: white;
-  padding: 8px 12px;
-  display: block;
-}
-.navbar a:hover {
-  background-color: var(--nav-hover);
-  border-radius: 6px;
-}
-.submenu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: var(--subnav);
-  border-radius: 4px;
-  z-index: 10;
-  min-width: 180px;
-  flex-direction: column;
-}
-.submenu a { font-size: 0.95rem; }
-.dropdown.show .submenu { display: flex; }
+/* ========== NAVBAR (come index) ========== */
+nav{ background:var(--nav); color:#fff; display:flex; align-items:center; padding:10px 20px; flex-wrap:wrap; }
+.home-icon{ font-size:1.4rem; margin-right:20px; text-decoration:none; color:#fff; }
+.hamburger{ font-size:1.5rem; cursor:pointer; margin-right:20px; display:none; }
+.navbar{ list-style:none; padding:0; margin:0; display:flex; gap:15px; align-items:center; flex-wrap:wrap; }
+.navbar li{ position:relative; }
+.navbar a{ color:#fff; text-decoration:none; padding:8px 12px; display:block; }
+.navbar a:hover{ background:var(--nav-hover); border-radius:6px; }
+.submenu{ display:none; position:absolute; top:100%; left:0; background:var(--subnav); border-radius:4px; z-index:10; min-width:180px; flex-direction:column; }
+.submenu a{ font-size:.95rem; }
+.dropdown.show .submenu{ display:flex; }
 
 /* ========== HEADER & TOOLBAR ========== */
-.page-header{
-  max-width: 1200px;
-  margin: 28px auto 8px;
-  padding: 0 16px;
-}
-.page-header h1{
-  color: var(--nav);
-  margin: 0 0 6px;
-  font-size: 2.1rem;
-  text-shadow: 2px 2px 8px var(--accent);
-}
-.page-header p{
-  margin: 0;
-  color: var(--muted);
-  font-size: 1.02rem;
-}
-
-.cup-toolbar{
-  max-width: 1200px;
-  margin: 12px auto 10px;
-  padding: 0 16px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.cup-toolbar .btn{
-  background: var(--nav);
-  color: #fff;
-  border: 0;
-  padding: 10px 14px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  box-shadow: 0 2px 6px rgba(0,0,0,.06);
-}
-.cup-toolbar .btn:hover{ filter: brightness(1.08); }
+.page-header,.cup-toolbar{ max-width:1200px; margin:28px auto 8px; padding:0 16px; }
+.page-header h1{ color:var(--nav); margin:0 0 6px; font-size:2.1rem; text-shadow:2px 2px 8px var(--accent); }
+.page-header p{ margin:0; color:var(--muted); font-size:1.02rem; }
+.cup-toolbar{ margin:12px auto 10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.cup-toolbar .btn{ background:var(--nav); color:#fff; border:0; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:600; box-shadow:0 2px 6px rgba(0,0,0,.06); }
+.cup-toolbar .btn:hover{ filter:brightness(1.08); }
 
 /* ========== BRACKET DESKTOP ========== */
-/* container agganciato a sinistra */
-.cup-container{
-  max-width: none;               /* niente cap a 1200 */
-  margin: 10px 16px 48px 16px;   /* niente auto centering */
-  padding-right: 16px;
-  overflow-x: auto;              /* sicurezza se stringe */
-}
-
-/* griglia che occupa solo lo spazio necessario e resta a sinistra */
+.cup-container{ max-width:none; margin:10px 16px 48px; padding-right:16px; overflow-x:auto; }
 .bracket{
-  display: grid;
-  grid-template-columns: minmax(460px, auto) 260px minmax(460px, auto);
-  gap: 20px;
-  align-items: start;
-  width: max-content;            /* si stringe al contenuto */
-  justify-content: start;        /* agganciata a sinistra */
+  display:grid;
+  grid-template-columns: minmax(360px,max-content) 240px minmax(360px,max-content);
+  gap:20px; align-items:start; width:max-content; justify-content:start;
 }
+.conference,.finals{ display:flex; flex-direction:column; gap:14px; }
+.conf-title{ margin:0; font-size:1.05rem; color:var(--nav); border-left:4px solid var(--accent); padding-left:10px; }
+.round{ display:flex; flex-direction:column; gap:14px; align-items:flex-start; }
 
-.conference, .finals { display: flex; flex-direction: column; gap: 14px; }
-.conf-title{
-  margin: 0;
-  font-size: 1.05rem;
-  color: var(--nav);
-  border-left: 4px solid var(--accent);
-  padding-left: 10px;
-}
-
-.round{
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  align-items: flex-start;   /* <— importante */
-}
-
-/* ========== MATCH CARD (stile NBA) ========== */
+/* === Match card compatta === */
 .match{
-  width: max-content;        /* <— la card non occupa 100% */
-  padding: 8px;              /* un filo più compatta */
+  background:var(--card); border:1px solid var(--line); border-radius:14px;
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
+  width:max-content; padding:6px;
 }
 
-/* una “riga squadra”: seed rosso | logo cerchio | box risultato rosso */
-.team{
-  display: grid;
-  grid-template-columns: 42px 60px auto;  /* prima avevi 42px 90px 1fr */
-  align-items: center;
-  gap: 10px;
-}
+/* === Riga squadra (Round 1: seed | logo | score) === */
+.team{ display:grid; grid-template-columns:36px 76px auto; gap:8px; align-items:center; }
 
-/* seed rosso */
+/* Seed */
 .seed{
-  width: 42px;
-  height: 42px;
-  background: var(--seed-red);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  font-weight: 800;
-  font-size: 1rem;
+  width:36px; height:36px; background:var(--seed-red); color:#fff;
+  display:grid; place-items:center; border-radius:8px; font-weight:800; font-size:.9rem;
 }
 
-/* === Round 2+ : niente seed, solo logo + punteggio === */
+/* Logo (solo immagine, niente cerchio) */
+.logo-wrap{ width:76px; height:76px; display:grid; place-items:center; background:transparent; border:0; border-radius:0; overflow:visible; }
+.logo-wrap .logo{ width:100%; height:100%; object-fit:contain; }
+.logo-wrap.no-logo{
+  background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 10px,#e2e8f0 10px,#e2e8f0 20px);
+}
+
+/* Score: numero singolo, compatto, a sinistra */
+.score-box{
+  width:44px; min-height:36px; padding:4px 8px; justify-self:start;
+  background:var(--score-red); color:#fff; border:2px solid #8b0f15;
+  border-radius:8px; font-weight:800; font-size:1.05rem; letter-spacing:0;
+  display:grid; align-items:center; text-align:left; outline:none; user-select:text;
+}
+.score-box:empty:before{ content:attr(data-placeholder); opacity:.8; }
+.score-box:focus{ box-shadow:0 0 0 3px rgba(197,22,31,.25); }
+
+/* === Round 2+ : nascondi seed, layout logo | score === */
 #left-round-2 .seed, #left-round-3 .seed,
 #right-round-2 .seed, #right-round-3 .seed,
-#nbafinals .seed { display: none; }
+#nbafinals .seed{ display:none; }
 
 #left-round-2 .team, #left-round-3 .team,
 #right-round-2 .team, #right-round-3 .team,
-#nbafinals .team {
-  grid-template-columns: 60px auto;  /* solo logo | score */
-}
+#nbafinals .team{ grid-template-columns:76px auto; }
 
-/* prima era un cerchio: ora solo il logo, quadrato/trasparente */
-.logo-wrap{
-  width: 60px;
-  height: 60px;
-  border-radius: 0;
-  border: 0;
-  overflow: visible;
-  background: transparent;
-  display: grid;
-  place-items: center;
-}
-.logo-wrap .logo{
-  width: 100%;
-  height: 100%;
-  object-fit: contain;  /* niente crop */
-}
-.logo-wrap.no-logo{
-  background: repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 10px,#e2e8f0 10px,#e2e8f0 20px);
-}
+/* ========== MOBILE (non prioritario, ma coerente) ========== */
+.bracket-mobile{ display:none; }
 
-/* box risultato rosso (contenteditable) */
-.score-box{
-  min-height: 44px;
-  width: 64px;               /* compatto */
-  justify-self: start;       /* non allargarti */
-  text-align: left;          /* numero a sinistra */
-  padding: 6px 10px;
-  background: var(--score-red);
-  border-radius: 10px;
-  color: #fff;
-  font-weight: 800;
-  font-size: 1.2rem;
-  border: 2px solid #8b0f15;
-  display: grid;
-  align-items: center;
-  letter-spacing: 0;
-}
-.score-box:empty:before{
-  content: attr(data-placeholder);
-  opacity: .8;
-}
-.score-box:focus{
-  box-shadow: 0 0 0 3px rgba(197,22,31,.25);
-}
+@media (max-width:768px){
+  .hamburger{ display:block; }
+  .navbar{ display:none; flex-direction:column; width:100%; background:var(--nav); margin-top:10px; }
+  .navbar.show{ display:flex; }
+  .submenu{ position:relative; background:var(--subnav); margin-left:10px; }
+  .dropdown .submenu a{ padding-left:20px; }
 
-/* ========== FINALS (leggermente più ampio) ========== */
-.finals .round-final .match .team{
-  grid-template-columns: 48px 104px 1fr;
-}
-.finals .round-final .logo-wrap{
-  width: 104px;
-  height: 104px;
-}
-
-
-/* ========== MOBILE ========== */
-.bracket-mobile{ display: none; }
-
-@media (max-width: 768px){
-  /* navbar mobile come nel tuo index */
-  .hamburger { display: block; }
-  .navbar {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    background-color: var(--nav);
-    margin-top: 10px;
-  }
-  .navbar.show { display: flex; }
-  .submenu { position: relative; background-color: var(--subnav); margin-left: 10px; }
-  .dropdown .submenu a { padding-left: 20px; }
-
-  /* bracket: nascondo desktop, mostro mobile */
-  .bracket { display: none !important; }
-  .bracket-mobile { display: block; }
+  .bracket{ display:none !important; }
+  .bracket-mobile{ display:block; }
 
   .round-mobile{
-    margin-bottom: 22px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,.06);
+    margin-bottom:22px; background:var(--card); border:1px solid var(--line);
+    border-radius:14px; padding:10px; box-shadow:0 2px 6px rgba(0,0,0,.06);
   }
-  .round-mobile h3{
-    font-size: 1.05rem;
-    color: var(--nav);
-    margin: 6px 0 12px;
-    border-left: 4px solid var(--accent);
-    padding-left: 10px;
-  }
+  .round-mobile h3{ font-size:1.05rem; color:var(--nav); margin:6px 0 12px; border-left:4px solid var(--accent); padding-left:10px; }
 
-  /* card match in mobile: compatta */
-  .match{
-    padding: 10px;
-    gap: 8px;
-  }
-  .team{
-    grid-template-columns: 40px 72px 1fr;
-    gap: 10px;
-  }
-  .seed{ width: 40px; height: 40px; font-size: .95rem; }
-  .logo-wrap{ width: 72px; height: 72px; }
-  .score-box{
-    min-height: 48px;
-    font-size: 1.15rem;
-  }
+  .match{ padding:10px; gap:8px; }
+  .team{ grid-template-columns:40px 72px 1fr; gap:10px; }
+  .seed{ width:40px; height:40px; font-size:.95rem; }
+  .logo-wrap{ width:72px; height:72px; }
+  .score-box{ min-height:48px; font-size:1.15rem; }
 }
 
-/* ========== MICRO MIGLIORIE ========== */
-[contenteditable]:empty { cursor: text; }
+/* ========== MICRO ========== */
+[contenteditable]:empty{ cursor:text; }
+
