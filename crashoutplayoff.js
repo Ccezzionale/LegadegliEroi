@@ -1,6 +1,6 @@
 // ======== CONFIG ========
 const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1pXJCNLgchygyLnGbDEsnIV3QAdPUiLcmgzMAhlzYRivXV4fnoSBW5VwiopwXEMfwk32mvdF3gWZC/pub?output=csv";
-const LOGO_BASE_PATH = "loghi/";       // cambia se necessario
+const LOGO_BASE_PATH = "img/";       // cambia se necessario
 const LOGO_EXT = ".png";               // .png o .jpg in base ai tuoi file
 const SCORE_DEFAULT = "0-0";
 
