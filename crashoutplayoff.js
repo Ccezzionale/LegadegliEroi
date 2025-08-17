@@ -247,61 +247,6 @@ function renderMobileList(bracket){
 // ======== OFFSETS DINAMICI (R1 → SF → CF → Finals) ========
 let _resizeHooked = false;
 
-function computeRoundOffsets() {
-  const r1 = document.getElementById("round-1");
-  const r2 = document.getElementById("round-2");
-  const r3 = document.getElementById("round-3");
-  const rf = document.getElementById("round-final");
-  if (!r1 || !r2 || !r3 || !rf) return;
-
-  const firstR1 = r1.querySelector(".match");
-  if (!firstR1) return;
-
-  // altezza card e row-gap REALI del grid di R1
-  const H = firstR1.getBoundingClientRect().height;
-  const cs = getComputedStyle(r1);
-  const rowGap = parseFloat(cs.rowGap || cs.gap) || 18;
-
-  // top assoluti (viewport) del primo match di R1 e dei contenitori
-  const baseTop = firstR1.getBoundingClientRect().top;
-  const topR2   = r2.getBoundingClientRect().top;
-  const topR3   = r3.getBoundingClientRect().top;
-  const topRF   = rf.getBoundingClientRect().top;
-
-  // offset desiderati (assoluti) rispetto al top del primo match di R1:
-  // - Semifinali: centro tra 1° e 2° → 0.5*(H+gap)
-  // - Conf Finals: centro tra le semifinali → 1.5*(H+gap)
-  // - Finals: a metà tra le due Conf Finals → 1.5*(H+gap)
-  const offR2 = 0.5 * (H + rowGap);
-  const offR3 = 1.5 * (H + rowGap);
-  const offRF = 1.5 * (H + rowGap);
-
-  // paddingTop = (posizione assoluta desiderata) - (top del contenitore)
-  const pad2 = Math.max(0, Math.round(baseTop + offR2 - topR2));
-  const pad3 = Math.max(0, Math.round(baseTop + offR3 - topR3));
-  const padF = Math.max(0, Math.round(baseTop + offRF - topRF));
-
-  r2.style.paddingTop = pad2 + "px";
-  r3.style.paddingTop = pad3 + "px";
-  rf.style.paddingTop = padF + "px";
-}
-
-
-// Ricalcola quando serve
-function armOffsetRecalc() {
-  // quando caricano i loghi (altezza può cambiare)
-  document
-    .querySelectorAll("#round-1 img.logo, #round-2 img.logo, #round-3 img.logo, #round-final img.logo")
-    .forEach(img => {
-      if (!img.complete) img.addEventListener("load", computeRoundOffsets, { once: true });
-    });
-
-  window.addEventListener("resize", computeRoundOffsets, { passive: true });
-
-  // al frame successivo, quando il layout è pronto
-  requestAnimationFrame(computeRoundOffsets);
-}
-
 // ======== BUILD & ACTIONS ========
 async function buildBracket() {
   try {
@@ -325,9 +270,6 @@ async function buildBracket() {
 
     // Mobile
     renderMobileList(bracket);
-
-    // DOPO il render → calcola offset
-    armOffsetRecalc();
 
   } catch (err) {
     console.error("Errore costruzione bracket:", err);
