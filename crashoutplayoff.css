@@ -297,6 +297,21 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 /* ========== MOBILE ========== */
 .bracket-mobile{ display:none; }
 
+/* layer per i connettori */
+.bracket{ position: relative; }
+#bracket-wires{
+  position: absolute; inset: 0;
+  pointer-events: none;       /* non intercetta il mouse */
+  overflow: visible;
+}
+#bracket-wires polyline{
+  fill: none;
+  stroke: #c9d0da;            /* colore linea */
+  stroke-width: 2;            /* spessore */
+  stroke-linejoin: round;
+}
+
+
 @media (max-width:768px){
   .hamburger{ display:block; }
   .navbar{ display:none; flex-direction:column; width:100%; background:var(--nav); margin-top:10px; }
