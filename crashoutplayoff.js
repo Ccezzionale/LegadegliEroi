@@ -145,29 +145,21 @@ function createMatchElement(match) {
 
   // SCORE (sincronizzati e memorizzati per serie)
 // SCORE (sincronizzati e memorizzati per serie)
-const seriesKey = `seriesScore:${match.id}`;
-const saved = localStorage.getItem(seriesKey) || SCORE_DEFAULT;
-scoreBoxes.forEach(b => { b.textContent = saved; });
+// SCORE (ogni squadra ha il suo box)
+scoreBoxes.forEach((b, idx) => {
+  const key = `seriesScore:${match.id}:${idx}`; // es: R1:0 (home), R1:1 (away)
+  const saved = localStorage.getItem(key) || "0";
+  b.textContent = saved;
 
-// sincronizza i due box
-scoreBoxes.forEach(b => {
   b.addEventListener("input", () => {
-    const val = b.textContent.trim() || SCORE_DEFAULT;
-    scoreBoxes.forEach(other => {
-      if (other !== b) other.textContent = val;
-    });
-    localStorage.setItem(seriesKey, val);
+    const val = b.textContent.trim() || "0";
+    localStorage.setItem(key, val);
+  });
+  b.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); b.blur(); }
   });
 });
 
-    // evita invii/paste formattati strani
-    b.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") { e.preventDefault(); b.blur(); }
-    });
-  });
-
-  return node;
-}
 
 function renderRound(containerId, matches){
   const container = document.getElementById(containerId);
