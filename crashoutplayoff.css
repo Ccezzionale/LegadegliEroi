@@ -244,45 +244,46 @@ nav {
     }
   }
 /* ====== DESKTOP: split in 2 metà + Finals al centro ====== */
+/* === HOTFIX: split desktop in 2 metà + finals al centro === */
 @media (min-width: 1200px){
-
-  /* ordine colonne: Round1 | Round2 | Finals | Round3 */
+  /* griglia principale: R1 | SF | Finals | CF */
   .bracket.single{
+    display: grid;
     grid-template-columns: max-content max-content max-content max-content;
     column-gap: 36px;
+    align-items: start;
   }
-  #round-1{ grid-column: 1; }
-  #round-2{ grid-column: 2; }
-  #round-final{ grid-column: 3; }      /* Finals in mezzo */
-  #round-3{ grid-column: 4; }
+
+  /* se esistono wrapper .round-col li neutralizzo */
+  .round-col{ display: contents !important; margin: 0 !important; padding: 0 !important; }
 
   /* ogni round: 2 colonne (LEFT | RIGHT) */
   #round-1,
   #round-2,
   #round-3{
-    display: grid;
-    grid-template-columns: max-content max-content; /* sinistra | destra */
+    display: grid !important;
+    grid-template-columns: max-content max-content;
     column-gap: 28px;
-    row-gap: var(--gap-round); /* importantissimo: serve a computeRoundOffsets */
+    row-gap: var(--gap-round); /* serve a computeRoundOffsets() */
+    padding-top: 0;            /* lascio che sia JS a metterlo */
   }
+  #round-final{ padding-top: 0; } /* anche qui ci pensa JS */
 
-  /* Round 1: L* a sinistra, R* a destra */
+  /* mapping sinistra/destra per i match */
   #round-1 .match[data-series^="L"]{ grid-column: 1; }
   #round-1 .match[data-series^="R"]{ grid-column: 2; }
 
-  /* Semifinali: LSF* a sinistra, RSF* a destra */
   #round-2 .match[data-series^="LSF"]{ grid-column: 1; }
   #round-2 .match[data-series^="RSF"]{ grid-column: 2; }
 
-  /* Finali di conference: LCF a sinistra, RCF a destra */
-  #round-3 .match[data-series^="LC"]{ grid-column: 1; }  /* LCF */
-  #round-3 .match[data-series^="RC"]{ grid-column: 2; }  /* RCF */
+  #round-3 .match[data-series^="LC"]{ grid-column: 1; } /* LCF */
+  #round-3 .match[data-series^="RC"]{ grid-column: 2; } /* RCF */
 
-  /* Compatta un filo i turni successivi */
+  /* carte più strette nei turni successivi */
   #round-2 .match,
   #round-3 .match,
   #round-final .match{
-    width: 200px;         /* regola tra 190–210 se vuoi */
+    width: 200px;
     padding-right: 10px;
   }
 }
