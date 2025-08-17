@@ -147,88 +147,120 @@ function createMatchElement(match) {
 }
 
 // --- SVG wires -------------------------------------------------
-function ensureWireLayer(){
-  const br = document.querySelector('.bracket');
-  let svg = document.getElementById('bracket-wires');
-  if (!svg){
-    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.id = 'bracket-wires';
-    br.appendChild(svg);
+// Crea (una volta sola) il layer dove disegnare i fili e lo ripulisce
+function ensureWireLayer(clear = false) {
+  const bracket = document.querySelector('.bracket');
+  if (!bracket) return null;
+
+  // il contenitore deve essere relativo
+  if (getComputedStyle(bracket).position === 'static') {
+    bracket.style.position = 'relative';
   }
-  // dimensioni reali
-  const r = br.getBoundingClientRect();
-  svg.setAttribute('width', r.width);
-  svg.setAttribute('height', r.height);
-  svg.style.width = r.width + 'px';
-  svg.style.height = r.height + 'px';
-  // pulisci
-  while (svg.firstChild) svg.removeChild(svg.firstChild);
-  return { svg, brRect: r };
+
+  // elimina eventuali layer legacy duplicati
+  const layers = bracket.querySelectorAll('.wire-layer');
+  layers.forEach((n, i) => { if (i > 0) n.remove(); });
+
+  let layer = layers[0];
+  if (!layer) {
+    layer = document.createElement('div');
+    layer.className = 'wire-layer';
+    Object.assign(layer.style, {
+      position: 'absolute',
+      inset: '0',
+      pointerEvents: 'none',
+      zIndex: '0' // dietro alle card
+    });
+    bracket.appendChild(layer);
+  }
+
+  if (clear) layer.replaceChildren(); // svuota tutto
+  return layer;
 }
 
-function midLeft(el, brRect){
+// Helpers per creare i segmenti
+function addSeg(layer, x, y, w, h) {
+  const d = document.createElement('div');
+  d.className = 'wire';
+  Object.assign(d.style, {
+    position: 'absolute',
+    left: x + 'px',
+    top: y + 'px',
+    width: w + 'px',
+    height: h + 'px',
+    background: '#d3d7dd',
+    borderRadius: (h <= 2 || w <= 2) ? '1px' : '3px'
+  });
+  layer.appendChild(d);
+}
+
+// Punto medio del bordo destro/sinistro di una card
+const midRight = el => {
   const r = el.getBoundingClientRect();
-  return { x: r.left - brRect.left, y: r.top - brRect.top + r.height/2 };
-}
-function midRight(el, brRect){
+  const p = document.querySelector('.bracket').getBoundingClientRect();
+  return { x: r.right - p.left, y: r.top - p.top + r.height / 2 };
+};
+const midLeft = el => {
   const r = el.getBoundingClientRect();
-  return { x: r.right - brRect.left, y: r.top - brRect.top + r.height/2 };
-}
+  const p = document.querySelector('.bracket').getBoundingClientRect();
+  return { x: r.left - p.left, y: r.top - p.top + r.height / 2 };
+};
 
-// disegna un gomito: orizzontale -> verticale -> orizzontale
-function addElbow(svg, p1, p2){
-  // giunto a metà strada tra x1 e x2
-  const jx = (p1.x + p2.x) / 2;
-  const pts = `${p1.x},${p1.y} ${jx},${p1.y} ${jx},${p2.y} ${p2.x},${p2.y}`;
-  const pl = document.createElementNS('http://www.w3.org/2000/svg','polyline');
-  pl.setAttribute('points', pts);
-  svg.appendChild(pl);
-}
+// Disegno dei fili (ripulisce SEMPRE prima)
+function drawWires() {
+  const layer = ensureWireLayer(true);      // <-- qui puliamo
+  if (!layer) return;
 
-// mappa dei collegamenti sorgente -> destinazione (ID serie = data-series)
-const WIRE_MAP = [
-  // LEFT: R1 -> semi
-  ['L1','LSF1'], ['L2','LSF1'],
-  ['L3','LSF2'], ['L4','LSF2'],
-  // LEFT: semi -> conf final
-  ['LSF1','LCF'], ['LSF2','LCF'],
+  // Mappa “da → a” (aggiungi/ritocca a piacere)
+  const WIRE_MAP = [
+    // LEFT: R1 → R2
+    ['#left-round-1 .match:nth-of-type(1)', '#left-round-2 .match:nth-of-type(1)'],
+    ['#left-round-1 .match:nth-of-type(2)', '#left-round-2 .match:nth-of-type(1)'],
+    ['#left-round-1 .match:nth-of-type(3)', '#left-round-2 .match:nth-of-type(2)'],
+    ['#left-round-1 .match:nth-of-type(4)', '#left-round-2 .match:nth-of-type(2)'],
+    // LEFT: R2 → R3
+    ['#left-round-2 .match:nth-of-type(1)', '#left-round-3 .match:nth-of-type(1)'],
+    ['#left-round-2 .match:nth-of-type(2)', '#left-round-3 .match:nth-of-type(1)'],
 
-  // RIGHT: R1 -> semi
-  ['R1','RSF1'], ['R2','RSF1'],
-  ['R3','RSF2'], ['R4','RSF2'],
-  // RIGHT: semi -> conf final
-  ['RSF1','RCF'], ['RSF2','RCF'],
+    // RIGHT: R1 → R2
+    ['#right-round-1 .match:nth-of-type(1)', '#right-round-2 .match:nth-of-type(1)'],
+    ['#right-round-1 .match:nth-of-type(2)', '#right-round-2 .match:nth-of-type(1)'],
+    ['#right-round-1 .match:nth-of-type(3)', '#right-round-2 .match:nth-of-type(2)'],
+    ['#right-round-1 .match:nth-of-type(4)', '#right-round-2 .match:nth-of-type(2)'],
+    // RIGHT: R2 → R3
+    ['#right-round-2 .match:nth-of-type(1)', '#right-round-3 .match:nth-of-type(1)'],
+    ['#right-round-2 .match:nth-of-type(2)', '#right-round-3 .match:nth-of-type(1)'],
 
-  // FINALS
-  ['LCF','F'], ['RCF','F']
-];
+    // FINALS: LCF → F e RCF → F
+    ['#left-round-3  .match:nth-of-type(1)', '#nbafinals .match:nth-of-type(1)'],
+    ['#right-round-3 .match:nth-of-type(1)', '#nbafinals .match:nth-of-type(1)'],
+  ];
 
-function drawWires(){
-  const { svg, brRect } = ensureWireLayer();
+  const H_PAD = 14;     // orizzontale della “spalletta”
+  const STROKE = 2;     // spessore linea
 
-  WIRE_MAP.forEach(([fromId,toId])=>{
-    const fromEl = document.querySelector(`.match[data-series="${fromId}"]`);
-    const toEl   = document.querySelector(`.match[data-series="${toId}"]`);
-    if (!fromEl || !toEl) return;
+  WIRE_MAP.forEach(([fromSel, toSel]) => {
+    const from = document.querySelector(fromSel);
+    const to   = document.querySelector(toSel);
+    if (!from || !to) return;
 
-    // direzione automatica: se il target è a destra uso right->left, altrimenti left->right
-    const fRect = fromEl.getBoundingClientRect();
-    const tRect = toEl.getBoundingClientRect();
+    const a = midRight(from);
+    const b = midLeft(to);
 
-    let p1, p2;
-    if (fRect.left < tRect.left){
-      // da sinistra verso destra
-      p1 = midRight(fromEl, brRect);
-      p2 = midLeft(toEl, brRect);
-    } else {
-      // da destra verso sinistra (colonna right che “va verso le finals”)
-      p1 = midLeft(fromEl, brRect);
-      p2 = midRight(toEl, brRect);
-    }
-    addElbow(svg, p1, p2);
+    // elbow └─: orizzontale poi verticale
+    const x1 = a.x, y1 = a.y;
+    const x2 = b.x, y2 = b.y;
+    const midX = Math.min(x1, x2) + Math.abs(x2 - x1) / 2;
+
+    // orizzontale a metà
+    addSeg(layer, x1, y1 - STROKE/2, Math.max(1, midX - x1), STROKE);
+    // verticale a metà
+    const top = Math.min(y1, y2);
+    addSeg(layer, midX - STROKE/2, top, STROKE, Math.max(1, Math.abs(y2 - y1)));
+    // orizzontale fino al target
+    addSeg(layer, midX, y2 - STROKE/2, Math.max(1, x2 - midX), STROKE);
   });
 }
-
 
 function renderRound(containerId, matches){
   const container = document.getElementById(containerId);
