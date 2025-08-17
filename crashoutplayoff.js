@@ -3,6 +3,8 @@ const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1pXJCNL
 const LOGO_BASE_PATH = "img/";   // cambia se necessario
 const LOGO_EXT = ".png";         // .png o .jpg in base ai tuoi file
 const SCORE_DEFAULT = "0";
+const BEST_OF = 5;
+const WINS_NEEDED = Math.floor(BEST_OF / 2) + 1; // 3
 const RESULTS = {
   // Round 1
   L1:[0,0], L2:[0,0], L3:[0,0], L4:[0,0],
@@ -104,6 +106,57 @@ function makeBracketStructure(seeds) {
   const rightCF = [ makeEmptyMatch("RCF") ];
   const finals  = [ makeEmptyMatch("F") ];
   return { r1, leftSF, rightSF, leftCF, rightCF, finals };
+}
+// trova un match ovunque nel bracket
+function findMatchById(bracket, id) {
+  const pools = [
+    ...bracket.r1.left, ...bracket.r1.right,
+    ...bracket.leftSF, ...bracket.rightSF,
+    ...bracket.leftCF, ...bracket.rightCF,
+    ...bracket.finals
+  ];
+  return pools.find(m => m.id === id) || null;
+}
+
+// dato un match, ritorna l'oggetto squadra vincente se ha raggiunto WINS_NEEDED
+function getWinner(match) {
+  const res = RESULTS[match.id];
+  if (!res) return null;
+  const [home, away] = res;
+  if (home >= WINS_NEEDED && home > away) return match.home;
+  if (away >= WINS_NEEDED && away > home) return match.away;
+  return null;
+}
+
+// copia seed/nome dentro uno slot del turno successivo
+function setSlot(targetMatch, side, teamObj) {
+  if (!targetMatch || !teamObj) return;
+  targetMatch[side].seed = teamObj.seed;
+  targetMatch[side].team = teamObj.team;
+}
+
+// Propagazione vincitori Round→Round
+function propagateWinners(bracket) {
+  // --- Semifinali di conference (da Round 1) ---
+  setSlot(findMatchById(bracket, "LSF1"), "home", getWinner(findMatchById(bracket, "L1")));
+  setSlot(findMatchById(bracket, "LSF1"), "away", getWinner(findMatchById(bracket, "L2")));
+  setSlot(findMatchById(bracket, "LSF2"), "home", getWinner(findMatchById(bracket, "L3")));
+  setSlot(findMatchById(bracket, "LSF2"), "away", getWinner(findMatchById(bracket, "L4")));
+
+  setSlot(findMatchById(bracket, "RSF1"), "home", getWinner(findMatchById(bracket, "R1")));
+  setSlot(findMatchById(bracket, "RSF1"), "away", getWinner(findMatchById(bracket, "R2")));
+  setSlot(findMatchById(bracket, "RSF2"), "home", getWinner(findMatchById(bracket, "R3")));
+  setSlot(findMatchById(bracket, "RSF2"), "away", getWinner(findMatchById(bracket, "R4")));
+
+  // --- Finali di conference (da Semifinali) ---
+  setSlot(findMatchById(bracket, "LCF"), "home", getWinner(findMatchById(bracket, "LSF1")));
+  setSlot(findMatchById(bracket, "LCF"), "away", getWinner(findMatchById(bracket, "LSF2")));
+  setSlot(findMatchById(bracket, "RCF"), "home", getWinner(findMatchById(bracket, "RSF1")));
+  setSlot(findMatchById(bracket, "RCF"), "away", getWinner(findMatchById(bracket, "RSF2")));
+
+  // --- Finals (da Finali di conference) ---
+  setSlot(findMatchById(bracket, "F"), "home", getWinner(findMatchById(bracket, "LCF")));
+  setSlot(findMatchById(bracket, "F"), "away", getWinner(findMatchById(bracket, "RCF")));
 }
 
 // ======== RENDER ========
@@ -261,6 +314,8 @@ async function buildBracket() {
       console.warn("Trovate meno di 16 squadre. Ne servono 16.");
     }
     const bracket = makeBracketStructure(seeds);
+
+    propagateWinners(bracket);
 
     // Round 1 (8 serie)
     renderRound("round-1", [...bracket.r1.left, ...bracket.r1.right]);
