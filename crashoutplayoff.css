@@ -36,54 +36,51 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .cup-container{ max-width:none; margin:10px 16px 48px; padding-right:16px; overflow-x:auto; }
 .bracket{
   display:grid;
-  grid-template-columns: minmax(360px,max-content) 240px minmax(360px,max-content);
+  grid-template-columns:minmax(360px,max-content) 240px minmax(360px,max-content); /* left | finals | right */
   gap:20px; align-items:start; width:max-content; justify-content:start;
 }
-.conference,.finals{ display:flex; flex-direction:column; gap:14px; }
+
+/* colonne conference affiancate; destra invertita (R1 a destra, poi R2, poi semifinale vicino alle Finals) */
+.conference{ display:flex; gap:24px; align-items:flex-start; }
+.conference.right{ flex-direction:row-reverse; }
+
+.finals{ display:flex; flex-direction:column; gap:14px; }
 .conf-title{ margin:0; font-size:1.05rem; color:var(--nav); border-left:4px solid var(--accent); padding-left:10px; }
-.round{ display:flex; flex-direction:column; gap:14px; align-items:flex-start; }
+
+/* ogni colonna di round è verticale e non stira le card */
+.round{ position:relative; display:flex; flex-direction:column; gap:14px; align-items:flex-start; }
+
+/* titoli sopra i turni */
+.round::before{
+  display:block; margin:0 0 8px 0; font-weight:700; color:var(--nav);
+  border-left:4px solid var(--accent); padding-left:10px;
+}
+#left-round-1::before,  #right-round-1::before  { content:"1° turno"; }
+#left-round-2::before,  #right-round-2::before  { content:"2° turno"; }
+#left-round-3::before,  #right-round-3::before  { content:"Semifinali"; }
+#nbafinals::before                               { content:"Finals"; }
 
 /* === Match card compatta === */
 .match{
   background:var(--card); border:1px solid var(--line); border-radius:14px;
   box-shadow:0 2px 6px rgba(0,0,0,.06);
   width:max-content; padding:6px;
-  gap: 12px; 
-  display: flex;           /* più robusto del grid qui */
-  flex-direction: column;
-}
-
-.match .team + .team{
-  margin-top: 12px;
+  display:flex; flex-direction:column; gap:12px;
 }
 
 /* === Riga squadra (Round 1: seed | logo | score) === */
-.team{
-  display: grid;
-  grid-template-columns: 32px 76px auto; /* allineato allo seed da 32px */
-  gap: 8px;
-  align-items: center;
-}
+.team{ display:grid; grid-template-columns:32px 76px auto; gap:8px; align-items:center; }
 
-/* Seed */
+/* Seed (solo Round 1) */
 .seed{
-  width: 32px;
-  height: 32px;
-  background: var(--seed-red);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  border-radius: 8px;          /* <- fix del refuso */
-  font-weight: 800;
-  font-size: .85rem;
+  width:32px; height:32px; background:var(--seed-red); color:#fff;
+  display:grid; place-items:center; border-radius:8px; font-weight:800; font-size:.85rem;
 }
 
-/* Logo (solo immagine, niente cerchio) */
+/* Logo (solo immagine) */
 .logo-wrap{ width:76px; height:76px; display:grid; place-items:center; background:transparent; border:0; border-radius:0; overflow:visible; }
 .logo-wrap .logo{ width:100%; height:100%; object-fit:contain; }
-.logo-wrap.no-logo{
-  background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 10px,#e2e8f0 10px,#e2e8f0 20px);
-}
+.logo-wrap.no-logo{ background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 10px,#e2e8f0 10px,#e2e8f0 20px); }
 
 /* Score: numero singolo, compatto, a sinistra */
 .score-box{
@@ -104,37 +101,7 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 #right-round-2 .team, #right-round-3 .team,
 #nbafinals .team{ grid-template-columns:76px auto; }
 
-/* Colonne dei round affiancate */
-.conference{
-  display:flex;
-  gap:24px;
-  align-items:flex-start;
-}
-
-/* Solo la conference di destra scorre da destra verso sinistra */
-.conference.right{ flex-direction: row-reverse; }
-
-/* Ogni colonna resta verticale (già definita .round) */
-.round .match{ width: max-content; }               /* niente larghezza fissa */
-.finals .round-final .match{ width: max-content; } /* idem per le Finals */
-
-.round{ position: relative; }
-.round::before{
-  display:block;
-  margin:0 0 8px 0;
-  font-weight:700;
-  color:var(--nav);
-  border-left:4px solid var(--accent);
-  padding-left:10px;
-}
-
-/* 1° turno / 2° turno / Semifinali / Finals */
-#left-round-1::before,  #right-round-1::before  { content:"1° turno"; }
-#left-round-2::before,  #right-round-2::before  { content:"2° turno"; }
-#left-round-3::before,  #right-round-3::before  { content:"Semifinali"; }
-#nbafinals::before                               { content:"Finals"; }
-
-/* ========== MOBILE (non prioritario, ma coerente) ========== */
+/* ========== MOBILE ========== */
 .bracket-mobile{ display:none; }
 
 @media (max-width:768px){
@@ -153,7 +120,7 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   }
   .round-mobile h3{ font-size:1.05rem; color:var(--nav); margin:6px 0 12px; border-left:4px solid var(--accent); padding-left:10px; }
 
-  .match{ padding:10px; gap:8px; display: grid; grid-template-rows: auto auto; row-gap: 10px;  }
+  .match{ padding:10px; gap:8px; display:grid; grid-template-rows:auto auto; row-gap:10px; }
   .team{ grid-template-columns:40px 72px 1fr; gap:10px; }
   .seed{ width:40px; height:40px; font-size:.95rem; }
   .logo-wrap{ width:74px; height:74px; }
