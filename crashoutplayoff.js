@@ -3,6 +3,22 @@ const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1pXJCNL
 const LOGO_BASE_PATH = "img/";       // cambia se necessario
 const LOGO_EXT = ".png";               // .png o .jpg in base ai tuoi file
 const SCORE_DEFAULT = "0";
+const BEST_OF = 5;
+const WINS_NEEDED = Math.floor(BEST_OF / 2) + 1; // 3
+const RESULTS = {
+  // Round 1
+  L1:[0,0], L2:[0,0], L3:[0,0], L4:[0,0],
+  R1:[0,0], R2:[0,0], R3:[0,0], R4:[0,0],
+
+  // Semifinali di Conference
+  LSF1:[0,0], LSF2:[0,0], RSF1:[0,0], RSF2:[0,0],
+
+  // Finali di Conference
+  LCF:[0,0], RCF:[0,0],
+
+  // Finals
+  F:[0,0],
+};
 
 // ======== UTILS ========
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -103,6 +119,59 @@ function makeBracketStructure(seeds){
   return { r1, leftSF, rightSF, leftCF, rightCF, finals };
 }
 
+// trova un match ovunque nel bracket
+function findMatchById(bracket, id) {
+  const pools = [
+    ...bracket.r1.left, ...bracket.r1.right,
+    ...bracket.leftSF, ...bracket.rightSF,
+    ...bracket.leftCF, ...bracket.rightCF,
+    ...bracket.finals
+  ];
+  return pools.find(m => m.id === id) || null;
+}
+
+// dato un match, ritorna l'oggetto squadra vincente se ha raggiunto WINS_NEEDED
+function getWinner(match) {
+  const res = RESULTS[match.id];
+  if (!res) return null;
+  const [home, away] = res;
+  if (home >= WINS_NEEDED && home > away) return match.home;
+  if (away >= WINS_NEEDED && away > home) return match.away;
+  return null;
+}
+
+// copia seed/nome dentro uno slot del turno successivo
+function setSlot(targetMatch, side, teamObj) {
+  if (!targetMatch || !teamObj) return;
+  targetMatch[side].seed = teamObj.seed;
+  targetMatch[side].team = teamObj.team;
+}
+
+// Propagazione vincitori Round→Round
+function propagateWinners(bracket) {
+  // --- Semifinali di conference (da Round 1) ---
+  setSlot(findMatchById(bracket, "LSF1"), "home", getWinner(findMatchById(bracket, "L1")));
+  setSlot(findMatchById(bracket, "LSF1"), "away", getWinner(findMatchById(bracket, "L2")));
+  setSlot(findMatchById(bracket, "LSF2"), "home", getWinner(findMatchById(bracket, "L3")));
+  setSlot(findMatchById(bracket, "LSF2"), "away", getWinner(findMatchById(bracket, "L4")));
+
+  setSlot(findMatchById(bracket, "RSF1"), "home", getWinner(findMatchById(bracket, "R1")));
+  setSlot(findMatchById(bracket, "RSF1"), "away", getWinner(findMatchById(bracket, "R2")));
+  setSlot(findMatchById(bracket, "RSF2"), "home", getWinner(findMatchById(bracket, "R3")));
+  setSlot(findMatchById(bracket, "RSF2"), "away", getWinner(findMatchById(bracket, "R4")));
+
+  // --- Finali di conference (da Semifinali) ---
+  setSlot(findMatchById(bracket, "LCF"), "home", getWinner(findMatchById(bracket, "LSF1")));
+  setSlot(findMatchById(bracket, "LCF"), "away", getWinner(findMatchById(bracket, "LSF2")));
+  setSlot(findMatchById(bracket, "RCF"), "home", getWinner(findMatchById(bracket, "RSF1")));
+  setSlot(findMatchById(bracket, "RCF"), "away", getWinner(findMatchById(bracket, "RSF2")));
+
+  // --- Finals (da Finali di conference) ---
+  setSlot(findMatchById(bracket, "F"), "home", getWinner(findMatchById(bracket, "LCF")));
+  setSlot(findMatchById(bracket, "F"), "away", getWinner(findMatchById(bracket, "RCF")));
+}
+
+
 // ======== RENDER ========
 function clearBracket() {
   ["left-round-1","left-round-2","left-round-3","right-round-1","right-round-2","right-round-3","nbafinals","bracket-mobile"]
@@ -114,64 +183,39 @@ function createMatchElement(match) {
   const node = tpl.content.firstElementChild.cloneNode(true);
   node.dataset.series = match.id;
 
-  const [homeEl, awayEl] = $$(".team", node);
-  const [homeSeed, awaySeed] = $$(".seed", node);
-  const [homeLogo, awayLogo] = $$(".logo", node);
-  const [homeBox, awayBox]   = $$(".score-box", node);
+  const teamsEls = $$(".team", node);
+  const seedEls  = $$(".seed", node);
+  const logoEls  = $$(".logo", node);
+  const scoreBoxes = $$(".score-box", node);
 
-  // dati base
-  homeSeed.textContent = match.home.seed || "";
-  awaySeed.textContent = match.away.seed || "";
+  // dati squadra/seed
+  seedEls[0].textContent = match.home.seed || "";
+  seedEls[1].textContent = match.away.seed || "";
 
-  homeLogo.alt = match.home.team;
-  awayLogo.alt = match.away.team;
+  logoEls[0].alt = match.home.team;
+  logoEls[1].alt = match.away.team;
 
-  if (match.home.team && match.home.team !== "TBD") homeLogo.src = logoSrc(match.home.team);
-  if (match.away.team && match.away.team !== "TBD") awayLogo.src = logoSrc(match.away.team);
+  if (match.home.team && match.home.team !== "TBD") logoEls[0].src = logoSrc(match.home.team);
+  if (match.away.team && match.away.team !== "TBD") logoEls[1].src = logoSrc(match.away.team);
 
-  homeLogo.onerror = () => { homeLogo.classList.add("hidden"); homeLogo.parentElement.classList.add("no-logo"); };
-  awayLogo.onerror = () => { awayLogo.classList.add("hidden"); awayLogo.parentElement.classList.add("no-logo"); };
+  // fallback logo
+  logoEls[0].onerror = function () { this.classList.add("hidden"); this.parentElement.classList.add("no-logo"); };
+  logoEls[1].onerror = function () { this.classList.add("hidden"); this.parentElement.classList.add("no-logo"); };
 
-  homeEl.title = match.home.team;
-  awayEl.title = match.away.team;
+  // tooltip
+  teamsEls[0].title = match.home.team;
+  teamsEls[1].title = match.away.team;
 
-  // ===== punteggio singolo per box (0..3) =====
-  const keyHome   = `seriesScore:${match.id}:home`;
-  const keyAway   = `seriesScore:${match.id}:away`;
-  const legacyKey = `seriesScore:${match.id}`; // per retrocompatibilità "0-0"
+  // ===== punteggi SOLO da RESULTS, non editabili in pagina =====
+  const [homeScore, awayScore] = (RESULTS[match.id] ?? [0,0]).map(x => String(x));
+  scoreBoxes[0].textContent = homeScore;
+  scoreBoxes[1].textContent = awayScore;
 
-  function clamp03(v){
-    const n = parseInt(String(v).replace(/\D/g,""), 10);
-    if (isNaN(n)) return "0";
-    return String(Math.max(0, Math.min(3, n)));
-  }
-
-  // carica (prima chiavi nuove, poi fallback al legacy "h-a")
-  let hVal = localStorage.getItem(keyHome);
-  let aVal = localStorage.getItem(keyAway);
-
-  if (hVal == null || aVal == null) {
-    const legacy = localStorage.getItem(legacyKey);
-    if (legacy && legacy.includes("-")) {
-      const [h,a] = legacy.split("-").map(clamp03);
-      if (hVal == null) hVal = h;
-      if (aVal == null) aVal = a;
-    }
-  }
-
-  homeBox.textContent = clamp03(hVal ?? SCORE_DEFAULT);
-  awayBox.textContent = clamp03(aVal ?? SCORE_DEFAULT);
-
-  function saveSide(box, key){
-    const val = clamp03(box.textContent);
-    box.textContent = val;                 // normalizza subito
-    localStorage.setItem(key, val);        // salva singolo numero
-  }
-
-  [[homeBox, keyHome], [awayBox, keyAway]].forEach(([box, key]) => {
-    box.addEventListener("input", () => saveSide(box, key));
-    box.addEventListener("blur",  () => saveSide(box, key));
-    box.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); box.blur(); } });
+  // assicurati che non siano editabili
+  scoreBoxes.forEach(b => {
+    b.removeAttribute("contenteditable");
+    b.style.cursor = "default";
+    b.title = "Risultati bloccati (si aggiornano dal file JS)";
   });
 
   return node;
@@ -228,6 +272,8 @@ async function buildBracket() {
 
     // Mobile
     renderMobileList(bracket);
+
+    propagateWinners(bracket);
 
   } catch (err) {
     console.error("Errore costruzione bracket:", err);
