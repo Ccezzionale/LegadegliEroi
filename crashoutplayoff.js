@@ -136,31 +136,25 @@ function createMatchElement(match) {
   const node = tpl.content.firstElementChild.cloneNode(true);
   node.dataset.series = match.id;
 
-  const [homeEl, awayEl] = $$(".team", node);
-  const [homeSeed, awaySeed] = $$(".seed", node);
-  const [homeLogo, awayLogo] = $$(".logo", node);
-  const [homeBox, awayBox]   = $$(".score-box", node);
+  const [homeEl, awayEl] = node.querySelectorAll(".team");
+  const [homeSeed, awaySeed] = node.querySelectorAll(".seed");
+  const [homeLogo, awayLogo] = node.querySelectorAll(".logo");
 
-  // dati base
   homeSeed.textContent = match.home.seed || "";
   awaySeed.textContent = match.away.seed || "";
 
-  homeLogo.alt = match.home.team;
-  awayLogo.alt = match.away.team;
-
+  homeLogo.alt = match.home.team;  awayLogo.alt = match.away.team;
   if (match.home.team && match.home.team !== "TBD") homeLogo.src = logoSrc(match.home.team);
   if (match.away.team && match.away.team !== "TBD") awayLogo.src = logoSrc(match.away.team);
-
   homeLogo.onerror = () => { homeLogo.classList.add("hidden"); homeLogo.parentElement.classList.add("no-logo"); };
   awayLogo.onerror = () => { awayLogo.classList.add("hidden"); awayLogo.parentElement.classList.add("no-logo"); };
+  homeEl.title = match.home.team; awayEl.title = match.away.team;
 
-  homeEl.title = match.home.team;
-  awayEl.title = match.away.team;
+  // ⬇️ QUI: scrive i punteggi visibili
+  applyScoresToNode(node, match.id);
 
-  // ===== punteggio singolo per box (0..3) =====
-  const keyHome   = `seriesScore:${match.id}:home`;
-  const keyAway   = `seriesScore:${match.id}:away`;
-  const legacyKey = `seriesScore:${match.id}`; // per retrocompatibilità "0-0"
+  return node;
+}
 
   function clamp03(v){
     const n = parseInt(String(v).replace(/\D/g,""), 10);
@@ -229,6 +223,16 @@ function getScoreFor(seriesId){
   const s = SCORES?.[seriesId] || {};
   return { home: clamp03(s.home), away: clamp03(s.away) };
 }
+
+function applyScoresToNode(node, seriesId){
+  const [homeBox, awayBox] = node.querySelectorAll('.score-box');
+  const s = (SCORES && SCORES[seriesId]) || {home:0, away:0};
+  homeBox.textContent = String(s.home ?? 0);
+  awayBox.textContent = String(s.away ?? 0);
+  homeBox.setAttribute('contenteditable','false');
+  awayBox.setAttribute('contenteditable','false');
+}
+
 
 // Ritorna l'oggetto team vincitore della serie (o null se non definitivo)
 function winnerOf(match, seriesId){
