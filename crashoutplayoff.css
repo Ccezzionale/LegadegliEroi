@@ -4,9 +4,11 @@
   --nav:#001f3f; --nav-hover:#0074D9; --subnav:#003366; --accent:#ffcc00;
   --card:#fff; --muted:#6b7280; --line:#e5e7eb;
   --seed-red:#d61f2a; --score-red:#c5161f;
-
-  /* distanza verticale di uno “step” dell’albero */
-  --slot:150px;
+  
+   --slot:150px;
+  /* LARGHEZZA della colonna centrale (aumenta qui per più spazio) */
+  --finals-col: 440px;     /* prova 440–520px */
+  --grid-gap: 16px;
 }
 
 
@@ -40,9 +42,12 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .cup-container{ max-width:none; margin:10px 16px 48px; padding-right:16px; overflow-x:auto; }
 
 .bracket{
-  display:grid;
-  grid-template-columns:minmax(360px,max-content) 180px minmax(360px,max-content); /* 240 -> 180 */
-  gap:16px; /* 20 -> 16 se vuoi stringere un filo anche lo spazio */
+  display: grid;
+  grid-template-columns:
+    minmax(360px, max-content)
+    var(--finals-col)
+    minmax(360px, max-content);
+  gap: var(--grid-gap);
 }
 
 .finals-split{
@@ -54,13 +59,17 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   position: relative;
 }
 
+.finals-split{ min-width: var(--finals-col); }
+
 .finals .round::before{ content:none; }
 
 /* la coppa al centro */
 .trophy{
-  width: 120px; height: 120px;
-  background: url("img/cup.png") center/contain no-repeat; /* metti il tuo file */
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,.2));
+  /* se vuoi fisso: width: 280px; height: 280px; */
+  width: clamp(220px, calc(var(--finals-col) - 160px), 360px);
+  height: clamp(220px, calc(var(--finals-col) - 160px), 360px);
+  background: url("img/cup.png") center/contain no-repeat;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,.25));
 }
 
 .trophy{ pointer-events:none; }
