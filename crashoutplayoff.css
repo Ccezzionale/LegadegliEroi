@@ -107,32 +107,45 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
 /* ---- Layout ad "albero" per i round (sinistra e destra) ---- */
 /* Altezza unità verticale: aumenta/diminuisci se serve più/meno spazio */
-:root{ --slot: 150px; }
+/* ---- Layout ad "albero" con titoli fissi sopra ---- */
+:root{ --slot: 150px; }  /* altezza di uno "scalino" verticale */
 
-/* ogni colonna di round diventa una griglia verticale */
+/* ogni round = griglia con altezza uniforme */
 .conference .round{
+  position: relative;
   display: grid !important;
-  grid-auto-rows: var(--slot);
+  grid-template-rows: repeat(12, var(--slot)); /* stesse righe per tutti */
   row-gap: 0;
+  padding-top: 0;  /* niente spazio extra: il titolo è assoluto */
 }
-.conference .round .match{ margin: 0; } /* lasciamo gestire gli spazi alla griglia */
+
+/* Titolo del round fuori dal flusso, non spinge i match in basso */
+.conference .round::before{
+  position: absolute;
+  top: -26px;     /* alza/abbassa il titolo a gusto */
+  left: 0;
+  margin: 0;
+  padding-left: 10px;
+  border-left: 4px solid var(--accent);
+  font-weight: 700;
+  color: var(--nav);
+}
+
+/* Le card non mettono margini: la griglia gestisce tutto */
+.conference .round .match{ margin: 0; }
 
 /* ---------- LEFT ---------- */
-/* 1° turno (4 match): occupano 2 "slot" ciascuno */
 #left-round-1 .match:nth-child(1){ grid-row: 1 / span 2; }
 #left-round-1 .match:nth-child(2){ grid-row: 3 / span 2; }
 #left-round-1 .match:nth-child(3){ grid-row: 5 / span 2; }
 #left-round-1 .match:nth-child(4){ grid-row: 7 / span 2; }
 
-/* 2° turno (2 match): tra 1&2 e tra 3&4 */
 #left-round-2 .match:nth-child(1){ grid-row: 2 / span 4; }
 #left-round-2 .match:nth-child(2){ grid-row: 6 / span 4; }
 
-/* Semifinale: centrata tra i due del 2° turno */
 #left-round-3 .match:nth-child(1){ grid-row: 4 / span 8; }
 
 /* ---------- RIGHT ---------- */
-/* schema identico, vale per la conference destra */
 #right-round-1 .match:nth-child(1){ grid-row: 1 / span 2; }
 #right-round-1 .match:nth-child(2){ grid-row: 3 / span 2; }
 #right-round-1 .match:nth-child(3){ grid-row: 5 / span 2; }
