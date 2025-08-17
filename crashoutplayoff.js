@@ -2,6 +2,28 @@
 const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1pXJCNLgchygyLnGbDEsnIV3QAdPUiLcmgzMAhlzYRivXV4fnoSBW5VwiopwXEMfwk32mvdF3gWZC/pub?output=csv";
 const LOGO_BASE_PATH = "img/";       // cambia se necessario
 const LOGO_EXT = ".png";               // .png o .jpg in base ai tuoi file
+const SCORES = {
+  // Round 1 — Left
+  L1:  { home: 0, away: 0 },
+  L2:  { home: 0, away: 0 },
+  L3:  { home: 0, away: 0 },
+  L4:  { home: 0, away: 0 },
+  // Round 1 — Right
+  R1:  { home: 0, away: 0 },
+  R2:  { home: 0, away: 0 },
+  R3:  { home: 0, away: 0 },
+  R4:  { home: 0, away: 0 },
+  // Semifinali
+  LSF1:{ home: 0, away: 0 },
+  LSF2:{ home: 0, away: 0 },
+  RSF1:{ home: 0, away: 0 },
+  RSF2:{ home: 0, away: 0 },
+  // Finali di Conference
+  LCF: { home: 0, away: 0 },
+  RCF: { home: 0, away: 0 },
+  // Finals
+  F:   { home: 0, away: 0 },
+};
 const SCORE_DEFAULT = "0";
 
 // ======== UTILS ========
