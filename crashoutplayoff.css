@@ -6,6 +6,7 @@
   --nav-hover: #0074D9;
   --subnav: #003366;
   --accent: #ffcc00;
+  --match-h: 190px; 
 
   --card: #ffffff;
   --muted: #6b7280;
@@ -193,8 +194,9 @@ nav {
   display: grid;
   grid-template-rows: auto auto;
   gap: 10px;
-  min-height: 190px;                  /* per calcolo connettori */
+ min-height: var(--match-h);  
 }
+
 
 /* riga squadra: seed | logo | punteggio */
 .team{
