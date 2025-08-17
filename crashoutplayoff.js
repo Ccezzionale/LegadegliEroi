@@ -187,21 +187,40 @@ function renderMobileList(bracket){
 let _resizeHooked = false;
 
 function computeRoundOffsets() {
-  const r1 = document.querySelector("#round-1 .match");
+  const r1 = document.getElementById("round-1");
   const r2 = document.getElementById("round-2");
   const r3 = document.getElementById("round-3");
   const rf = document.getElementById("round-final");
   if (!r1 || !r2 || !r3 || !rf) return;
 
-  // altezza reale di UN match e gap letti dal CSS
-  const h = Math.round(r1.getBoundingClientRect().height);
-  const rootStyle = getComputedStyle(document.documentElement);
-  const gap = parseFloat(rootStyle.getPropertyValue("--gap-round")) || 18;
+  const m = r1.querySelector(".match");
+  if (!m) return;
 
-  r2.style.paddingTop = `${2   * (h + gap) + up}px`;
-  r3.style.paddingTop = `${2.5 * (h + gap) + up}px`;
-  rf.style.paddingTop = `${3   * (h + gap) + up}px`;
+  // Altezza card e gap reale tra le card
+  const H = m.getBoundingClientRect().height;
+  const G = parseFloat(getComputedStyle(r1).gap) || 18;
+
+  // *** FORMULE ESATTE ***
+  r2.style.paddingTop = `${2 * (H + G)}px`;    // Semifinali allineate 3°→6° di R1
+  r3.style.paddingTop = `${3 * (H + G)}px`;    // Conference Finals allineate 2°→3° di R2
+  rf.style.paddingTop = `${3.5 * (H + G)}px`;  // Finals nel mezzo fra CF1 e CF2
 }
+
+// Ricalcola quando serve
+function armOffsetRecalc() {
+  // quando caricano i loghi (altezza può cambiare)
+  document
+    .querySelectorAll("#round-1 img.logo, #round-2 img.logo, #round-3 img.logo, #round-final img.logo")
+    .forEach(img => {
+      if (!img.complete) img.addEventListener("load", computeRoundOffsets, { once: true });
+    });
+
+  window.addEventListener("resize", computeRoundOffsets, { passive: true });
+
+  // al frame successivo, quando il layout è pronto
+  requestAnimationFrame(computeRoundOffsets);
+}
+
 
 function setupOffsetRecalc() {
   // se hai vecchi transform nel CSS, neutralizzali (nel dubbio)
@@ -248,7 +267,7 @@ async function buildBracket() {
     renderMobileList(bracket);
 
     // DOPO il render → calcola offset
-    setupOffsetRecalc();
+    armOffsetRecalc();
 
   } catch (err) {
     console.error("Errore costruzione bracket:", err);
