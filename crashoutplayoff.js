@@ -193,20 +193,19 @@ function computeRoundOffsets() {
   const rf = document.getElementById("round-final");
   if (!r1 || !r2 || !r3 || !rf) return;
 
-  // altezza reale della card (padding + bordo inclusi)
+  // altezza reale di UN match e gap letti dal CSS
   const h = Math.round(r1.getBoundingClientRect().height);
-
-  // leggo il gap dai CSS custom props (fallback 18)
   const rootStyle = getComputedStyle(document.documentElement);
   const gap = parseFloat(rootStyle.getPropertyValue("--gap-round")) || 18;
 
-  // micro-aggiustamento per centrare al pixel le Semifinali
-  const tweak = 16; // prova 12–20 per rifinire
+  // Semifinali: allinea dal 3° al 6° match del Round 1
+  r2.style.paddingTop = `${2 * (h + gap)}px`;      // 2*(h+gap) = inizio al R1 #3
 
-  // Applica offsets come paddingTop (inline)
-  r2.style.paddingTop = `${(h + gap) / 2 + tweak}px`;
-  r3.style.paddingTop = `${(h + gap)}px`;
-  rf.style.paddingTop = `${1.5 * (h + gap)}px`;
+  // Finale di Conference: in mezzo alle semifinali (tra R1 #3 e #4)
+  r3.style.paddingTop = `${2.5 * (h + gap)}px`;    // 2.5*(h+gap)
+
+  // Finals: in mezzo alle due Conference Finals
+  rf.style.paddingTop = `${3 * (h + gap)}px`;      // 3*(h+gap)
 }
 
 function setupOffsetRecalc() {
