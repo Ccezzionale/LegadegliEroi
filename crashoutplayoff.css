@@ -165,6 +165,98 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .conference > .conf-title { display: none; }
 .finals     > .conf-title { display: block; }
 
+/* ===== CONNECTORS (linee tra i turni) ===== */
+:root{
+  --conn: 28px;            /* lunghezza orizzontale del connettore */
+  --conn-w: 2px;           /* spessore linea */
+  --conn-color: #c9d0da;   /* colore linea (usa pure var(--line) se vuoi) */
+}
+
+/* preparazione (serve per posizionare le pseudo) */
+.conference .match,
+#nbafinals .match{
+  position: relative;
+  z-index: 1;              /* le linee passano sotto le card */
+}
+
+/* ---------- LATO SINISTRO (Left) ----------
+   dal 1° e 2° turno esce una linea orizzontale verso destra;
+   nel 2° e 3° turno c'è la “spina” verticale che raccoglie le due linee. */
+
+/* orizzontali in uscita (→) */
+.conference.left #left-round-1 .match::after,
+.conference.left #left-round-2 .match::after,
+.conference.left #left-round-3 .match::after{
+  content:"";
+  position:absolute;
+  top: calc(50% - var(--conn-w)/2);
+  right: calc(-1 * var(--conn));
+  width: var(--conn);
+  border-top: var(--conn-w) solid var(--conn-color);
+  z-index: 0;
+}
+
+/* spine verticali di raccolta (│) */
+.conference.left #left-round-2 .match::before,
+.conference.left #left-round-3 .match::before{
+  content:"";
+  position:absolute;
+  left: calc(-1 * var(--conn));
+  top: 0;
+  bottom: 0;
+  border-left: var(--conn-w) solid var(--conn-color);
+  z-index: 0;
+}
+
+/* ---------- LATO DESTRO (Right) ----------
+   i turni sono rovesciati: le orizzontali vanno a sinistra,
+   e la “spina” verticale sta a destra della card del turno successivo. */
+
+/* orizzontali in uscita (←) */
+.conference.right #right-round-1 .match::after,
+.conference.right #right-round-2 .match::after,
+.conference.right #right-round-3 .match::after{
+  content:"";
+  position:absolute;
+  top: calc(50% - var(--conn-w)/2);
+  left: calc(-1 * var(--conn));
+  width: var(--conn);
+  border-top: var(--conn-w) solid var(--conn-color);
+  z-index: 0;
+}
+
+/* spine verticali di raccolta (│) sul lato destro */
+.conference.right #right-round-2 .match::before,
+.conference.right #right-round-3 .match::before{
+  content:"";
+  position:absolute;
+  right: calc(-1 * var(--conn));
+  top: 0;
+  bottom: 0;
+  border-right: var(--conn-w) solid var(--conn-color);
+  z-index: 0;
+}
+
+/* ---------- FINALS ----------
+   raccoglie la linea che arriva da sinistra (LCF) e quella da destra (RCF) */
+#nbafinals .match::before,
+#nbafinals .match::after{
+  content:"";
+  position:absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 0;
+}
+#nbafinals .match::before{  /* collegamento da LEFT */
+  left:  calc(-1 * var(--conn));
+  border-left:  var(--conn-w) solid var(--conn-color);
+}
+#nbafinals .match::after{   /* collegamento da RIGHT */
+  right: calc(-1 * var(--conn));
+  border-right: var(--conn-w) solid var(--conn-color);
+}
+
+
 
 
 /* ========== MOBILE ========== */
