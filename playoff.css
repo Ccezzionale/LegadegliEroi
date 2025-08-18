@@ -1,263 +1,51 @@
-/* ====== BASE ====== */
 :root{
-  --bg:#f4f4f4; 
-  --text:#222;
-  --nav:#001f3f; 
-  --nav-hover:#0074D9; 
-  --subnav:#003366; 
-  --accent:#ffcc00;
-  --card:#fff;
-  --line:#e5e7eb;
+  --bg:#f4f4f4; --text:#222;
+  --nav:#001f3f; --nav-hover:#0074D9; --subnav:#003366; --accent:#ffcc00;
+  --card:#fff; --line:#e5e7eb;
 }
 
 *{ box-sizing:border-box; }
+body{ margin:0; font-family:'Segoe UI',Tahoma,Verdana,sans-serif; background:var(--bg); color:var(--text); }
+.titolo-pagina{ text-align:center; color:var(--nav); font-size:2.2rem; margin:30px 0 20px; font-weight:700; text-shadow:2px 2px 6px #FFD700; }
 
-body{
-  margin:0;
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  overflow-x:auto;
-}
-
-h1{
-  text-align:center;
-  color:var(--nav);
-  margin:20px 0 0;
-  font-size:2.4rem;
-  text-shadow:1px 1px 1px #ccc;
-}
-
-.titolo-pagina{
-  text-align:center;
-  color:var(--nav);
-  font-size:2.2rem;
-  margin:30px 0 20px;
-  font-weight:700;
-  text-shadow:2px 2px 6px #FFD700;
-}
-
-/* ====== NAVBAR ====== */
-nav{
-  background:var(--nav);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  padding:10px 20px;
-  flex-wrap:wrap;
-}
-
-.home-icon{
-  font-size:1.6rem;
-  margin-right:20px;
-  text-decoration:none;
-  color:#fff;
-}
-
-.hamburger{ display:none !important; } /* sempre nascosto */
-
-.navbar{
-  list-style:none;
-  margin-left:auto;
-  display:flex;
-  align-items:center;
-  gap:25px;
-  background:var(--nav);
-  padding:10px 30px;
-  justify-content:center;
-}
-
-.navbar li{ position:relative; }
-
-.navbar a{
-  color:#fff;
-  text-decoration:none;
-  padding:8px 12px;
-  border-radius:6px;
-  font-weight:500;
-  font-size:1rem;
-}
-
+/* NAVBAR */
+nav{ background:var(--nav); color:#fff; display:flex; align-items:center; padding:10px 20px; }
+.home-icon{ color:#fff; text-decoration:none; font-size:1.6rem; margin-right:18px; }
+.navbar{ list-style:none; margin:0; padding:0; display:flex; gap:24px; }
+.navbar a{ color:#fff; text-decoration:none; padding:8px 12px; border-radius:6px; }
 .navbar a:hover{ background:var(--nav-hover); }
+.navbar li{ position:relative; }
+.submenu{ display:none; position:absolute; top:100%; left:0; background:var(--subnav); border-radius:6px; min-width:200px; padding:8px 0; z-index:10; }
+.submenu a{ display:block; padding:8px 12px; }
+.dropdown:hover .submenu{ display:block; } /* semplice, solo desktop */
 
-.submenu{
-  display:none;
-  position:absolute;
-  top:100%;
-  left:0;
-  background:var(--subnav);
-  border-radius:4px;
-  z-index:10;
-  min-width:180px;
-  padding:8px 0;
-}
-
-.submenu a{
-  display:block;
-  padding:8px 12px;
-  font-size:0.95rem;
-}
-
-.dropdown.show .submenu{ display:block; }
-
-/* Disattiva completamente la versione mobile separata */
-#bracket-mobile{ display:none !important; }
-
-/* ====== BRACKET LAYOUT ====== */
-.bracket{
-  display:flex;
-  align-items:flex-start;
-  gap:30px;
-  width:max-content;
-  padding:40px;
-}
-
-.blocco-colonna{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-
-.blocco-colonna h2{
-  color:var(--nav);
-  font-size:1.1rem;
-  margin-bottom:12px;
-}
-
-.colonna{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-/* ====== MATCH SLOT ====== */
-.match{
-  background:var(--card);
-  border:2px solid var(--nav);
-  border-radius:8px;
-  padding:10px 20px;
-  min-width:200px;
-  color:var(--nav);
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
-}
-
-.match.vincente{
-  border:3px solid var(--accent);
-  box-shadow:0 0 0 2px rgba(255,204,0,.15);
-}
-
-/* Finale (solo tipografia) */
-.finale{
-  font-weight:700;
-  color:var(--nav);
-}
-
-/* Spaziature verticali per allineare le colonne */
+/* BRACKET */
+.bracket{ display:flex; align-items:flex-start; gap:34px; width:max-content; padding:36px; }
+.blocco-colonna{ display:flex; flex-direction:column; align-items:center; }
+.blocco-colonna h2{ color:var(--nav); font-size:1.1rem; margin-bottom:12px; }
+.colonna{ display:flex; flex-direction:column; gap:12px; }
 .spaziata{ margin-top:100px; }
-.semifinale-sx, .semifinale-dx{ margin-top:120px; }
+.semifinale-sx,.semifinale-dx{ margin-top:120px; }
 
-/* ====== RIGA SQUADRA (logo + seed + nome + punteggio) ====== */
-.squadra.orizzontale{
-  display:grid;
-  grid-template-columns:24px auto 1fr auto; /* logo | seed | nome | score */
-  align-items:center;
-  gap:8px;
-  min-height:28px;
-}
-
-.squadra.orizzontale img{
-  width:24px; height:24px; object-fit:contain;
-}
-
-.squadra .seed{
-  display:inline-block;
-  min-width:28px;
-  padding:2px 6px;
-  font-size:.8rem;
-  line-height:1;
-  text-align:center;
-  border:1px solid #c7d2fe;
-  background:#e9eef7;
-  color:var(--nav);
-  border-radius:4px;
-  font-weight:600;
-}
-.squadra .seed-empty{ visibility:hidden; }
-
-.squadra .nome{
-  font-weight:700;
-  color:var(--nav);
-}
-
-.squadra .score{
-  font-weight:700;
-  color:var(--nav);
-  justify-self:end;
-}
-
-/* ====== COPPA & VINCITORE ====== */
-.coppa-vittoria{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  margin-top:30px;
-}
-
-.coppa-vittoria img{ width:180px; height:auto; }
-
-.vincitore-info{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  margin-top:10px;
-}
-
-.logo-vincitore{
-  width:60px; height:60px; object-fit:contain; margin-bottom:6px;
-}
-
-.nome-vincitore{
-  color:var(--nav);
-  font-weight:700;
-  font-size:1rem;
-}
-
-/* Match a due righe stile UEFA */
-.match.pair{
-  padding: 8px 12px;
-  min-width: 220px;       /* allarga/accorcia a piacere */
-}
+/* BOX PARTITA (2 righe) */
+.match{ background:var(--card); border:2px solid var(--nav); border-radius:10px; padding:10px 12px; min-width:240px; box-shadow:0 2px 6px rgba(0,0,0,.1); }
+.match.finale{ font-weight:700; }
+.match.decided{ border:3px solid var(--accent); box-shadow:0 0 0 2px rgba(255,204,0,.12); }
 
 .pair-box{ display:flex; flex-direction:column; gap:6px; }
-
-.team-line{
-  display:grid;
-  grid-template-columns: 24px auto 1fr auto;  /* logo | seed | nome | gol */
-  align-items:center;
-  gap:8px;
-  padding:2px 4px;
-  border-radius:6px;
-}
-
+.team-line{ display:grid; grid-template-columns:24px auto 1fr auto; align-items:center; gap:8px; padding:2px 4px; border-radius:6px; }
 .team-line img{ width:24px; height:24px; object-fit:contain; }
+.team-line .seed{ min-width:28px; padding:2px 6px; font-size:.8rem; line-height:1; text-align:center; border:1px solid #c7d2fe; background:#e9eef7; color:var(--nav); border-radius:4px; font-weight:700; }
+.team-line .nome{ font-weight:700; color:var(--nav); }
+.team-line .gol{ font-weight:700; color:var(--nav); justify-self:end; }
+.team-line.winner{ background:rgba(255,204,0,.14); }
+.team-line.winner .nome,.team-line.winner .gol{ color:#b58900; }
 
-.team-line .seed{
-  display:inline-block; min-width:28px; padding:2px 6px;
-  font-size:.8rem; line-height:1; text-align:center;
-  border:1px solid #c7d2fe; background:#e9eef7; color:#001f3f;
-  border-radius:4px; font-weight:600;
-}
+/* TROFEO / VINCITORE */
+.coppa-vittoria{ display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:18px; }
+.coppa-vittoria img{ width:180px; height:auto; }
+.vincitore-info{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+.vincitore-info .logo-vincitore{ width:68px; height:68px; object-fit:contain; }
+.vincitore-info .nome-vincitore{ font-weight:800; color:var(--nav); }
 
-.team-line .nome{ font-weight:700; color:#001f3f; }
-.team-line .gol{ font-weight:700; color:#001f3f; justify-self:end; }
-
-/* Evidenzia la riga vincente */
-.team-line.winner{ background:rgba(255,204,0,.15); }
-.team-line.winner .nome, .team-line.winner .gol{ color:#b58900; }
-
-/* Box deciso (bordo oro leggero, opzionale) */
-.match.pair.decided{
-  border:3px solid #ffcc00;
-  box-shadow:0 0 0 2px rgba(255,204,0,.12);
-}
 
