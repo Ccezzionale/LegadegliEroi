@@ -241,6 +241,23 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 #right-round-2 .score-box,
 #right-round-3 .score-box{ width:42px; min-width:42px; }
 
+/* Titolo centrato e full-width */
+.page-header{
+  max-width:100% !important;
+  width:100%;
+  margin:28px 0 8px;      /* niente padding laterale */
+  display:grid;
+  place-items:center;     /* centra orizzontale/verticale */
+  text-align:center;
+}
+.page-header h1{ margin:0; }
+
+/* Nascondi la riga descrittiva sotto al titolo */
+.page-header p{ display:none !important; }
+
+/* Nascondi il bottone “Aggiorna da Classifica” (tutta la toolbar) */
+.cup-toolbar{ display:none !important; }
+
 /* ========== MOBILE ========== */
 .bracket-mobile{ display:none; }
 
