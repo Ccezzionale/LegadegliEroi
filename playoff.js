@@ -35,166 +35,88 @@ function creaMatchCardMobile(nomeA, nomeB, logoA, logoB, vincenteNome) {
     </div>`;
 }
 
-function aggiornaPlayoffMobile() {
-  if (window.innerWidth > 768) return;
+const SEED_WC = {
+  WC1: [7, 8],
+  WC2: [4, 11],
+  WC3: [5, 10],
+  WC4: [6, 9],
+};
 
-  const sezioni = {
-    WC: document.getElementById("round-wc"),
-    Q: document.getElementById("round-qf"),
-    S: document.getElementById("round-sf"),
-    F: document.getElementById("round-f")
-  };
+function creaMatchBox({ nomeA, seedA, golA, logoA, nomeB, seedB, golB, logoB, vincente }) {
+  const isV1 = vincente === nomeA;
+  const isV2 = vincente === nomeB;
+  return `
+    <div class="pair-box">
+      <div class="team-line ${isV1 ? 'winner' : ''}">
+        <img src="${logoA}" onerror="this.style.display='none'">
+        <span class="seed">${seedA ? '#' + seedA : ''}</span>
+        <span class="nome">${nomeA ?? ''}</span>
+        <span class="gol">${golA ?? ''}</span>
+      </div>
+      <div class="team-line ${isV2 ? 'winner' : ''}">
+        <img src="${logoB}" onerror="this.style.display='none'">
+        <span class="seed">${seedB ? '#' + seedB : ''}</span>
+        <span class="nome">${nomeB ?? ''}</span>
+        <span class="gol">${golB ?? ''}</span>
+      </div>
+    </div>`;
+}
 
-  const rounds = window.risultati || [];
-  for (const r of rounds) {
-    let key = "";
-if (r.partita?.startsWith("WC")) key = "WC";
-else if (r.partita?.startsWith("Q")) key = "Q";
-else if (r.partita?.startsWith("S")) key = "S";
-else if (r.partita?.startsWith("F")) key = "F";
-
-    const container = sezioni[key];
-    if (!container) continue;
-
-    const logoA = `img/${r.squadraA.replace(/[°]/g, "").trim()}.png`;
-    const logoB = `img/${r.squadraB.replace(/[°]/g, "").trim()}.png`;
-
-    const matchHTML = creaMatchCardMobile(r.squadraA, r.squadraB, logoA, logoB, r.vincente);
-    container.insertAdjacentHTML("beforeend", matchHTML);
-  }
+function pulisci(str){ return (str || '').replace(/[°]/g,'').trim(); }
+function logoPath(nome){ return `img/${pulisci(nome)}.png`; }
+function seedOf(nome){
+  const idx = Array.isArray(window.squadre) ? window.squadre.findIndex(s => s.nome === nome) : -1;
+  return idx >= 0 ? idx + 1 : "";
 }
 
 function aggiornaPlayoff() {
-  const mapping = {
-    "WC1-A": { idx: 0, pos: 7 },
-    "WC1-B": { idx: 1, pos: 8 },
-    "WC2-A": { idx: 3, pos: 4 },
-    "WC2-B": { idx: 2, pos: 11 },
-    "WC3-A": { idx: 4, pos: 5 },
-    "WC3-B": { idx: 5, pos: 10 },
-    "WC4-A": { idx: 6, pos: 6 },
-    "WC4-B": { idx: 7, pos: 9 },
-    "Q1-A": { id: "Q1", side: "A" },
-    "Q1-B": { id: "Q1", side: "B" },
-    "Q2-A": { id: "Q2", side: "A" },
-    "Q2-B": { id: "Q2", side: "B" },
-    "Q3-A": { id: "Q3", side: "A" },
-    "Q3-B": { id: "Q3", side: "B" },
-    "Q4-A": { id: "Q4", side: "A" },
-    "Q4-B": { id: "Q4", side: "B" },
-    "S1-A": { id: "S1", side: "A", from: ["Q1", "Q2"] },
-    "S1-B": { id: "S1", side: "B", from: ["Q1", "Q2"] },
-    "S2-A": { id: "S2", side: "A", from: ["Q3", "Q4"] },
-    "S2-B": { id: "S2", side: "B", from: ["Q3", "Q4"] },
-    "F-A":  { id: "F",  side: "A", from: ["S1", "S2"] },
-    "F-B":  { id: "F",  side: "B", from: ["S1", "S2"] },
-  };
+  document.querySelectorAll(".match.pair").forEach(box => {
+    const id = box.dataset.match;           // es. WC1, Q1, S1, F
+    const r = window.risultati?.find(x => x.partita === id);
 
-  document.querySelectorAll(".match").forEach(div => {
-    const id = div.dataset.match;
-    const config = mapping[id];
-    if (!config) return;
+    let nomeA, nomeB, golA, golB;
 
-    const r = window.risultati?.find(x => x.partita === config.id || x.partita === id.replace(/-[AB]$/, ""));
-    let nome = "?", seed = "", punteggio = "";
-
-    if (id.includes("WC")) {
-      const squadra = window.squadre?.[config.pos]?.nome;
-      nome = r?.[id.endsWith("A") ? "squadraA" : "squadraB"] || squadra || "?";
-      seed = (config.pos + 1);                                        // << NUMERO
-      punteggio = r?.[id.endsWith("A") ? "golA" : "golB"] ?? "";
-
-    } else if (/^(Q|S|F)/.test(id)) {
-      const teamKey = id.endsWith("A") ? "squadraA" : "squadraB";
-      nome = r?.[teamKey] || r?.vincente || `Vincente ${config.from?.join("/")}`;
-      const idx = window.squadre?.findIndex(s => s.nome === nome);
-      seed = (idx !== -1 && idx != null) ? (idx + 1) : "";            // << NUMERO
-      punteggio = r?.[id.endsWith("A") ? "golA" : "golB"] ?? "";
+    if (r) {
+      // c'è già l'abbinamento nel file risultati
+      nomeA = r.squadraA; nomeB = r.squadraB;
+      golA  = r.golA;     golB  = r.golB;
+    } else if (id.startsWith('WC') && window.squadre?.length) {
+      // fallback wildcard da seed
+      const [iA, iB] = SEED_WC[id];
+      nomeA = window.squadre[iA]?.nome || "?";
+      nomeB = window.squadre[iB]?.nome || "?";
+      golA = golB = "";
+    } else {
+      // placeholder
+      nomeA = "TBD"; nomeB = "TBD"; golA = golB = "";
     }
 
-    const isVincente = r?.vincente === nome;
-    div.innerHTML = creaHTMLSquadra(nome, seed, punteggio, isVincente);
-    if (isVincente) div.classList.add("vincente");
+    const seedA = seedOf(nomeA);
+    const seedB = seedOf(nomeB);
+
+    box.innerHTML = creaMatchBox({
+      nomeA, seedA, golA, logoA: logoPath(nomeA),
+      nomeB, seedB, golB, logoB: logoPath(nomeB),
+      vincente: r?.vincente
+    });
+
+    // Highlight box se deciso
+    if (r?.vincente) box.classList.add("decided");
+    else box.classList.remove("decided");
   });
 
+  // Trofeo / vincitore
   const finale = window.risultati?.find(x => x.partita === "F");
   if (finale?.vincente) {
-    const nomeVincitore = finale.vincente;
-    const logoSrc = `img/${nomeVincitore.replace(/[°]/g, "").trim()}.png`;
+    const nome = finale.vincente;
     const container = document.getElementById("vincitore-assoluto");
     if (container) {
       container.innerHTML = `
-        <img src="${logoSrc}" alt="${nomeVincitore}" class="logo-vincitore" onerror="this.style.display='none'">
-        <div class="nome-vincitore">${nomeVincitore}</div>`;
+        <img class="logo-vincitore" src="${logoPath(nome)}" onerror="this.style.display='none'">
+        <div class="nome-vincitore">${nome}</div>`;
     }
   }
 }
-
-function aggiornaPlayoffMobile() {
-  if (window.innerWidth > 768) return;
-
-  const sezioni = {
-    WC: document.getElementById("round-wc"),
-    Q: document.getElementById("round-qf"),
-    S: document.getElementById("round-sf"),
-    F: document.getElementById("round-f")
-  };
-
-  const rounds = window.risultati || [];
-  for (const r of rounds) {
-    let key = "";
-    if (r.partita?.startsWith("WC")) key = "WC";
-    else if (r.partita?.startsWith("Q")) key = "Q";
-    else if (r.partita?.startsWith("S")) key = "S";
-    else if (r.partita?.startsWith("F")) key = "F";
-
-    const container = sezioni[key];
-    if (!container) continue;
-
-    const logoA = `img/${r.squadraA.replace(/[°]/g, "").trim()}.png`;
-    const logoB = `img/${r.squadraB.replace(/[°]/g, "").trim()}.png`;
-
-    const matchHTML = creaMatchCardMobile(r.squadraA, r.squadraB, logoA, logoB, r.vincente);
-    container.insertAdjacentHTML("beforeend", matchHTML);
-  }
-}
-
-function creaMatchCardMobile(nomeA, nomeB, logoA, logoB, vincenteNome) {
-  const squadraA = window.squadre?.find(s => s.nome === nomeA);
-  const squadraB = window.squadre?.find(s => s.nome === nomeB);
-  const posA = squadraA ? window.squadre.indexOf(squadraA) + 1 : "";
-  const posB = squadraB ? window.squadre.indexOf(squadraB) + 1 : "";
-
-  const risultato = window.risultati?.find(r => 
-    (r.squadraA === nomeA && r.squadraB === nomeB) || 
-    (r.squadraA === nomeB && r.squadraB === nomeA)
-  );
-
-  const golA = risultato?.squadraA === nomeA ? risultato?.golA : risultato?.golB ?? "";
-  const golB = risultato?.squadraB === nomeB ? risultato?.golB : risultato?.golA ?? "";
-
-  const isV1 = vincenteNome === nomeA;
-  const isV2 = vincenteNome === nomeB;
-
-  return `
-    <div class="match-card ${isV1 || isV2 ? 'vincente' : ''}">
-      <div class="team-line ${isV1 ? 'winner' : ''}">
-        <span class="pos">${posA ? posA + "°" : ""}</span>
-        <img src="${logoA}" onerror="this.style.display='none'">
-        <span class="nome">${nomeA}</span>
-        <span class="gol">${golA !== null ? golA : ""}</span>
-      </div>
-      <div class="vs">vs</div>
-      <div class="team-line ${isV2 ? 'winner' : ''}">
-        <span class="pos">${posB ? posB + "°" : ""}</span>
-        <img src="${logoB}" onerror="this.style.display='none'">
-        <span class="nome">${nomeB}</span>
-        <span class="gol">${golB !== null ? golB : ""}</span>
-      </div>
-    </div>
-  `;
-}
-
 
 fetch(URL_CLASSIFICA_TOTALE)
   .then(res => res.text())
