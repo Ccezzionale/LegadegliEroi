@@ -221,3 +221,43 @@ nav{
   font-weight:700;
   font-size:1rem;
 }
+
+/* Match a due righe stile UEFA */
+.match.pair{
+  padding: 8px 12px;
+  min-width: 220px;       /* allarga/accorcia a piacere */
+}
+
+.pair-box{ display:flex; flex-direction:column; gap:6px; }
+
+.team-line{
+  display:grid;
+  grid-template-columns: 24px auto 1fr auto;  /* logo | seed | nome | gol */
+  align-items:center;
+  gap:8px;
+  padding:2px 4px;
+  border-radius:6px;
+}
+
+.team-line img{ width:24px; height:24px; object-fit:contain; }
+
+.team-line .seed{
+  display:inline-block; min-width:28px; padding:2px 6px;
+  font-size:.8rem; line-height:1; text-align:center;
+  border:1px solid #c7d2fe; background:#e9eef7; color:#001f3f;
+  border-radius:4px; font-weight:600;
+}
+
+.team-line .nome{ font-weight:700; color:#001f3f; }
+.team-line .gol{ font-weight:700; color:#001f3f; justify-self:end; }
+
+/* Evidenzia la riga vincente */
+.team-line.winner{ background:rgba(255,204,0,.15); }
+.team-line.winner .nome, .team-line.winner .gol{ color:#b58900; }
+
+/* Box deciso (bordo oro leggero, opzionale) */
+.match.pair.decided{
+  border:3px solid #ffcc00;
+  box-shadow:0 0 0 2px rgba(255,204,0,.12);
+}
+
