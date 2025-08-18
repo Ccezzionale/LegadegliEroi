@@ -118,3 +118,7 @@ body{margin:0;font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:#f4f6f
   border-left: none !important;
 }
 
+.emblem{ width:42px; height:42px; }
+.emblem img{ width:28px; height:28px; }
+
+
