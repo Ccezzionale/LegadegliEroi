@@ -259,9 +259,10 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .cup-toolbar{ display:none !important; }
 
 /* ========== MOBILE ========== */
+/* ===== MOBILE: stesso bracket + scroll orizzontale, no overlap ===== */
 @media (max-width:768px){
 
-  /* NAVBAR: hamburger on */
+  /* NAVBAR: hamburger */
   .hamburger{ display:block; }
   .navbar{ display:none; flex-direction:column; width:100%; background:var(--nav); margin-top:10px; }
   .navbar.show{ display:flex; }
@@ -269,29 +270,28 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   .dropdown .submenu a{ padding-left:20px; }
 
   /* Bracket desktop anche su mobile + scroll orizzontale */
-  .bracket{ 
-    display:grid !important; 
-    grid-template-columns: minmax(300px,max-content) 320px minmax(300px,max-content);
-    gap:12px;
-  }
-  .bracket-mobile{ display:none !important; }
-
   .cup-container{
     overflow-x:auto;
     padding:0 8px 18px;
     -webkit-overflow-scrolling:touch;
     overscroll-behavior-x:contain;
   }
+  .bracket{
+    display:grid !important;
+    grid-template-columns: minmax(300px,max-content) 320px minmax(300px,max-content);
+    gap:18px; /* più spazio tra colonne */
+  }
+  .bracket-mobile{ display:none !important; }
 
-  /* più aria verticale per evitare sovrapposizioni */
-  :root{ 
-    --slot: 170px;           /* <— alza se vedi ancora incastri: prova 180/190 */
-    --finals-col: 320px; 
-    --grid-gap:12px; 
+  /* Spaziature e dimensioni più compatte, ma senza incastri */
+  :root{
+    --slot: 190px;        /* alza a 200 se serve ancora aria */
+    --finals-col: 320px;
+    --grid-gap: 18px;
   }
 
   .conference{ gap:14px; }
-  .match{ padding:8px 10px; gap:10px; }  /* leggermente più compatto */
+  .match{ padding:8px 10px; gap:10px; }
   .team{ grid-template-columns:28px 64px auto; gap:9px; }
   #left-round-2 .team, #left-round-3 .team,
   #right-round-2 .team, #right-round-3 .team,
@@ -299,7 +299,13 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
   .logo-wrap{ width:64px; height:64px; }
   .seed{ width:26px; height:26px; font-size:.8rem; border-radius:8px; }
-  .score-box{ width:36px; height:36px; min-height:36px; font-size:.95rem; border-radius:8px; }
+  .score-box{ width:36px; height:36px; min-height:36px; font-size:.95rem; border-radius:8px; place-items:center; }
+
+  /* Z-index: le Finals sopra, fili sotto */
+  .finals-split{ position:relative; z-index:3; }
+  .finals-split .match, .trophy{ position:relative; z-index:4; }
+  .conference .match{ position:relative; z-index:1; }
+  .wire-layer{ z-index:0; }
 
   .page-header{ margin:18px 0 0; }
 }
