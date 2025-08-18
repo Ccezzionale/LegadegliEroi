@@ -411,9 +411,6 @@ async function buildBracket() {
     document.getElementById("finals-bottom")
       .appendChild(createFinalSide(f.away, "away", "F"));
 
-    // Mobile
-    renderMobileList(bracket);
-
     // Connettori
     requestAnimationFrame(() => {
       drawWires();
