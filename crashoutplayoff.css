@@ -266,8 +266,8 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
   /* --- dimensioni più compatte ma stessa struttura --- */
   :root{
-    --slot: 120px;         /* altezza “gradino” per l’albero */
-    --finals-col: 320px;   /* colonna centrale più stretta per stare in mobile */
+    --slot: 128px;           /* gradino verticale */
+    --finals-col: 380px;     /* colonna Finals più ampia */
     --grid-gap: 12px;
   }
 
@@ -297,17 +297,27 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
       var(--finals-col)
       minmax(320px, max-content);
     gap: var(--grid-gap);
-    min-width: 980px; /* forza lo scroll se lo schermo è stretto */
+    min-width: 1240px; /* forza lo scroll se lo schermo è stretto */
     position: relative; /* per i connettori */
   }
 
   /* Finals “split” dimensionate sul mobile */
+
   .finals-split{
-    min-height: calc(var(--slot) * 8);
+    grid-template-rows: minmax(160px,1fr) auto minmax(160px,1fr);
+    row-gap: 16px;
+    padding-block: 8px;
   }
-  .trophy{
-    width: clamp(180px, calc(var(--finals-col) - 120px), 260px);
-    height: clamp(180px, calc(var(--finals-col) - 120px), 260px);
+
+    .finals-split .match{
+    position: relative;
+    z-index: 1;              /* card sopra al trofeo */
+    margin-inline: auto;     /* centrata nella colonna */
+  }
+    .trophy{
+    width: clamp(200px, calc(var(--finals-col) - 120px), 300px);
+    height: clamp(200px, calc(var(--finals-col) - 120px), 300px);
+    z-index: 0;              /* sta dietro alle card */
   }
 
   /* Card e righe squadra più compatte */
