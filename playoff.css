@@ -1,149 +1,445 @@
-:root{
-  --nav:#001f3f;
-  --nav-hover:#0b4fb8;
-  --ink:#001f3f;
-  --gold:#ffcc00;
-  --card:#fff;
-  --line:#dbe3f4;
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+      color: #222;
+      overflow-x: auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #001f3f;
+      margin-top: 20px;
+      font-size: 2.4rem;
+      text-shadow: 1px 1px 1px #ccc;
+    }
+
+    .bracket {
+      display: flex;
+      align-items: flex-start;
+      flex-direction: row;
+      gap: 30px;
+      width: max-content;
+      padding: 40px;
+    }
+
+    .blocco-colonna {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .blocco-colonna h2 {
+      color: #001f3f;
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+    }
+
+    .colonna {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .match {
+      background-color: white;
+      border: 2px solid #001f3f;
+      border-radius: 8px;
+      padding: 10px 20px;
+      min-width: 160px;
+      color: #001f3f;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .finale {
+      font-weight: bold;
+      color: #001f3f;
+    }
+
+.match.vincente {
+  border: 3px solid gold;
+  font-weight: bold;
 }
 
-*{box-sizing:border-box}
-body{margin:0;font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:#f4f6fb;color:#111}
-
-.nav{background:var(--nav);color:#fff;display:flex;align-items:center;padding:10px 20px}
-.nav .home{color:#fff;text-decoration:none;font-size:1.6rem;margin-right:14px}
-.nav .menu{list-style:none;display:flex;gap:22px;margin:0;padding:0}
-.nav .menu a{color:#fff;text-decoration:none;padding:8px 12px;border-radius:6px}
-.nav .menu a:hover{background:var(--nav-hover)}
-.nav .menu li{position:relative}
-.submenu{display:none;position:absolute;top:100%;left:0;background:#003366;border-radius:8px;min-width:200px;padding:8px 0;z-index:10}
-.submenu a{display:block;padding:8px 12px}
-.dropdown:hover .submenu{display:block}
-
-.title{ text-align:center; color:var(--nav); font-size:2.3rem; font-weight:900; margin:28px 0 8px; text-shadow:2px 2px 6px #ffd700; }
-
-/* BOARD a colonne, finale all'estrema destra */
-.board{
-  display:grid;
-  grid-auto-flow:column;
-  grid-auto-columns: 380px;     /* larghezza colonna */
-  gap:75px;
-  width:max-content;
-  margin: 0 auto 60px;
-  padding: 24px 34px;
-  background:#eef2fb;
-  border-radius:16px;
-  box-shadow: 0 6px 20px rgba(0,0,0,.05) inset;
+.titolo-pagina {
+  text-align: center;
+  color: #001f3f;
+  font-size: 2.2rem;
+  margin: 30px 0 20px;
+  font-weight: 700;
+  text-shadow: 2px 2px 6px #FFD700; /* giallo oro tenue */
 }
 
-.round{display:flex; flex-direction:column; align-items:center; gap:16px}
-.round h2{color:var(--nav); font-size:1.05rem; margin:4px 0 8px; letter-spacing:.3px}
+    .squadra.orizzontale {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-/* BOX partita più grande */
-.match{
+    .squadra.orizzontale img {
+      max-height: 24px;
+      max-width: 24px;
+    }
+
+    .squadra.orizzontale span {
+      font-weight: bold;
+      color: #001f3f;
+    }
+
+    .spaziata {
+      margin-top: 100px;
+    }
+
+    .semifinale-sx,
+    .semifinale-dx {
+      margin-top: 120px;
+    }
+
+    .coppa-vittoria {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 30px;
+    }
+
+    .coppa-vittoria img {
+      width: 180px;
+      height: auto;
+    }
+
+    .vincitore-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .logo-vincitore {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      margin-bottom: 6px;
+    }
+
+    .nome-vincitore {
+      color: #001f3f;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+nav {
+  background-color: #001f3f;
+  color: white;
   display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  flex-wrap: wrap;
+}
+
+.home-icon {
+  font-size: 1.6rem;
+  margin-right: 20px;
+  text-decoration: none;
+  color: white;
+}
+
+.hamburger {
+  font-size: 1.5rem;
+  cursor: pointer;
+  margin-right: 20px;
+  display: none;
+}
+
+.navbar {
+  list-style-type: none;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  background-color: #001f3f;
+  padding: 10px 30px;
+justify-content: center;
+}
+
+
+.navbar li {
+  position: relative;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  background-color: transparent;
+}
+
+.navbar a:hover {
+  background-color: #0074D9;
+}
+
+.submenu {
+  display: none;
+  background-color: #003366;
+  border-radius: 4px;
   flex-direction: column;
-  gap: 0px !important;     /* prima era >10px */
-  padding: 0 !important;
-}
-
-/* se avevi messo un margine tra le card, riducilo */
-.team + .team{
-  margin-top: 0px !important;  /* prima 10px */
-}
-
-/* — Mantieni invece uno spazio visibile tra partite diverse — */
-.col .match + .match{
-  margin-top: 18px;            /* regola qui se vuoi più/meno spazio tra match */
-}
-
-/* ogni squadra = card bianca */
-.team{
-  display:grid;
-  grid-template-columns:42px 1fr auto;
-  align-items:center;
-  gap:12px;
-  padding:12px;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:12px;
-  color:var(--ink);
-}
-.team + .team{ margin-top:10px; }
-
-.emblem{
-  width:42px; height:42px; border-radius:10px;
-  display:grid; place-items:center;
-  outline:2px solid rgba(0,0,0,.06);
-}
-.emblem img{ width:28px; height:28px; object-fit:contain; }
-
-.name{
-  font-weight:800; text-transform:uppercase; letter-spacing:.2px;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.score{ font-weight:900; font-size:1.05rem; }
-
-/* campione (sotto la finale) */
-.champion{ display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:22px; color:var(--ink); font-weight:800; }
-.champion img{ width:90px; height:90px; object-fit:contain; }
-
-/* ——— Solo riquadri singoli ——— */
-
-/* il contenitore partita sparisce: niente bordo, niente ombra, niente sfondo */
-.match{
-  border: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 0 !important;
   width: 100%;
-  display: flex;               /* solo per tenere le due card una sotto l’altra */
-  flex-direction: column;
-  gap: 12px;                   /* spazio tra le due card della stessa partita */
+  padding-left: 20px;
+  margin-top: 6px;
 }
 
-/* card singola (squadra) rettangolare */
-.team{
-  border-radius: 0 !important; /* niente arrotondamento */
-  border: 1px solid #d9e1f2;   /* bordo sottile blu/gray */
-  background: #fff;            /* bianco pieno */
+.submenu a {
+  font-size: 0.95rem;
+}
+
+.dropdown.show .submenu {
+  display: flex;
+}
+
+#bracket-mobile {
+  display: none;
+  padding: 20px;
+}
+
+@media (min-width: 769px) {
+  .mobile-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    background-color: #001f3f;
+    padding: 12px 30px;
+    height: 52px; /* forza altezza uniforme con navbar */
+  }
+
+    .mobile-nav {
+  display: none;
+}
+
+  .home-icon {
+    font-size: 1.6rem;
+    text-decoration: none;
+    color: white;
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar {
+    list-style-type: none;
+    margin: 0;
+    padding: 10px 30px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    background-color: #001f3f;
+    margin-top: -4px; /* allineamento verticale perfetto */
+  }
+
+  .navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px;
+    font-weight: 500;
+    font-size: 1rem;
+  }
+
+  .navbar a:hover {
+    background-color: #0074D9;
+    border-radius: 6px;
+  }
+    .home-desktop {
+  margin-right: 10px;
+}
+
+  .submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #003366;
+    border-radius: 4px;
+    z-index: 10;
+    min-width: 180px;
+    flex-direction: column;
+  }
+
+  .dropdown.show .submenu {
+    display: flex;
+  }
+
+  .hamburger {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .bracket {
+    display: none !important;
+  }
+
+  #bracket-mobile {
+    display: block;
+  }
+
+    .navbar .home-desktop {
+  display: none;
+}
+
+  .round-mobile {
+    margin-bottom: 30px;
+  }
+
+  .round-mobile h2 {
+    font-size: 1.2rem;
+    color: #001f3f;
+    margin-bottom: 10px;
+    border-left: 4px solid #ffcc00;
+    padding-left: 10px;
+  }
+
+.match-card {
+  background: #001f3f;       /* blu scuro */
+  border: 2px solid #001f3f;
+  border-radius: 10px;
   padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: white;              /* testo bianco */
 }
 
-/* nome e punteggio già blu scuro: lasciamo così */
+  .match-card.vincente {
+    background-color: #001f3f;           /* blu */
+    border: 2px solid #ffcc00;           /* bordo giallo */
+    color: #fff;
+  }
 
-/* tile dietro al logo: rettangolare anche lui */
-.emblem{
-  border-radius: 0 !important;
-  outline: 1px solid rgba(0,0,0,.06);
+  .match-card img {
+    height: 24px;
+    width: 24px;
+    object-fit: contain;
+  }
+
+  .match-card .team {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .match-card .vs {
+    font-weight: bold;
+    color: #888;
+  }
+    
+.hamburger {
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+display: block;
 }
 
-/* se avevi stili speciali per vincitore, azzera per tenere TUTTI bianchi */
-.team-line.winner,
-.team.winner{
-  background: #fff !important;
-  box-shadow: none !important;
-  border-left: none !important;
+    .home-icon img {
+  height: 28px;
+  width: 28px;
+}
+    
+.mobile-nav {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  background-color: #001f3f;
+  gap: 6px;
+}
+    
+.navbar {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: none;
+  flex-direction: column;
+  width: 100%;
+  background-color: #001f3f;
 }
 
-.emblem{ width:42px; height:42px; }
-.emblem img{ width:28px; height:28px; }
+  .navbar.show {
+    display: flex;
+  }
 
-.board{
-  display: grid;
-  grid-template-columns: repeat(4, 380px);   /* stessa larghezza che usi ora */
-  grid-template-rows: auto auto;
-  column-gap: 34px;
-  row-gap: 20px;
+.submenu {
+  display: none;
+  flex-direction: column;
+  background-color: #002244;
+  margin-left: 20px;
 }
 
-/* posizionamento esplicito dei round */
-.board .round:nth-of-type(1){ grid-column: 1; grid-row: 1; } /* Wildcard */
-.board .round:nth-of-type(2){ grid-column: 2; grid-row: 1; } /* Quarti */
-.board .round:nth-of-type(3){ grid-column: 3; grid-row: 2; } /* Semifinali (sotto) */
-.board .round:nth-of-type(4){ grid-column: 4; grid-row: 1; } /* Finale, in alto a destra */
+.dropdown.show .submenu {
+  display: flex;
+}
+      .bracket {
+        gap: 20px;
+        padding: 20px;
+      }
 
-/* (opzionale) allinea le card all'inizio della colonna */
-.board .round { align-items: stretch; }
+      .match {
+        min-width: 140px;
+        padding: 8px 10px;
+        font-size: 0.85rem;
+      }
 
+      h1 {
+        font-size: 1.6rem;
+        margin-top: 10px;
+      }
+    
+.match-card .team-line {
+  display: grid !important;
+  grid-template-columns: auto 32px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  width: 100%;
+}
 
+.match-card .team-line .pos {
+  font-weight: bold;
+  color: #001f3f;
+  min-width: 28px;
+  text-align: left;
+}
+
+.match-card .team-line img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.match-card .team-line .nome {
+  font-size: 0.95rem;
+  text-align: left;
+  overflow-wrap: break-word;
+}
+
+.match-card .team-line .gol {
+  font-weight: bold;
+  text-align: right;
+  min-width: 16px;
+}
+
+    .match-card .team-line .nome,
+  .match-card .team-line .pos,
+  .match-card .team-line .gol {
+    color: #fff;
+  }
+    
+ .team-line.winner .nome,
+  .team-line.winner .gol {
+    font-weight: 700;
+    color: #ffcc00;                      /* giallo/arancio */
+  }
+    .match-card .vs { color: rgba(255,255,255,.7); }
+}
