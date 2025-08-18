@@ -261,78 +261,107 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .bracket-mobile { display: none !important; }
 
 /* ========== MOBILE ========== */
-/* ===== MOBILE: stesso bracket + scroll orizzontale, no overlap ===== */
-@media (max-width:768px){
+/* ========== MOBILE ========== */
+@media (max-width: 768px){
 
-  /* NAVBAR (hamburger) */
+  /* --- dimensioni più compatte ma stessa struttura --- */
+  :root{
+    --slot: 120px;         /* altezza “gradino” per l’albero */
+    --finals-col: 320px;   /* colonna centrale più stretta per stare in mobile */
+    --grid-gap: 12px;
+  }
+
+  /* Navbar hamburger (come prima) */
   .hamburger{ display:block; }
   .navbar{ display:none; flex-direction:column; width:100%; background:var(--nav); margin-top:10px; }
   .navbar.show{ display:flex; }
   .submenu{ position:relative; background:var(--subnav); margin-left:10px; }
   .dropdown .submenu a{ padding-left:20px; }
 
-  /* Container scrollabile orizzontale */
+  /* NIENTE versione alternativa: nascondi eventuale mobile-list */
+  .bracket-mobile{ display:none !important; }
+
+  /* Stesso bracket del desktop + scroll orizzontale */
   .cup-container{
-    overflow-x:auto; padding:0 8px 18px;
-    -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain;
+    margin:8px 0 28px;
+    padding:0 8px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling: touch;
   }
 
-  /* Variabili mobile */
-  :root{
-    --slot: 220px;          /* aria verticale colonna centrale (alza a 230 se serve) */
-    --finals-col: 340px;    /* larghezza colonna centrale */
-    --grid-gap: 22px;       /* gap tra colonne */
-  }
-
-  /* Stesso bracket della desktop, ma più compatto */
+  /* Mantieni la griglia a 3 colonne, ma con una larghezza minima così scorre */
   .bracket{
     display:grid !important;
     grid-template-columns:
-      minmax(300px, max-content)
+      minmax(320px, max-content)
       var(--finals-col)
-      minmax(300px, max-content);
+      minmax(320px, max-content);
     gap: var(--grid-gap);
-    position: relative;
-    isolation: isolate;     /* nuovo stacking context */
-  }
-  .bracket-mobile{ display:none !important; }
-
-  /* Card e righe più compatte */
-  .conference{ gap:14px; position:relative; overflow:hidden; z-index:1; } /* clip laterali */
-  .match{ padding:8px 10px; gap:8px; }
-
-  /* override di width:max-content in mobile (card restano nella colonna) */
-  .conference .match,
-  .finals-split .match{
-    width:100% !important; max-width:100% !important; box-sizing:border-box;
+    min-width: 980px; /* forza lo scroll se lo schermo è stretto */
+    position: relative; /* per i connettori */
   }
 
-  .team{ grid-template-columns:28px 64px auto; gap:9px; }
+  /* Finals “split” dimensionate sul mobile */
+  .finals-split{
+    min-height: calc(var(--slot) * 8);
+  }
+  .trophy{
+    width: clamp(180px, calc(var(--finals-col) - 120px), 260px);
+    height: clamp(180px, calc(var(--finals-col) - 120px), 260px);
+  }
+
+  /* Card e righe squadra più compatte */
+  .match{
+    padding:8px 10px;
+    gap:12px;
+  }
+  .team{
+    grid-template-columns: 28px 72px auto; /* seed | logo | score (round 1) */
+    gap:8px;
+  }
+  .seed{
+    width:24px; height:24px; font-size:.75rem; border-radius:6px;
+  }
+  .logo-wrap{ width:72px; height:72px; }
+  .logo-wrap .logo{ max-width:98%; max-height:98%; }
+  .score-box{
+    width:36px; min-height:34px; padding:4px 6px;
+    font-size:1rem; border-radius:7px;
+  }
+
+  /* Round 2+ (niente seed) layout logo | score più stretto */
   #left-round-2 .team, #left-round-3 .team,
   #right-round-2 .team, #right-round-3 .team,
-  .finals-split .team{ grid-template-columns:64px auto; }
-
-  .logo-wrap{ width:64px; height:64px; }
-  .seed{ width:26px; height:26px; font-size:.8rem; border-radius:8px; }
-  .score-box{ width:36px; height:36px; min-height:36px; font-size:.95rem; border-radius:8px; place-items:center; }
-
-  /* Finals: trophy dietro e centrata, card sopra, niente overlap */
-  .finals-split{
-    position:relative; z-index:2; overflow:hidden;
-    grid-template-rows: calc(var(--slot)*3) auto calc(var(--slot)*3);
-    row-gap:28px; padding:8px 0;
+  .finals-split .team{
+    grid-template-columns: 72px auto;
+    gap:8px;
   }
-  .finals-split .trophy{
-    position:absolute !important; left:50%; top:50%; transform:translate(-50%,-50%);
-    width:150px; height:150px; z-index:0 !important; pointer-events:none;
-  }
-  #finals-top .match{    align-self:end;   margin-bottom:24px !important; }
-  #finals-bottom .match{ align-self:start; margin-top:   24px !important; }
 
-  .wire-layer{ z-index:0; }
-  .page-header{ margin:18px 0 0; }
+  /* Mantieni l’ordine voluto a DESTRA anche in mobile */
+  #right-round-1 .team{
+    display:flex; align-items:center; gap:8px;
+  }
+  #right-round-1 .score-box{ order:1; width:36px; min-width:36px; }
+  #right-round-1 .logo-wrap{ order:2; width:72px; min-width:72px; height:72px; }
+  #right-round-1 .seed     { order:3; width:24px; min-width:24px; }
+
+  #right-round-2 .team,
+  #right-round-3 .team{
+    display:flex; flex-direction:row-reverse; align-items:center; gap:8px;
+  }
+  #right-round-2 .logo-wrap,
+  #right-round-3 .logo-wrap{ width:72px; min-width:72px; height:72px; }
+  #right-round-2 .score-box,
+  #right-round-3 .score-box{ width:36px; min-width:36px; }
+
+  /* Label dei round un filo più piccole e ravvicinate */
+  .conference .round::before{
+    top:-22px;
+    font-size:.95rem;
+    border-left-width:3px;
+    padding-left:8px;
+  }
+
+  /* Connettori: restano attivi (il layer usa position:relative su .bracket) */
+  .wire-layer .wire{ height:3px; }
 }
-
-/* ========== MICRO ========== */
-[contenteditable]:empty{ cursor:text; }
-
