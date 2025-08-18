@@ -6,16 +6,22 @@ function creaHTMLSquadra(nome, posizione = "", punteggio = "", isVincente = fals
   const fileLogo = `img/${nomePulito}.png`;
   const classe = isVincente ? "vincente" : "perdente";
 
-  const logoHTML = usaLogo
-    ? `<img src="${fileLogo}" alt="${nome}" onerror="this.style.display='none'">`
-    : "";
+  // normalizzo il seed anche se arriva come "8°"
+  const seed = String(posizione ?? "")
+    .replace(/[^\d]/g, ""); // solo numero
+
+  const logoHTML = usaLogo ? `<img src="${fileLogo}" alt="${nome}" onerror="this.style.display='none'">` : "";
 
   return `
     <div class="squadra orizzontale ${classe}">
       ${logoHTML}
-      <span>${posizione} ${nome}</span>
+      ${seed ? `<span class="seed">#${seed}</span>` : `<span class="seed seed-empty"></span>`}
+      <span class="nome">${nome}</span>
+      ${punteggio !== "" && punteggio !== null && punteggio !== undefined
+        ? `<span class="score">${punteggio}</span>` : `<span class="score"></span>`}
     </div>`;
 }
+
 
 function creaMatchCardMobile(nomeA, nomeB, logoA, logoB, vincenteNome) {
   const isV1 = vincenteNome === nomeA;
