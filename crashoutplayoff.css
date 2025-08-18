@@ -259,33 +259,49 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .cup-toolbar{ display:none !important; }
 
 /* ========== MOBILE ========== */
-.bracket-mobile{ display:none; }
-
+/* ===== MOBILE: stesso bracket + scroll orizzontale ===== */
 @media (max-width:768px){
-  .hamburger{ display:block; }
-  .navbar{ display:none; flex-direction:column; width:100%; background:var(--nav); margin-top:10px; }
-  .navbar.show{ display:flex; }
-  .submenu{ position:relative; background:var(--subnav); margin-left:10px; }
-  .dropdown .submenu a{ padding-left:20px; }
 
-  .bracket{ display:none !important; }
-  .bracket-mobile{ display:block; }
-
-  .round-mobile{
-    margin-bottom:22px; background:var(--card); border:1px solid var(--line);
-    border-radius:14px; padding:10px; box-shadow:0 2px 6px rgba(0,0,0,.06);
+  /* mostra il bracket desktop, nascondi l’alternativa mobile */
+  .bracket{ 
+    display:grid !important; 
+    grid-template-columns: minmax(300px,max-content) 320px minmax(300px,max-content);
+    gap:12px;
   }
-  .round-mobile h3{
-    font-size:1.05rem; color:var(--nav); margin:6px 0 12px;
-    border-left:4px solid var(--accent); padding-left:10px;
+  .bracket-mobile{ display:none !important; }
+
+  /* scroll orizzontale fluido */
+  .cup-container{
+    overflow-x:auto;
+    padding:0 8px 18px;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:contain;
+    scroll-snap-type:x proximity; /* opzionale */
   }
 
-  .match{ padding:10px; gap:12px; display:grid; grid-template-rows:auto auto; row-gap:12px; }
-  .team{ grid-template-columns:32px 72px auto; gap:10px; }
-  .seed{ width:32px; height:32px; font-size:.9rem; }
-  .logo-wrap{ width:72px; height:72px; }
-  .score-box{ min-height:44px; font-size:1.05rem; width:40px; padding:4px 8px; }
+  /* compattiamo dimensioni/spacing */
+  :root{ --slot:120px; --finals-col:320px; --grid-gap:12px; }
+
+  .conference{ gap:14px; }
+  .match{ padding:8px 10px; gap:12px; }
+  .team{ grid-template-columns:28px 68px auto; gap:10px; }
+  #left-round-2 .team, #left-round-3 .team,
+  #right-round-2 .team, #right-round-3 .team,
+  .finals-split .team{ grid-template-columns:68px auto; }
+
+  .logo-wrap{ width:68px; height:68px; }
+  .seed{ width:26px; height:26px; font-size:.8rem; border-radius:8px; }
+  .score-box{ width:38px; height:38px; min-height:38px; font-size:1rem; border-radius:8px; }
+
+  /* header un filo più compatto su mobile */
+  .page-header{ margin:18px 0 0; }
 }
+
+/* scrollbar visibile (opzionale, solo estetica) */
+.cup-container::-webkit-scrollbar{ height:10px; }
+.cup-container::-webkit-scrollbar-track{ background:#e5e7eb; border-radius:10px; }
+.cup-container::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:10px; }
+.cup-container:hover::-webkit-scrollbar-thumb{ background:#94a3b8; }
 
 /* ========== MICRO ========== */
 [contenteditable]:empty{ cursor:text; }
