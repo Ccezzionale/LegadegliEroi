@@ -258,8 +258,9 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 /* Nascondi il bottone “Aggiorna da Classifica” (tutta la toolbar) */
 .cup-toolbar{ display:none !important; }
 
+.bracket-mobile { display: none !important; }
+
 /* ========== MOBILE ========== */
-/* ===== MOBILE: stesso bracket + scroll orizzontale, no overlap ===== */
 /* ===== MOBILE: stesso bracket + scroll orizzontale, no overlap ===== */
 @media (max-width:768px){
 
