@@ -261,27 +261,28 @@ function drawWires() {
 
   // gomito tra due card, coordinate relative alla .bracket + scroll del container
   function elbow(fromEl, toEl, nearTo = false) {
-    const p  = bracket.getBoundingClientRect();
-    const fr = fromEl.getBoundingClientRect();
-    const tr = toEl.getBoundingClientRect();
-    const sx = container.scrollLeft;
-    const sy = container.scrollTop;
+  // coordinate relative alla .bracket (Niente scrollLeft/Top!)
+  const p  = bracket.getBoundingClientRect();
+  const fr = fromEl.getBoundingClientRect();
+  const tr = toEl.getBoundingClientRect();
 
-    let ax = fr.right - p.left + sx;
-    let ay = fr.top   - p.top  + sy + fr.height / 2;
-    let bx = tr.left  - p.left + sx;
-    let by = tr.top   - p.top  + sy + tr.height / 2;
+  let ax = fr.right - p.left;
+  let ay = fr.top   - p.top  + fr.height / 2;
+  let bx = tr.left  - p.left;
+  let by = tr.top   - p.top  + tr.height / 2;
 
-    // se il FROM è a destra del TO, inverti i bordi
-    if (ax > bx) { ax = fr.left - p.left + sx; bx = tr.right - p.left + sx; }
+  if (ax > bx) { ax = fr.left - p.left; bx = tr.right - p.left; }
 
-    const dir = (bx > ax) ? 1 : -1;
-    const xk = nearTo ? (bx - dir * H_PAD) : (ax + (bx - ax) / 2);
+  const H_PAD  = 14;
+  const STROKE = 3;
+  const dir = (bx > ax) ? 1 : -1;
+  const xk = nearTo ? (bx - dir * H_PAD) : (ax + (bx - ax) / 2);
 
-    addSeg(layer, Math.min(ax, xk), ay - STROKE / 2, Math.abs(xk - ax), STROKE);
-    addSeg(layer, xk - STROKE / 2, Math.min(ay, by), STROKE, Math.abs(by - ay));
-    addSeg(layer, Math.min(xk, bx), by - STROKE / 2, Math.abs(bx - xk), STROKE);
-  }
+  addSeg(layer, Math.min(ax, xk), ay - STROKE / 2, Math.abs(xk - ax), STROKE);
+  addSeg(layer, xk - STROKE / 2, Math.min(ay, by), STROKE, Math.abs(by - ay));
+  addSeg(layer, Math.min(xk, bx), by - STROKE / 2, Math.abs(bx - xk), STROKE);
+}
+
 
   const MAP = [
     // LEFT: R1 → R2
