@@ -282,7 +282,7 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   :root{
     --slot: 210px;          /* aumenta a 220/230 se serve più aria verticale */
     --finals-col: 340px;    /* larghezza colonna centrale */
-    --grid-gap: 18px;       /* gap fra colonne */
+    --grid-gap: 22px;       /* gap fra colonne */
   }
 
   /* Stesso bracket della desktop, ma più compatto */
@@ -308,12 +308,12 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   .score-box{ width:36px; height:36px; min-height:36px; font-size:.95rem; border-radius:8px; place-items:center; }
 
   /* Finals: più aria sopra/sotto, card confinata nella colonna e trophy ridotta */
- .finals-split{
-  /* più aria sopra/sotto, e CLIP della colonna centrale */
+.finals-split{
   grid-template-rows: calc(var(--slot) * 3) auto calc(var(--slot) * 3);
   padding: 8px 0;
   position: relative;
-  overflow: hidden;     /* <— taglia tutto ciò che sfora verso le colonne laterali */
+  overflow: hidden;  /* taglia eventuali sbordi */
+  row-gap: 28px;     /* distacco tra top/trophy/bottom */
 }
 .finals-split .match{ 
   width: 100% !important;
@@ -322,13 +322,33 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   position: relative;
   z-index: 2;
 }
+
+  /* --- MOBILE: distacco netto trophy vs Finals --- */
+.finals-split{
+  row-gap: 28px;                          /* gap verticale tra le 3 righe */
+}
+
+#finals-top .match{
+  align-self: end;                         /* spingi verso l’alto della riga */
+  margin-bottom: 22px;                     /* spazio extra dalla trophy */
+  width: 100% !important;                  /* resta dentro la colonna */
+  max-width: 100%;
+}
+
+#finals-bottom .match{
+  align-self: start;                       /* spingi verso il basso della riga */
+  margin-top: 22px;                        /* spazio extra dalla trophy */
+  width: 100% !important;
+  max-width: 100%;
+}
+
 .trophy{
-  width: 160px;    /* riduci se serve ancora (150) */
-  height: 160px;
-  position: relative;
-  z-index: 1;      /* <— sotto le card */
+  width: 160px; height: 160px;             /* un filo più piccola su mobile */
+  margin: 6px 0;                           /* respira senza toccare le card */
+  z-index: 1;                              /* resta sotto le card */
   pointer-events: none;
 }
+
 
   .bracket{ gap: 22px; }
 
