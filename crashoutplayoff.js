@@ -272,63 +272,61 @@ function drawWires() {
   const layer = ensureWireLayer(true);
   if (!layer) return;
 
-  const H_PAD  = 14; // quanto vicino al target mettiamo la verticale
-  const STROKE = 3;  // spessore linea
+  const H_PAD  = 14;
+  const STROKE = 3;
+
+  function addSeg(layer, x, y, w, h) {
+    const d = document.createElement('div');
+    d.className = 'wire';
+    Object.assign(d.style, {
+      position: 'absolute',
+      left: x + 'px',
+      top: y + 'px',
+      width: w + 'px',
+      height: h + 'px',
+      background: 'var(--wire-color)',
+      borderRadius: (h <= 2 || w <= 2) ? '1px' : '3px'
+    });
+    layer.appendChild(d);
+  }
 
   function elbow(fromEl, toEl, nearTo = false) {
     const p  = document.querySelector('.bracket').getBoundingClientRect();
     const fr = fromEl.getBoundingClientRect();
     const tr = toEl.getBoundingClientRect();
 
-    // punti medi dei bordi
-    let ax = fr.right - p.left;                 // default: bordo destro del FROM
+    let ax = fr.right - p.left;
     let ay = fr.top - p.top + fr.height / 2;
-    let bx = tr.left  - p.left;                 // default: bordo sinistro del TO
+    let bx = tr.left  - p.left;
     let by = tr.top - p.top + tr.height / 2;
 
-    // se il FROM è a destra del TO, invertiamo i bordi (si va verso sinistra)
-    if (ax > bx) {
-      ax = fr.left  - p.left;                   // esci dal bordo sinistro del FROM
-      bx = tr.right - p.left;                   // entra dal bordo destro del TO
-    }
+    if (ax > bx) { ax = fr.left - p.left; bx = tr.right - p.left; }
 
-    // direzione orizzontale: +1 -> verso destra, -1 -> verso sinistra
     const dir = (bx > ax) ? 1 : -1;
-
-    // x del “gomito” (verticale): vicino al target se richiesto
     const xk = nearTo ? (bx - dir * H_PAD) : (ax + (bx - ax) / 2);
 
-    // orizzontale FROM -> xk
     addSeg(layer, Math.min(ax, xk), ay - STROKE / 2, Math.abs(xk - ax), STROKE);
-    // verticale xk
     addSeg(layer, xk - STROKE / 2, Math.min(ay, by), STROKE, Math.abs(by - ay));
-    // orizzontale xk -> TO
     addSeg(layer, Math.min(xk, bx), by - STROKE / 2, Math.abs(bx - xk), STROKE);
   }
 
   const MAP = [
-    // LEFT: R1 → R2
     {from:'#left-round-1 .match:nth-of-type(1)', to:'#left-round-2 .match:nth-of-type(1)'},
     {from:'#left-round-1 .match:nth-of-type(2)', to:'#left-round-2 .match:nth-of-type(1)'},
     {from:'#left-round-1 .match:nth-of-type(3)', to:'#left-round-2 .match:nth-of-type(2)'},
     {from:'#left-round-1 .match:nth-of-type(4)', to:'#left-round-2 .match:nth-of-type(2)'},
-    // LEFT: R2 → R3 (verticale vicino al target)
     {from:'#left-round-2 .match:nth-of-type(1)', to:'#left-round-3 .match:nth-of-type(1)', nearTo:true},
     {from:'#left-round-2 .match:nth-of-type(2)', to:'#left-round-3 .match:nth-of-type(1)', nearTo:true},
 
-    // RIGHT: R1 → R2
     {from:'#right-round-1 .match:nth-of-type(1)', to:'#right-round-2 .match:nth-of-type(1)'},
     {from:'#right-round-1 .match:nth-of-type(2)', to:'#right-round-2 .match:nth-of-type(1)'},
     {from:'#right-round-1 .match:nth-of-type(3)', to:'#right-round-2 .match:nth-of-type(2)'},
     {from:'#right-round-1 .match:nth-of-type(4)', to:'#right-round-2 .match:nth-of-type(2)'},
-    // RIGHT: R2 → R3 (verticale vicino al target)
     {from:'#right-round-2 .match:nth-of-type(1)', to:'#right-round-3 .match:nth-of-type(1)', nearTo:true},
     {from:'#right-round-2 .match:nth-of-type(2)', to:'#right-round-3 .match:nth-of-type(1)', nearTo:true},
 
-   // FINALS
-{from:'#left-round-3  .match:nth-of-type(1)', to:'#finals-top .match:nth-of-type(1)'},    // Ovest -> top
-{from:'#right-round-3 .match:nth-of-type(1)', to:'#finals-bottom .match:nth-of-type(1)'}  // Est -> bottom
-
+    {from:'#left-round-3  .match:nth-of-type(1)', to:'#finals-top .match:nth-of-type(1)'},
+    {from:'#right-round-3 .match:nth-of-type(1)', to:'#finals-bottom .match:nth-of-type(1)'}
   ];
 
   MAP.forEach(({from, to, nearTo}) => {
@@ -337,6 +335,35 @@ function drawWires() {
     if (f && t) elbow(f, t, !!nearTo);
   });
 }
+// --- Layer e ridisegno reattivo (una volta sola) ---
+const container = document.querySelector('.cup-container');
+const bracket   = document.querySelector('.bracket');
+
+function sizeWireLayer(){
+  const layer = ensureWireLayer(false);
+  if (!layer) return;
+  layer.style.width  = bracket.scrollWidth + 'px';
+  layer.style.height = bracket.scrollHeight + 'px';
+}
+
+let rafId;
+function scheduleRedraw(){
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(() => {
+    sizeWireLayer();
+    drawWires();
+  });
+}
+
+// listener unici
+window.addEventListener('resize', scheduleRedraw, {passive:true});
+window.addEventListener('orientationchange', scheduleRedraw);
+container.addEventListener('scroll', scheduleRedraw, {passive:true});
+document.querySelectorAll('img').forEach(img=>{
+  if(!img.complete) img.addEventListener('load', scheduleRedraw, {once:true});
+});
+(document.fonts?.ready || Promise.resolve()).then(scheduleRedraw);
+window.addEventListener('load', scheduleRedraw);
 
 
 
