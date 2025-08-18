@@ -123,6 +123,10 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .logo-wrap .logo{ width:100%; height:100%; object-fit:contain; display:block; max-width:98%; max-height:98%; }
 .logo-wrap.no-logo{ background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 10px,#e2e8f0 10px,#e2e8f0 20px); }
 
+/* Nasconde l'icona/alt delle immagini segnaposto */
+.logo[alt="TBD"]{ display:none !important; }
+
+
 /* Punteggio */
 /* Centro perfetto del numero nella box punteggio */
 .score-box{
