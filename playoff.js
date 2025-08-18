@@ -22,26 +22,6 @@ function creaHTMLSquadra(nome, posizione = "", punteggio = "", isVincente = fals
     </div>`;
 }
 
-
-function creaMatchCardMobile(nomeA, nomeB, logoA, logoB, vincenteNome) {
-  const isV1 = vincenteNome === nomeA;
-  const isV2 = vincenteNome === nomeB;
-
-  return `
-    <div class="match-card ${isV1 || isV2 ? 'vincente' : ''}">
-      <div class="team"><img src="${logoA}" onerror="this.style.display='none'"><span>${nomeA}</span></div>
-      <span class="vs">vs</span>
-      <div class="team"><img src="${logoB}" onerror="this.style.display='none'"><span>${nomeB}</span></div>
-    </div>`;
-}
-
-const SEED_WC = {
-  WC1: [7, 8],
-  WC2: [4, 11],
-  WC3: [5, 10],
-  WC4: [6, 9],
-};
-
 function creaMatchBox({ nomeA, seedA, golA, logoA, nomeB, seedB, golB, logoB, vincente }) {
   const isV1 = vincente === nomeA;
   const isV2 = vincente === nomeB;
@@ -75,25 +55,48 @@ function getRis(id){
   );
 }
 
+// Unifica i vecchi slot "-A/-B" in un solo <div class="match pair" data-match="Q1">
+function ensurePairs() {
+  // se già esistono i box "pair", non faccio nulla
+  let pairs = document.querySelectorAll(".match.pair");
+  if (pairs.length) return pairs;
+
+  // trova tutti gli "A"
+  document.querySelectorAll(".match[data-match$='-A']").forEach(a => {
+    const base = a.dataset.match.replace(/-A$/, "");      // es. "Q1"
+    const b = document.querySelector(`.match[data-match='${base}-B']`);
+    if (!b) return;
+
+    const pair = document.createElement("div");
+    pair.className = "match pair";
+    pair.dataset.match = base;
+
+    // inserisco il nuovo box prima di A, poi rimuovo A e B
+    a.parentNode.insertBefore(pair, a);
+    a.remove();
+    b.remove();
+  });
+
+  return document.querySelectorAll(".match.pair");
+}
+
 function aggiornaPlayoff() {
-  document.querySelectorAll(".match.pair").forEach(box => {
-    const id = box.dataset.match;           // es. WC1, Q1, S1, F
+  const boxes = ensurePairs();  // <— crea/recupera i box unici
+  boxes.forEach(box => {
+    const id = box.dataset.match;        // es. WC1, Q1, S1, F
     const r = getRis(id);
 
     let nomeA, nomeB, golA, golB;
 
     if (r) {
-      // c'è già l'abbinamento nel file risultati
       nomeA = r.squadraA; nomeB = r.squadraB;
       golA  = r.golA;     golB  = r.golB;
     } else if (id.startsWith('WC') && window.squadre?.length) {
-      // fallback wildcard da seed
-      const [iA, iB] = SEED_WC[id];
+      const [iA, iB] = SEED_WC[id] || [];
       nomeA = window.squadre[iA]?.nome || "?";
       nomeB = window.squadre[iB]?.nome || "?";
       golA = golB = "";
     } else {
-      // placeholder
       nomeA = "TBD"; nomeB = "TBD"; golA = golB = "";
     }
 
@@ -106,13 +109,12 @@ function aggiornaPlayoff() {
       vincente: r?.vincente
     });
 
-    // Highlight box se deciso
     if (r?.vincente) box.classList.add("decided");
     else box.classList.remove("decided");
   });
 
-  // Trofeo / vincitore
-  const finale = window.risultati?.find(x => x.partita === "F");
+  // vincitore finale invariato...
+  const finale = window.risultati?.find(x => x.partita === "F" || x.partita === "F-A" || x.partita === "F-B");
   if (finale?.vincente) {
     const nome = finale.vincente;
     const container = document.getElementById("vincitore-assoluto");
@@ -123,6 +125,7 @@ function aggiornaPlayoff() {
     }
   }
 }
+
 
 fetch(URL_CLASSIFICA_TOTALE)
   .then(res => res.text())
