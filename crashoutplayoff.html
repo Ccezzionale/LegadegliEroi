@@ -56,41 +56,43 @@
   <!-- ===== TOOLBAR (opzionale) ===== -->
   </section>
 
-  <!-- ===== BRACKET WRAPPER ===== -->
-  <main class="cup-container">
-    <div id="bracket" class="bracket">
-      <!-- Colonna sinistra: Round 1, Semifinali Conf, Finali Conf (Ovest) -->
-      <section class="conference left">
-        <h2 class="conf-title">Conference (Left)</h2>
-        <div class="round round-1" id="left-round-1" aria-label="Left Round 1"></div>
-        <div class="round round-2" id="left-round-2" aria-label="Left Semifinals"></div>
-        <div class="round round-3" id="left-round-3" aria-label="Left Conference Finals"></div>
-      </section>
+ <!-- ===== BRACKET WRAPPER ===== -->
+<main class="cup-container">
+  <div id="bracket" class="bracket">
 
-      <!-- Centro: Finals -->
-  <section class="finals" aria-label="NBA Finals">
-  <h2 class="conf-title">Finals</h2>
-  <div id="finals-split" class="finals-split">
-    <div id="finals-top" class="round round-final" aria-label="Finals Top"></div>
-    <div id="finals-trophy" class="trophy" aria-hidden="true"></div>
-    <div id="finals-bottom" class="round round-final" aria-label="Finals Bottom"></div>
+    <!-- LAYER DEI FILI: deve stare DENTRO .bracket -->
+    <div class="wire-layer"></div>
+
+    <!-- Colonna sinistra -->
+    <section class="conference left">
+      <h2 class="conf-title">Conference (Left)</h2>
+      <div class="round round-1" id="left-round-1" aria-label="Left Round 1"></div>
+      <div class="round round-2" id="left-round-2" aria-label="Left Semifinals"></div>
+      <div class="round round-3" id="left-round-3" aria-label="Left Conference Finals"></div>
+    </section>
+
+    <!-- Centro: Finals -->
+    <section class="finals" aria-label="NBA Finals">
+      <h2 class="conf-title">Finals</h2>
+      <div id="finals-split" class="finals-split">
+        <div id="finals-top" class="round round-final" aria-label="Finals Top"></div>
+        <div id="finals-trophy" class="trophy" aria-hidden="true"></div>
+        <div id="finals-bottom" class="round round-final" aria-label="Finals Bottom"></div>
+      </div>
+    </section>
+
+    <!-- Colonna destra -->
+    <section class="conference right">
+      <h2 class="conf-title">Conference (Right)</h2>
+      <div class="round round-1" id="right-round-1" aria-label="Right Round 1"></div>
+      <div class="round round-2" id="right-round-2" aria-label="Right Semifinals"></div>
+      <div class="round round-3" id="right-round-3" aria-label="Right Conference Finals"></div>
+    </section>
   </div>
-</section>
 
-      <!-- Colonna destra: Round 1, Semifinali Conf, Finali Conf (Est) -->
-      <section class="conference right">
-        <h2 class="conf-title">Conference (Right)</h2>
-        <div class="round round-1" id="right-round-1" aria-label="Right Round 1"></div>
-        <div class="round round-2" id="right-round-2" aria-label="Right Semifinals"></div>
-        <div class="round round-3" id="right-round-3" aria-label="Right Conference Finals"></div>
-      </section>
-    </div>
-
-    <!-- Mobile stack -->
-    <div id="bracket-mobile" class="bracket-mobile" aria-label="Bracket mobile">
-      <!-- Il JS genererà qui un elenco verticale dei match per round -->
-    </div>
-  </main>
+  <!-- Mobile stack -->
+  <div id="bracket-mobile" class="bracket-mobile" aria-label="Bracket mobile"></div>
+</main>
 
   <!-- ===== TEMPLATE (clonati dal JS) ===== -->
 <template id="match-template">
