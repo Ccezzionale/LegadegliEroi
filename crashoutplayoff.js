@@ -222,10 +222,9 @@ function ensureWireLayer(clear = false) {
       position: 'absolute',
       inset: '0',
       pointerEvents: 'none',
-      zIndex: '0'
+      zIndex: '0' // dietro alle card
     });
-    // PRIMO figlio: sta sempre dietro
-    bracket.insertBefore(layer, bracket.firstChild);
+    bracket.appendChild(layer);
   }
 
   if (clear) layer.replaceChildren();
@@ -242,47 +241,70 @@ function addSeg(layer, x, y, w, h) {
     top: y + 'px',
     width: w + 'px',
     height: h + 'px',
-    background: 'var(--wire-color)',
+    background: 'var(--wire-color)',   // usa la CSS var (emerald)
     borderRadius: (h <= 2 || w <= 2) ? '1px' : '3px'
   });
   layer.appendChild(d);
 }
+
+// helper posizioni
+const rectOf = el => el.getBoundingClientRect();
+const relToBracket = pt => {
+  const p = document.querySelector('.bracket').getBoundingClientRect();
+  return { x: pt.x - p.left, y: pt.y - p.top };
+};
+
+// --- punti medi relativi al contenitore .bracket (serve a drawWires)
+const midRight = (el) => {
+  const r = el.getBoundingClientRect();
+  const p = document.querySelector('.bracket').getBoundingClientRect();
+  return { x: r.right - p.left, y: r.top - p.top + r.height / 2 };
+};
+const midLeft = (el) => {
+  const r = el.getBoundingClientRect();
+  const p = document.querySelector('.bracket').getBoundingClientRect();
+  return { x: r.left - p.left, y: r.top - p.top + r.height / 2 };
+};
+
 
 // ridisegna tutti i connettori con ancore stabili
 function drawWires() {
   const layer = ensureWireLayer(true);
   if (!layer) return;
 
-  const H_PAD  = 14;
-  const STROKE = 3;
+  const H_PAD  = 14; // quanto vicino al target mettiamo la verticale
+  const STROKE = 3;  // spessore linea
 
-  const container = document.querySelector('.cup-container');
-  const bracket   = document.querySelector('.bracket');
-
-  // gomito tra due card, coordinate relative alla .bracket + scroll del container
   function elbow(fromEl, toEl, nearTo = false) {
-  // coordinate relative alla .bracket (Niente scrollLeft/Top!)
-  const p  = bracket.getBoundingClientRect();
-  const fr = fromEl.getBoundingClientRect();
-  const tr = toEl.getBoundingClientRect();
+    const p  = document.querySelector('.bracket').getBoundingClientRect();
+    const fr = fromEl.getBoundingClientRect();
+    const tr = toEl.getBoundingClientRect();
 
-  let ax = fr.right - p.left;
-  let ay = fr.top   - p.top  + fr.height / 2;
-  let bx = tr.left  - p.left;
-  let by = tr.top   - p.top  + tr.height / 2;
+    // punti medi dei bordi
+    let ax = fr.right - p.left;                 // default: bordo destro del FROM
+    let ay = fr.top - p.top + fr.height / 2;
+    let bx = tr.left  - p.left;                 // default: bordo sinistro del TO
+    let by = tr.top - p.top + tr.height / 2;
 
-  if (ax > bx) { ax = fr.left - p.left; bx = tr.right - p.left; }
+    // se il FROM è a destra del TO, invertiamo i bordi (si va verso sinistra)
+    if (ax > bx) {
+      ax = fr.left  - p.left;                   // esci dal bordo sinistro del FROM
+      bx = tr.right - p.left;                   // entra dal bordo destro del TO
+    }
 
-  const H_PAD  = 14;
-  const STROKE = 3;
-  const dir = (bx > ax) ? 1 : -1;
-  const xk = nearTo ? (bx - dir * H_PAD) : (ax + (bx - ax) / 2);
+    // direzione orizzontale: +1 -> verso destra, -1 -> verso sinistra
+    const dir = (bx > ax) ? 1 : -1;
 
-  addSeg(layer, Math.min(ax, xk), ay - STROKE / 2, Math.abs(xk - ax), STROKE);
-  addSeg(layer, xk - STROKE / 2, Math.min(ay, by), STROKE, Math.abs(by - ay));
-  addSeg(layer, Math.min(xk, bx), by - STROKE / 2, Math.abs(bx - xk), STROKE);
-}
+    // x del “gomito” (verticale): vicino al target se richiesto
+    const xk = nearTo ? (bx - dir * H_PAD) : (ax + (bx - ax) / 2);
 
+    // orizzontale FROM -> xk
+    addSeg(layer, Math.min(ax, xk), ay - STROKE / 2, Math.abs(xk - ax), STROKE);
+    // verticale xk
+    addSeg(layer, xk - STROKE / 2, Math.min(ay, by), STROKE, Math.abs(by - ay));
+    // orizzontale xk -> TO
+    addSeg(layer, Math.min(xk, bx), by - STROKE / 2, Math.abs(bx - xk), STROKE);
+  }
 
   const MAP = [
     // LEFT: R1 → R2
@@ -290,7 +312,7 @@ function drawWires() {
     {from:'#left-round-1 .match:nth-of-type(2)', to:'#left-round-2 .match:nth-of-type(1)'},
     {from:'#left-round-1 .match:nth-of-type(3)', to:'#left-round-2 .match:nth-of-type(2)'},
     {from:'#left-round-1 .match:nth-of-type(4)', to:'#left-round-2 .match:nth-of-type(2)'},
-    // LEFT: R2 → R3
+    // LEFT: R2 → R3 (verticale vicino al target)
     {from:'#left-round-2 .match:nth-of-type(1)', to:'#left-round-3 .match:nth-of-type(1)', nearTo:true},
     {from:'#left-round-2 .match:nth-of-type(2)', to:'#left-round-3 .match:nth-of-type(1)', nearTo:true},
 
@@ -299,13 +321,14 @@ function drawWires() {
     {from:'#right-round-1 .match:nth-of-type(2)', to:'#right-round-2 .match:nth-of-type(1)'},
     {from:'#right-round-1 .match:nth-of-type(3)', to:'#right-round-2 .match:nth-of-type(2)'},
     {from:'#right-round-1 .match:nth-of-type(4)', to:'#right-round-2 .match:nth-of-type(2)'},
-    // RIGHT: R2 → R3
+    // RIGHT: R2 → R3 (verticale vicino al target)
     {from:'#right-round-2 .match:nth-of-type(1)', to:'#right-round-3 .match:nth-of-type(1)', nearTo:true},
     {from:'#right-round-2 .match:nth-of-type(2)', to:'#right-round-3 .match:nth-of-type(1)', nearTo:true},
 
-    // FINALS
-    {from:'#left-round-3  .match:nth-of-type(1)', to:'#finals-top .match:nth-of-type(1)'},
-    {from:'#right-round-3 .match:nth-of-type(1)', to:'#finals-bottom .match:nth-of-type(1)'}
+   // FINALS
+{from:'#left-round-3  .match:nth-of-type(1)', to:'#finals-top .match:nth-of-type(1)'},    // Ovest -> top
+{from:'#right-round-3 .match:nth-of-type(1)', to:'#finals-bottom .match:nth-of-type(1)'}  // Est -> bottom
+
   ];
 
   MAP.forEach(({from, to, nearTo}) => {
@@ -315,35 +338,7 @@ function drawWires() {
   });
 }
 
-// --- Layer e ridisegno reattivo (una volta sola) ---
-const container = document.querySelector('.cup-container');
-const bracket   = document.querySelector('.bracket');
 
-function sizeWireLayer(){
-  const layer = ensureWireLayer(false);
-  if (!layer) return;
-  layer.style.width  = bracket.scrollWidth + 'px';
-  layer.style.height = bracket.scrollHeight + 'px';
-}
-
-let rafId;
-function scheduleRedraw(){
-  cancelAnimationFrame(rafId);
-  rafId = requestAnimationFrame(() => {
-    sizeWireLayer();
-    drawWires();
-  });
-}
-
-// listener unici
-window.addEventListener('resize', scheduleRedraw, {passive:true});
-window.addEventListener('orientationchange', scheduleRedraw);
-container.addEventListener('scroll', scheduleRedraw, {passive:true});
-document.querySelectorAll('img').forEach(img=>{
-  if(!img.complete) img.addEventListener('load', scheduleRedraw, {once:true});
-});
-(document.fonts?.ready || Promise.resolve()).then(scheduleRedraw);
-window.addEventListener('load', scheduleRedraw);
 
 // ======== BUILD & ACTIONS ========
 function clamp03(n){ n = Number(n||0); return Math.max(0, Math.min(3, n)); }
@@ -359,32 +354,37 @@ function winnerOf(match, seriesId){
 }
 const TBD = { seed: "", team: "TBD" };
 
-function propagateWinners(bracketData){
-  const [L1m,L2m,L3m,L4m] = bracketData.r1.left;
-  const [R1m,R2m,R3m,R4m] = bracketData.r1.right;
+function propagateWinners(bracket){
+  // round 1
+  const [L1m,L2m,L3m,L4m] = bracket.r1.left;
+  const [R1m,R2m,R3m,R4m] = bracket.r1.right;
 
+  // semifinali (left)
   const wL1 = winnerOf(L1m, 'L1'); const wL2 = winnerOf(L2m, 'L2');
   const wL3 = winnerOf(L3m, 'L3'); const wL4 = winnerOf(L4m, 'L4');
-  bracketData.leftSF[0].home = wL1 || TBD;  bracketData.leftSF[0].away = wL2 || TBD;
-  bracketData.leftSF[1].home = wL3 || TBD;  bracketData.leftSF[1].away = wL4 || TBD;
+  bracket.leftSF[0].home = wL1 || TBD;  bracket.leftSF[0].away = wL2 || TBD; // LSF1
+  bracket.leftSF[1].home = wL3 || TBD;  bracket.leftSF[1].away = wL4 || TBD; // LSF2
 
+  // semifinali (right)
   const wR1 = winnerOf(R1m, 'R1'); const wR2 = winnerOf(R2m, 'R2');
   const wR3 = winnerOf(R3m, 'R3'); const wR4 = winnerOf(R4m, 'R4');
-  bracketData.rightSF[0].home = wR1 || TBD; bracketData.rightSF[0].away = wR2 || TBD;
-  bracketData.rightSF[1].home = wR3 || TBD; bracketData.rightSF[1].away = wR4 || TBD;
+  bracket.rightSF[0].home = wR1 || TBD; bracket.rightSF[0].away = wR2 || TBD; // RSF1
+  bracket.rightSF[1].home = wR3 || TBD; bracket.rightSF[1].away = wR4 || TBD; // RSF2
 
-  const wLSF1 = winnerOf(bracketData.leftSF[0],  'LSF1');
-  const wLSF2 = winnerOf(bracketData.leftSF[1],  'LSF2');
-  bracketData.leftCF[0].home = wLSF1 || TBD;  bracketData.leftCF[0].away = wLSF2 || TBD;
+  // finali di conference
+  const wLSF1 = winnerOf(bracket.leftSF[0],  'LSF1');
+  const wLSF2 = winnerOf(bracket.leftSF[1],  'LSF2');
+  bracket.leftCF[0].home = wLSF1 || TBD;  bracket.leftCF[0].away = wLSF2 || TBD;
 
-  const wRSF1 = winnerOf(bracketData.rightSF[0], 'RSF1');
-  const wRSF2 = winnerOf(bracketData.rightSF[1], 'RSF2');
-  bracketData.rightCF[0].home = wRSF1 || TBD; bracketData.rightCF[0].away = wRSF2 || TBD;
+  const wRSF1 = winnerOf(bracket.rightSF[0], 'RSF1');
+  const wRSF2 = winnerOf(bracket.rightSF[1], 'RSF2');
+  bracket.rightCF[0].home = wRSF1 || TBD; bracket.rightCF[0].away = wRSF2 || TBD;
 
-  const wLCF = winnerOf(bracketData.leftCF[0],  'LCF');
-  const wRCF = winnerOf(bracketData.rightCF[0], 'RCF');
-  bracketData.finals[0].home = wLCF || TBD;
-  bracketData.finals[0].away = wRCF || TBD;
+  // finals
+  const wLCF = winnerOf(bracket.leftCF[0],  'LCF');
+  const wRCF = winnerOf(bracket.rightCF[0], 'RCF');
+  bracket.finals[0].home = wLCF || TBD;
+  bracket.finals[0].away = wRCF || TBD;
 }
 
 async function buildBracket() {
@@ -393,37 +393,43 @@ async function buildBracket() {
     const seeds = await loadStandings();
     if (seeds.length < 16) console.warn("Trovate meno di 16 squadre. Ne servono 16.");
 
-    const bracketData = makeBracketStructure(seeds);
-    propagateWinners(bracketData);
+    const bracket = makeBracketStructure(seeds);
+    propagateWinners(bracket);
 
-    // Round 1 / 2 / 3
-    renderRound("left-round-1",  bracketData.r1.left);
-    renderRound("right-round-1", bracketData.r1.right);
-    renderRound("left-round-2",  bracketData.leftSF);
-    renderRound("right-round-2", bracketData.rightSF);
-    renderRound("left-round-3",  bracketData.leftCF);
-    renderRound("right-round-3", bracketData.rightCF);
+    // --- Round 1 / 2 / 3 ---
+    renderRound("left-round-1",  bracket.r1.left);
+    renderRound("right-round-1", bracket.r1.right);
+    renderRound("left-round-2",  bracket.leftSF);
+    renderRound("right-round-2", bracket.rightSF);
+    renderRound("left-round-3",  bracket.leftCF);
+    renderRound("right-round-3", bracket.rightCF);
 
-    // Finals split
-    const f = bracketData.finals[0];
+    // --- Finals "split" (STEP 3.c) ---
+    const f = bracket.finals[0];           // { id:'F', home:…, away:… }
     document.getElementById("finals-top")
       .appendChild(createFinalSide(f.home, "home", "F"));
     document.getElementById("finals-bottom")
       .appendChild(createFinalSide(f.away, "away", "F"));
 
     // Mobile
-    renderMobileList(bracketData);
+    renderMobileList(bracket);
 
     // Connettori
-    scheduleRedraw();
-
+    requestAnimationFrame(() => {
+      drawWires();
+      setTimeout(drawWires, 0);
+    });
   } catch (err) {
     console.error("Errore costruzione bracket:", err);
   }
-}
+} // <-- chiude buildBracket
+
+// ridisegna i fili al resize (una volta sola)
+window.addEventListener('resize', () => requestAnimationFrame(drawWires));
 
 // avvio pagina
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('refreshBracket')?.addEventListener('click', buildBracket);
   buildBracket();
 });
+
