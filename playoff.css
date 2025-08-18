@@ -41,12 +41,20 @@ body{margin:0;font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:#f4f6f
 
 /* BOX partita più grande */
 .match{
-  background:transparent;
-  border:2px solid var(--ink);
-  border-radius:14px;
-  padding:14px;
-  width:100%;
-  box-shadow:0 2px 6px rgba(0,0,0,.08);
+  display: flex;
+  flex-direction: column;
+  gap: 3px !important;     /* prima era >10px */
+  padding: 0 !important;
+}
+
+/* se avevi messo un margine tra le card, riducilo */
+.team + .team{
+  margin-top: 3px !important;  /* prima 10px */
+}
+
+/* — Mantieni invece uno spazio visibile tra partite diverse — */
+.col .match + .match{
+  margin-top: 18px;            /* regola qui se vuoi più/meno spazio tra match */
 }
 
 /* ogni squadra = card bianca */
