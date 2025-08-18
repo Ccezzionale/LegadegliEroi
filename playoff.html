@@ -2,132 +2,121 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Playoff - Lega degli Eroi</title>
-  <script src="risultati_playoff.js" defer></script>
-  <script src="playoff.js" defer></script>
+
+  <!-- CSS -->
   <link rel="stylesheet" href="playoff.css">
 </head>
 <body>
-<!-- NAVBAR COMPLETA -->
+
+  <!-- NAVBAR -->
   <nav>
-    <span id="hamburger" class="hamburger">☰</span>
     <a href="index.html" class="home-icon">🏠</a>
     <ul class="navbar" id="mainMenu">
       <li><a href="rose.html">Rose</a></li>
-    <li class="dropdown">
-      <a href="#" class="toggle-submenu">Draft ▾</a>
-      <ul class="submenu">
-        <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
-        <li><a href="draft_conference.html">🟨 Conf.League</a></li>
-        <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
-      </ul>
-    </li>
-    <li class="dropdown">
-      <a href="#" class="toggle-submenu">Competizioni ▾</a>
-      <ul class="submenu">
-        <li><a href="classifica.html">📊 Classifiche</a></li>
-        <li><a href="playoff.html">🏆 Playoff</a></li>
-        <li><a href="arena.html">🏟️ Higlander</a></li>
-         <li><a href="crashoutcup.html">💥 Crash out Cup</a></li>
-        <li><a href="crashoutcup.html">💥 Crash out Cup - Playoff</a></li>
-      </ul>
-    </li>
-    <li><a href="svincolati.html">Svincolati</a></li>
-    <li><a href="chiamate.html">Chiamate</a></li>
-    <li class="dropdown">
-      <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
-      <ul class="submenu">
-   <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
-      <li><a href="albo.html">🏅  Medagliere</a></li>
-    </ul>
+
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Draft ▾</a>
+        <ul class="submenu">
+          <li><a href="draft_championship.html">🟦 Conf. Championship</a></li>
+          <li><a href="draft_conference.html">🟨 Conf. League</a></li>
+          <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+        </ul>
+      </li>
+
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Competizioni ▾</a>
+        <ul class="submenu">
+          <li><a href="classifica.html">📊 Classifiche</a></li>
+          <li><a href="playoff.html">🏆 Playoff</a></li>
+          <li><a href="arena.html">🏟️ Highlander</a></li>
+          <li><a href="crashoutcup.html">💥 Crash Out Cup</a></li>
+        </ul>
+      </li>
+
+      <li><a href="svincolati.html">Svincolati</a></li>
+      <li><a href="chiamate.html">Chiamate</a></li>
+
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
+        <ul class="submenu">
+          <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
+          <li><a href="albo.html">🏅 Medagliere</a></li>
+        </ul>
+      </li>
+
       <li><a href="regolamento.html">Regolamento</a></li>
+    </ul>
   </nav>
 
   <h1 class="titolo-pagina">Playoff Lega degli Eroi</h1>
-<div class="bracket">
-  <!-- SINISTRA -->
-  <div class="blocco-colonna">
-    <h2>Wildcard</h2>
-    <div class="colonna wc-sx">
-      <div class="match pair" data-match="WC1"></div>
-      <div class="match pair spaziata" data-match="WC3"></div>
-    </div>
-  </div>
 
-  <div class="blocco-colonna">
-    <h2>Quarti</h2>
-    <div class="colonna">
-      <div class="match pair" data-match="Q1"></div>
-      <div class="match pair spaziata" data-match="Q3"></div>
+  <!-- BRACKET UEFA (un box per gara) -->
+  <div class="bracket">
+    <!-- SINISTRA -->
+    <div class="blocco-colonna">
+      <h2>Wildcard</h2>
+      <div class="colonna">
+        <div class="match pair" data-match="WC1"></div>
+        <div class="match pair spaziata" data-match="WC3"></div>
+      </div>
     </div>
-  </div>
 
-  <div class="blocco-colonna">
-    <h2>Semifinale</h2>
-    <div class="colonna semifinale-sx">
-      <div class="match pair" data-match="S1"></div>
+    <div class="blocco-colonna">
+      <h2>Quarti</h2>
+      <div class="colonna">
+        <div class="match pair" data-match="Q1"></div>
+        <div class="match pair spaziata" data-match="Q3"></div>
+      </div>
     </div>
-  </div>
 
-  <!-- CENTRO -->
-  <div class="blocco-colonna">
-    <h2>Finale</h2>
-    <div class="colonna">
-      <div class="match pair finale" data-match="F"></div>
+    <div class="blocco-colonna">
+      <h2>Semifinale</h2>
+      <div class="colonna semifinale-sx">
+        <div class="match pair" data-match="S1"></div>
+      </div>
     </div>
-    <div class="coppa-vittoria">
-      <img src="img/coppa.png" alt="Coppa del Vincitore">
-      <div id="vincitore-assoluto" class="vincitore-info">
-        <img id="logo-vincitore" src="" alt="Logo Vincitore">
-        <span id="nome-vincitore"></span>
+
+    <!-- CENTRO -->
+    <div class="blocco-colonna">
+      <h2>Finale</h2>
+      <div class="colonna">
+        <div class="match pair finale" data-match="F"></div>
+      </div>
+      <div class="coppa-vittoria">
+        <img src="img/coppa.png" alt="Coppa del Vincitore">
+        <div id="vincitore-assoluto" class="vincitore-info"></div>
+      </div>
+    </div>
+
+    <!-- DESTRA -->
+    <div class="blocco-colonna">
+      <h2>Semifinale</h2>
+      <div class="colonna semifinale-dx">
+        <div class="match pair" data-match="S2"></div>
+      </div>
+    </div>
+
+    <div class="blocco-colonna">
+      <h2>Quarti</h2>
+      <div class="colonna">
+        <div class="match pair" data-match="Q2"></div>
+        <div class="match pair spaziata" data-match="Q4"></div>
+      </div>
+    </div>
+
+    <div class="blocco-colonna">
+      <h2>Wildcard</h2>
+      <div class="colonna">
+        <div class="match pair" data-match="WC2"></div>
+        <div class="match pair spaziata" data-match="WC4"></div>
       </div>
     </div>
   </div>
 
-  <!-- DESTRA -->
-  <div class="blocco-colonna">
-    <h2>Semifinale</h2>
-    <div class="colonna semifinale-dx">
-      <div class="match pair" data-match="S2"></div>
-    </div>
-  </div>
-
-  <div class="blocco-colonna">
-    <h2>Quarti</h2>
-    <div class="colonna">
-      <div class="match pair" data-match="Q2"></div>
-      <div class="match pair spaziata" data-match="Q4"></div>
-    </div>
-  </div>
-
-  <div class="blocco-colonna">
-    <h2>Wildcard</h2>
-    <div class="colonna wc-dx">
-      <div class="match pair" data-match="WC2"></div>
-      <div class="match pair spaziata" data-match="WC4"></div>
-    </div>
-  </div>
-</div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const hamburger = document.getElementById("hamburger");
-      const mainMenu = document.getElementById("mainMenu");
-      const submenuToggles = document.querySelectorAll(".toggle-submenu");
-
-      hamburger?.addEventListener("click", () => {
-        mainMenu.classList.toggle("show");
-      });
-
-      submenuToggles.forEach(toggle => {
-        toggle.addEventListener("click", function (e) {
-          e.preventDefault();
-          const parent = this.closest(".dropdown");
-          parent.classList.toggle("show");
-        });
-      });
-      });
-  </script>
+  <!-- JS: prima i risultati (separati), poi il renderer -->
+  <script src="risultati_playoff.js"></script>
+  <script src="playoff.js"></script>
 </body>
 </html>
