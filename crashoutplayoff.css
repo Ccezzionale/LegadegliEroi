@@ -360,6 +360,35 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
   .bracket{ gap: 22px; }
 
+  .bracket{ position: relative; isolation: isolate; }
+
+/* ogni card resta nella propria colonna (override a width:max-content) */
+.conference .match,
+.finals-split .match{
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* se una card laterale volesse sconfinare, viene clipppata */
+.conference{ position: relative; z-index: 1; overflow: hidden; }
+
+/* colonna centrale sopra le laterali */
+.finals-split{ position: relative; z-index: 2; }
+
+/* trophy solo decorativa, assoluta dietro e più piccola */
+.finals-split .trophy{
+  position: absolute !important;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 150px; height: 150px;
+  z-index: 0 !important;
+  pointer-events: none;
+}
+
+/* un filo più di respiro, se serve */
+:root{ --grid-gap: 22px; }
+
   /* Fili sotto, card laterali sopra i fili */
   .conference .match{ position:relative; z-index:1; }
   .wire-layer{ z-index:0; }
