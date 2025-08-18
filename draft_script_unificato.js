@@ -356,7 +356,7 @@ function getSpecialPickSets(tab) {
   }
   // Default: Conference
   return {
-    fp: new Set([60, 61, 64]),
+    fp: new Set([61, 64]),
     u21: new Set([114, 115, 117, 118, 119])
   };
 }
