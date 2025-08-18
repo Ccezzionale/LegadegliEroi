@@ -69,10 +69,16 @@ function seedOf(nome){
   return idx >= 0 ? idx + 1 : "";
 }
 
+function getRis(id){
+  return window.risultati?.find(x =>
+    x.partita === id || x.partita === `${id}-A` || x.partita === `${id}-B`
+  );
+}
+
 function aggiornaPlayoff() {
   document.querySelectorAll(".match.pair").forEach(box => {
     const id = box.dataset.match;           // es. WC1, Q1, S1, F
-    const r = window.risultati?.find(x => x.partita === id);
+    const r = getRis(id);
 
     let nomeA, nomeB, golA, golB;
 
