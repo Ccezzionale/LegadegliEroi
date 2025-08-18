@@ -294,7 +294,6 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
     position: relative;
     isolation: isolate;     /* nuovo stacking context */
   }
-  .bracket-mobile{ display:none !important; }
 
   /* Card e righe più compatte */
   .conference{ gap:14px; position:relative; overflow:hidden; z-index:1; } /* clip laterali */
