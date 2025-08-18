@@ -27,7 +27,7 @@ body{margin:0;font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:#f4f6f
   display:grid;
   grid-auto-flow:column;
   grid-auto-columns: 380px;     /* larghezza colonna */
-  gap:34px;
+  gap:75px;
   width:max-content;
   margin: 0 auto 60px;
   padding: 24px 34px;
@@ -43,13 +43,13 @@ body{margin:0;font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:#f4f6f
 .match{
   display: flex;
   flex-direction: column;
-  gap: 3px !important;     /* prima era >10px */
+  gap: 0px !important;     /* prima era >10px */
   padding: 0 !important;
 }
 
 /* se avevi messo un margine tra le card, riducilo */
 .team + .team{
-  margin-top: 2px !important;  /* prima 10px */
+  margin-top: 0px !important;  /* prima 10px */
 }
 
 /* — Mantieni invece uno spazio visibile tra partite diverse — */
@@ -128,5 +128,22 @@ body{margin:0;font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:#f4f6f
 
 .emblem{ width:42px; height:42px; }
 .emblem img{ width:28px; height:28px; }
+
+.board{
+  display: grid;
+  grid-template-columns: repeat(4, 380px);   /* stessa larghezza che usi ora */
+  grid-template-rows: auto auto;
+  column-gap: 34px;
+  row-gap: 20px;
+}
+
+/* posizionamento esplicito dei round */
+.board .round:nth-of-type(1){ grid-column: 1; grid-row: 1; } /* Wildcard */
+.board .round:nth-of-type(2){ grid-column: 2; grid-row: 1; } /* Quarti */
+.board .round:nth-of-type(3){ grid-column: 3; grid-row: 2; } /* Semifinali (sotto) */
+.board .round:nth-of-type(4){ grid-column: 4; grid-row: 1; } /* Finale, in alto a destra */
+
+/* (opzionale) allinea le card all'inizio della colonna */
+.board .round { align-items: stretch; }
 
 
