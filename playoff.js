@@ -1,25 +1,42 @@
-const URL_CLASSIFICA_TOTALE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTduESMbJiPuCDLaAFdOHjep9GW-notjraILSyyjo6SA0xKSR0H0fgMLPNNYSwXgnGGJUyv14kjFRqv/pub?gid=691152130&single=true&output=csv";
+// ===== CONFIG =====
+const URL_CLASSIFICA_TOTALE =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTduESMbJiPuCDLaAFdOHjep9GW-notjraILSyyjo6SA0xKSR0H0fgMLPNNYSwXgnGGJUyv14kjFRqv/pub?gid=691152130&single=true&output=csv";
 
-function creaHTMLSquadra(nome, posizione = "", punteggio = "", isVincente = false) {
-  const nomePulito = nome.replace(/[°]/g, "").trim();
-  const usaLogo = !nome.toLowerCase().includes("vincente") && !nome.toLowerCase().includes("classificata");
-  const fileLogo = `img/${nomePulito}.png`;
-  const classe = isVincente ? "vincente" : "perdente";
+// Wildcard dal seeding (12 squadre)
+const SEED_WC = {
+  WC1: [7, 8],   // 8 vs 9
+  WC2: [4, 11],  // 5 vs 12
+  WC3: [5, 10],  // 6 vs 11
+  WC4: [6, 9],   // 7 vs 10
+};
 
-  // normalizzo il seed anche se arriva come "8°"
-  const seed = String(posizione ?? "")
-    .replace(/[^\d]/g, ""); // solo numero
+// ===== NAVBAR (solo desktop: click per aprire sottomenù anche senza hover) =====
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".toggle-submenu").forEach(a => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      const li = a.closest(".dropdown");
+      li.classList.toggle("show");
+    });
+  });
+});
 
-  const logoHTML = usaLogo ? `<img src="${fileLogo}" alt="${nome}" onerror="this.style.display='none'">` : "";
+// ===== Helper =====
+function clean(s){ return (s || "").replace(/[°]/g,"").trim(); }
+function logoPath(nome){ return `img/${clean(nome)}.png`; }
 
-  return `
-    <div class="squadra orizzontale ${classe}">
-      ${logoHTML}
-      ${seed ? `<span class="seed">#${seed}</span>` : `<span class="seed seed-empty"></span>`}
-      <span class="nome">${nome}</span>
-      ${punteggio !== "" && punteggio !== null && punteggio !== undefined
-        ? `<span class="score">${punteggio}</span>` : `<span class="score"></span>`}
-    </div>`;
+function seedOf(nome){
+  const idx = Array.isArray(window.squadre)
+    ? window.squadre.findIndex(t => t.nome === nome)
+    : -1;
+  return idx >= 0 ? idx + 1 : "";
+}
+
+function getRis(id){
+  // compatibile con vecchi ID "Q1-A"/"Q1-B"
+  return window.risultati?.find(r =>
+    r.partita === id || r.partita === `${id}-A` || r.partita === `${id}-B`
+  );
 }
 
 function creaMatchBox({ nomeA, seedA, golA, logoA, nomeB, seedB, golB, logoB, vincente }) {
@@ -42,48 +59,9 @@ function creaMatchBox({ nomeA, seedA, golA, logoA, nomeB, seedB, golB, logoB, vi
     </div>`;
 }
 
-function pulisci(str){ return (str || '').replace(/[°]/g,'').trim(); }
-function logoPath(nome){ return `img/${pulisci(nome)}.png`; }
-function seedOf(nome){
-  const idx = Array.isArray(window.squadre) ? window.squadre.findIndex(s => s.nome === nome) : -1;
-  return idx >= 0 ? idx + 1 : "";
-}
-
-function getRis(id){
-  return window.risultati?.find(x =>
-    x.partita === id || x.partita === `${id}-A` || x.partita === `${id}-B`
-  );
-}
-
-// Unifica i vecchi slot "-A/-B" in un solo <div class="match pair" data-match="Q1">
-function ensurePairs() {
-  // se già esistono i box "pair", non faccio nulla
-  let pairs = document.querySelectorAll(".match.pair");
-  if (pairs.length) return pairs;
-
-  // trova tutti gli "A"
-  document.querySelectorAll(".match[data-match$='-A']").forEach(a => {
-    const base = a.dataset.match.replace(/-A$/, "");      // es. "Q1"
-    const b = document.querySelector(`.match[data-match='${base}-B']`);
-    if (!b) return;
-
-    const pair = document.createElement("div");
-    pair.className = "match pair";
-    pair.dataset.match = base;
-
-    // inserisco il nuovo box prima di A, poi rimuovo A e B
-    a.parentNode.insertBefore(pair, a);
-    a.remove();
-    b.remove();
-  });
-
-  return document.querySelectorAll(".match.pair");
-}
-
-function aggiornaPlayoff() {
-  const boxes = ensurePairs();  // <— crea/recupera i box unici
-  boxes.forEach(box => {
-    const id = box.dataset.match;        // es. WC1, Q1, S1, F
+function renderBracket(){
+  document.querySelectorAll(".match.pair").forEach(box => {
+    const id = box.dataset.match; // WC1..WC4, Q1..Q4, S1..S2, F
     const r = getRis(id);
 
     let nomeA, nomeB, golA, golB;
@@ -91,10 +69,11 @@ function aggiornaPlayoff() {
     if (r) {
       nomeA = r.squadraA; nomeB = r.squadraB;
       golA  = r.golA;     golB  = r.golB;
-    } else if (id.startsWith('WC') && window.squadre?.length) {
+    } else if (id.startsWith("WC") && Array.isArray(window.squadre) && window.squadre.length >= 12) {
+      // fallback da seeding
       const [iA, iB] = SEED_WC[id] || [];
-      nomeA = window.squadre[iA]?.nome || "?";
-      nomeB = window.squadre[iB]?.nome || "?";
+      nomeA = window.squadre[iA]?.nome || "TBD";
+      nomeB = window.squadre[iB]?.nome || "TBD";
       golA = golB = "";
     } else {
       nomeA = "TBD"; nomeB = "TBD"; golA = golB = "";
@@ -113,43 +92,38 @@ function aggiornaPlayoff() {
     else box.classList.remove("decided");
   });
 
-  // vincitore finale invariato...
-  const finale = window.risultati?.find(x => x.partita === "F" || x.partita === "F-A" || x.partita === "F-B");
+  // Campione (da Finale)
+  const finale = getRis("F");
   if (finale?.vincente) {
     const nome = finale.vincente;
-    const container = document.getElementById("vincitore-assoluto");
-    if (container) {
-      container.innerHTML = `
-        <img class="logo-vincitore" src="${logoPath(nome)}" onerror="this.style.display='none'">
-        <div class="nome-vincitore">${nome}</div>`;
-    }
+    document.getElementById("vincitore-assoluto").innerHTML = `
+      <img class="logo-vincitore" src="${logoPath(nome)}" onerror="this.style.display='none'">
+      <div class="nome-vincitore">${nome}</div>`;
   }
 }
 
-
+// ===== Carica classifica (per seed) e poi render =====
 fetch(URL_CLASSIFICA_TOTALE)
-  .then(res => res.text())
+  .then(r => r.text())
   .then(csv => {
     const righe = csv.trim().split("\n");
-    const startRow = 1;
     const squadre = [];
-
-    for (let i = startRow; i < righe.length; i++) {
-      const colonne = righe[i].split(",").map(c => c.replace(/"/g, "").trim());
-      const nome = colonne[1];
-      const punti = parseInt(colonne[10]);
-      const mp = parseFloat(colonne[11].replace(",", ".")) || 0;
+    for (let i = 1; i < righe.length; i++){
+      const c = righe[i].split(",").map(x => x.replace(/"/g,"").trim());
+      const nome = c[1];
+      const punti = parseInt(c[10]);
+      const mp = parseFloat((c[11]||"").replace(",", ".")) || 0;
       if (!nome || isNaN(punti)) continue;
       squadre.push({ nome, punti, mp });
       if (squadre.length === 12) break;
     }
-
-    squadre.sort((a, b) => b.punti - a.punti || b.mp - a.mp);
+    squadre.sort((a,b) => (b.punti - a.punti) || (b.mp - a.mp));
     window.squadre = squadre;
 
-    if (typeof aggiornaPlayoff === "function") aggiornaPlayoff();
-    if (typeof aggiornaPlayoffMobile === "function") aggiornaPlayoffMobile();
-  })
-  .catch(err => console.error("Errore nel caricamento classifica:", err));
+    // Se non esiste, evita errori (puoi definirlo in risultati_playoff.js)
+    window.risultati = window.risultati || [];
 
+    renderBracket();
+  })
+  .catch(err => console.error("Errore classifica:", err));
 
