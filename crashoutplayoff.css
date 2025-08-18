@@ -285,13 +285,13 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
   /* Spaziature e dimensioni più compatte, ma senza incastri */
   :root{
-    --slot: 190px;        /* alza a 200 se serve ancora aria */
+     --slot: 210px;        /* alza a 200 se serve ancora aria */
     --finals-col: 320px;
     --grid-gap: 18px;
   }
 
   .conference{ gap:14px; }
-  .match{ padding:8px 10px; gap:10px; }
+  .match{ padding:8px 10px; gap:8px; }
   .team{ grid-template-columns:28px 64px auto; gap:9px; }
   #left-round-2 .team, #left-round-3 .team,
   #right-round-2 .team, #right-round-3 .team,
@@ -302,8 +302,15 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   .score-box{ width:36px; height:36px; min-height:36px; font-size:.95rem; border-radius:8px; place-items:center; }
 
   /* Z-index: le Finals sopra, fili sotto */
-  .finals-split{ position:relative; z-index:3; }
-  .finals-split .match, .trophy{ position:relative; z-index:4; }
+ .finals-split{
+  grid-template-rows: calc(var(--slot) * 3) auto calc(var(--slot) * 3);
+  padding: 8px 0;
+}
+  .finals-split .match,
+  .trophy{
+  width: 180px;
+  height: 180px;
+}
   .conference .match{ position:relative; z-index:1; }
   .wire-layer{ z-index:0; }
 
