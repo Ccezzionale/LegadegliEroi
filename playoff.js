@@ -85,14 +85,6 @@ function teamColor(name) {
   // pastello leggibile sul blu scuro
   return `hsl(${h} 70% 85%)`;
 }
-function clean(s){ return (s || '').replace(/[°]/g,'').trim(); }
-function logoPath(nome){ return `img/${clean(nome)}.png`; }
-function seedOf(nome){
-  const idx = Array.isArray(window.squadre) ? window.squadre.findIndex(s => s.nome === nome) : -1;
-  return idx >= 0 ? idx + 1 : "";
-}
-
-
 
 // ========= Render =========
 function renderBracket(){
