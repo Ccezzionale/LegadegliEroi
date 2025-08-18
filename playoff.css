@@ -50,39 +50,59 @@ nav{background:var(--nav); color:#fff; display:flex; align-items:center; padding
 
 /* BOX PARTITA – 2 righe */
 .match{
-  background:var(--card);
-  border:2px solid var(--ink);
-  border-radius:10px;
-  padding:10px 12px;
-  min-width:260px;
-  box-shadow:0 2px 6px rgba(0,0,0,.12);
+  background: transparent;                 /* il contenitore esterno non è bianco */
+  border: 2px solid #001f3f;
+  border-radius: 14px;
+  padding: 14px 16px;                      /* più spazio */
+  min-width: 360px;                        /* PIÙ GRANDE */
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
 }
-
 .match.finale{ font-weight:700; }
-.match.decided{ border:3px solid var(--accent); box-shadow:0 0 0 2px rgba(255,204,0,.12); }
+.match.decided{ border:3px solid #ffcc00; box-shadow:0 0 0 2px rgba(255,204,0,.12); }
 
-.pair-box{ display:flex; flex-direction:column; gap:6px; }
+.pair-box{ display:flex; flex-direction:column; gap:10px; }
 
+/* --- Ogni squadra su una CARD bianca --- */
 .team-line{
   display:grid;
-  grid-template-columns:24px auto 1fr auto;
-  gap:8px; align-items:center;
-  padding:2px 4px; border-radius:6px;
+  grid-template-columns: 36px auto 1fr auto; /* tile logo | seed | nome | gol */
+  align-items:center;
+  gap:12px;
+  padding:10px 12px;
+  background:#ffffff;                       /* CARD BIANCA */
+  border:1px solid #d9e1f2;
+  border-radius:12px;
 }
 
-.team-line img{width:24px; height:24px; object-fit:contain;}
-
-.seed{
-  min-width:28px; padding:2px 6px; font-size:.8rem; line-height:1; text-align:center;
-  border:1px solid #c7d2fe; background:#e9eef7; color:var(--ink);
-  border-radius:4px; font-weight:700;
+/* tile colorato dietro il logo */
+.team-line .emblem{
+  width:36px; height:36px;
+  border-radius:8px;
+  display:grid; place-items:center;
+  /* background impostato inline via JS */
+}
+.team-line .emblem img{
+  width:24px; height:24px; object-fit:contain;
 }
 
-.nome{ font-weight:700; color:var(--ink); }
-.gol{ font-weight:800; color:var(--ink); justify-self:end; }
+/* tipografia */
+.team-line .seed{
+  min-width:34px; padding:4px 8px;
+  font-size:.9rem; line-height:1;
+  text-align:center;
+  border:1px solid #c7d2fe; background:#eef3ff; color:#001f3f;
+  border-radius:999px; font-weight:700;
+}
+.team-line .nome{ font-weight:800; color:#001f3f; }
+.team-line .gol{ font-weight:800; color:#001f3f; justify-self:end; }
 
-.team-line.winner{ background:rgba(255,204,0,.14); }
-.team-line.winner .nome,.team-line.winner .gol{ color:#b58900; }
+/* evidenzia vincitore */
+.team-line.winner{ box-shadow: inset 0 0 0 9999px rgba(255,204,0,.15); }
+.team-line.winner .nome, .team-line.winner .gol{ color:#b58900; }
+
+/* spaziature colonne (già presenti, eventualmente alza un po') */
+.round { gap: 16px; }
+.col   { gap: 18px; }
 
 /* Trofeo / vincitore */
 .coppa-vittoria{ display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:16px; }
