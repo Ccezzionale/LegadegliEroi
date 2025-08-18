@@ -79,3 +79,42 @@ body{margin:0;font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:#f4f6f
 /* campione (sotto la finale) */
 .champion{ display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:22px; color:var(--ink); font-weight:800; }
 .champion img{ width:90px; height:90px; object-fit:contain; }
+
+/* ——— Solo riquadri singoli ——— */
+
+/* il contenitore partita sparisce: niente bordo, niente ombra, niente sfondo */
+.match{
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  width: 100%;
+  display: flex;               /* solo per tenere le due card una sotto l’altra */
+  flex-direction: column;
+  gap: 12px;                   /* spazio tra le due card della stessa partita */
+}
+
+/* card singola (squadra) rettangolare */
+.team{
+  border-radius: 0 !important; /* niente arrotondamento */
+  border: 1px solid #d9e1f2;   /* bordo sottile blu/gray */
+  background: #fff;            /* bianco pieno */
+  padding: 12px;
+}
+
+/* nome e punteggio già blu scuro: lasciamo così */
+
+/* tile dietro al logo: rettangolare anche lui */
+.emblem{
+  border-radius: 0 !important;
+  outline: 1px solid rgba(0,0,0,.06);
+}
+
+/* se avevi stili speciali per vincitore, azzera per tenere TUTTI bianchi */
+.team-line.winner,
+.team.winner{
+  background: #fff !important;
+  box-shadow: none !important;
+  border-left: none !important;
+}
+
