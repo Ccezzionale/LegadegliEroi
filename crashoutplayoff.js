@@ -6,25 +6,25 @@ const LOGO_EXT = ".png";
 // PUNTEGGI (best-of-5: 0..3)
 const SCORES = {
   // Round 1 — Left
-  L1:  { home: 3, away: 0 },
-  L2:  { home: 0, away: 3 },
-  L3:  { home: 0, away: 3 },
-  L4:  { home: 3, away: 0 },
+  L1:  { home: 0, away: 0 },
+  L2:  { home: 0, away: 0 },
+  L3:  { home: 0, away: 0 },
+  L4:  { home: 0, away: 0 },
   // Round 1 — Right
-  R1:  { home: 3, away: 0 },
-  R2:  { home: 0, away: 3 },
-  R3:  { home: 3, away: 0 },
-  R4:  { home: 3, away: 0 },
+  R1:  { home: 0, away: 0 },
+  R2:  { home: 0, away: 0 },
+  R3:  { home: 0, away: 0 },
+  R4:  { home: 0, away: 0 },
   // Semifinali
-  LSF1:{ home: 3, away: 0 },
-  LSF2:{ home: 3, away: 0 },
-  RSF1:{ home: 0, away: 3 },
-  RSF2:{ home: 3, away: 0 },
+  LSF1:{ home: 0, away: 0 },
+  LSF2:{ home: 0, away: 0 },
+  RSF1:{ home: 0, away: 0 },
+  RSF2:{ home: 0, away: 0 },
   // Finali di Conference
-  LCF: { home: 0, away: 3 },
-  RCF: { home: 3, away: 0 },
+  LCF: { home: 0, away: 0 },
+  RCF: { home: 0, away: 0 },
   // Finals
-  F:   { home: 3, away: 0 },
+  F:   { home: 0, away: 0 },
 };
 
 // ======== UTILS ========
