@@ -7,91 +7,207 @@
   <link rel="stylesheet" href="playoff.css">
 </head>
 <body>
-  <!-- NAVBAR (semplice desktop) -->
-  <nav>
-    <a href="index.html" class="home-icon">🏠</a>
-    <ul class="navbar">
+  <!-- Navbar minimale (desktop) -->
+  <nav class="nav">
+    <a href="index.html" class="home">🏠</a>
+    <ul class="menu">
       <li><a href="rose.html">Rose</a></li>
       <li class="dropdown">
-        <a href="#" class="toggle-submenu">Draft ▾</a>
+        <a href="#" class="toggle">Draft ▾</a>
         <ul class="submenu">
-          <li><a href="draft_championship.html">🟦 Conf. Championship</a></li>
-          <li><a href="draft_conference.html">🟨 Conf. League</a></li>
-          <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+          <li><a href="draft_championship.html">Conf. Championship</a></li>
+          <li><a href="draft_conference.html">Conf. League</a></li>
+          <li><a href="dinamico-draft.html">Draft 2026</a></li>
         </ul>
       </li>
       <li class="dropdown">
-        <a href="#" class="toggle-submenu">Competizioni ▾</a>
+        <a href="#" class="toggle">Competizioni ▾</a>
         <ul class="submenu">
-          <li><a href="classifica.html">📊 Classifiche</a></li>
-          <li><a href="playoff.html">🏆 Playoff</a></li>
-          <li><a href="arena.html">🏟️ Highlander</a></li>
-          <li><a href="crashoutcup.html">💥 Crash Out Cup</a></li>
+          <li><a href="classifica.html">Classifiche</a></li>
+          <li><a href="playoff.html">Playoff</a></li>
+          <li><a href="arena.html">Highlander</a></li>
+          <li><a href="crashoutcup.html">Crash Out Cup</a></li>
         </ul>
       </li>
       <li><a href="svincolati.html">Svincolati</a></li>
       <li><a href="chiamate.html">Chiamate</a></li>
       <li class="dropdown">
-        <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
+        <a href="#" class="toggle">Hall of Fame ▾</a>
         <ul class="submenu">
-          <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
-          <li><a href="albo.html">🏅 Medagliere</a></li>
+          <li><a href="medagliere.html">Albo d'Oro</a></li>
+          <li><a href="albo.html">Medagliere</a></li>
         </ul>
       </li>
       <li><a href="regolamento.html">Regolamento</a></li>
     </ul>
   </nav>
 
-  <h1 class="titolo-pagina">Playoff Lega degli Eroi</h1>
+  <h1 class="title">Playoff Lega degli Eroi</h1>
 
-  <!-- BRACKET A COLONNE (unica progressione sinistra→destra) -->
-  <div id="bracket-wrap">
-    <!-- SVG per connettori -->
-    <svg id="wires" xmlns="http://www.w3.org/2000/svg"></svg>
-
+  <!-- BOARD in colonne: Wildcard → Quarti → Semifinali → Finale (a destra) -->
+  <section class="board">
     <div class="round">
       <h2>Wildcard</h2>
-      <div class="col">
-        <div class="match pair" data-match="WC1"></div>
-        <div class="match pair" data-match="WC2"></div>
-        <div class="match pair" data-match="WC3"></div>
-        <div class="match pair" data-match="WC4"></div>
+      <div class="match">
+        <div class="team" data-name="Rafa Casablanca">
+          <span class="emblem"><img src="img/Rafa Casablanca.png" alt=""></span>
+          <span class="name">Rafa Casablanca</span>
+          <span class="score">2</span>
+        </div>
+        <div class="team" data-name="Union Librino">
+          <span class="emblem"><img src="img/Union Librino.png" alt=""></span>
+          <span class="name">Union Librino</span>
+          <span class="score">2</span>
+        </div>
+      </div>
+
+      <div class="match">
+        <div class="team" data-name="Giod y">
+          <span class="emblem"><img src="img/Giody.png" alt=""></span>
+          <span class="name">Giody</span>
+          <span class="score">1</span>
+        </div>
+        <div class="team" data-name="Giulay">
+          <span class="emblem"><img src="img/Giulay.png" alt=""></span>
+          <span class="name">Giulay</span>
+          <span class="score">0</span>
+        </div>
+      </div>
+
+      <div class="match">
+        <div class="team" data-name="Minnesode Timberland">
+          <span class="emblem"><img src="img/Minnesode Timberland.png" alt=""></span>
+          <span class="name">Minnesode Timberland</span>
+          <span class="score">1</span>
+        </div>
+        <div class="team" data-name="wildboys78">
+          <span class="emblem"><img src="img/wildboys78.png" alt=""></span>
+          <span class="name">wildboys78</span>
+          <span class="score">1</span>
+        </div>
+      </div>
+
+      <div class="match">
+        <div class="team" data-name="Ibla">
+          <span class="emblem"><img src="img/Ibla.png" alt=""></span>
+          <span class="name">Ibla</span>
+          <span class="score">2</span>
+        </div>
+        <div class="team" data-name="PokerMantra">
+          <span class="emblem"><img src="img/PokerMantra.png" alt=""></span>
+          <span class="name">PokerMantra</span>
+          <span class="score">2</span>
+        </div>
       </div>
     </div>
 
     <div class="round">
       <h2>Quarti</h2>
-      <div class="col">
-        <div class="match pair" data-match="Q1"></div>
-        <div class="match pair" data-match="Q2"></div>
-        <div class="match pair" data-match="Q3"></div>
-        <div class="match pair" data-match="Q4"></div>
+      <div class="match">
+        <div class="team" data-name="Rubinkebab">
+          <span class="emblem"><img src="img/Rubinkebab.png" alt=""></span>
+          <span class="name">Rubinkebab</span>
+          <span class="score">0</span>
+        </div>
+        <div class="team" data-name="Rafa Casablanca">
+          <span class="emblem"><img src="img/Rafa Casablanca.png" alt=""></span>
+          <span class="name">Rafa Casablanca</span>
+          <span class="score">3</span>
+        </div>
+      </div>
+
+      <div class="match">
+        <div class="team" data-name="Real Mimmo">
+          <span class="emblem"><img src="img/Real Mimmo.png" alt=""></span>
+          <span class="name">Real Mimmo</span>
+          <span class="score">1</span>
+        </div>
+        <div class="team" data-name="Giody">
+          <span class="emblem"><img src="img/Giody.png" alt=""></span>
+          <span class="name">Giody</span>
+          <span class="score">1</span>
+        </div>
+      </div>
+
+      <div class="match">
+        <div class="team" data-name="Bayern Christiansen">
+          <span class="emblem"><img src="img/Bayern Christiansen.png" alt=""></span>
+          <span class="name">Bayern Christiansen</span>
+          <span class="score">1</span>
+        </div>
+        <div class="team" data-name="Minnesode Timberland">
+          <span class="emblem"><img src="img/Minnesode Timberland.png" alt=""></span>
+          <span class="name">Minnesode Timberland</span>
+          <span class="score">1</span>
+        </div>
+      </div>
+
+      <div class="match">
+        <div class="team" data-name="Team Bartowski">
+          <span class="emblem"><img src="img/Team Bartowski.png" alt=""></span>
+          <span class="name">Team Bartowski</span>
+          <span class="score">1</span>
+        </div>
+        <div class="team" data-name="Ibla">
+          <span class="emblem"><img src="img/Ibla.png" alt=""></span>
+          <span class="name">Ibla</span>
+          <span class="score">3</span>
+        </div>
       </div>
     </div>
 
     <div class="round">
       <h2>Semifinali</h2>
-      <div class="col">
-        <div class="match pair" data-match="S1"></div>
-        <div class="match pair" data-match="S2"></div>
+      <div class="match">
+        <div class="team" data-name="Bayern Christiansen">
+          <span class="emblem"><img src="img/Bayern Christiansen.png" alt=""></span>
+          <span class="name">Bayern Christiansen</span>
+          <span class="score">6</span>
+        </div>
+        <div class="team" data-name="Ibla">
+          <span class="emblem"><img src="img/Ibla.png" alt=""></span>
+          <span class="name">Ibla</span>
+          <span class="score">2</span>
+        </div>
+      </div>
+
+      <div class="match">
+        <div class="team" data-name="Rafa Casablanca">
+          <span class="emblem"><img src="img/Rafa Casablanca.png" alt=""></span>
+          <span class="name">Rafa Casablanca</span>
+          <span class="score">3</span>
+        </div>
+        <div class="team" data-name="Real Mimmo">
+          <span class="emblem"><img src="img/Real Mimmo.png" alt=""></span>
+          <span class="name">Real Mimmo</span>
+          <span class="score">4</span>
+        </div>
       </div>
     </div>
 
     <div class="round">
       <h2>Finale</h2>
-      <div class="col">
-        <div class="match pair finale" data-match="F"></div>
-        <div class="coppa-vittoria">
-          <img src="img/coppa.png" alt="Coppa">
-          <div id="vincitore" class="vincitore-info"></div>
+      <div class="match">
+        <div class="team" data-name="Real Mimmo">
+          <span class="emblem"><img src="img/Real Mimmo.png" alt=""></span>
+          <span class="name">Real Mimmo</span>
+          <span class="score">1</span>
+        </div>
+        <div class="team" data-name="Bayern Christiansen">
+          <span class="emblem"><img src="img/Bayern Christiansen.png" alt=""></span>
+          <span class="name">Bayern Christiansen</span>
+          <span class="score">2</span>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Risultati (se ce l’hai già, basta che definisca window.risultati = [...]) -->
-  <script src="risultati_playoff.js"></script>
-  <script src="playoff.js"></script>
+      <div class="champion">
+        <img src="img/Bayern Christiansen.png" alt="">
+        <div>Bayern Christiansen</div>
+      </div>
+    </div>
+  </section>
+
+  <script src="playoff-ui-only.js"></script>
 </body>
 </html>
 
