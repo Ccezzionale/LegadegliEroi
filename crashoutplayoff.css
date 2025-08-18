@@ -308,21 +308,29 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   .score-box{ width:36px; height:36px; min-height:36px; font-size:.95rem; border-radius:8px; place-items:center; }
 
   /* Finals: più aria sopra/sotto, card confinata nella colonna e trophy ridotta */
-  .finals-split{
-    grid-template-rows: calc(var(--slot) * 3) auto calc(var(--slot) * 3);
-    padding: 8px 0;
-    position: relative; z-index: 3;
-  }
-  .finals-split .match{
-    width:100% !important;
-    max-width:100%;
-    box-sizing:border-box;
-    position: relative; z-index: 4;
-  }
-  .trophy{
-    width:170px; height:170px;
-    position: relative; z-index: 4;
-  }
+ .finals-split{
+  /* più aria sopra/sotto, e CLIP della colonna centrale */
+  grid-template-rows: calc(var(--slot) * 3) auto calc(var(--slot) * 3);
+  padding: 8px 0;
+  position: relative;
+  overflow: hidden;     /* <— taglia tutto ciò che sfora verso le colonne laterali */
+}
+.finals-split .match{ 
+  width: 100% !important;
+  max-width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 2;
+}
+.trophy{
+  width: 160px;    /* riduci se serve ancora (150) */
+  height: 160px;
+  position: relative;
+  z-index: 1;      /* <— sotto le card */
+  pointer-events: none;
+}
+
+  .bracket{ gap: 22px; }
 
   /* Fili sotto, card laterali sopra i fili */
   .conference .match{ position:relative; z-index:1; }
