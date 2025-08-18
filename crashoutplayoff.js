@@ -6,7 +6,7 @@ const LOGO_EXT = ".png";
 // PUNTEGGI (best-of-5: 0..3)
 const SCORES = {
   // Round 1 — Left
-  L1:  { home: 0, away: 3 },
+  L1:  { home: 0, away: 0 },
   L2:  { home: 0, away: 0 },
   L3:  { home: 0, away: 0 },
   L4:  { home: 0, away: 0 },
