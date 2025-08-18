@@ -285,7 +285,7 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
   /* Spaziature e dimensioni più compatte, ma senza incastri */
   :root{
-     --slot: 210px;        /* alza a 200 se serve ancora aria */
+     --slot: 280px;        /* alza a 200 se serve ancora aria */
     --finals-col: 320px;
     --grid-gap: 18px;
   }
