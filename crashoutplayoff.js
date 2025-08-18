@@ -291,24 +291,32 @@ function drawWires() {
   }
 
   function elbow(fromEl, toEl, nearTo = false) {
-    const p  = document.querySelector('.bracket').getBoundingClientRect();
-    const fr = fromEl.getBoundingClientRect();
-    const tr = toEl.getBoundingClientRect();
+  const p  = bracket.getBoundingClientRect();              // .bracket
+  const fr = fromEl.getBoundingClientRect();
+  const tr = toEl.getBoundingClientRect();
 
-    let ax = fr.right - p.left;
-    let ay = fr.top - p.top + fr.height / 2;
-    let bx = tr.left  - p.left;
-    let by = tr.top - p.top + tr.height / 2;
+  const sx = container.scrollLeft;                         // <— offset scroll
+  const sy = container.scrollTop;
 
-    if (ax > bx) { ax = fr.left - p.left; bx = tr.right - p.left; }
+  // punti medi dei bordi, *nel sistema di coordinate della .bracket*
+  let ax = fr.right - p.left + sx;
+  let ay = fr.top   - p.top  + sy + fr.height / 2;
+  let bx = tr.left  - p.left + sx;
+  let by = tr.top   - p.top  + sy + tr.height / 2;
 
-    const dir = (bx > ax) ? 1 : -1;
-    const xk = nearTo ? (bx - dir * H_PAD) : (ax + (bx - ax) / 2);
+  // se il FROM è a destra del TO, inverti i bordi
+  if (ax > bx) { ax = fr.left  - p.left + sx; bx = tr.right - p.left + sx; }
 
-    addSeg(layer, Math.min(ax, xk), ay - STROKE / 2, Math.abs(xk - ax), STROKE);
-    addSeg(layer, xk - STROKE / 2, Math.min(ay, by), STROKE, Math.abs(by - ay));
-    addSeg(layer, Math.min(xk, bx), by - STROKE / 2, Math.abs(bx - xk), STROKE);
-  }
+  const H_PAD  = 14;
+  const STROKE = 3;
+  const dir = (bx > ax) ? 1 : -1;
+  const xk = nearTo ? (bx - dir * H_PAD) : (ax + (bx - ax) / 2);
+
+  addSeg(layer, Math.min(ax, xk), ay - STROKE / 2, Math.abs(xk - ax), STROKE);
+  addSeg(layer, xk - STROKE / 2, Math.min(ay, by), STROKE, Math.abs(by - ay));
+  addSeg(layer, Math.min(xk, bx), by - STROKE / 2, Math.abs(bx - xk), STROKE);
+}
+
 
   const MAP = [
     {from:'#left-round-1 .match:nth-of-type(1)', to:'#left-round-2 .match:nth-of-type(1)'},
@@ -341,9 +349,16 @@ const bracket   = document.querySelector('.bracket');
 
 function sizeWireLayer(){
   const layer = ensureWireLayer(false);
-  if (!layer) return;
-  layer.style.width  = bracket.scrollWidth + 'px';
-  layer.style.height = bracket.scrollHeight + 'px';
+if (!layer) {
+  layer = document.createElement('div');
+  layer.className = 'wire-layer';
+  Object.assign(layer.style, {
+    position: 'absolute',
+    inset: '0',
+    pointerEvents: 'none',
+    zIndex: '0'
+  });
+  bracket.insertBefore(layer, bracket.firstChild);  // <— PRIMO figlio
 }
 
 let rafId;
@@ -442,17 +457,12 @@ async function buildBracket() {
     renderMobileList(bracket);
 
     // Connettori
-    requestAnimationFrame(() => {
-      drawWires();
-      setTimeout(drawWires, 0);
-    });
-  } catch (err) {
-    console.error("Errore costruzione bracket:", err);
-  }
-} // <-- chiude buildBracket
+scheduleRedraw();
 
-// ridisegna i fili al resize (una volta sola)
-window.addEventListener('resize', () => requestAnimationFrame(drawWires));
+} catch (err) {
+  console.error("Errore costruzione bracket:", err);
+}
+}
 
 // avvio pagina
 document.addEventListener('DOMContentLoaded', () => {
