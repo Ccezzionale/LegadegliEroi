@@ -210,15 +210,34 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   z-index: 1;
 }
 
-.right .match {
-  display: flex;            /* se non lo è già */
-  flex-direction: row-reverse;
+/* --- RESET: annulla l'inversione sbagliata delle card a destra --- */
+.conference.right .match { flex-direction: column; }  /* come a sinistra */
+.right .match { flex-direction: column; }             /* nel dubbio */
+
+/* ============== DESTRA – ROUND 1 ============== */
+/* Ordine voluto: [score] [logo] [seed] */
+#right-round-1 .team{
+  display:flex;                 /* override del grid */
+  align-items:center;
+  gap:12px;
 }
+#right-round-1 .score-box{ order:1; width:42px; min-width:42px; }
+#right-round-1 .logo-wrap{ order:2; width:92px; min-width:92px; height:92px; }
+#right-round-1 .seed     { order:3; width:28px; min-width:28px; }
 
-/* Spaziature coerenti dopo l’inversione */
-.right .score { margin-right: 0; margin-left: 8px; } /* risultato a sinistra */
-.right .seed  { margin-left: 0;  margin-right: 8px; } /* seed a destra della squadra */
-
+/* ============== DESTRA – ROUND 2 e 3 ============== */
+/* Niente seed, risultato a sinistra e logo a destra */
+#right-round-2 .team,
+#right-round-3 .team{
+  display:flex;                 /* override del grid */
+  flex-direction: row-reverse;  /* diventa: [score] [logo] */
+  align-items:center;
+  gap:12px;
+}
+#right-round-2 .logo-wrap,
+#right-round-3 .logo-wrap{ width:92px; min-width:92px; height:92px; }
+#right-round-2 .score-box,
+#right-round-3 .score-box{ width:42px; min-width:42px; }
 
 /* ========== MOBILE ========== */
 .bracket-mobile{ display:none; }
