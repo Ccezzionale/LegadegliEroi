@@ -263,7 +263,7 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 /* ===== MOBILE: stesso bracket + scroll orizzontale, no overlap ===== */
 @media (max-width:768px){
 
-  /* NAVBAR: hamburger */
+  /* NAVBAR (hamburger) */
   .hamburger{ display:block; }
   .navbar{ display:none; flex-direction:column; width:100%; background:var(--nav); margin-top:10px; }
   .navbar.show{ display:flex; }
@@ -272,17 +272,15 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
   /* Container scrollabile orizzontale */
   .cup-container{
-    overflow-x:auto;
-    padding:0 8px 18px;
-    -webkit-overflow-scrolling:touch;
-    overscroll-behavior-x:contain;
+    overflow-x:auto; padding:0 8px 18px;
+    -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain;
   }
 
   /* Variabili mobile */
   :root{
-    --slot: 210px;          /* aumenta a 220/230 se serve più aria verticale */
+    --slot: 220px;          /* aria verticale colonna centrale (alza a 230 se serve) */
     --finals-col: 340px;    /* larghezza colonna centrale */
-    --grid-gap: 22px;       /* gap fra colonne */
+    --grid-gap: 22px;       /* gap tra colonne */
   }
 
   /* Stesso bracket della desktop, ma più compatto */
@@ -293,11 +291,21 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
       var(--finals-col)
       minmax(300px, max-content);
     gap: var(--grid-gap);
+    position: relative;
+    isolation: isolate;     /* nuovo stacking context */
   }
   .bracket-mobile{ display:none !important; }
 
-  .conference{ gap:14px; }
+  /* Card e righe più compatte */
+  .conference{ gap:14px; position:relative; overflow:hidden; z-index:1; } /* clip laterali */
   .match{ padding:8px 10px; gap:8px; }
+
+  /* override di width:max-content in mobile (card restano nella colonna) */
+  .conference .match,
+  .finals-split .match{
+    width:100% !important; max-width:100% !important; box-sizing:border-box;
+  }
+
   .team{ grid-template-columns:28px 64px auto; gap:9px; }
   #left-round-2 .team, #left-round-3 .team,
   #right-round-2 .team, #right-round-3 .team,
@@ -307,102 +315,22 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   .seed{ width:26px; height:26px; font-size:.8rem; border-radius:8px; }
   .score-box{ width:36px; height:36px; min-height:36px; font-size:.95rem; border-radius:8px; place-items:center; }
 
-  /* Finals: più aria sopra/sotto, card confinata nella colonna e trophy ridotta */
-.finals-split{
-  position: relative;
-  overflow: hidden;                           /* taglia eventuali sbordi laterali */
-  row-gap: 32px;                              /* spazio tra top / trophy / bottom */
-  grid-template-rows: calc(var(--slot)*3) auto calc(var(--slot)*3);
-}
-.finals-split .match{
-  position: relative;
-  z-index: 2 !important;                      /* sopra la trophy */
-  width: 100% !important;                     /* resta nella colonna centrale */
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
+  /* Finals: trophy dietro e centrata, card sopra, niente overlap */
+  .finals-split{
+    position:relative; z-index:2; overflow:hidden;
+    grid-template-rows: calc(var(--slot)*3) auto calc(var(--slot)*3);
+    row-gap:28px; padding:8px 0;
+  }
   .finals-split .trophy{
-  position: absolute !important;              /* fuori dal flusso della griglia */
-  left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
-  width: 150px; height: 150px;                /* ridotta su mobile */
-  z-index: 0 !important;                      /* dietro le card */
-  pointer-events: none;
-}
+    position:absolute !important; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:150px; height:150px; z-index:0 !important; pointer-events:none;
+  }
+  #finals-top .match{    align-self:end;   margin-bottom:24px !important; }
+  #finals-bottom .match{ align-self:start; margin-top:   24px !important; }
 
-  #finals-top .match{    margin-bottom: 24px !important; align-self: end;   }
-#finals-bottom .match{ margin-top:    24px !important; align-self: start; }
-
-  /* --- MOBILE: distacco netto trophy vs Finals --- */
-
-#finals-top .match{
-  align-self: end;                         /* spingi verso l’alto della riga */
-  margin-bottom: 22px;                     /* spazio extra dalla trophy */
-  width: 100% !important;                  /* resta dentro la colonna */
-  max-width: 100%;
-}
-
-#finals-bottom .match{
-  align-self: start;                       /* spingi verso il basso della riga */
-  margin-top: 22px;                        /* spazio extra dalla trophy */
-  width: 100% !important;
-  max-width: 100%;
-}
-
-.trophy{
-  width: 160px; height: 160px;             /* un filo più piccola su mobile */
-  margin: 6px 0;                           /* respira senza toccare le card */
-  z-index: 1;                              /* resta sotto le card */
-  pointer-events: none;
-}
-
-
-  .bracket{ gap: 22px; }
-
-  .bracket{ position: relative; isolation: isolate; }
-
-/* ogni card resta nella propria colonna (override a width:max-content) */
-.conference .match,
-.finals-split .match{
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box;
-}
-
-/* se una card laterale volesse sconfinare, viene clipppata */
-.conference{ position: relative; z-index: 1; overflow: hidden; }
-
-/* colonna centrale sopra le laterali */
-.finals-split{ position: relative; z-index: 2; }
-
-/* trophy solo decorativa, assoluta dietro e più piccola */
-.finals-split .trophy{
-  position: absolute !important;
-  left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
-  width: 150px; height: 150px;
-  z-index: 0 !important;
-  pointer-events: none;
-}
-
-/* un filo più di respiro, se serve */
-:root{ --grid-gap: 22px; }
-
-  /* Fili sotto, card laterali sopra i fili */
-  .conference .match{ position:relative; z-index:1; }
   .wire-layer{ z-index:0; }
-
-  /* Header un filo più compatto */
   .page-header{ margin:18px 0 0; }
 }
-
-/* Scrollbar orizzontale (opzionale) */
-.cup-container::-webkit-scrollbar{ height:10px; }
-.cup-container::-webkit-scrollbar-track{ background:#e5e7eb; border-radius:10px; }
-.cup-container::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:10px; }
-.cup-container:hover::-webkit-scrollbar-thumb{ background:#94a3b8; }
-
 
 /* ========== MICRO ========== */
 [contenteditable]:empty{ cursor:text; }
