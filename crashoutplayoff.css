@@ -309,24 +309,32 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
   /* Finals: più aria sopra/sotto, card confinata nella colonna e trophy ridotta */
 .finals-split{
-  grid-template-rows: calc(var(--slot) * 3) auto calc(var(--slot) * 3);
-  padding: 8px 0;
   position: relative;
-  overflow: hidden;  /* taglia eventuali sbordi */
-  row-gap: 28px;     /* distacco tra top/trophy/bottom */
+  overflow: hidden;                           /* taglia eventuali sbordi laterali */
+  row-gap: 32px;                              /* spazio tra top / trophy / bottom */
+  grid-template-rows: calc(var(--slot)*3) auto calc(var(--slot)*3);
 }
-.finals-split .match{ 
-  width: 100% !important;
+.finals-split .match{
+  position: relative;
+  z-index: 2 !important;                      /* sopra la trophy */
+  width: 100% !important;                     /* resta nella colonna centrale */
   max-width: 100%;
   box-sizing: border-box;
-  position: relative;
-  z-index: 2;
 }
 
-  /* --- MOBILE: distacco netto trophy vs Finals --- */
-.finals-split{
-  row-gap: 28px;                          /* gap verticale tra le 3 righe */
+  .finals-split .trophy{
+  position: absolute !important;              /* fuori dal flusso della griglia */
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 150px; height: 150px;                /* ridotta su mobile */
+  z-index: 0 !important;                      /* dietro le card */
+  pointer-events: none;
 }
+
+  #finals-top .match{    margin-bottom: 24px !important; align-self: end;   }
+#finals-bottom .match{ margin-top:    24px !important; align-self: start; }
+
+  /* --- MOBILE: distacco netto trophy vs Finals --- */
 
 #finals-top .match{
   align-self: end;                         /* spingi verso l’alto della riga */
