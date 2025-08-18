@@ -1,112 +1,81 @@
 :root{
-  --bg:#0c1b3a;          /* fondo scuro tipo UEFA? usa il tuo se vuoi */
-  --stage:#0a244d;       /* non usato ora, pronto per varianti */
-  --card:#ffffff;
   --nav:#001f3f;
-  --nav-hover:#0074D9;
-  --subnav:#003366;
-  --accent:#ffcc00;
+  --nav-hover:#0b4fb8;
   --ink:#001f3f;
+  --gold:#ffcc00;
+  --card:#fff;
+  --line:#dbe3f4;
 }
 
-*{box-sizing:border-box;}
-body{margin:0; font-family:'Segoe UI',Tahoma,Verdana,sans-serif; background:#f4f4f4; color:#222;}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:#f4f6fb;color:#111}
 
-nav{background:var(--nav); color:#fff; display:flex; align-items:center; padding:10px 20px;}
-.home-icon{color:#fff; text-decoration:none; font-size:1.6rem; margin-right:16px;}
-.navbar{list-style:none; display:flex; gap:22px; margin:0; padding:0;}
-.navbar a{color:#fff; text-decoration:none; padding:8px 12px; border-radius:6px;}
-.navbar a:hover{background:var(--nav-hover);}
-.navbar li{position:relative;}
-.submenu{display:none; position:absolute; top:100%; left:0; background:var(--subnav); border-radius:6px; min-width:200px; padding:8px 0; z-index:10;}
-.submenu a{display:block; padding:8px 12px;}
-.dropdown:hover .submenu{display:block;}
+.nav{background:var(--nav);color:#fff;display:flex;align-items:center;padding:10px 20px}
+.nav .home{color:#fff;text-decoration:none;font-size:1.6rem;margin-right:14px}
+.nav .menu{list-style:none;display:flex;gap:22px;margin:0;padding:0}
+.nav .menu a{color:#fff;text-decoration:none;padding:8px 12px;border-radius:6px}
+.nav .menu a:hover{background:var(--nav-hover)}
+.nav .menu li{position:relative}
+.submenu{display:none;position:absolute;top:100%;left:0;background:#003366;border-radius:8px;min-width:200px;padding:8px 0;z-index:10}
+.submenu a{display:block;padding:8px 12px}
+.dropdown:hover .submenu{display:block}
 
-.titolo-pagina{ text-align:center; color:var(--nav); font-size:2.2rem; margin:30px 0 8px; font-weight:800; text-shadow:2px 2px 6px #ffd700;}
+.title{ text-align:center; color:var(--nav); font-size:2.3rem; font-weight:900; margin:28px 0 8px; text-shadow:2px 2px 6px #ffd700; }
 
-#bracket-wrap{
-  position:relative;
+/* BOARD a colonne, finale all'estrema destra */
+.board{
   display:grid;
   grid-auto-flow:column;
-  grid-auto-columns: 320px;   /* larghezza di una colonna round */
-  gap:40px;
-  padding:30px 40px 80px;
+  grid-auto-columns: 380px;     /* larghezza colonna */
+  gap:34px;
   width:max-content;
-  margin:0 auto;
-  background:#f4f4f4;
-  border-radius:12px;
+  margin: 0 auto 60px;
+  padding: 24px 34px;
+  background:#eef2fb;
+  border-radius:16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.05) inset;
 }
 
-#wires{
-  position:absolute; inset:0;
-  width:100%; height:100%;
-  pointer-events:none;
-}
+.round{display:flex; flex-direction:column; align-items:center; gap:16px}
+.round h2{color:var(--nav); font-size:1.05rem; margin:4px 0 8px; letter-spacing:.3px}
 
-.round{display:flex; flex-direction:column; align-items:center; gap:12px;}
-.round h2{color:var(--nav); font-size:1.1rem; margin:0 0 6px;}
-
-.col{display:flex; flex-direction:column; gap:16px;}
-
-/* BOX PARTITA – 2 righe */
+/* BOX partita più grande */
 .match{
-  background: transparent;                 /* il contenitore esterno non è bianco */
-  border: 2px solid #001f3f;
-  border-radius: 14px;
-  padding: 14px 16px;                      /* più spazio */
-  min-width: 360px;                        /* PIÙ GRANDE */
-  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  background:transparent;
+  border:2px solid var(--ink);
+  border-radius:14px;
+  padding:14px;
+  width:100%;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
 }
-.match.finale{ font-weight:700; }
-.match.decided{ border:3px solid #ffcc00; box-shadow:0 0 0 2px rgba(255,204,0,.12); }
 
-.pair-box{ display:flex; flex-direction:column; gap:10px; }
-
-/* --- Ogni squadra su una CARD bianca --- */
-.team-line{
+/* ogni squadra = card bianca */
+.team{
   display:grid;
-  grid-template-columns: 36px auto 1fr auto; /* tile logo | seed | nome | gol */
+  grid-template-columns:42px 1fr auto;
   align-items:center;
   gap:12px;
-  padding:10px 12px;
-  background:#ffffff;                       /* CARD BIANCA */
-  border:1px solid #d9e1f2;
+  padding:12px;
+  background:var(--card);
+  border:1px solid var(--line);
   border-radius:12px;
+  color:var(--ink);
 }
+.team + .team{ margin-top:10px; }
 
-/* tile colorato dietro il logo */
-.team-line .emblem{
-  width:36px; height:36px;
-  border-radius:8px;
+.emblem{
+  width:42px; height:42px; border-radius:10px;
   display:grid; place-items:center;
-  /* background impostato inline via JS */
+  outline:2px solid rgba(0,0,0,.06);
 }
-.team-line .emblem img{
-  width:24px; height:24px; object-fit:contain;
+.emblem img{ width:28px; height:28px; object-fit:contain; }
+
+.name{
+  font-weight:800; text-transform:uppercase; letter-spacing:.2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
+.score{ font-weight:900; font-size:1.05rem; }
 
-/* tipografia */
-.team-line .seed{
-  min-width:34px; padding:4px 8px;
-  font-size:.9rem; line-height:1;
-  text-align:center;
-  border:1px solid #c7d2fe; background:#eef3ff; color:#001f3f;
-  border-radius:999px; font-weight:700;
-}
-.team-line .nome{ font-weight:800; color:#001f3f; }
-.team-line .gol{ font-weight:800; color:#001f3f; justify-self:end; }
-
-/* evidenzia vincitore */
-.team-line.winner{ box-shadow: inset 0 0 0 9999px rgba(255,204,0,.15); }
-.team-line.winner .nome, .team-line.winner .gol{ color:#b58900; }
-
-/* spaziature colonne (già presenti, eventualmente alza un po') */
-.round { gap: 16px; }
-.col   { gap: 18px; }
-
-/* Trofeo / vincitore */
-.coppa-vittoria{ display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:16px; }
-.coppa-vittoria img{ width:160px; height:auto; }
-.vincitore-info{ display:flex; flex-direction:column; align-items:center; gap:6px; }
-.vincitore-info img{ width:72px; height:72px; object-fit:contain; }
-.vincitore-info .name{ font-weight:800; color:var(--ink); }
+/* campione (sotto la finale) */
+.champion{ display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:22px; color:var(--ink); font-weight:800; }
+.champion img{ width:90px; height:90px; object-fit:contain; }
