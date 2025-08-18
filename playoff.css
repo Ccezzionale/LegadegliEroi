@@ -1,51 +1,92 @@
 :root{
-  --bg:#f4f4f4; --text:#222;
-  --nav:#001f3f; --nav-hover:#0074D9; --subnav:#003366; --accent:#ffcc00;
-  --card:#fff; --line:#e5e7eb;
+  --bg:#0c1b3a;          /* fondo scuro tipo UEFA? usa il tuo se vuoi */
+  --stage:#0a244d;       /* non usato ora, pronto per varianti */
+  --card:#ffffff;
+  --nav:#001f3f;
+  --nav-hover:#0074D9;
+  --subnav:#003366;
+  --accent:#ffcc00;
+  --ink:#001f3f;
 }
 
-*{ box-sizing:border-box; }
-body{ margin:0; font-family:'Segoe UI',Tahoma,Verdana,sans-serif; background:var(--bg); color:var(--text); }
-.titolo-pagina{ text-align:center; color:var(--nav); font-size:2.2rem; margin:30px 0 20px; font-weight:700; text-shadow:2px 2px 6px #FFD700; }
+*{box-sizing:border-box;}
+body{margin:0; font-family:'Segoe UI',Tahoma,Verdana,sans-serif; background:#f4f4f4; color:#222;}
 
-/* NAVBAR */
-nav{ background:var(--nav); color:#fff; display:flex; align-items:center; padding:10px 20px; }
-.home-icon{ color:#fff; text-decoration:none; font-size:1.6rem; margin-right:18px; }
-.navbar{ list-style:none; margin:0; padding:0; display:flex; gap:24px; }
-.navbar a{ color:#fff; text-decoration:none; padding:8px 12px; border-radius:6px; }
-.navbar a:hover{ background:var(--nav-hover); }
-.navbar li{ position:relative; }
-.submenu{ display:none; position:absolute; top:100%; left:0; background:var(--subnav); border-radius:6px; min-width:200px; padding:8px 0; z-index:10; }
-.submenu a{ display:block; padding:8px 12px; }
-.dropdown:hover .submenu{ display:block; } /* semplice, solo desktop */
+nav{background:var(--nav); color:#fff; display:flex; align-items:center; padding:10px 20px;}
+.home-icon{color:#fff; text-decoration:none; font-size:1.6rem; margin-right:16px;}
+.navbar{list-style:none; display:flex; gap:22px; margin:0; padding:0;}
+.navbar a{color:#fff; text-decoration:none; padding:8px 12px; border-radius:6px;}
+.navbar a:hover{background:var(--nav-hover);}
+.navbar li{position:relative;}
+.submenu{display:none; position:absolute; top:100%; left:0; background:var(--subnav); border-radius:6px; min-width:200px; padding:8px 0; z-index:10;}
+.submenu a{display:block; padding:8px 12px;}
+.dropdown:hover .submenu{display:block;}
 
-/* BRACKET */
-.bracket{ display:flex; align-items:flex-start; gap:34px; width:max-content; padding:36px; }
-.blocco-colonna{ display:flex; flex-direction:column; align-items:center; }
-.blocco-colonna h2{ color:var(--nav); font-size:1.1rem; margin-bottom:12px; }
-.colonna{ display:flex; flex-direction:column; gap:12px; }
-.spaziata{ margin-top:100px; }
-.semifinale-sx,.semifinale-dx{ margin-top:120px; }
+.titolo-pagina{ text-align:center; color:var(--nav); font-size:2.2rem; margin:30px 0 8px; font-weight:800; text-shadow:2px 2px 6px #ffd700;}
 
-/* BOX PARTITA (2 righe) */
-.match{ background:var(--card); border:2px solid var(--nav); border-radius:10px; padding:10px 12px; min-width:240px; box-shadow:0 2px 6px rgba(0,0,0,.1); }
+#bracket-wrap{
+  position:relative;
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns: 320px;   /* larghezza di una colonna round */
+  gap:40px;
+  padding:30px 40px 80px;
+  width:max-content;
+  margin:0 auto;
+  background:#f4f4f4;
+  border-radius:12px;
+}
+
+#wires{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  pointer-events:none;
+}
+
+.round{display:flex; flex-direction:column; align-items:center; gap:12px;}
+.round h2{color:var(--nav); font-size:1.1rem; margin:0 0 6px;}
+
+.col{display:flex; flex-direction:column; gap:16px;}
+
+/* BOX PARTITA – 2 righe */
+.match{
+  background:var(--card);
+  border:2px solid var(--ink);
+  border-radius:10px;
+  padding:10px 12px;
+  min-width:260px;
+  box-shadow:0 2px 6px rgba(0,0,0,.12);
+}
+
 .match.finale{ font-weight:700; }
 .match.decided{ border:3px solid var(--accent); box-shadow:0 0 0 2px rgba(255,204,0,.12); }
 
 .pair-box{ display:flex; flex-direction:column; gap:6px; }
-.team-line{ display:grid; grid-template-columns:24px auto 1fr auto; align-items:center; gap:8px; padding:2px 4px; border-radius:6px; }
-.team-line img{ width:24px; height:24px; object-fit:contain; }
-.team-line .seed{ min-width:28px; padding:2px 6px; font-size:.8rem; line-height:1; text-align:center; border:1px solid #c7d2fe; background:#e9eef7; color:var(--nav); border-radius:4px; font-weight:700; }
-.team-line .nome{ font-weight:700; color:var(--nav); }
-.team-line .gol{ font-weight:700; color:var(--nav); justify-self:end; }
+
+.team-line{
+  display:grid;
+  grid-template-columns:24px auto 1fr auto;
+  gap:8px; align-items:center;
+  padding:2px 4px; border-radius:6px;
+}
+
+.team-line img{width:24px; height:24px; object-fit:contain;}
+
+.seed{
+  min-width:28px; padding:2px 6px; font-size:.8rem; line-height:1; text-align:center;
+  border:1px solid #c7d2fe; background:#e9eef7; color:var(--ink);
+  border-radius:4px; font-weight:700;
+}
+
+.nome{ font-weight:700; color:var(--ink); }
+.gol{ font-weight:800; color:var(--ink); justify-self:end; }
+
 .team-line.winner{ background:rgba(255,204,0,.14); }
 .team-line.winner .nome,.team-line.winner .gol{ color:#b58900; }
 
-/* TROFEO / VINCITORE */
-.coppa-vittoria{ display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:18px; }
-.coppa-vittoria img{ width:180px; height:auto; }
+/* Trofeo / vincitore */
+.coppa-vittoria{ display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:16px; }
+.coppa-vittoria img{ width:160px; height:auto; }
 .vincitore-info{ display:flex; flex-direction:column; align-items:center; gap:6px; }
-.vincitore-info .logo-vincitore{ width:68px; height:68px; object-fit:contain; }
-.vincitore-info .nome-vincitore{ font-weight:800; color:var(--nav); }
-
-
+.vincitore-info img{ width:72px; height:72px; object-fit:contain; }
+.vincitore-info .name{ font-weight:800; color:var(--ink); }
