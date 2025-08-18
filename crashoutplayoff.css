@@ -126,14 +126,10 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 /* Punteggio */
 /* Centro perfetto del numero nella box punteggio */
 .score-box{
-  display: grid;          /* già usata */
-  place-items: center;    /* centro verticale + orizzontale */
-  text-align: center;     /* centra anche il placeholder */
-  padding: 0;             /* niente offset che lo sposta */
-  height: 42px;           /* blocca l’altezza */
-  min-height: 42px;
-  line-height: 1;
-  white-space: nowrap;    /* evita a capo durante l’editing */
+  width:42px; min-height:40px; padding:4px 8px; justify-self:start;
+  background:var(--score-red); color:#fff; border:2px solid #8b0f15;
+  border-radius:8px; font-weight:800; font-size:1.15rem; letter-spacing:0;
+  display:grid; align-items:center; text-align:center; outline:none; user-select:text;
 }
 
 .score-box:empty:before{ content:attr(data-placeholder); opacity:.8; }
