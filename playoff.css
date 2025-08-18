@@ -49,7 +49,7 @@ body{margin:0;font-family:'Segoe UI',Tahoma,Verdana,sans-serif;background:#f4f6f
 
 /* se avevi messo un margine tra le card, riducilo */
 .team + .team{
-  margin-top: 3px !important;  /* prima 10px */
+  margin-top: 2px !important;  /* prima 10px */
 }
 
 /* — Mantieni invece uno spazio visibile tra partite diverse — */
