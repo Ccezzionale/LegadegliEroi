@@ -3,19 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Playoff - Lega degli Eroi</title>
-
-  <!-- CSS -->
+  <title>Playoff – Lega degli Eroi</title>
   <link rel="stylesheet" href="playoff.css">
 </head>
 <body>
-
-  <!-- NAVBAR -->
+  <!-- NAVBAR (semplice desktop) -->
   <nav>
     <a href="index.html" class="home-icon">🏠</a>
-    <ul class="navbar" id="mainMenu">
+    <ul class="navbar">
       <li><a href="rose.html">Rose</a></li>
-
       <li class="dropdown">
         <a href="#" class="toggle-submenu">Draft ▾</a>
         <ul class="submenu">
@@ -24,7 +20,6 @@
           <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
         </ul>
       </li>
-
       <li class="dropdown">
         <a href="#" class="toggle-submenu">Competizioni ▾</a>
         <ul class="submenu">
@@ -34,10 +29,8 @@
           <li><a href="crashoutcup.html">💥 Crash Out Cup</a></li>
         </ul>
       </li>
-
       <li><a href="svincolati.html">Svincolati</a></li>
       <li><a href="chiamate.html">Chiamate</a></li>
-
       <li class="dropdown">
         <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
         <ul class="submenu">
@@ -45,78 +38,60 @@
           <li><a href="albo.html">🏅 Medagliere</a></li>
         </ul>
       </li>
-
       <li><a href="regolamento.html">Regolamento</a></li>
     </ul>
   </nav>
 
   <h1 class="titolo-pagina">Playoff Lega degli Eroi</h1>
 
-  <!-- BRACKET UEFA (un box per gara) -->
-  <div class="bracket">
-    <!-- SINISTRA -->
-    <div class="blocco-colonna">
+  <!-- BRACKET A COLONNE (unica progressione sinistra→destra) -->
+  <div id="bracket-wrap">
+    <!-- SVG per connettori -->
+    <svg id="wires" xmlns="http://www.w3.org/2000/svg"></svg>
+
+    <div class="round">
       <h2>Wildcard</h2>
-      <div class="colonna">
+      <div class="col">
         <div class="match pair" data-match="WC1"></div>
-        <div class="match pair spaziata" data-match="WC3"></div>
+        <div class="match pair" data-match="WC2"></div>
+        <div class="match pair" data-match="WC3"></div>
+        <div class="match pair" data-match="WC4"></div>
       </div>
     </div>
 
-    <div class="blocco-colonna">
+    <div class="round">
       <h2>Quarti</h2>
-      <div class="colonna">
+      <div class="col">
         <div class="match pair" data-match="Q1"></div>
-        <div class="match pair spaziata" data-match="Q3"></div>
+        <div class="match pair" data-match="Q2"></div>
+        <div class="match pair" data-match="Q3"></div>
+        <div class="match pair" data-match="Q4"></div>
       </div>
     </div>
 
-    <div class="blocco-colonna">
-      <h2>Semifinale</h2>
-      <div class="colonna semifinale-sx">
+    <div class="round">
+      <h2>Semifinali</h2>
+      <div class="col">
         <div class="match pair" data-match="S1"></div>
-      </div>
-    </div>
-
-    <!-- CENTRO -->
-    <div class="blocco-colonna">
-      <h2>Finale</h2>
-      <div class="colonna">
-        <div class="match pair finale" data-match="F"></div>
-      </div>
-      <div class="coppa-vittoria">
-        <img src="img/coppa.png" alt="Coppa del Vincitore">
-        <div id="vincitore-assoluto" class="vincitore-info"></div>
-      </div>
-    </div>
-
-    <!-- DESTRA -->
-    <div class="blocco-colonna">
-      <h2>Semifinale</h2>
-      <div class="colonna semifinale-dx">
         <div class="match pair" data-match="S2"></div>
       </div>
     </div>
 
-    <div class="blocco-colonna">
-      <h2>Quarti</h2>
-      <div class="colonna">
-        <div class="match pair" data-match="Q2"></div>
-        <div class="match pair spaziata" data-match="Q4"></div>
-      </div>
-    </div>
-
-    <div class="blocco-colonna">
-      <h2>Wildcard</h2>
-      <div class="colonna">
-        <div class="match pair" data-match="WC2"></div>
-        <div class="match pair spaziata" data-match="WC4"></div>
+    <div class="round">
+      <h2>Finale</h2>
+      <div class="col">
+        <div class="match pair finale" data-match="F"></div>
+        <div class="coppa-vittoria">
+          <img src="img/coppa.png" alt="Coppa">
+          <div id="vincitore" class="vincitore-info"></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- JS: prima i risultati (separati), poi il renderer -->
+  <!-- Risultati (se ce l’hai già, basta che definisca window.risultati = [...]) -->
   <script src="risultati_playoff.js"></script>
   <script src="playoff.js"></script>
 </body>
 </html>
+
