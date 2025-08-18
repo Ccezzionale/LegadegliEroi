@@ -260,6 +260,7 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
 /* ========== MOBILE ========== */
 /* ===== MOBILE: stesso bracket + scroll orizzontale, no overlap ===== */
+/* ===== MOBILE: stesso bracket + scroll orizzontale, no overlap ===== */
 @media (max-width:768px){
 
   /* NAVBAR: hamburger */
@@ -269,26 +270,31 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   .submenu{ position:relative; background:var(--subnav); margin-left:10px; }
   .dropdown .submenu a{ padding-left:20px; }
 
-  /* Bracket desktop anche su mobile + scroll orizzontale */
+  /* Container scrollabile orizzontale */
   .cup-container{
     overflow-x:auto;
     padding:0 8px 18px;
     -webkit-overflow-scrolling:touch;
     overscroll-behavior-x:contain;
   }
+
+  /* Variabili mobile */
+  :root{
+    --slot: 210px;          /* aumenta a 220/230 se serve più aria verticale */
+    --finals-col: 340px;    /* larghezza colonna centrale */
+    --grid-gap: 18px;       /* gap fra colonne */
+  }
+
+  /* Stesso bracket della desktop, ma più compatto */
   .bracket{
     display:grid !important;
-    grid-template-columns: minmax(300px,max-content) 320px minmax(300px,max-content);
-    gap:18px; /* più spazio tra colonne */
+    grid-template-columns:
+      minmax(300px, max-content)
+      var(--finals-col)
+      minmax(300px, max-content);
+    gap: var(--grid-gap);
   }
   .bracket-mobile{ display:none !important; }
-
-  /* Spaziature e dimensioni più compatte, ma senza incastri */
-  :root{
-     --slot: 500px;        /* alza a 200 se serve ancora aria */
-    --finals-col: 320px;
-    --grid-gap: 18px;
-  }
 
   .conference{ gap:14px; }
   .match{ padding:8px 10px; gap:8px; }
@@ -301,19 +307,28 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   .seed{ width:26px; height:26px; font-size:.8rem; border-radius:8px; }
   .score-box{ width:36px; height:36px; min-height:36px; font-size:.95rem; border-radius:8px; place-items:center; }
 
-  /* Z-index: le Finals sopra, fili sotto */
- .finals-split{
-  grid-template-rows: calc(var(--slot) * 3) auto calc(var(--slot) * 3);
-  padding: 8px 0;
-}
-  .finals-split .match,
+  /* Finals: più aria sopra/sotto, card confinata nella colonna e trophy ridotta */
+  .finals-split{
+    grid-template-rows: calc(var(--slot) * 3) auto calc(var(--slot) * 3);
+    padding: 8px 0;
+    position: relative; z-index: 3;
+  }
+  .finals-split .match{
+    width:100% !important;
+    max-width:100%;
+    box-sizing:border-box;
+    position: relative; z-index: 4;
+  }
   .trophy{
-  width: 180px;
-  height: 180px;
-}
+    width:170px; height:170px;
+    position: relative; z-index: 4;
+  }
+
+  /* Fili sotto, card laterali sopra i fili */
   .conference .match{ position:relative; z-index:1; }
   .wire-layer{ z-index:0; }
 
+  /* Header un filo più compatto */
   .page-header{ margin:18px 0 0; }
 }
 
