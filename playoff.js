@@ -58,22 +58,41 @@ function winnerName(id){
 function creaMatchBox({ nomeA, seedA, golA, logoA, nomeB, seedB, golB, logoB, vincente }) {
   const isV1 = vincente === nomeA;
   const isV2 = vincente === nomeB;
+  const tileA = teamColor(nomeA || "");
+  const tileB = teamColor(nomeB || "");
+
   return `
     <div class="pair-box">
       <div class="team-line ${isV1 ? 'winner' : ''}">
-        <img src="${logoA}" onerror="this.style.display='none'">
+        <span class="emblem" style="background:${tileA}"><img src="${logoA}" onerror="this.style.display='none'"></span>
         <span class="seed">${seedA ? '#' + seedA : ''}</span>
         <span class="nome">${nomeA ?? ''}</span>
         <span class="gol">${golA ?? ''}</span>
       </div>
       <div class="team-line ${isV2 ? 'winner' : ''}">
-        <img src="${logoB}" onerror="this.style.display='none'">
+        <span class="emblem" style="background:${tileB}"><img src="${logoB}" onerror="this.style.display='none'"></span>
         <span class="seed">${seedB ? '#' + seedB : ''}</span>
         <span class="nome">${nomeB ?? ''}</span>
         <span class="gol">${golB ?? ''}</span>
       </div>
     </div>`;
 }
+
+function teamColor(name) {
+  // hash semplice -> hue
+  let h = 0; for (let i = 0; i < name.length; i++) h = (h*31 + name.charCodeAt(i)) >>> 0;
+  h = h % 360;
+  // pastello leggibile sul blu scuro
+  return `hsl(${h} 70% 85%)`;
+}
+function clean(s){ return (s || '').replace(/[°]/g,'').trim(); }
+function logoPath(nome){ return `img/${clean(nome)}.png`; }
+function seedOf(nome){
+  const idx = Array.isArray(window.squadre) ? window.squadre.findIndex(s => s.nome === nome) : -1;
+  return idx >= 0 ? idx + 1 : "";
+}
+
+
 
 // ========= Render =========
 function renderBracket(){
