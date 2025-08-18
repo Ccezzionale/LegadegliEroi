@@ -124,12 +124,18 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 .logo-wrap.no-logo{ background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 10px,#e2e8f0 10px,#e2e8f0 20px); }
 
 /* Punteggio */
+/* Centro perfetto del numero nella box punteggio */
 .score-box{
-  width:42px; min-height:40px; padding:4px 8px; justify-self:start;
-  background:var(--score-red); color:#fff; border:2px solid #8b0f15;
-  border-radius:8px; font-weight:800; font-size:1.15rem; letter-spacing:0;
-  display:grid; align-items:center; text-align:left; outline:none; user-select:text;
+  display: grid;          /* già usata */
+  place-items: center;    /* centro verticale + orizzontale */
+  text-align: center;     /* centra anche il placeholder */
+  padding: 0;             /* niente offset che lo sposta */
+  height: 42px;           /* blocca l’altezza */
+  min-height: 42px;
+  line-height: 1;
+  white-space: nowrap;    /* evita a capo durante l’editing */
 }
+
 .score-box:empty:before{ content:attr(data-placeholder); opacity:.8; }
 .score-box:focus{ box-shadow:0 0 0 3px rgba(197,22,31,.25); }
 .score-box[contenteditable="false"]{ cursor:default; caret-color:transparent; user-select:none; }
