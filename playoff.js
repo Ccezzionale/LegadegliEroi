@@ -86,8 +86,8 @@ function aggiornaPlayoff() {
     "S1-B": { id: "S1", side: "B", from: ["Q1", "Q2"] },
     "S2-A": { id: "S2", side: "A", from: ["Q3", "Q4"] },
     "S2-B": { id: "S2", side: "B", from: ["Q3", "Q4"] },
-    "F-A": { id: "F", side: "A", from: ["S1", "S2"] },
-    "F-B": { id: "F", side: "B", from: ["S1", "S2"] },
+    "F-A":  { id: "F",  side: "A", from: ["S1", "S2"] },
+    "F-B":  { id: "F",  side: "B", from: ["S1", "S2"] },
   };
 
   document.querySelectorAll(".match").forEach(div => {
@@ -95,44 +95,38 @@ function aggiornaPlayoff() {
     const config = mapping[id];
     if (!config) return;
 
-    const risultato = window.risultati?.find(r => r.partita === config.id || r.partita === id.replace(/-[AB]$/, ""));
-    let nome = "?", posizione = "", punteggio = "";
+    const r = window.risultati?.find(x => x.partita === config.id || x.partita === id.replace(/-[AB]$/, ""));
+    let nome = "?", seed = "", punteggio = "";
 
     if (id.includes("WC")) {
       const squadra = window.squadre?.[config.pos]?.nome;
-      nome = risultato?.[id.endsWith("A") ? "squadraA" : "squadraB"] || squadra || "?";
-      posizione = `${config.pos + 1}°`;
-      punteggio = risultato?.[id.endsWith("A") ? "golA" : "golB"] ?? "";
+      nome = r?.[id.endsWith("A") ? "squadraA" : "squadraB"] || squadra || "?";
+      seed = (config.pos + 1);                                        // << NUMERO
+      punteggio = r?.[id.endsWith("A") ? "golA" : "golB"] ?? "";
 
-    } else if (id.startsWith("Q") || id.startsWith("S") || id.startsWith("F")) {
+    } else if (/^(Q|S|F)/.test(id)) {
       const teamKey = id.endsWith("A") ? "squadraA" : "squadraB";
-      nome = risultato?.[teamKey] || risultato?.vincente || `Vincente ${config.from?.join("/")}`;
-      posizione = window.squadre?.findIndex(s => s.nome === nome);
-      posizione = posizione !== -1 ? `${posizione + 1}°` : "";
-      punteggio = risultato?.[id.endsWith("A") ? "golA" : "golB"] ?? "";
+      nome = r?.[teamKey] || r?.vincente || `Vincente ${config.from?.join("/")}`;
+      const idx = window.squadre?.findIndex(s => s.nome === nome);
+      seed = (idx !== -1 && idx != null) ? (idx + 1) : "";            // << NUMERO
+      punteggio = r?.[id.endsWith("A") ? "golA" : "golB"] ?? "";
     }
 
-    const isVincente = risultato?.vincente === nome;
-    div.innerHTML = creaHTMLSquadra(nome, posizione, punteggio, isVincente);
-
-    if (isVincente) {
-      div.classList.add("vincente");
-    }
+    const isVincente = r?.vincente === nome;
+    div.innerHTML = creaHTMLSquadra(nome, seed, punteggio, isVincente);
+    if (isVincente) div.classList.add("vincente");
   });
 
-  const finale = window.risultati?.find(r => r.partita === "F");
+  const finale = window.risultati?.find(x => x.partita === "F");
   if (finale?.vincente) {
     const nomeVincitore = finale.vincente;
-    const posizione = window.squadre?.findIndex(s => s.nome === nomeVincitore);
-    const posizioneText = posizione >= 0 ? `${posizione + 1}°` : "";
     const logoSrc = `img/${nomeVincitore.replace(/[°]/g, "").trim()}.png`;
-
-    const htmlVincitore = `
-      <img src="${logoSrc}" alt="${nomeVincitore}" class="logo-vincitore" onerror="this.style.display='none'">
-      <div class="nome-vincitore">${nomeVincitore}</div>
-    `;
     const container = document.getElementById("vincitore-assoluto");
-    if (container) container.innerHTML = htmlVincitore;
+    if (container) {
+      container.innerHTML = `
+        <img src="${logoSrc}" alt="${nomeVincitore}" class="logo-vincitore" onerror="this.style.display='none'">
+        <div class="nome-vincitore">${nomeVincitore}</div>`;
+    }
   }
 }
 
