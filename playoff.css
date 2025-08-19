@@ -214,11 +214,33 @@ nav{
   font-size: 1rem;
 }
 
-/* Nasconde del tutto il layout mobile del bracket, se presente in HTML */
-#bracket-mobile{ display: none !important; }
+/* ——— NAVBAR: forza una sola riga su desktop ——— */
+nav{
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;     /* << stop wrapping */
+  gap: 12px;
+  min-height: 56px;
+}
 
-/* ========== SOLO NAVBAR MOBILE ========== */
+.home-icon{
+  flex: 0 0 auto;
+  margin-right: 12px;
+}
+
+.navbar{
+  margin-left: auto;     /* spinge il menu a destra */
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 12px;       /* padding più compatto evita il wrap */
+}
+
+.navbar > li{ white-space: nowrap; } /* evita che voci lunghe spezzino */
+
+/* Mobile: riattivo il wrap e l'hamburger */
 @media (max-width: 768px){
+  nav{ flex-wrap: wrap; }
   .hamburger{ display: block; }
   .navbar{
     display: none;
@@ -228,9 +250,5 @@ nav{
     padding: 8px 16px;
   }
   .navbar.show{ display: flex; }
-  .submenu{
-    position: static;
-    margin-left: 20px;
-    background-color: #002244;
-  }
+  .submenu{ position: static; margin-left: 20px; background:#002244; }
 }
