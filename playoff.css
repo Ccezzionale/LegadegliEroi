@@ -452,6 +452,42 @@ nav {
   letter-spacing: .2px;
   font-weight: 700;
 }
+  /* ===== BIANCO → ORO ===== */
+:root{
+  --gold-shadow: rgba(0,0,0,.35);
+  --gold-glow:   rgba(255,210,80,.35);
+}
+
+/* Titolo principale: gradiente bianco→oro */
+.titolo-pagina{
+  background: linear-gradient(180deg, #ffffff 10%, #fff3bf 45%, #ffd36b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent; /* fallback gestito dallo shadow */
+  text-shadow:
+    0 2px 0 var(--gold-shadow),
+    0 0 18px var(--gold-glow);
+}
+
+/* Headings delle colonne (Wildcard/Quarti/Semifinale/Finale) */
+.blocco-colonna h2{
+  color: #ffec9f; /* oro chiaro leggibile sul blu */
+  text-shadow:
+    0 1px 2px var(--gold-shadow),
+    0 0 8px var(--gold-glow);
+  font-weight: 700;
+}
+
+/* Sottolineatura decorativa leggera (opzionale) */
+.blocco-colonna h2::after{
+  content:"";
+  display:block;
+  width:38px; height:2px; margin:6px auto 0;
+  background: linear-gradient(90deg, transparent, #ffd36b 30%, #fff 50%, #ffd36b 70%, transparent);
+  opacity:.7; border-radius:1px;
+}
+
 
 
 @media (max-width: 768px) {
