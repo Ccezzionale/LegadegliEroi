@@ -372,7 +372,7 @@ nav {
 
   /* --- Card più corte + nomi su due righe --- */
 :root{
-  --card-w: 280px;      /* riduci/ aumenta qui: 260–300px di solito ok */
+  --card-w: 210px;      /* riduci/ aumenta qui: 260–300px di solito ok */
   --team-card-h: 56px;  /* resta bassa; crescerà solo se il nome va su 2 righe */
   --team-logo: 40px;
 }
