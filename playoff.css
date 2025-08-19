@@ -2,8 +2,8 @@
 :root{
   /* Card & contenuti */
   --card-w:       210px;   /* larghezza identica per tutte le card */
-  --team-card-h:   56px;   /* altezza minima card */
-  --team-logo:     40px;   /* diametro logo */
+  --team-card-h:   10px;   /* altezza minima card */
+  --team-logo:     50px;   /* diametro logo */
   --team-pad-y:     8px;   /* padding verticale */
   --team-pad-x:    14px;   /* padding orizzontale */
 
