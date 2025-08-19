@@ -238,6 +238,27 @@ nav{
 
 .navbar > li{ white-space: nowrap; } /* evita che voci lunghe spezzino */
 
+/* NAVBAR — allinea a sinistra come nello screenshot */
+nav{
+  flex-wrap: nowrap;          /* una sola riga */
+  gap: 12px;
+}
+
+.home-icon{
+  flex: 0 0 auto;
+  margin-right: 12px;
+}
+
+.navbar{
+  margin-left: 0 !important;  /* rimuove lo “spingi a destra” */
+  justify-content: flex-start !important; /* non centrare */
+  padding: 10px 0;            /* niente padding sinistro extra */
+  gap: 22px;                  /* spazio tra voci */
+}
+
+.navbar > li{ white-space: nowrap; } /* evita che rompa su 2 righe */
+
+
 /* Mobile: riattivo il wrap e l'hamburger */
 @media (max-width: 768px){
   nav{ flex-wrap: wrap; }
