@@ -267,6 +267,56 @@ nav {
   .hamburger {
     display: none;
   }
+
+  /* ======= COMPATTAZIONE RIQUADRI ======= */
+:root{
+  --team-card-h: 56px;   /* riquadro più basso */
+  --team-logo:   36px;   /* logo grande ma equilibrato */
+  --team-pad-y:   8px;   /* padding verticale ridotto */
+  --team-pad-x:  12px;   /* padding orizzontale ridotto */
+  --pair-gap:     6px;   /* distanza tra i due riquadri dello stesso match */
+}
+
+/* Coppia di riquadri (resta ravvicinata) */
+.match-pair{
+  display: grid;
+  grid-template-rows: repeat(2, minmax(var(--team-card-h), auto));
+  row-gap: var(--pair-gap);
+}
+
+/* Riquadro singolo: rettangolare, piccolo, shrink-to-fit */
+.match{
+  border-radius: 4px;                 /* metti 0 se li vuoi totalmente squadrati */
+  padding: var(--team-pad-y) var(--team-pad-x);
+  min-height: var(--team-card-h);
+  min-width: 0;                       /* cancella min-width precedente */
+  width: max-content;                 /* niente spazio bianco dopo il nome */
+  white-space: nowrap;                /* evita a capo del nome squadra */
+  display: inline-flex;               /* compatibile con shrink-to-fit */
+  align-items: center;
+}
+
+/* Riga contenuto */
+.squadra.orizzontale{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Loghi più grandi */
+.squadra.orizzontale img{
+  width: var(--team-logo);
+  height: var(--team-logo);
+  object-fit: contain;
+}
+
+/* Testo un filo più compatto */
+.squadra.orizzontale span{
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.1;
+}
+
 }
 
 @media (max-width: 768px) {
