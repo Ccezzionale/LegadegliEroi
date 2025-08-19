@@ -415,6 +415,12 @@ nav {
   -webkit-box-orient: vertical;
 }
 
+  :root{
+  --team-card-h: 10px;
+  --team-pad-y: 0px;
+  --team-logo: 40px;
+}
+
 
 
 }
