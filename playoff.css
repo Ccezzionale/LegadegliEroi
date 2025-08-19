@@ -1,63 +1,70 @@
 /* ========== VARIABILI ========== */
 :root{
-  /* dimensioni riquadri e loghi */
-  --team-card-h: 72px;      /* altezza riquadro singolo */
-  --team-logo:   40px;      /* diametro logo */
-  --team-pad-y:  14px;      /* padding verticale */
-  --team-pad-x:  18px;      /* padding orizzontale */
+  /* Card & contenuti */
+  --card-w:       210px;   /* larghezza identica per tutte le card */
+  --team-card-h:   56px;   /* altezza minima card */
+  --team-logo:     40px;   /* diametro logo */
+  --team-pad-y:     8px;   /* padding verticale */
+  --team-pad-x:    14px;   /* padding orizzontale */
 
-  /* spaziature */
-  --pair-gap:     6px;      /* distanza tra i due riquadri dello stesso match */
-  --pair-margin: 24px;      /* distanza tra match diversi (tra una coppia e l’altra) */
-  --col-gap:     30px;      /* distanza tra colonne (Wildcard/Quarti/Semifinale/…) */
+  /* Spaziature layout */
+  --pair-gap:       6px;   /* distanza tra i due riquadri dello stesso match */
+  --pair-margin:   24px;   /* distanza tra match diversi (tra una coppia e l’altra) */
+  --col-gap:       30px;   /* distanza tra colonne (Wildcard/Quarti/Semifinale/Finale) */
+
+  /* Effetti titolo/heading */
+  --gold-shadow: rgba(0,0,0,.35);
+  --gold-glow:   rgba(255,210,80,.35);
 }
 
 /* ========== BASE ========== */
-body {
+body{
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f4f4f4;
-  color: #222;
   overflow-x: auto;
+  background: #071a3b url("img/champions-bg.png") center / cover no-repeat fixed;
+  color: #222;
 }
 
-h1,
-.titolo-pagina {
-  text-align: center;
-  color: #001f3f;
-  text-shadow: 1px 1px 1px #ccc;
-}
-h1 { margin-top: 20px; font-size: 2.4rem; }
-.titolo-pagina {
+/* Titolo principale: gradiente bianco→oro */
+.titolo-pagina{
   font-size: 2.2rem;
   margin: 30px 0 20px;
   font-weight: 700;
-  text-shadow: 2px 2px 6px #FFD700; /* giallo oro tenue */
+  text-align: center;
+  background: linear-gradient(180deg, #ffffff 10%, #fff3bf 45%, #ffd36b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  text-shadow:
+    0 2px 0 var(--gold-shadow),
+    0 0 18px var(--gold-glow);
 }
 
-/* ========== NAVBAR ========== */
-nav {
+/* ========== NAVBAR (desktop + mobile) ========== */
+nav{
   background-color: #001f3f;
-  color: white;
+  color: #fff;
   display: flex;
   align-items: center;
   padding: 10px 20px;
   flex-wrap: wrap;
 }
-.home-icon {
+.home-icon{
   font-size: 1.6rem;
   margin-right: 20px;
   text-decoration: none;
-  color: white;
+  color: #fff;
 }
-.hamburger {
+.hamburger{
   font-size: 1.5rem;
   cursor: pointer;
   margin-right: 20px;
-  display: none;
+  display: none; /* mostrata solo su mobile */
 }
-.navbar {
-  list-style-type: none;
+.navbar{
+  list-style: none;
   margin-left: auto;
   display: flex;
   align-items: center;
@@ -66,342 +73,104 @@ nav {
   padding: 10px 30px;
   justify-content: center;
 }
-.navbar li { position: relative; }
-.navbar a {
-  color: white;
+.navbar li{ position: relative; }
+.navbar a{
+  color: #fff;
   text-decoration: none;
-  padding: 6px 12px;
-  border-radius: 5px;
-  background-color: transparent;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: 500;
 }
-.navbar a:hover { background-color: #0074D9; }
-.submenu {
+.navbar a:hover{ background-color: #0074D9; }
+.submenu{
   display: none;
+  position: absolute;
+  top: 100%; left: 0;
   background-color: #003366;
   border-radius: 4px;
+  z-index: 10;
+  min-width: 180px;
   flex-direction: column;
-  width: 100%;
-  padding-left: 20px;
-  margin-top: 6px;
 }
-.submenu a { font-size: 0.95rem; }
-.dropdown.show .submenu { display: flex; }
+.dropdown.show .submenu{ display: flex; }
 
 /* ========== BRACKET DESKTOP ========== */
-.bracket {
+.bracket{
   display: flex;
   align-items: flex-start;
-  flex-direction: row;
   gap: var(--col-gap);
   width: max-content;
   padding: 40px;
 }
-.blocco-colonna {
+.blocco-colonna{
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.blocco-colonna h2 {
-  color: #001f3f;
+.blocco-colonna h2{
+  margin: 0 0 12px;
   font-size: 1.1rem;
-  margin-bottom: 12px;
+  color: #ffec9f; /* oro chiaro leggibile sul blu */
+  text-shadow:
+    0 1px 2px var(--gold-shadow),
+    0 0 8px var(--gold-glow);
+  font-weight: 700;
+}
+.blocco-colonna h2::after{
+  content:"";
+  display:block;
+  width:38px; height:2px; margin:6px auto 0;
+  background: linear-gradient(90deg, transparent, #ffd36b 30%, #fff 50%, #ffd36b 70%, transparent);
+  opacity:.7; border-radius:1px;
 }
 
 /* Ogni colonna contiene più "coppie" (match-pair) */
-.colonna {
+.colonna{
   display: flex;
   flex-direction: column;
   gap: var(--pair-margin); /* distanza tra coppie */
 }
 
-/* Wrapper che contiene i due riquadri di una partita */
-.match-pair {
+/* Wrapper che contiene i due riquadri della stessa partita */
+.match-pair{
   display: grid;
   grid-template-rows: repeat(2, minmax(var(--team-card-h), auto));
-  row-gap: var(--pair-gap); /* distanza ravvicinata tra i due riquadri dello stesso match */
+  row-gap: var(--pair-gap);
 }
 
 /* Riquadro singolo squadra */
-.match {
+.match{
+  width: var(--card-w);
+  min-width: var(--card-w);
+  max-width: var(--card-w);
+  min-height: var(--team-card-h);
+  padding: var(--team-pad-y) var(--team-pad-x);
   background-color: #fff;
+  color: #001f3f;
   border: 2px solid #001f3f;
   border-radius: 8px;
-  padding: var(--team-pad-y) var(--team-pad-x);
-  min-width: 180px;                 /* un filo più largo */
-  min-height: var(--team-card-h);   /* più alto */
-  color: #001f3f;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 /* Evidenza vincente */
-.match.vincente {
+.match.vincente{
   border: 3px solid gold;
-  font-weight: bold;
-}
-
-/* Testo finale */
-.finale {
-  font-weight: bold;
-  color: #001f3f;
+  font-weight: 700;
 }
 
 /* Riga contenuto squadra orizzontale */
-.squadra.orizzontale {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* Loghi più grandi */
-.squadra.orizzontale img {
-  width: var(--team-logo);
-  height: var(--team-logo);
-  object-fit: contain;
-}
-
-/* Nome squadra ben leggibile */
-.squadra.orizzontale span {
-  font-weight: 700;
-  color: #001f3f;
-  font-size: 1rem;
-  line-height: 1.1;
-}
-
-/* Allineamenti speciali preesistenti */
-.spaziata { margin-top: 100px; }
-.semifinale-sx,
-.semifinale-dx { margin-top: 120px; }
-
-/* Blocco coppa / vincitore (se lo usi) */
-.coppa-vittoria {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 30px;
-}
-.coppa-vittoria img { width: 180px; height: auto; }
-.vincitore-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 10px;
-}
-.logo-vincitore {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-  margin-bottom: 6px;
-}
-.nome-vincitore {
-  color: #001f3f;
-  font-weight: bold;
-  font-size: 1rem;
-}
-
-@media (min-width: 769px) {
-  .mobile-nav {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 20px;
-    background-color: #001f3f;
-    padding: 12px 30px;
-    height: 52px; /* forza altezza uniforme con navbar */
-  }
-
-    .mobile-nav {
-  display: none;
-}
-
-  .home-icon {
-    font-size: 1.6rem;
-    text-decoration: none;
-    color: white;
-    display: flex;
-    align-items: center;
-  }
-
-  .navbar {
-    list-style-type: none;
-    margin: 0;
-    padding: 10px 30px;
-    display: flex;
-    align-items: center;
-    gap: 25px;
-    background-color: #001f3f;
-    margin-top: -4px; /* allineamento verticale perfetto */
-  }
-
-  .navbar a {
-    color: white;
-    text-decoration: none;
-    padding: 8px 12px;
-    font-weight: 500;
-    font-size: 1rem;
-  }
-
-  .navbar a:hover {
-    background-color: #0074D9;
-    border-radius: 6px;
-  }
-    .home-desktop {
-  margin-right: 10px;
-}
-
-  .submenu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #003366;
-    border-radius: 4px;
-    z-index: 10;
-    min-width: 180px;
-    flex-direction: column;
-  }
-
-  .dropdown.show .submenu {
-    display: flex;
-  }
-
-  .hamburger {
-    display: none;
-  }
-
-  /* ======= COMPATTAZIONE RIQUADRI ======= */
-:root{
-  --team-card-h: 56px;   /* riquadro più basso */
-  --team-logo:   36px;   /* logo grande ma equilibrato */
-  --team-pad-y:   8px;   /* padding verticale ridotto */
-  --team-pad-x:  12px;   /* padding orizzontale ridotto */
-  --pair-gap:     6px;   /* distanza tra i due riquadri dello stesso match */
-}
-
-/* Coppia di riquadri (resta ravvicinata) */
-.match-pair{
-  display: grid;
-  grid-template-rows: repeat(2, minmax(var(--team-card-h), auto));
-  row-gap: var(--pair-gap);
-}
-
-/* Riquadro singolo: rettangolare, piccolo, shrink-to-fit */
-.match{
-  border-radius: 4px;                 /* metti 0 se li vuoi totalmente squadrati */
-  padding: var(--team-pad-y) var(--team-pad-x);
-  min-height: var(--team-card-h);
-  min-width: 0;                       /* cancella min-width precedente */
-  width: max-content;                 /* niente spazio bianco dopo il nome */
-  white-space: nowrap;                /* evita a capo del nome squadra */
-  display: inline-flex;               /* compatibile con shrink-to-fit */
-  align-items: center;
-}
-
-/* Riga contenuto */
 .squadra.orizzontale{
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
-/* Loghi più grandi */
-.squadra.orizzontale img{
-  width: var(--team-logo);
-  height: var(--team-logo);
-  object-fit: contain;
-}
-
-/* Testo un filo più compatto */
-.squadra.orizzontale span{
-  font-weight: 700;
-  font-size: 0.95rem;
-  line-height: 1.1;
-}
-
-  /* ===== Uniforma larghezza, abbassa altezza, loghi grandi ===== */
-:root{
-  --card-w:      320px;   /* larghezza identica per tutte le card (regola qui) */
-  --team-card-h: 56px;    /* altezza RIBASSATA della card */
-  --team-logo:   40px;    /* loghi grandi */
-  --team-pad-y:   8px;    /* padding verticale compatto */
-  --team-pad-x:  16px;    /* padding orizzontale */
-  --pair-gap:     6px;    /* distanza ravvicinata tra i due riquadri dello stesso match */
-}
-
-/* coppia di riquadri della stessa partita */
-.match-pair{
-  display: grid;
-  grid-template-rows: repeat(2, minmax(var(--team-card-h), auto));
-  row-gap: var(--pair-gap);
-}
-
-/* riquadro singolo – larghezza fissa uguale per tutti + altezza bassa */
-.match{
-  width: var(--card-w);
-  min-width: var(--card-w);
-  max-width: var(--card-w);
-  min-height: var(--team-card-h);
-  padding: var(--team-pad-y) var(--team-pad-x);
-  /* mantieni i tuoi border/shadow/rounded esistenti */
-}
-
-/* contenuto orizzontale */
-.squadra.orizzontale{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* logo grande */
 .squadra.orizzontale img{
   width: var(--team-logo);
   height: var(--team-logo);
   object-fit: contain;
   flex: 0 0 var(--team-logo);
 }
-
-/* testo su una riga, ellissi se troppo lungo */
-.squadra.orizzontale span{
-  font-weight: 700;
-  font-size: 0.95rem;
-  line-height: 1.1;
-  flex: 1;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-  /* --- Card più corte + nomi su due righe --- */
-:root{
-  --card-w: 210px;      /* riduci/ aumenta qui: 260–300px di solito ok */
-  --team-card-h: 56px;  /* resta bassa; crescerà solo se il nome va su 2 righe */
-  --team-logo: 40px;
-}
-
-/* larghezza identica per tutte */
-.match{
-  width: var(--card-w);
-  min-width: var(--card-w);
-  max-width: var(--card-w);
-  min-height: var(--team-card-h);
-  padding: 8px 14px;
-}
-
-/* riga contenuto */
-.squadra.orizzontale{
-  display: flex;
-  align-items: center;        /* metti 'flex-start' se vuoi il logo allineato in alto quando il nome va su 2 righe */
-  gap: 10px;
-}
-
-/* logo grande */
-.squadra.orizzontale img{
-  width: var(--team-logo);
-  height: var(--team-logo);
-  object-fit: contain;
-  flex: 0 0 var(--team-logo);
-}
-
-/* nome: massimo 2 righe, poi taglio */
+/* Nome squadra: max 2 righe */
 .squadra.orizzontale span{
   flex: 1;
   font-weight: 700;
@@ -411,253 +180,57 @@ nav {
   white-space: normal;
   word-break: break-word;
   display: -webkit-box;
-  -webkit-line-clamp: 2;      /* max 2 righe */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
-  :root{
-  --team-card-h: 10px;
-  --team-pad-y: 0px;
-  --team-logo: 50px;
-}
+/* Allineamenti speciali */
+.spaziata{ margin-top: 100px; }
+.semifinale-sx,
+.semifinale-dx{ margin-top: 120px; }
 
-  body{
-  background: #071a3b url("img/champions-bg.png") center / cover no-repeat fixed;
-
-}
-
-  /* === Contrasto su sfondo blu === */
-:root{
-  --title-color:   #ffffff;
-  --title-glow:    rgba(255,228,105,.45);   /* oro morbido */
-  --heading-color: #eaf2ff;                 /* azzurro ghiaccio */
-  --heading-glow:  rgba(120,200,255,.38);   /* alone ciano */
-}
-
-/* Titolo principale */
-.titolo-pagina{
-  color: var(--title-color) !important;
-  text-shadow:
-    0 2px 0 rgba(10,22,48,.6),      /* leggero bordo scuro */
-    0 0 10px var(--title-glow),
-    0 0 24px var(--title-glow);
-}
-
-/* Headings sopra i riquadri */
-.blocco-colonna h2{
-  color: var(--heading-color) !important;
-  text-shadow:
-    0 1px 2px rgba(0,0,0,.45),
-    0 0 10px var(--heading-glow);
-  letter-spacing: .2px;
-  font-weight: 700;
-}
-  /* ===== BIANCO → ORO ===== */
-:root{
-  --gold-shadow: rgba(0,0,0,.35);
-  --gold-glow:   rgba(255,210,80,.35);
-}
-
-/* Titolo principale: gradiente bianco→oro */
-.titolo-pagina{
-  background: linear-gradient(180deg, #ffffff 10%, #fff3bf 45%, #ffd36b 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent; /* fallback gestito dallo shadow */
-  text-shadow:
-    0 2px 0 var(--gold-shadow),
-    0 0 18px var(--gold-glow);
-}
-
-/* Headings delle colonne (Wildcard/Quarti/Semifinale/Finale) */
-.blocco-colonna h2{
-  color: #ffec9f; /* oro chiaro leggibile sul blu */
-  text-shadow:
-    0 1px 2px var(--gold-shadow),
-    0 0 8px var(--gold-glow);
-  font-weight: 700;
-}
-
-/* Sottolineatura decorativa leggera (opzionale) */
-.blocco-colonna h2::after{
-  content:"";
-  display:block;
-  width:38px; height:2px; margin:6px auto 0;
-  background: linear-gradient(90deg, transparent, #ffd36b 30%, #fff 50%, #ffd36b 70%, transparent);
-  opacity:.7; border-radius:1px;
-}
-
-
-
-@media (max-width: 768px) {
-  .bracket {
-    display: none !important;
-  }
-
-  #bracket-mobile {
-    display: block;
-  }
-
-    .navbar .home-desktop {
-  display: none;
-}
-
-  .round-mobile {
-    margin-bottom: 30px;
-  }
-
-  .round-mobile h2 {
-    font-size: 1.2rem;
-    color: #001f3f;
-    margin-bottom: 10px;
-    border-left: 4px solid #ffcc00;
-    padding-left: 10px;
-  }
-
-.match-card {
-  background: #001f3f;       /* blu scuro */
-  border: 2px solid #001f3f;
-  border-radius: 10px;
-  padding: 12px;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+/* Blocco coppa / vincitore */
+.coppa-vittoria{
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
-  font-size: 0.95rem;
-  color: white;              /* testo bianco */
-}
-
-  .match-card.vincente {
-    background-color: #001f3f;           /* blu */
-    border: 2px solid #ffcc00;           /* bordo giallo */
-    color: #fff;
-  }
-
-  .match-card img {
-    height: 24px;
-    width: 24px;
-    object-fit: contain;
-  }
-
-  .match-card .team {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .match-card .vs {
-    font-weight: bold;
-    color: #888;
-  }
-    
-.hamburger {
-  font-size: 24px;
-  color: white;
-  cursor: pointer;
-display: block;
-}
-
-    .home-icon img {
-  height: 28px;
-  width: 28px;
-}
-    
-.mobile-nav {
-  display: flex;
-  align-items: center;
-  padding: 0;
-  background-color: #001f3f;
-  gap: 6px;
-}
-    
-.navbar {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  display: none;
   flex-direction: column;
-  width: 100%;
-  background-color: #001f3f;
-}
-
-  .navbar.show {
-    display: flex;
-  }
-
-.submenu {
-  display: none;
-  flex-direction: column;
-  background-color: #002244;
-  margin-left: 20px;
-}
-
-.dropdown.show .submenu {
-  display: flex;
-}
-      .bracket {
-        gap: 20px;
-        padding: 20px;
-      }
-
-      .match {
-        min-width: 140px;
-        padding: 8px 10px;
-        font-size: 0.85rem;
-      }
-
-      h1 {
-        font-size: 1.6rem;
-        margin-top: 10px;
-      }
-    
-.match-card .team-line {
-  display: grid !important;
-  grid-template-columns: auto 32px 1fr auto;
   align-items: center;
-  gap: 8px;
-  padding: 4px 0;
-  width: 100%;
+  margin-top: 30px;
 }
-
-.match-card .team-line .pos {
-  font-weight: bold;
-  color: #001f3f;
-  min-width: 28px;
-  text-align: left;
+.coppa-vittoria img{ width: 180px; height: auto; }
+.vincitore-info{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
 }
-
-.match-card .team-line img {
-  width: 32px;
-  height: 32px;
+.logo-vincitore{
+  width: 60px; height: 60px;
   object-fit: contain;
+  margin-bottom: 6px;
+}
+.nome-vincitore{
+  color: #001f3f;
+  font-weight: 700;
+  font-size: 1rem;
 }
 
-.match-card .team-line .nome {
-  font-size: 0.95rem;
-  text-align: left;
-  overflow-wrap: break-word;
-}
+/* Nasconde del tutto il layout mobile del bracket, se presente in HTML */
+#bracket-mobile{ display: none !important; }
 
-.match-card .team-line .gol {
-  font-weight: bold;
-  text-align: right;
-  min-width: 16px;
-}
-
-    .match-card .team-line .nome,
-  .match-card .team-line .pos,
-  .match-card .team-line .gol {
-    color: #fff;
+/* ========== SOLO NAVBAR MOBILE ========== */
+@media (max-width: 768px){
+  .hamburger{ display: block; }
+  .navbar{
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    gap: 0;
+    padding: 8px 16px;
   }
-    
- .team-line.winner .nome,
-  .team-line.winner .gol {
-    font-weight: 700;
-    color: #ffcc00;                      /* giallo/arancio */
+  .navbar.show{ display: flex; }
+  .submenu{
+    position: static;
+    margin-left: 20px;
+    background-color: #002244;
   }
-    .match-card .vs { color: rgba(255,255,255,.7); }
 }
