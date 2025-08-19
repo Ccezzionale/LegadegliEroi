@@ -317,6 +317,60 @@ nav {
   line-height: 1.1;
 }
 
+  /* ===== Uniforma larghezza, abbassa altezza, loghi grandi ===== */
+:root{
+  --card-w:      320px;   /* larghezza identica per tutte le card (regola qui) */
+  --team-card-h: 56px;    /* altezza RIBASSATA della card */
+  --team-logo:   40px;    /* loghi grandi */
+  --team-pad-y:   8px;    /* padding verticale compatto */
+  --team-pad-x:  16px;    /* padding orizzontale */
+  --pair-gap:     6px;    /* distanza ravvicinata tra i due riquadri dello stesso match */
+}
+
+/* coppia di riquadri della stessa partita */
+.match-pair{
+  display: grid;
+  grid-template-rows: repeat(2, minmax(var(--team-card-h), auto));
+  row-gap: var(--pair-gap);
+}
+
+/* riquadro singolo – larghezza fissa uguale per tutti + altezza bassa */
+.match{
+  width: var(--card-w);
+  min-width: var(--card-w);
+  max-width: var(--card-w);
+  min-height: var(--team-card-h);
+  padding: var(--team-pad-y) var(--team-pad-x);
+  /* mantieni i tuoi border/shadow/rounded esistenti */
+}
+
+/* contenuto orizzontale */
+.squadra.orizzontale{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* logo grande */
+.squadra.orizzontale img{
+  width: var(--team-logo);
+  height: var(--team-logo);
+  object-fit: contain;
+  flex: 0 0 var(--team-logo);
+}
+
+/* testo su una riga, ellissi se troppo lungo */
+.squadra.orizzontale span{
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.1;
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
 }
 
 @media (max-width: 768px) {
