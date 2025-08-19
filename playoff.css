@@ -1,132 +1,41 @@
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f4f4;
-      color: #222;
-      overflow-x: auto;
-    }
+/* ========== VARIABILI ========== */
+:root{
+  /* dimensioni riquadri e loghi */
+  --team-card-h: 72px;      /* altezza riquadro singolo */
+  --team-logo:   40px;      /* diametro logo */
+  --team-pad-y:  14px;      /* padding verticale */
+  --team-pad-x:  18px;      /* padding orizzontale */
 
-    h1 {
-      text-align: center;
-      color: #001f3f;
-      margin-top: 20px;
-      font-size: 2.4rem;
-      text-shadow: 1px 1px 1px #ccc;
-    }
-
-    .bracket {
-      display: flex;
-      align-items: flex-start;
-      flex-direction: row;
-      gap: 30px;
-      width: max-content;
-      padding: 40px;
-    }
-
-    .blocco-colonna {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .blocco-colonna h2 {
-      color: #001f3f;
-      font-size: 1.1rem;
-      margin-bottom: 12px;
-    }
-
-    .colonna {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .match {
-      background-color: white;
-      border: 2px solid #001f3f;
-      border-radius: 8px;
-      padding: 10px 20px;
-      min-width: 160px;
-      color: #001f3f;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    .finale {
-      font-weight: bold;
-      color: #001f3f;
-    }
-
-.match.vincente {
-  border: 3px solid gold;
-  font-weight: bold;
+  /* spaziature */
+  --pair-gap:     6px;      /* distanza tra i due riquadri dello stesso match */
+  --pair-margin: 24px;      /* distanza tra match diversi (tra una coppia e l’altra) */
+  --col-gap:     30px;      /* distanza tra colonne (Wildcard/Quarti/Semifinale/…) */
 }
 
+/* ========== BASE ========== */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f4f4;
+  color: #222;
+  overflow-x: auto;
+}
+
+h1,
 .titolo-pagina {
   text-align: center;
   color: #001f3f;
+  text-shadow: 1px 1px 1px #ccc;
+}
+h1 { margin-top: 20px; font-size: 2.4rem; }
+.titolo-pagina {
   font-size: 2.2rem;
   margin: 30px 0 20px;
   font-weight: 700;
   text-shadow: 2px 2px 6px #FFD700; /* giallo oro tenue */
 }
 
-    .squadra.orizzontale {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .squadra.orizzontale img {
-      max-height: 24px;
-      max-width: 24px;
-    }
-
-    .squadra.orizzontale span {
-      font-weight: bold;
-      color: #001f3f;
-    }
-
-    .spaziata {
-      margin-top: 100px;
-    }
-
-    .semifinale-sx,
-    .semifinale-dx {
-      margin-top: 120px;
-    }
-
-    .coppa-vittoria {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 30px;
-    }
-
-    .coppa-vittoria img {
-      width: 180px;
-      height: auto;
-    }
-
-    .vincitore-info {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 10px;
-    }
-
-    .logo-vincitore {
-      width: 60px;
-      height: 60px;
-      object-fit: contain;
-      margin-bottom: 6px;
-    }
-
-    .nome-vincitore {
-      color: #001f3f;
-      font-weight: bold;
-      font-size: 1rem;
-    }
-
+/* ========== NAVBAR ========== */
 nav {
   background-color: #001f3f;
   color: white;
@@ -135,21 +44,18 @@ nav {
   padding: 10px 20px;
   flex-wrap: wrap;
 }
-
 .home-icon {
   font-size: 1.6rem;
   margin-right: 20px;
   text-decoration: none;
   color: white;
 }
-
 .hamburger {
   font-size: 1.5rem;
   cursor: pointer;
   margin-right: 20px;
   display: none;
 }
-
 .navbar {
   list-style-type: none;
   margin-left: auto;
@@ -158,14 +64,9 @@ nav {
   gap: 25px;
   background-color: #001f3f;
   padding: 10px 30px;
-justify-content: center;
+  justify-content: center;
 }
-
-
-.navbar li {
-  position: relative;
-}
-
+.navbar li { position: relative; }
 .navbar a {
   color: white;
   text-decoration: none;
@@ -173,11 +74,7 @@ justify-content: center;
   border-radius: 5px;
   background-color: transparent;
 }
-
-.navbar a:hover {
-  background-color: #0074D9;
-}
-
+.navbar a:hover { background-color: #0074D9; }
 .submenu {
   display: none;
   background-color: #003366;
@@ -187,18 +84,118 @@ justify-content: center;
   padding-left: 20px;
   margin-top: 6px;
 }
+.submenu a { font-size: 0.95rem; }
+.dropdown.show .submenu { display: flex; }
 
-.submenu a {
-  font-size: 0.95rem;
-}
-
-.dropdown.show .submenu {
+/* ========== BRACKET DESKTOP ========== */
+.bracket {
   display: flex;
+  align-items: flex-start;
+  flex-direction: row;
+  gap: var(--col-gap);
+  width: max-content;
+  padding: 40px;
+}
+.blocco-colonna {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.blocco-colonna h2 {
+  color: #001f3f;
+  font-size: 1.1rem;
+  margin-bottom: 12px;
 }
 
-#bracket-mobile {
-  display: none;
-  padding: 20px;
+/* Ogni colonna contiene più "coppie" (match-pair) */
+.colonna {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pair-margin); /* distanza tra coppie */
+}
+
+/* Wrapper che contiene i due riquadri di una partita */
+.match-pair {
+  display: grid;
+  grid-template-rows: repeat(2, minmax(var(--team-card-h), auto));
+  row-gap: var(--pair-gap); /* distanza ravvicinata tra i due riquadri dello stesso match */
+}
+
+/* Riquadro singolo squadra */
+.match {
+  background-color: #fff;
+  border: 2px solid #001f3f;
+  border-radius: 8px;
+  padding: var(--team-pad-y) var(--team-pad-x);
+  min-width: 180px;                 /* un filo più largo */
+  min-height: var(--team-card-h);   /* più alto */
+  color: #001f3f;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Evidenza vincente */
+.match.vincente {
+  border: 3px solid gold;
+  font-weight: bold;
+}
+
+/* Testo finale */
+.finale {
+  font-weight: bold;
+  color: #001f3f;
+}
+
+/* Riga contenuto squadra orizzontale */
+.squadra.orizzontale {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Loghi più grandi */
+.squadra.orizzontale img {
+  width: var(--team-logo);
+  height: var(--team-logo);
+  object-fit: contain;
+}
+
+/* Nome squadra ben leggibile */
+.squadra.orizzontale span {
+  font-weight: 700;
+  color: #001f3f;
+  font-size: 1rem;
+  line-height: 1.1;
+}
+
+/* Allineamenti speciali preesistenti */
+.spaziata { margin-top: 100px; }
+.semifinale-sx,
+.semifinale-dx { margin-top: 120px; }
+
+/* Blocco coppa / vincitore (se lo usi) */
+.coppa-vittoria {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+}
+.coppa-vittoria img { width: 180px; height: auto; }
+.vincitore-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+.logo-vincitore {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-bottom: 6px;
+}
+.nome-vincitore {
+  color: #001f3f;
+  font-weight: bold;
+  font-size: 1rem;
 }
 
 @media (min-width: 769px) {
