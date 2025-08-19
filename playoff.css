@@ -370,6 +370,52 @@ nav {
   text-overflow: ellipsis;
 }
 
+  /* --- Card più corte + nomi su due righe --- */
+:root{
+  --card-w: 280px;      /* riduci/ aumenta qui: 260–300px di solito ok */
+  --team-card-h: 56px;  /* resta bassa; crescerà solo se il nome va su 2 righe */
+  --team-logo: 40px;
+}
+
+/* larghezza identica per tutte */
+.match{
+  width: var(--card-w);
+  min-width: var(--card-w);
+  max-width: var(--card-w);
+  min-height: var(--team-card-h);
+  padding: 8px 14px;
+}
+
+/* riga contenuto */
+.squadra.orizzontale{
+  display: flex;
+  align-items: center;        /* metti 'flex-start' se vuoi il logo allineato in alto quando il nome va su 2 righe */
+  gap: 10px;
+}
+
+/* logo grande */
+.squadra.orizzontale img{
+  width: var(--team-logo);
+  height: var(--team-logo);
+  object-fit: contain;
+  flex: 0 0 var(--team-logo);
+}
+
+/* nome: massimo 2 righe, poi taglio */
+.squadra.orizzontale span{
+  flex: 1;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.15;
+  overflow: hidden;
+  white-space: normal;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;      /* max 2 righe */
+  -webkit-box-orient: vertical;
+}
+
+
 
 }
 
