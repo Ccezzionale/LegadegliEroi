@@ -418,10 +418,11 @@ nav {
   :root{
   --team-card-h: 10px;
   --team-pad-y: 0px;
-  --team-logo: 40px;
+  --team-logo: 50px;
 }
 
-
+  body{
+  background: #071a3b url("img/champions-bg.png") center / cover no-repeat fixed;
 
 }
 
