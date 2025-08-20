@@ -218,35 +218,69 @@ function wrapPairOnce(pairCode, extraClass = '') {
   w.appendChild(b);
 }
 
-// Allinea le colonne come l’Excel (Q e S alte come le wildcard vicine)
-function alignLikeExcel() {
-  // colonne wildcard (devono esistere nel markup)
-  const wcLeft  = document.querySelector('.wc-sx .colonna');
-  const wcRight = document.querySelector('.wc-dx .colonna');
+// --- crea un wrapper per la coppia Qx-A/B e lo ritorna (idempotente)
+function ensurePairWrap(code) {
+  const a = document.querySelector(`.match[data-match="${code}-A"]`);
+  const b = document.querySelector(`.match[data-match="${code}-B"]`);
+  if (!a || !b) return null;
 
-  // colonne a sinistra: Quarti, Semi
-  const qLeft  = document.querySelector('.q-sx  .colonna');
-  const sLeft  = document.querySelector('.s-sx  .colonna');
-  // colonne a destra: Semi, Quarti
-  const sRight = document.querySelector('.s-dx  .colonna');
-  const qRight = document.querySelector('.q-dx  .colonna');
+  // già wrappati?
+  if (a.parentElement.classList.contains('pair-offset') &&
+      a.parentElement === b.parentElement) {
+    return a.parentElement;
+  }
 
-  const hLeft  = wcLeft  ? wcLeft.offsetHeight  : 0;
-  const hRight = wcRight ? wcRight.offsetHeight : 0;
+  const parent = a.parentElement;
+  if (parent !== b.parentElement) return null;
 
-  if (qLeft)  { qLeft.classList.add('col--spread');  qLeft.style.minHeight  = hLeft  + 'px'; }
-  if (sLeft)  { sLeft.classList.add('col--center');  sLeft.style.minHeight  = hLeft  + 'px'; }
-
-  if (qRight) { qRight.classList.add('col--spread'); qRight.style.minHeight = hRight + 'px'; }
-  if (sRight) { sRight.classList.add('col--center'); sRight.style.minHeight = hRight + 'px'; }
+  const w = document.createElement('div');
+  w.className = 'pair-offset';
+  parent.insertBefore(w, a);
+  w.appendChild(a);
+  w.appendChild(b);
+  return w;
 }
 
-// >>> alla fine di aggiornaPlayoff(), dopo aver riempito le .match:
-wrapPairOnce('Q1', 'pair-top-left');     // Q1 blocco alto sinistra
-wrapPairOnce('Q2', 'pair-bottom-left');  // Q2 blocco basso sinistra
-wrapPairOnce('Q3', 'pair-top-right');    // Q3 blocco alto destra
-wrapPairOnce('Q4', 'pair-bottom-right'); // Q4 blocco basso destra
+// --- ordina i blocchi dei quarti nelle colonne giuste (top/bottom)
+function placeQuarterPairs() {
+  const colQsx = document.querySelector('.q-sx .colonna');
+  const colQdx = document.querySelector('.q-dx .colonna');
+  if (colQsx) {
+    const q1 = ensurePairWrap('Q1');
+    const q2 = ensurePairWrap('Q2');
+    // Q1 sopra, Q2 sotto
+    if (q1) colQsx.append(q1);
+    if (q2) colQsx.append(q2);
+  }
+  if (colQdx) {
+    const q3 = ensurePairWrap('Q3');
+    const q4 = ensurePairWrap('Q4');
+    // Q3 sopra, Q4 sotto
+    if (q3) colQdx.append(q3);
+    if (q4) colQdx.append(q4);
+  }
+}
 
+// --- allinea le colonne: i Quarti “spalmati”, le Semi centrate
+function alignLikeExcel() {
+  const getCol = sel => document.querySelector(`${sel} .colonna`);
+  const wcL = getCol('.wc-sx'), wcR = getCol('.wc-dx');
+  const qL  = getCol('.q-sx'),  sL  = getCol('.s-sx');
+  const qR  = getCol('.q-dx'),  sR  = getCol('.s-dx');
+
+  // classi di comportamento
+  [qL, qR].forEach(c => c && c.classList.add('col--spread'));
+  [sL, sR].forEach(c => c && c.classList.add('col--center'));
+
+  // altezze minime uguali a quelle delle wildcard adiacenti
+  if (qL) qL.style.minHeight = (wcL ? wcL.offsetHeight : 0) + 'px';
+  if (sL) sL.style.minHeight = (wcL ? wcL.offsetHeight : 0) + 'px';
+  if (qR) qR.style.minHeight = (wcR ? wcR.offsetHeight : 0) + 'px';
+  if (sR) sR.style.minHeight = (wcR ? wcR.offsetHeight : 0) + 'px';
+}
+
+// >>> dopo aver popolato tutte le .match:
+placeQuarterPairs();
 alignLikeExcel();
 window.addEventListener('resize', alignLikeExcel);
 
