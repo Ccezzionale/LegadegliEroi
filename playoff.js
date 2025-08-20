@@ -194,30 +194,6 @@ function aggiornaPlayoff() {
   wrapPairOnce('Q2', 'pair-Q2'); // primo quarto a destra
 }
 
-/* idempotente: non wrappa due volte, ma aggiunge la classe offset se serve */
-// Wrappa una coppia Qx in un contenitore (idempotente)
-function wrapPairOnce(pairCode, extraClass = '') {
-  const a = document.querySelector(`.match[data-match="${pairCode}-A"]`);
-  const b = document.querySelector(`.match[data-match="${pairCode}-B"]`);
-  if (!a || !b) return;
-
-  // già wrappati?
-  if (a.parentElement.classList.contains('pair-offset') &&
-      a.parentElement === b.parentElement) {
-    if (extraClass) a.parentElement.classList.add(extraClass);
-    return;
-  }
-
-  const parent = a.parentElement;
-  if (parent !== b.parentElement) return;
-
-  const w = document.createElement('div');
-  w.className = `pair-offset ${extraClass}`.trim();
-  parent.insertBefore(w, a);
-  w.appendChild(a);
-  w.appendChild(b);
-}
-
 // --- crea un wrapper per la coppia Qx-A/B e lo ritorna (idempotente)
 function ensurePairWrap(code) {
   const a = document.querySelector(`.match[data-match="${code}-A"]`);
