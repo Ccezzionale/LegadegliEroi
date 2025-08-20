@@ -135,8 +135,8 @@ function computeParticipants() {
 // Q4: 4ª vs (5–12) → WC2
 P.Q1 = { home: { name: S[0].nome, seed: 1 }, away: winnerOf('WC1') || { name: 'Vincente WC1' } };
 P.Q2 = { home: { name: S[1].nome, seed: 2 }, away: winnerOf('WC4') || { name: 'Vincente WC4' } };
-P.Q3 = { home: { name: S[3].nome, seed: 4 }, away: winnerOf('WC2') || { name: 'Vincente WC2' } }; // <-- swap
-P.Q4 = { home: { name: S[2].nome, seed: 3 }, away: winnerOf('WC3') || { name: 'Vincente WC3' } }; // <-- swap
+P.Q3 = { home: { name: S[2].nome, seed: 3 }, away: winnerOf('WC3') || { name: 'Vincente WC3' } }; // 3ª vs 6–11
+P.Q4 = { home: { name: S[3].nome, seed: 4 }, away: winnerOf('WC2') || { name: 'Vincente WC2' } }; // 4ª vs 5–12
 
 // ---- SEMIFINALI ---- (tabellone fisso)
 P.S1 = { home: winnerOf('Q1') || { name: 'Vincente Q1' }, away: winnerOf('Q4') || { name: 'Vincente Q4' } };
