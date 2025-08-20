@@ -337,8 +337,8 @@ nav{
 
 /* manopola per micro-regolare l'altezza delle semifinali (px) */
 :root{
-  --semi-shift-left: 0px;   /* positivo = su, negativo = giù */
-  --semi-shift-right: 0px;  /* positivo = su, negativo = giù */
+  --semi-shift-left: 18px;   /* positivo = su, negativo = giù */
+  --semi-shift-right: 18px;  /* positivo = su, negativo = giù */
 }
 
 
