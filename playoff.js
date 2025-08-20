@@ -91,11 +91,12 @@ const PICKS = {
 
 /* 2) Abbinamenti Wildcard (indici 0-based nella classifica ordinata) */
 const WC_PAIRS = {
-  WC1: [7, 8],   // 8ª vs 9ª  (colonna sinistra - in alto)
-  WC2: [4, 11],  // 5ª vs 12ª (colonna sinistra - in basso)
-  WC3: [5, 10],  // 6ª vs 11ª (colonna destra  - in basso)
-  WC4: [6, 9],   // 7ª vs 10ª (colonna destra  - in alto)
+  WC1: [7, 8],   // SINISTRA in alto  -> 8ª vs 9ª
+  WC3: [4, 11],  // SINISTRA in basso -> 5ª vs 12ª
+  WC2: [6, 9],   // DESTRA  in alto   -> 7ª vs 10ª
+  WC4: [5, 10],  // DESTRA  in basso  -> 6ª vs 11ª
 };
+
 
 /* 3) Helpers */
 const truthy = v => !(v === '' || v === 0 || v === null || v === undefined || v === false);
@@ -129,14 +130,18 @@ function computeParticipants() {
 
 
 // ---- QUARTI ---- (tabellone fisso da regolamento)
-// Q1: 1ª vs (8–9)  → WC1
-// Q2: 2ª vs (7–10) → WC4
-// Q3: 3ª vs (6–11) → WC3
-// Q4: 4ª vs (5–12) → WC2
+// Q1: 1ª vs (8–9)   -> WC1
 P.Q1 = { home: { name: S[0].nome, seed: 1 }, away: winnerOf('WC1') || { name: 'Vincente WC1' } };
-P.Q2 = { home: { name: S[1].nome, seed: 2 }, away: winnerOf('WC4') || { name: 'Vincente WC4' } };
-P.Q3 = { home: { name: S[2].nome, seed: 3 }, away: winnerOf('WC3') || { name: 'Vincente WC3' } };
-P.Q4 = { home: { name: S[3].nome, seed: 4 }, away: winnerOf('WC2') || { name: 'Vincente WC2' } };
+
+// Q2: 2ª vs (7–10)  -> WC2  (ATTENZIONE: prima puntavi a WC4)
+P.Q2 = { home: { name: S[1].nome, seed: 2 }, away: winnerOf('WC2') || { name: 'Vincente WC2' } };
+
+// Q3: 3ª vs (6–11)  -> WC4  (prima puntavi a WC3)
+P.Q3 = { home: { name: S[2].nome, seed: 3 }, away: winnerOf('WC4') || { name: 'Vincente WC4' } };
+
+// Q4: 4ª vs (5–12)  -> WC3  (prima puntavi a WC2)
+P.Q4 = { home: { name: S[3].nome, seed: 4 }, away: winnerOf('WC3') || { name: 'Vincente WC3' } };
+
 
 // ---- SEMIFINALI ---- (tabellone fisso)
 P.S1 = { home: winnerOf('Q1') || { name: 'Vincente Q1' }, away: winnerOf('Q4') || { name: 'Vincente Q4' } };
