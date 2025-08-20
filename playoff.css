@@ -322,7 +322,7 @@ nav{
 .col--center {
   display: flex;
   flex-direction: column;
-  justify-content: center;          /* semifinali in mezzo */
+  justify-content:flex-start; } 
 }
 
 /* (opzionale) piccolo abbassamento dei primi quarti per stacco visivo */
