@@ -37,9 +37,6 @@ function applyTeamColorFromCard(cardEl){
   cardEl.style.setProperty('--team-color', c);
 }
 
-// Esegui dopo il render delle card:
-document.querySelectorAll('.match').forEach(applyTeamColorFromCard);
-
 function creaHTMLSquadra(nome, posizione = "", punteggio = "", isVincente = false) {
   const nomePulito = nome.replace(/[°]/g, "").trim();
   const usaLogo = !nome.toLowerCase().includes("vincente") && !nome.toLowerCase().includes("classificata");
@@ -148,6 +145,7 @@ function aggiornaPlayoff() {
 
     const isVincente = risultato?.vincente === nome;
     div.innerHTML = creaHTMLSquadra(nome, posizione, punteggio, isVincente);
+    applyTeamColorFromCard(div);
 
     if (isVincente) {
       div.classList.add("vincente");
