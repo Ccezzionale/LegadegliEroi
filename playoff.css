@@ -1,23 +1,33 @@
-/* ========== VARIABILI ========== */
+/* ========== VARIABILI GLOBALI ========== */
 :root{
   /* Card & contenuti */
-  --card-w:       250px;   /* larghezza identica per tutte le card */
-  --team-card-h:   10px;   /* altezza minima card */
-  --team-logo:     50px;   /* diametro logo */
-  --team-pad-y:     8px;   /* padding verticale */
-  --team-pad-x:    14px;   /* padding orizzontale */
+  --card-w:        250px;   /* larghezza card */
+  --team-card-h:     10px;  /* altezza minima card */
+  --team-logo:       50px;  /* diametro logo */
+  --team-pad-y:       8px;  /* padding verticale */
+  --team-pad-x:      14px;  /* padding orizzontale */
 
   /* Spaziature layout */
-  --pair-gap:       6px;   /* distanza tra i due riquadri dello stesso match */
-  --pair-margin:   24px;   /* distanza tra match diversi (tra una coppia e l’altra) */
-  --col-gap:       30px;   /* distanza tra colonne (Wildcard/Quarti/Semifinale/Finale) */
+  --pair-gap:         6px;  /* tra i due riquadri dello stesso match */
+  --pair-margin:     24px;  /* tra match diversi (coppie) */
+  --col-gap:         30px;  /* tra colonne (WC/Q/S/F) */
+
+  /* Card bicolore */
+  --logo-slab:       62px;  /* larghezza pannello logo */
+  --team-color:   #123c7a;  /* fallback per-panchina */
 
   /* Effetti titolo/heading */
   --gold-shadow: rgba(0,0,0,.35);
   --gold-glow:   rgba(255,210,80,.35);
+
+  /* Manopola altezze Semifinali (positivo = più in alto) */
+  --semi-shift-left:  18px;
+  --semi-shift-right: 18px;
 }
 
 /* ========== BASE ========== */
+*{ box-sizing: border-box; }
+html, body{ height:100%; }
 body{
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -37,43 +47,38 @@ body{
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  text-shadow:
-    0 2px 0 var(--gold-shadow),
-    0 0 18px var(--gold-glow);
+  text-shadow: 0 2px 0 var(--gold-shadow), 0 0 18px var(--gold-glow);
 }
 
-/* ========== NAVBAR (desktop + mobile) ========== */
+/* ========== NAVBAR (desktop) ========== */
 nav{
   background-color: #001f3f;
   color: #fff;
   display: flex;
   align-items: center;
+  flex-wrap: nowrap;          /* una sola riga */
+  gap: 12px;
+  min-height: 56px;
   padding: 10px 20px;
-  flex-wrap: wrap;
 }
 .home-icon{
   font-size: 1.6rem;
-  margin-right: 20px;
+  margin-right: 12px;
   text-decoration: none;
   color: #fff;
 }
-.hamburger{
-  font-size: 1.5rem;
-  cursor: pointer;
-  margin-right: 20px;
-  display: none; /* mostrata solo su mobile */
-}
+.hamburger{ display:none; }
 .navbar{
   list-style: none;
-  margin-left: auto;
+  margin: 0;
+  margin-left: 0 !important;  /* allinea a sinistra */
   display: flex;
   align-items: center;
-  gap: 25px;
-  background-color: #001f3f;
-  padding: 10px 30px;
-  justify-content: center;
+  justify-content: flex-start !important;
+  gap: 22px;
+  padding: 10px 0;
 }
-.navbar li{ position: relative; }
+.navbar > li{ position: relative; white-space: nowrap; }
 .navbar a{
   color: #fff;
   text-decoration: none;
@@ -110,10 +115,8 @@ nav{
 .blocco-colonna h2{
   margin: 0 0 12px;
   font-size: 1.1rem;
-  color: #ffec9f; /* oro chiaro leggibile sul blu */
-  text-shadow:
-    0 1px 2px var(--gold-shadow),
-    0 0 8px var(--gold-glow);
+  color: #ffec9f;
+  text-shadow: 0 1px 2px var(--gold-shadow), 0 0 8px var(--gold-glow);
   font-weight: 700;
 }
 .blocco-colonna h2::after{
@@ -124,14 +127,14 @@ nav{
   opacity:.7; border-radius:1px;
 }
 
-/* Ogni colonna contiene più "coppie" (match-pair) */
+/* Colonne di coppie (match-pair) */
 .colonna{
   display: flex;
   flex-direction: column;
-  gap: var(--pair-margin); /* distanza tra coppie */
+  gap: var(--pair-margin);
 }
 
-/* Wrapper che contiene i due riquadri della stessa partita */
+/* Ogni coppia contiene i due riquadri del match */
 .match-pair{
   display: grid;
   grid-template-rows: repeat(2, minmax(var(--team-card-h), auto));
@@ -144,35 +147,42 @@ nav{
   min-width: var(--card-w);
   max-width: var(--card-w);
   min-height: var(--team-card-h);
-  padding: var(--team-pad-y) var(--team-pad-x);
   background-color: #fff;
   color: #001f3f;
   border: 2px solid #001f3f;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
 
-/* Evidenza vincente */
-.match.vincente{
-  border: 3px solid gold;
-  font-weight: 700;
-}
-
-/* Riga contenuto squadra orizzontale */
-.squadra.orizzontale{
-  display: flex;
+  /* layout bicolore */
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--logo-slab) 1fr;
   align-items: center;
-  gap: 10px;
+  overflow: hidden;
+  padding: 0; /* padding sugli interni */
 }
+.match::before{
+  content:"";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--logo-slab);
+  background: var(--team-color);
+}
+
+/* Contenuti interni del riquadro */
+.squadra.orizzontale{ display: contents; }
 .squadra.orizzontale img{
+  grid-column: 1;
+  justify-self: center;
   width: var(--team-logo);
   height: var(--team-logo);
   object-fit: contain;
-  flex: 0 0 var(--team-logo);
+  z-index: 1;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,.35));
 }
-/* Nome squadra: max 2 righe */
 .squadra.orizzontale span{
-  flex: 1;
+  grid-column: 2;
+  padding: var(--team-pad-y) var(--team-pad-x);
   font-weight: 700;
   font-size: 0.95rem;
   line-height: 1.15;
@@ -184,180 +194,51 @@ nav{
   -webkit-box-orient: vertical;
 }
 
-/* Allineamenti speciali */
-.spaziata{ margin-top: 100px; }
-.semifinale-sx,
-.semifinale-dx{ margin-top: 120px; }
-
-/* Blocco coppa / vincitore */
-.coppa-vittoria{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 30px;
-}
-.coppa-vittoria img{ width: 180px; height: auto; }
-.vincitore-info{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 10px;
-}
-.logo-vincitore{
-  width: 60px; height: 60px;
-  object-fit: contain;
-  margin-bottom: 6px;
-}
-.nome-vincitore{
-  color: #001f3f;
+/* Evidenza vincente */
+.match.vincente{
+  border: 3px solid gold;
   font-weight: 700;
-  font-size: 1rem;
 }
 
-/* ——— NAVBAR: forza una sola riga su desktop ——— */
-nav{
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap;     /* << stop wrapping */
-  gap: 12px;
-  min-height: 56px;
-}
-
-.home-icon{
-  flex: 0 0 auto;
-  margin-right: 12px;
-}
-
-.navbar{
-  margin-left: auto;     /* spinge il menu a destra */
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 0 12px;       /* padding più compatto evita il wrap */
-}
-
-.navbar > li{ white-space: nowrap; } /* evita che voci lunghe spezzino */
-
-/* NAVBAR — allinea a sinistra come nello screenshot */
-nav{
-  flex-wrap: nowrap;          /* una sola riga */
-  gap: 12px;
-}
-
-.home-icon{
-  flex: 0 0 auto;
-  margin-right: 12px;
-}
-
-.navbar{
-  margin-left: 0 !important;  /* rimuove lo “spingi a destra” */
-  justify-content: flex-start !important; /* non centrare */
-  padding: 10px 0;            /* niente padding sinistro extra */
-  gap: 22px;                  /* spazio tra voci */
-}
-
-.navbar > li{ white-space: nowrap; } /* evita che rompa su 2 righe */
-
-/* —— Card bicolore: pannello logo + pannello info —— */
-:root{
-  --logo-slab: 62px;           /* larghezza pannello logo */
-  --team-color: #123c7a;       /* fallback se non impostato per-card */
-}
-
-/* contenitore in 2 colonne, bordo unico, angoli arrotondati */
-.match{
-  position: relative;
-  display: grid;
-  grid-template-columns: var(--logo-slab) 1fr;
-  align-items: center;
-  overflow: hidden;            /* per “attaccare” i due riquadri */
-  padding: 0;                  /* padding spostato sui contenuti */
-}
-
-/* pannello sinistro colorato (si colora via --team-color) */
-.match::before{
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: var(--logo-slab);
-  background: var(--team-color);
-}
-
-/* usiamo il wrapper esistente ma lo “apriamo” dentro la griglia */
-.match .squadra.orizzontale{
-  display: contents;           /* img in colonna 1, testo in colonna 2 */
-}
-
-/* logo centrato nel pannello sinistro */
-.match .squadra.orizzontale img{
-  grid-column: 1;
-  justify-self: center;
-  width: var(--team-logo);
-  height: var(--team-logo);
-  object-fit: contain;
-  z-index: 1;                  /* sopra il pannello colorato */
-  filter: drop-shadow(0 0 2px rgba(0,0,0,.35));
-}
-
-/* seed + nome nel pannello destro, su bianco */
-.match .squadra.orizzontale span{
-  grid-column: 2;
-  padding: var(--team-pad-y) var(--team-pad-x);
-}
-
-
-/* wrapper di una coppia Qx */
-.pair-offset {
+/* Wrapper di una coppia (usato dal JS quando serve offset) */
+.pair-offset{
   display: grid;
   grid-auto-rows: auto;
   row-gap: var(--pair-gap, 6px);
 }
 
-/* colonne “a scacchiera”: Quarti riempiono alto+baso, Semi centrate */
-.col--spread {
+/* Colonne a “scacchiera” e colonne centrate (classi aggiunte dal JS) */
+.col--spread{
   display: flex;
   flex-direction: column;
-  justify-content: space-between;   /* una coppia su, una giù */
+  justify-content: space-between; /* una coppia su, una giù */
 }
-/* --- SEMIFINALI: FIX --- */
-
-/* chiudi bene questo blocco (niente graffa extra dopo) */
 .col--center{
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
 }
 
-/* niente offset che falsano la metà */
-.semifinale-sx,
-.semifinale-dx,
+/* --- PULIZIA OFFSET FISSI --- */
 .spaziata{ margin-top: 0 !important; }
-
+.semifinale-sx,
+.semifinale-dx{ margin-top: 0 !important; }
 .q-sx .pair-offset:first-child,
 .q-dx .pair-offset:first-child{ margin-top: 0 !important; }
 
-/* manopola unica */
-:root{
-  --semi-shift-left: 18px;   /* + su, - giù */
-  --semi-shift-right: 18px;
-}
-
-/* applico lo spostamento */
-.s-sx .colonna{
+/* --- MANOPOLA: alza/abbassa le Semifinali --- */
+.semifinale-sx{
   transform: translateY(calc(-1 * var(--semi-shift-left)));
   will-change: transform;
 }
-.s-dx .colonna{
+.semifinale-dx{
   transform: translateY(calc(-1 * var(--semi-shift-right)));
   will-change: transform;
 }
 
-
-
-/* Mobile: riattivo il wrap e l'hamburger */
+/* ========== MOBILE (hamburger) ========== */
 @media (max-width: 768px){
-  nav{ flex-wrap: wrap; }
-  .hamburger{ display: block; }
+  .hamburger{ display:block; cursor:pointer; }
   .navbar{
     display: none;
     flex-direction: column;
@@ -365,6 +246,7 @@ nav{
     gap: 0;
     padding: 8px 16px;
   }
-  .navbar.show{ display: flex; }
+  .navbar.show{ display:flex; }
   .submenu{ position: static; margin-left: 20px; background:#002244; }
 }
+
