@@ -327,8 +327,8 @@ nav{
 }
 
 /* offset specifici per i “primi quarti” */
-.pair-Q1 { margin-top: 24px; }  /* regola qui l’abbassamento a sinistra */
-.pair-Q2 { margin-top: 24px; }  /* regola qui l’abbassamento a destra */
+.pair-top-left  { margin-top: 20px; }  /* Q1 sotto a WC1/WC2 */
+.pair-top-right { margin-top: 20px; }  /* Q3 sotto a WC3/WC4 */
 
 
 /* mantieni il resto del tuo stile (bordi, shadow, vincente) */
