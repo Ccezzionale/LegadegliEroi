@@ -246,6 +246,8 @@ function placeQuarterPairs() {
 
 // allinea le colonne: quarti “spalmati”, altezze uguali alle wildcard
 // e semifinali centrate esattamente a metà
+// allinea le colonne: quarti “spalmati”, altezze uguali alle wildcard
+// e semifinali centrate esattamente a metà
 function alignLikeExcel() {
   const wcL = getCol('.wc-sx', 1);
   const qL  = getCol('.q-sx', 2);
@@ -272,6 +274,31 @@ function alignLikeExcel() {
   // *** centratura verticale precisa delle semifinali nella loro colonna ***
   if (sL) centerSemiColumn(sL, hL);
   if (sR) centerSemiColumn(sR, hR);
+}
+
+// calcola quanto spazio libero c’è nella colonna e
+// aggiunge padding-top/padding-bottom uguale per centrare il blocco semifinali
+function centerSemiColumn(col, targetHeight){
+  if (!col) return;
+
+  // reset padding per misurare correttamente
+  col.style.paddingTop = '0px';
+  col.style.paddingBottom = '0px';
+
+  const items = Array.from(col.children)
+    .filter(el => el.nodeType === 1); // solo elementi
+
+  // somma l’altezza degli item + gap verticale effettivo
+  const cs = getComputedStyle(col);
+  const gap = parseFloat(cs.rowGap || cs.gap || 0);
+  let contentH = 0;
+  items.forEach((el, i) => { contentH += el.offsetHeight; if (i>0) contentH += gap; });
+
+  const free = Math.max(0, targetHeight - contentH);
+  const pad = free / 2;
+
+  col.style.paddingTop = pad + 'px';
+  col.style.paddingBottom = pad + 'px';
 }
 
 // calcola quanto spazio libero c’è nella colonna e
