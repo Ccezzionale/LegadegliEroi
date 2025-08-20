@@ -251,8 +251,6 @@ function alignLikeExcel() {
 }
 
 // >>> dopo aver popolato tutte le .match:
-placeQuarterPairs();
-alignLikeExcel();
 window.addEventListener('resize', alignLikeExcel);
 
 /* =========================================
