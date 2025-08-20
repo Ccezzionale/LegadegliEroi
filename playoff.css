@@ -1,7 +1,7 @@
 /* ========== VARIABILI GLOBALI ========== */
 :root{
   /* Card & contenuti */
-  --card-w:        250px;   /* larghezza card */
+  --card-w:        255px;   /* larghezza card */
   --team-card-h:     10px;  /* altezza minima card */
   --team-logo:       50px;  /* diametro logo */
   --team-pad-y:       8px;  /* padding verticale */
