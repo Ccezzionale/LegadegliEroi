@@ -319,36 +319,38 @@ nav{
   flex-direction: column;
   justify-content: space-between;   /* una coppia su, una giù */
 }
-.col--center {
+/* --- SEMIFINALI: FIX --- */
+
+/* chiudi bene questo blocco (niente graffa extra dopo) */
+.col--center{
   display: flex;
   flex-direction: column;
-  justify-content:flex-start; } 
+  justify-content: flex-start;
 }
 
-/* --- SEMIFINALI: rimuovo spinte verso il basso --- */
+/* niente offset che falsano la metà */
 .semifinale-sx,
 .semifinale-dx,
 .spaziata{ margin-top: 0 !important; }
 
-/* anche i quarti non devono avere offset extra, altrimenti
-   la "metà" non è più la vera metà della colonna */
 .q-sx .pair-offset:first-child,
 .q-dx .pair-offset:first-child{ margin-top: 0 !important; }
 
-/* manopola per micro-regolare l'altezza delle semifinali (px) */
+/* manopola unica */
 :root{
-  --semi-shift-left: 18px;   /* positivo = su, negativo = giù */
-  --semi-shift-right: 18px;  /* positivo = su, negativo = giù */
-}
-
-/* Sposta le colonne Semifinali in alto/basso senza toccare il layout */
-:root{
-  --semi-shift-left: 18px;   /* positivo = più in alto */
+  --semi-shift-left: 18px;   /* + su, - giù */
   --semi-shift-right: 18px;
 }
-.s-sx .colonna{ transform: translateY(calc(-1 * var(--semi-shift-left))); }
-.s-dx .colonna{ transform: translateY(calc(-1 * var(--semi-shift-right))); }
 
+/* applico lo spostamento */
+.s-sx .colonna{
+  transform: translateY(calc(-1 * var(--semi-shift-left)));
+  will-change: transform;
+}
+.s-dx .colonna{
+  transform: translateY(calc(-1 * var(--semi-shift-right)));
+  will-change: transform;
+}
 
 
 
