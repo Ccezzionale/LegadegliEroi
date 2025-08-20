@@ -305,6 +305,10 @@ nav{
   padding: var(--team-pad-y) var(--team-pad-x);
 }
 
+.match[data-match="Q1-A"] {
+  margin-top: 24px; /* regola qui */
+}
+
 /* mantieni il resto del tuo stile (bordi, shadow, vincente) */
 
 
