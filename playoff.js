@@ -195,6 +195,7 @@ function aggiornaPlayoff() {
 }
 
 /* idempotente: non wrappa due volte, ma aggiunge la classe offset se serve */
+// Wrappa una coppia Qx in un contenitore (idempotente)
 function wrapPairOnce(pairCode, extraClass = '') {
   const a = document.querySelector(`.match[data-match="${pairCode}-A"]`);
   const b = document.querySelector(`.match[data-match="${pairCode}-B"]`);
@@ -216,6 +217,38 @@ function wrapPairOnce(pairCode, extraClass = '') {
   w.appendChild(a);
   w.appendChild(b);
 }
+
+// Allinea le colonne come l’Excel (Q e S alte come le wildcard vicine)
+function alignLikeExcel() {
+  // colonne wildcard (devono esistere nel markup)
+  const wcLeft  = document.querySelector('.wc-sx .colonna');
+  const wcRight = document.querySelector('.wc-dx .colonna');
+
+  // colonne a sinistra: Quarti, Semi
+  const qLeft  = document.querySelector('.q-sx  .colonna');
+  const sLeft  = document.querySelector('.s-sx  .colonna');
+  // colonne a destra: Semi, Quarti
+  const sRight = document.querySelector('.s-dx  .colonna');
+  const qRight = document.querySelector('.q-dx  .colonna');
+
+  const hLeft  = wcLeft  ? wcLeft.offsetHeight  : 0;
+  const hRight = wcRight ? wcRight.offsetHeight : 0;
+
+  if (qLeft)  { qLeft.classList.add('col--spread');  qLeft.style.minHeight  = hLeft  + 'px'; }
+  if (sLeft)  { sLeft.classList.add('col--center');  sLeft.style.minHeight  = hLeft  + 'px'; }
+
+  if (qRight) { qRight.classList.add('col--spread'); qRight.style.minHeight = hRight + 'px'; }
+  if (sRight) { sRight.classList.add('col--center'); sRight.style.minHeight = hRight + 'px'; }
+}
+
+// >>> alla fine di aggiornaPlayoff(), dopo aver riempito le .match:
+wrapPairOnce('Q1', 'pair-top-left');     // Q1 blocco alto sinistra
+wrapPairOnce('Q2', 'pair-bottom-left');  // Q2 blocco basso sinistra
+wrapPairOnce('Q3', 'pair-top-right');    // Q3 blocco alto destra
+wrapPairOnce('Q4', 'pair-bottom-right'); // Q4 blocco basso destra
+
+alignLikeExcel();
+window.addEventListener('resize', alignLikeExcel);
 
 /* =========================================
    FETCH CLASSIFICA e AVVIO
