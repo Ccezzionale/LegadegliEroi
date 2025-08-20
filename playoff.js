@@ -26,13 +26,6 @@ const TEAM_COLORS = {
   "riverfilo":              "#D5011D",
   "eintracht franco 126":   "#E1000F",
   "lokomotiv lipsia":       "#FACC15",
-
-  // (facoltative, se compaiono nel bracket attuale)
-  "real mimmo":             "#FF8C00",
-  "rafa casablanca":        "#0E5A37",
-  "giuly":                  "#5FB3FF",
-  "giody":                  "#0B1F3A",
-  "union librino":          "#9B7BD7"
 };
 
 // --- applica colore leggendo il nome della card ---
