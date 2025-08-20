@@ -128,15 +128,14 @@ function computeParticipants() {
     return null; // non deciso o ambiguità
   };
 
-// ---- QUARTI ---- (schema Excel, lato sinistro = 1 e 4, lato destro = 2 e 3)
-// Sinistra
+// ---- QUARTI ---- (schema Excel corretto)
+// Sinistra (1 in alto, 4 in basso)
 P.Q1 = { home: { name: S[0].nome, seed: 1 }, away: winnerOf('WC1') || { name: 'Vincente WC1' } }; // 1 vs 8–9
 P.Q4 = { home: { name: S[3].nome, seed: 4 }, away: winnerOf('WC3') || { name: 'Vincente WC3' } }; // 4 vs 5–12
-// Destra
+
+// Destra (2 in alto, 3 in basso)
 P.Q2 = { home: { name: S[1].nome, seed: 2 }, away: winnerOf('WC2') || { name: 'Vincente WC2' } }; // 2 vs 7–10
 P.Q3 = { home: { name: S[2].nome, seed: 3 }, away: winnerOf('WC4') || { name: 'Vincente WC4' } }; // 3 vs 6–11
-
-
 
 // ---- SEMIFINALI ---- (tabellone fisso)
 P.S1 = { home: winnerOf('Q1') || { name: 'Vincente Q1' }, away: winnerOf('Q4') || { name: 'Vincente Q4' } };
@@ -159,7 +158,7 @@ function aggiornaPlayoff() {
   const fill = (code, side) => {
     const data = P[code]?.[side];
     if (!data) return;
-    const slot = side === 'home' ? 'A' : 'B'; // A = riquadro sopra, B = sotto
+    const slot = side === 'home' ? 'A' : 'B'; // A = sopra, B = sotto
     const el = document.querySelector(`.match[data-match="${code}-${slot}"]`);
     if (!el) return;
 
@@ -189,7 +188,7 @@ function aggiornaPlayoff() {
       : "";
   }
 
-  // Ordina i blocchi dei quarti nelle colonne giuste (Q1 top sx, Q4 bottom sx, Q2 top dx, Q3 bottom dx)
+  // Ordina i blocchi dei quarti nelle colonne giuste
   placeQuarterPairs();
   // Allinea colonne (quarti “spalmati”, semifinali centrate)
   alignLikeExcel();
@@ -203,7 +202,6 @@ function ensurePairWrap(code) {
   const b = document.querySelector(`.match[data-match="${code}-B"]`);
   if (!a || !b) return null;
 
-  // già wrappati?
   if (a.parentElement.classList.contains('pair-offset') &&
       a.parentElement === b.parentElement) {
     return a.parentElement;
@@ -220,20 +218,31 @@ function ensurePairWrap(code) {
   return w;
 }
 
-// ordina i blocchi dei quarti per avere la griglia come da schema Excel
+// utility: prendi la colonna con fallback se non hai le classi semantiched
+function getQuarterCol(side) {
+  if (side === 'left') {
+    return document.querySelector('.q-sx .colonna')
+        || document.querySelector('.bracket > .blocco-colonna:nth-of-type(2) .colonna');
+  } else {
+    return document.querySelector('.q-dx .colonna')
+        || document.querySelector('.bracket > .blocco-colonna:nth-of-type(6) .colonna');
+  }
+}
+
+// ordina i blocchi dei quarti per avere: Q1/Q4 a sinistra, Q2/Q3 a destra
 function placeQuarterPairs() {
-  const colQsx = document.querySelector('.q-sx .colonna');
-  const colQdx = document.querySelector('.q-dx .colonna');
+  const colQsx = getQuarterCol('left');
+  const colQdx = getQuarterCol('right');
 
   if (colQsx) {
     const q1 = ensurePairWrap('Q1'); // top sinistra
-    const q4 = ensurePairWrap('Q4'); // bottom sinistra
+    const q4 = ensurePairWrap('Q4'); // bottom sinistra (qui c'è la 4ª)
     if (q1) colQsx.append(q1);
     if (q4) colQsx.append(q4);
   }
   if (colQdx) {
     const q2 = ensurePairWrap('Q2'); // top destra
-    const q3 = ensurePairWrap('Q3'); // bottom destra
+    const q3 = ensurePairWrap('Q3'); // bottom destra (qui c'è la 3ª)
     if (q2) colQdx.append(q2);
     if (q3) colQdx.append(q3);
   }
@@ -241,10 +250,13 @@ function placeQuarterPairs() {
 
 // allinea colonne: quarti “spalmati”, semifinali centrate, altezza pari alle wildcard adiacenti
 function alignLikeExcel() {
-  const getCol = sel => document.querySelector(`${sel} .colonna`);
-  const wcL = getCol('.wc-sx'), wcR = getCol('.wc-dx');
-  const qL  = getCol('.q-sx'),  sL  = getCol('.s-sx');
-  const qR  = getCol('.q-dx'),  sR  = getCol('.s-dx');
+  const getCol = (sel, nth) =>
+    document.querySelector(`${sel} .colonna`) ||
+    document.querySelector(`.bracket > .blocco-colonna:nth-of-type(${nth}) .colonna`);
+
+  const wcL = getCol('.wc-sx', 1), wcR = getCol('.wc-dx', 7);
+  const qL  = getCol('.q-sx', 2),  sL  = getCol('.s-sx', 3);
+  const qR  = getCol('.q-dx', 6),  sR  = getCol('.s-dx', 5);
 
   [qL, qR].forEach(c => c && c.classList.add('col--spread'));
   [sL, sR].forEach(c => c && c.classList.add('col--center'));
@@ -255,8 +267,9 @@ function alignLikeExcel() {
   if (sR) sR.style.minHeight = (wcR ? wcR.offsetHeight : 0) + 'px';
 }
 
-// registra il listener (una sola volta, funzione globale)
+// registra il listener (una sola volta)
 window.addEventListener('resize', alignLikeExcel);
+
 
 /* =========================================
    FETCH CLASSIFICA e AVVIO
