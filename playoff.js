@@ -189,11 +189,6 @@ function aggiornaPlayoff() {
       : "";
   }
 
-  // === SOLO la soluzione “offset per blocco” ===
-  wrapPairOnce('Q1', 'pair-Q1'); // primo quarto a sinistra
-  wrapPairOnce('Q2', 'pair-Q2'); // primo quarto a destra
-}
-
 // --- crea un wrapper per la coppia Qx-A/B e lo ritorna (idempotente)
 function ensurePairWrap(code) {
   const a = document.querySelector(`.match[data-match="${code}-A"]`);
