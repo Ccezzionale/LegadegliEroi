@@ -325,9 +325,22 @@ nav{
   justify-content:flex-start; } 
 }
 
-/* (opzionale) piccolo abbassamento dei primi quarti per stacco visivo */
-.q-sx .pair-offset:first-child { margin-top: 20px; }
-.q-dx .pair-offset:first-child { margin-top: 20px; }
+/* --- SEMIFINALI: rimuovo spinte verso il basso --- */
+.semifinale-sx,
+.semifinale-dx,
+.spaziata{ margin-top: 0 !important; }
+
+/* anche i quarti non devono avere offset extra, altrimenti
+   la "metà" non è più la vera metà della colonna */
+.q-sx .pair-offset:first-child,
+.q-dx .pair-offset:first-child{ margin-top: 0 !important; }
+
+/* manopola per micro-regolare l'altezza delle semifinali (px) */
+:root{
+  --semi-shift-left: 0px;   /* positivo = su, negativo = giù */
+  --semi-shift-right: 0px;  /* positivo = su, negativo = giù */
+}
+
 
 
 /* Mobile: riattivo il wrap e l'hamburger */
