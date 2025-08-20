@@ -341,6 +341,15 @@ nav{
   --semi-shift-right: 18px;  /* positivo = su, negativo = giù */
 }
 
+/* Sposta le colonne Semifinali in alto/basso senza toccare il layout */
+:root{
+  --semi-shift-left: 18px;   /* positivo = più in alto */
+  --semi-shift-right: 18px;
+}
+.s-sx .colonna{ transform: translateY(calc(-1 * var(--semi-shift-left))); }
+.s-dx .colonna{ transform: translateY(calc(-1 * var(--semi-shift-right))); }
+
+
 
 
 /* Mobile: riattivo il wrap e l'hamburger */
