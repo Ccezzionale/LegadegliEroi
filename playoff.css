@@ -305,22 +305,6 @@ nav{
   padding: var(--team-pad-y) var(--team-pad-x);
 }
 
-/* Sposta GIÙ il quarto in alto a sinistra (Q1) */
-.match[data-match="Q1-A"],
-.match[data-match="Q1-B"] {
-  position: relative;
-  transform: translateY(24px); /* regola qui */
-  z-index: 1;
-}
-
-/* Sposta GIÙ il quarto in alto a destra (Q2) */
-.match[data-match="Q2-A"],
-.match[data-match="Q2-B"] {
-  position: relative;
-  transform: translateY(24px); /* regola qui, anche diverso da Q1 se vuoi */
-  z-index: 1;
-}
-
 
 /* wrapper standard per una coppia di riquadri (Q1 = Q1-A/B, ecc.) */
 .pair-offset {
@@ -340,15 +324,6 @@ nav{
   display: flex;
   flex-direction: column;
   justify-content: center;        /* semifinale in mezzo */
-}
-
-/* se avevi messo offset diretti sui singoli match, annullali */
-.match[data-match="Q1-A"],
-.match[data-match="Q1-B"],
-.match[data-match="Q2-A"],
-.match[data-match="Q2-B"] {
-  transform: none !important;
-  top: auto !important;
 }
 
 /* offset specifici per i “primi quarti” */
