@@ -321,11 +321,34 @@ nav{
   z-index: 1;
 }
 
-/* wrapper per una coppia di riquadri (match pair) */
+
+/* wrapper standard per una coppia di riquadri (Q1 = Q1-A/B, ecc.) */
 .pair-offset {
   display: grid;
   grid-auto-rows: auto;
   row-gap: var(--pair-gap, 6px);
+}
+
+/* colonne “a scacchiera” */
+.col--spread {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* primo wrapper su, secondo giù */
+}
+
+.col--center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;        /* semifinale in mezzo */
+}
+
+/* se avevi messo offset diretti sui singoli match, annullali */
+.match[data-match="Q1-A"],
+.match[data-match="Q1-B"],
+.match[data-match="Q2-A"],
+.match[data-match="Q2-B"] {
+  transform: none !important;
+  top: auto !important;
 }
 
 /* offset specifici per i “primi quarti” */
