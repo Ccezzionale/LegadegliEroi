@@ -305,9 +305,21 @@ nav{
   padding: var(--team-pad-y) var(--team-pad-x);
 }
 
+/* Sposta giù SOLO il riquadro Q1-A senza muovere il resto */
 .match[data-match="Q1-A"] {
-  margin-top: 24px; /* regola qui */
+  position: relative;
+  top: 24px;              /* regola qui */
+  z-index: 1;             /* evita eventuali sovrapposizioni sotto */
 }
+
+/* In alternativa (stesso effetto) */
+/*
+.match[data-match="Q1-A"] {
+  transform: translateY(24px);
+  z-index: 1;
+}
+*/
+
 
 /* mantieni il resto del tuo stile (bordi, shadow, vincente) */
 
