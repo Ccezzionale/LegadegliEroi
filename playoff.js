@@ -1,27 +1,51 @@
 const URL_CLASSIFICA_TOTALE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTduESMbJiPuCDLaAFdOHjep9GW-notjraILSyyjo6SA0xKSR0H0fgMLPNNYSwXgnGGJUyv14kjFRqv/pub?gid=691152130&single=true&output=csv";
 
+// --- normalizza: toglie seed "8°", spazi doppi, case, accenti ---
+const norm = (s) => (s || "")
+  .toString()
+  .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // accenti
+  .replace(/^\s*\d+\s*°?\s*/,"")                    // "8° " iniziale
+  .replace(/\s+/g," ")                              
+  .trim()
+  .toLowerCase();
+
+// --- mappa colori (la tua) ---
 const TEAM_COLORS = {
-  "team bartowski":         "#C1121F", // rosso
-  "bayern christiansen":    "#8B0A1A", // rosso scuro
-  "wildboys78":             "#A07900", // giallo scuro
-  "desperados":             "#0B1F3A", // blu scuro
-  "minnesode timberland":   "#00A651", // verde Celtic
-  "golden knights":         "#B4975A", // oro (stile Vegas)
-  "pokermantra":            "#5B2A86", // viola
-  "rubinkebab":             "#C27A33", // "color kebab" (marrone/ramato)
-  "pandinicoccolosini":     "#228B22", // verde albero
-  "ibla":                   "#F97316", // arancione
-  "fc disoneste":           "#A78BFA", // viola chiaro
-  "athletic pongao":        "#C1121F", // rosso
-  "riverfilo":              "#D5011D", // rosso River Plate
-  "eintracht franco 126":   "#E1000F", // rosso Eintracht
-  "lokomotiv lipsia":       "#FACC15", // giallo
+  "team bartowski":         "#C1121F",
+  "bayern christiansen":    "#8B0A1A",
+  "wildboys78":             "#A07900",
+  "desperados":             "#0B1F3A",
+  "minnesode timberland":   "#00A651",
+  "golden knights":         "#B4975A",
+  "pokermantra":            "#5B2A86",
+  "rubinkebab":             "#C27A33",
+  "pandinicoccolosini":     "#228B22",
+  "ibla":                   "#F97316",
+  "fc disoneste":           "#A78BFA",
+  "athletic pongao":        "#C1121F",
+  "riverfilo":              "#D5011D",
+  "eintracht franco 126":   "#E1000F",
+  "lokomotiv lipsia":       "#FACC15",
+
+  // (facoltative, se compaiono nel bracket attuale)
+  "real mimmo":             "#FF8C00",
+  "rafa casablanca":        "#0E5A37",
+  "giuly":                  "#5FB3FF",
+  "giody":                  "#0B1F3A",
+  "union librino":          "#9B7BD7"
 };
 
-function applyTeamColor(cardEl, teamName){
-  const c = TEAM_COLORS[teamName] || "#123c7a";
+// --- applica colore leggendo il nome della card ---
+function applyTeamColorFromCard(cardEl){
+  const nameEl = cardEl.querySelector('.squadra.orizzontale span');
+  if (!nameEl) return;
+  const key = norm(nameEl.textContent);
+  const c = TEAM_COLORS[key] || "#123c7a"; // fallback
   cardEl.style.setProperty('--team-color', c);
 }
+
+// Esegui dopo il render delle card:
+document.querySelectorAll('.match').forEach(applyTeamColorFromCard);
 
 function creaHTMLSquadra(nome, posizione = "", punteggio = "", isVincente = false) {
   const nomePulito = nome.replace(/[°]/g, "").trim();
