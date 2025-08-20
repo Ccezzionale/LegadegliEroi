@@ -4,209 +4,127 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Playoff - Lega degli Eroi</title>
+  <script src="risultati_playoff.js" defer></script>
   <script src="playoff.js" defer></script>
   <link rel="stylesheet" href="playoff.css">
 </head>
 <body>
-
-  <!-- NAVBAR COMPLETA -->
+<!-- NAVBAR COMPLETA -->
   <nav>
     <span id="hamburger" class="hamburger">☰</span>
     <a href="index.html" class="home-icon">🏠</a>
     <ul class="navbar" id="mainMenu">
       <li><a href="rose.html">Rose</a></li>
-
-      <li class="dropdown">
-        <a href="#" class="toggle-submenu">Draft ▾</a>
-        <ul class="submenu">
-          <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
-          <li><a href="draft_conference.html">🟨 Conf.League</a></li>
-          <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
-        </ul>
-      </li>
-
-      <li class="dropdown">
-        <a href="#" class="toggle-submenu">Competizioni ▾</a>
-        <ul class="submenu">
-          <li><a href="classifica.html">📊 Classifiche</a></li>
-          <li><a href="playoff.html">🏆 Playoff</a></li>
-          <li><a href="arena.html">🏟️ Highlander</a></li>
-          <li><a href="crashoutcup.html">💥 Crash out Cup</a></li>
-          <li><a href="crashoutplayoff.html">💥 Crash out Cup - Playoff</a></li>
-        </ul>
-      </li>
-
-      <li><a href="svincolati.html">Svincolati</a></li>
-      <li><a href="chiamate.html">Chiamate</a></li>
-
-      <li class="dropdown">
-        <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
-        <ul class="submenu">
-          <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
-          <li><a href="albo.html">🏅 Medagliere</a></li>
-        </ul>
-      </li>
-
-      <li><a href="regolamento.html">Regolamento</a></li>
+    <li class="dropdown">
+      <a href="#" class="toggle-submenu">Draft ▾</a>
+      <ul class="submenu">
+        <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
+        <li><a href="draft_conference.html">🟨 Conf.League</a></li>
+        <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+      </ul>
+    </li>
+    <li class="dropdown">
+      <a href="#" class="toggle-submenu">Competizioni ▾</a>
+      <ul class="submenu">
+        <li><a href="classifica.html">📊 Classifiche</a></li>
+        <li><a href="playoff.html">🏆 Playoff</a></li>
+        <li><a href="arena.html">🏟️ Higlander</a></li>
+         <li><a href="crashoutcup.html">💥 Crash out Cup</a></li>
+        <li><a href="crashoutplayoff.html">💥 Crash out Cup - Playoff</a></li>
+      </ul>
+    </li>
+    <li><a href="svincolati.html">Svincolati</a></li>
+    <li><a href="chiamate.html">Chiamate</a></li>
+    <li class="dropdown">
+      <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
+      <ul class="submenu">
+   <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
+      <li><a href="albo.html">🏅  Medagliere</a></li>
     </ul>
+      <li><a href="regolamento.html">Regolamento</a></li>
   </nav>
 
   <h1 class="titolo-pagina">Playoff Lega degli Eroi</h1>
 
-  <!-- BRACKET DESKTOP -->
-  <div class="bracket">
+  <!-- BRACKET MOBILE -->
+<div id="bracket-mobile">
+  <div class="round-mobile" id="round-wc"><h2>Wildcard</h2></div>
+  <div class="round-mobile" id="round-qf"><h2>Quarti</h2></div>
+  <div class="round-mobile" id="round-sf"><h2>Semifinali</h2></div>
+  <div class="round-mobile" id="round-f"><h2>Finale</h2></div>
+</div>
 
-    <!-- Wildcard SX -->
+  <div class="bracket">
     <div class="blocco-colonna">
       <h2>Wildcard</h2>
       <div class="colonna wc-sx">
-        <div class="match-pair" data-series="WC1">
-          <div class="match" data-match="WC1-A"></div>
-          <div class="match" data-match="WC1-B"></div>
-        </div>
-
-        <div class="match-pair spaziata" data-series="WC3">
-          <div class="match" data-match="WC3-A"></div>
-          <div class="match" data-match="WC3-B"></div>
-        </div>
+        <div class="match" data-match="WC1-A"></div>
+        <div class="match" data-match="WC1-B"></div>
+        <div class="match spaziata" data-match="WC3-A"></div>
+        <div class="match" data-match="WC3-B"></div>
       </div>
     </div>
 
-    <!-- Quarti SX (★ aggiunta classe q-sx) -->
-    <div class="blocco-colonna q-sx">
+    <div class="blocco-colonna">
       <h2>Quarti</h2>
       <div class="colonna">
-        <div class="match-pair" data-series="Q1">
-          <div class="match" data-match="Q1-A"></div>
-          <div class="match" data-match="Q1-B"></div>
-        </div>
-
-        <div class="match-pair spaziata" data-series="Q3">
-          <div class="match" data-match="Q3-A"></div>
-          <div class="match" data-match="Q3-B"></div>
-        </div>
+        <div class="match" data-match="Q1-A"></div>
+        <div class="match" data-match="Q1-B"></div>
+        <div class="match spaziata" data-match="Q3-A"></div>
+        <div class="match" data-match="Q3-B"></div>
       </div>
     </div>
 
-    <!-- Semifinale SX (★ aggiunta classe s-sx) -->
-    <div class="blocco-colonna s-sx">
+    <div class="blocco-colonna">
       <h2>Semifinale</h2>
       <div class="colonna semifinale-sx">
-        <div class="match-pair" data-series="S1">
-          <div class="match" data-match="S1-A"></div>
-          <div class="match" data-match="S1-B"></div>
-        </div>
+        <div class="match" data-match="S1-A"></div>
+        <div class="match" data-match="S1-B"></div>
       </div>
     </div>
 
-    <!-- Finale -->
-    <div class="blocco-colonna">
+ <div class="blocco-colonna">
       <h2>Finale</h2>
       <div class="colonna">
-        <div class="match-pair" data-series="F">
-          <div class="match finale" data-match="F-A"></div>
-          <div class="match finale" data-match="F-B"></div>
-        </div>
+        <div class="match finale" data-match="F-A"></div>
+        <div class="match finale" data-match="F-B"></div>
       </div>
-
       <div class="coppa-vittoria">
         <img src="img/coppa.png" alt="Coppa del Vincitore">
-        <div id="vincitore-assoluto" class="vincitore-info">
-          <img id="logo-vincitore" class="logo-vincitore" src="" alt="Logo Vincitore">
-          <span id="nome-vincitore" class="nome-vincitore"></span>
+       <div id="vincitore-assoluto" class="vincitore-info">
+          <img id="logo-vincitore" src="" alt="Logo Vincitore">
+          <span id="nome-vincitore"></span>
         </div>
       </div>
     </div>
 
-    <!-- Semifinale DX (★ aggiunta classe s-dx) -->
-    <div class="blocco-colonna s-dx">
-      <h2>Semifinale</h2>
-      <div class="colonna semifinale-dx">
-        <div class="match-pair" data-series="S2">
-          <div class="match" data-match="S2-A"></div>
-          <div class="match" data-match="S2-B"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quarti DX (★ aggiunta classe q-dx) -->
-    <div class="blocco-colonna q-dx">
-      <h2>Quarti</h2>
-      <div class="colonna">
-        <div class="match-pair" data-series="Q2">
-          <div class="match" data-match="Q2-A"></div>
-          <div class="match" data-match="Q2-B"></div>
-        </div>
-
-        <div class="match-pair spaziata" data-series="Q4">
-          <div class="match" data-match="Q4-A"></div>
-          <div class="match" data-match="Q4-B"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Wildcard DX -->
-    <div class="blocco-colonna">
-      <h2>Wildcard</h2>
-      <div class="colonna wc-dx">
-        <div class="match-pair" data-series="WC2">
-          <div class="match" data-match="WC2-A"></div>
-          <div class="match" data-match="WC2-B"></div>
-        </div>
-
-        <div class="match-pair spaziata" data-series="WC4">
-          <div class="match" data-match="WC4-A"></div>
-          <div class="match" data-match="WC4-B"></div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /.bracket -->
-    <!-- Semifinale DX -->
     <div class="blocco-colonna">
       <h2>Semifinale</h2>
       <div class="colonna semifinale-dx">
-        <div class="match-pair" data-series="S2">
-          <div class="match" data-match="S2-A"></div>
-          <div class="match" data-match="S2-B"></div>
-        </div>
+        <div class="match" data-match="S2-A"></div>
+        <div class="match" data-match="S2-B"></div>
       </div>
     </div>
 
-    <!-- Quarti DX -->
     <div class="blocco-colonna">
       <h2>Quarti</h2>
       <div class="colonna">
-        <div class="match-pair" data-series="Q2">
-          <div class="match" data-match="Q2-A"></div>
-          <div class="match" data-match="Q2-B"></div>
-        </div>
-
-        <div class="match-pair spaziata" data-series="Q4">
-          <div class="match" data-match="Q4-A"></div>
-          <div class="match" data-match="Q4-B"></div>
-        </div>
+        <div class="match" data-match="Q2-A"></div>
+        <div class="match" data-match="Q2-B"></div>
+        <div class="match spaziata" data-match="Q4-A"></div>
+        <div class="match" data-match="Q4-B"></div>
       </div>
     </div>
 
-    <!-- Wildcard DX -->
     <div class="blocco-colonna">
-      <h2>Wildcard</h2>
+          <h2>Wildcard</h2>
       <div class="colonna wc-dx">
-        <div class="match-pair" data-series="WC2">
-          <div class="match" data-match="WC2-A"></div>
-          <div class="match" data-match="WC2-B"></div>
-        </div>
-
-        <div class="match-pair spaziata" data-series="WC4">
-          <div class="match" data-match="WC4-A"></div>
-          <div class="match" data-match="WC4-B"></div>
-        </div>
+        <div class="match" data-match="WC2-A"></div>
+        <div class="match" data-match="WC2-B"></div>
+        <div class="match spaziata" data-match="WC4-A"></div>
+        <div class="match" data-match="WC4-B"></div>
       </div>
-    </div>
-
-  </div><!-- /.bracket -->
-
+  </div>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const hamburger = document.getElementById("hamburger");
@@ -224,8 +142,7 @@
           parent.classList.toggle("show");
         });
       });
-    });
+      });
   </script>
-
 </body>
 </html>
