@@ -129,18 +129,11 @@ function computeParticipants() {
   };
 
 
-// ---- QUARTI ---- (tabellone fisso da regolamento)
-// Q1: 1ª vs (8–9)   -> WC1
-P.Q1 = { home: { name: S[0].nome, seed: 1 }, away: winnerOf('WC1') || { name: 'Vincente WC1' } };
-
-// Q2: 2ª vs (7–10)  -> WC2  (ATTENZIONE: prima puntavi a WC4)
-P.Q2 = { home: { name: S[1].nome, seed: 2 }, away: winnerOf('WC2') || { name: 'Vincente WC2' } };
-
-// Q3: 3ª vs (6–11)  -> WC4  (prima puntavi a WC3)
-P.Q3 = { home: { name: S[2].nome, seed: 3 }, away: winnerOf('WC4') || { name: 'Vincente WC4' } };
-
-// Q4: 4ª vs (5–12)  -> WC3  (prima puntavi a WC2)
-P.Q4 = { home: { name: S[3].nome, seed: 4 }, away: winnerOf('WC3') || { name: 'Vincente WC3' } };
+// ---- QUARTI ---- (come da schema Excel)
+P.Q1 = { home: { name: S[0].nome, seed: 1 }, away: winnerOf('WC1') || { name: 'Vincente WC1' } }; // 1 vs 8–9
+P.Q2 = { home: { name: S[1].nome, seed: 2 }, away: winnerOf('WC4') || { name: 'Vincente WC4' } }; // 2 vs 7–10
+P.Q3 = { home: { name: S[2].nome, seed: 3 }, away: winnerOf('WC3') || { name: 'Vincente WC3' } }; // 3 vs 6–11
+P.Q4 = { home: { name: S[3].nome, seed: 4 }, away: winnerOf('WC2') || { name: 'Vincente WC2' } }; // 4 vs 5–12
 
 
 // ---- SEMIFINALI ---- (tabellone fisso)
