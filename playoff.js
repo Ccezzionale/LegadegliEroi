@@ -148,7 +148,6 @@ P.S2 = { home: winnerOf('Q2') || { name: 'Vincente Q2' }, away: winnerOf('Q3') |
   return P;
 }
 
-/* 5) Render di tutte le card .match */
 function aggiornaPlayoff() {
   const P = computeParticipants();
   if (!Object.keys(P).length) return;
@@ -158,7 +157,7 @@ function aggiornaPlayoff() {
   const fill = (code, side) => {
     const data = P[code]?.[side];
     if (!data) return;
-    const slot = side === 'home' ? 'A' : 'B'; // A = sopra, B = sotto
+    const slot = side === 'home' ? 'A' : 'B'; // A sopra, B sotto
     const el = document.querySelector(`.match[data-match="${code}-${slot}"]`);
     if (!el) return;
 
@@ -173,7 +172,7 @@ function aggiornaPlayoff() {
 
   codes.forEach(code => { fill(code, 'home'); fill(code, 'away'); });
 
-  // Vincitore assoluto (se F decisa)
+  // Vincitore assoluto se F decisa
   const fPick = PICKS.F;
   const winnerSide = fPick && truthy(fPick.home) !== truthy(fPick.away)
     ? (truthy(fPick.home) ? 'home' : 'away')
@@ -188,13 +187,13 @@ function aggiornaPlayoff() {
       : "";
   }
 
-  // Ordina i blocchi dei quarti nelle colonne giuste
+  // ordina i blocchi dei quarti nelle rispettive colonne
   placeQuarterPairs();
-  // Allinea colonne (quarti “spalmati”, semifinali centrate)
+  // allinea le altezze e centra le semifinali
   alignLikeExcel();
 }
 
-/* — Helpers layout — */
+/* — helpers layout — */
 
 // crea un wrapper per la coppia Qx-A/B e lo ritorna (idempotente)
 function ensurePairWrap(code) {
@@ -218,57 +217,61 @@ function ensurePairWrap(code) {
   return w;
 }
 
-// utility: prendi la colonna con fallback se non hai le classi semantiched
-function getQuarterCol(side) {
-  if (side === 'left') {
-    return document.querySelector('.q-sx .colonna')
-        || document.querySelector('.bracket > .blocco-colonna:nth-of-type(2) .colonna');
-  } else {
-    return document.querySelector('.q-dx .colonna')
-        || document.querySelector('.bracket > .blocco-colonna:nth-of-type(6) .colonna');
-  }
+// helper per recuperare le colonne (con fallback se non hai le classi semantiched)
+function getCol(selector, nthFallback){
+  return document.querySelector(`${selector} .colonna`)
+      || document.querySelector(`.bracket > .blocco-colonna:nth-of-type(${nthFallback}) .colonna`);
 }
 
-// ordina i blocchi dei quarti per avere: Q1/Q4 a sinistra, Q2/Q3 a destra
+// Q1/Q4 a sinistra — Q2/Q3 a destra (ordine top/bottom)
 function placeQuarterPairs() {
-  const colQsx = getQuarterCol('left');
-  const colQdx = getQuarterCol('right');
+  const colQsx = getCol('.q-sx', 2);
+  const colQdx = getCol('.q-dx', 6);
 
   if (colQsx) {
     const q1 = ensurePairWrap('Q1'); // top sinistra
-    const q4 = ensurePairWrap('Q4'); // bottom sinistra (qui c'è la 4ª)
+    const q4 = ensurePairWrap('Q4'); // bottom sinistra
+    colQsx.innerHTML = '';           // pulisco e ri-appendo in ordine
     if (q1) colQsx.append(q1);
     if (q4) colQsx.append(q4);
   }
   if (colQdx) {
     const q2 = ensurePairWrap('Q2'); // top destra
-    const q3 = ensurePairWrap('Q3'); // bottom destra (qui c'è la 3ª)
+    const q3 = ensurePairWrap('Q3'); // bottom destra
+    colQdx.innerHTML = '';
     if (q2) colQdx.append(q2);
     if (q3) colQdx.append(q3);
   }
 }
 
-// allinea colonne: quarti “spalmati”, semifinali centrate, altezza pari alle wildcard adiacenti
+// allinea le colonne: quarti “spalmati”, semifinali centrate, altezza = wildcard adiacente
 function alignLikeExcel() {
-  const getCol = (sel, nth) =>
-    document.querySelector(`${sel} .colonna`) ||
-    document.querySelector(`.bracket > .blocco-colonna:nth-of-type(${nth}) .colonna`);
+  const wcL = getCol('.wc-sx', 1);
+  const qL  = getCol('.q-sx', 2);
+  const sL  = getCol('.s-sx', 3);
 
-  const wcL = getCol('.wc-sx', 1), wcR = getCol('.wc-dx', 7);
-  const qL  = getCol('.q-sx', 2),  sL  = getCol('.s-sx', 3);
-  const qR  = getCol('.q-dx', 6),  sR  = getCol('.s-dx', 5);
+  const wcR = getCol('.wc-dx', 7);
+  const qR  = getCol('.q-dx', 6);
+  const sR  = getCol('.s-dx', 5);
 
+  // classi di comportamento
   [qL, qR].forEach(c => c && c.classList.add('col--spread'));
   [sL, sR].forEach(c => c && c.classList.add('col--center'));
 
-  if (qL) qL.style.minHeight = (wcL ? wcL.offsetHeight : 0) + 'px';
-  if (sL) sL.style.minHeight = (wcL ? wcL.offsetHeight : 0) + 'px';
-  if (qR) qR.style.minHeight = (wcR ? wcR.offsetHeight : 0) + 'px';
-  if (sR) sR.style.minHeight = (wcR ? wcR.offsetHeight : 0) + 'px';
+  // usa H ESATTA = altezza wildcard adiacente (non solo min-height)
+  const hL = wcL ? wcL.offsetHeight : 0;
+  const hR = wcR ? wcR.offsetHeight : 0;
+
+  if (qL) { qL.style.height = hL + 'px'; qL.style.minHeight = hL + 'px'; }
+  if (sL) { sL.style.height = hL + 'px'; sL.style.minHeight = hL + 'px'; }
+
+  if (qR) { qR.style.height = hR + 'px'; qR.style.minHeight = hR + 'px'; }
+  if (sR) { sR.style.height = hR + 'px'; sR.style.minHeight = hR + 'px'; }
 }
 
-// registra il listener (una sola volta)
+// riallinea al resize
 window.addEventListener('resize', alignLikeExcel);
+
 
 
 /* =========================================
