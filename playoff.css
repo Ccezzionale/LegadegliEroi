@@ -306,32 +306,28 @@ nav{
 }
 
 
-/* wrapper standard per una coppia di riquadri (Q1 = Q1-A/B, ecc.) */
+/* wrapper di una coppia Qx */
 .pair-offset {
   display: grid;
   grid-auto-rows: auto;
   row-gap: var(--pair-gap, 6px);
 }
 
-/* colonne “a scacchiera” */
+/* colonne “a scacchiera”: Quarti riempiono alto+baso, Semi centrate */
 .col--spread {
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* primo wrapper su, secondo giù */
+  justify-content: space-between;   /* una coppia su, una giù */
 }
-
 .col--center {
   display: flex;
   flex-direction: column;
-  justify-content: center;        /* semifinale in mezzo */
+  justify-content: center;          /* semifinali in mezzo */
 }
 
-/* offset specifici per i “primi quarti” */
-.pair-top-left  { margin-top: 20px; }  /* Q1 sotto a WC1/WC2 */
-.pair-top-right { margin-top: 20px; }  /* Q3 sotto a WC3/WC4 */
-
-
-/* mantieni il resto del tuo stile (bordi, shadow, vincente) */
+/* (opzionale) piccolo abbassamento dei primi quarti per stacco visivo */
+.q-sx .pair-offset:first-child { margin-top: 20px; }
+.q-dx .pair-offset:first-child { margin-top: 20px; }
 
 
 /* Mobile: riattivo il wrap e l'hamburger */
