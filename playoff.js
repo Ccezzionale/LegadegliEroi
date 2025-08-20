@@ -128,12 +128,14 @@ function computeParticipants() {
     return null; // non deciso o ambiguità
   };
 
-
-// ---- QUARTI ---- (come da schema Excel)
+// ---- QUARTI ---- (schema Excel, lato sinistro = 1 e 4, lato destro = 2 e 3)
+// Sinistra
 P.Q1 = { home: { name: S[0].nome, seed: 1 }, away: winnerOf('WC1') || { name: 'Vincente WC1' } }; // 1 vs 8–9
-P.Q2 = { home: { name: S[1].nome, seed: 2 }, away: winnerOf('WC4') || { name: 'Vincente WC4' } }; // 2 vs 7–10
-P.Q3 = { home: { name: S[2].nome, seed: 3 }, away: winnerOf('WC3') || { name: 'Vincente WC3' } }; // 3 vs 6–11
-P.Q4 = { home: { name: S[3].nome, seed: 4 }, away: winnerOf('WC2') || { name: 'Vincente WC2' } }; // 4 vs 5–12
+P.Q4 = { home: { name: S[3].nome, seed: 4 }, away: winnerOf('WC3') || { name: 'Vincente WC3' } }; // 4 vs 5–12
+// Destra
+P.Q2 = { home: { name: S[1].nome, seed: 2 }, away: winnerOf('WC2') || { name: 'Vincente WC2' } }; // 2 vs 7–10
+P.Q3 = { home: { name: S[2].nome, seed: 3 }, away: winnerOf('WC4') || { name: 'Vincente WC4' } }; // 3 vs 6–11
+
 
 
 // ---- SEMIFINALI ---- (tabellone fisso)
@@ -148,9 +150,6 @@ P.S2 = { home: winnerOf('Q2') || { name: 'Vincente Q2' }, away: winnerOf('Q3') |
 }
 
 /* 5) Render di tutte le card .match */
-/* ================================
-   5) RENDER DI TUTTE LE CARD .match
-   ================================ */
 function aggiornaPlayoff() {
   const P = computeParticipants();
   if (!Object.keys(P).length) return;
@@ -160,9 +159,7 @@ function aggiornaPlayoff() {
   const fill = (code, side) => {
     const data = P[code]?.[side];
     if (!data) return;
-
-    // A = riquadro sopra (home), B = riquadro sotto (away)
-    const slot = side === "home" ? "A" : "B";
+    const slot = side === 'home' ? 'A' : 'B'; // A = riquadro sopra, B = sotto
     const el = document.querySelector(`.match[data-match="${code}-${slot}"]`);
     if (!el) return;
 
@@ -170,24 +167,18 @@ function aggiornaPlayoff() {
     el.innerHTML = creaHTMLSquadra(data.name, posText, "", false);
     applyTeamColorFromCard(el);
 
-    // evidenzia il vincitore se marcato in PICKS
     const pick = PICKS[code];
-    const won =
-      pick &&
-      truthy(pick[side]) &&
-      !truthy(pick[side === "home" ? "away" : "home"]);
-    el.classList.toggle("vincente", !!won);
+    const won = pick && truthy(pick[side]) && !truthy(pick[side === 'home' ? 'away' : 'home']);
+    el.classList.toggle('vincente', !!won);
   };
 
-  // popola tutte le card
-  codes.forEach(code => { fill(code, "home"); fill(code, "away"); });
+  codes.forEach(code => { fill(code, 'home'); fill(code, 'away'); });
 
-  // Vincitore assoluto (se deciso in PICKS.F)
+  // Vincitore assoluto (se F decisa)
   const fPick = PICKS.F;
-  const winnerSide =
-    fPick && truthy(fPick.home) !== truthy(fPick.away)
-      ? (truthy(fPick.home) ? "home" : "away")
-      : null;
+  const winnerSide = fPick && truthy(fPick.home) !== truthy(fPick.away)
+    ? (truthy(fPick.home) ? 'home' : 'away')
+    : null;
   const champ = winnerSide ? P.F?.[winnerSide]?.name : null;
 
   const container = document.getElementById("vincitore-assoluto");
@@ -198,84 +189,74 @@ function aggiornaPlayoff() {
       : "";
   }
 
-  // layout “a scacchiera” come lo schema Excel
+  // Ordina i blocchi dei quarti nelle colonne giuste (Q1 top sx, Q4 bottom sx, Q2 top dx, Q3 bottom dx)
   placeQuarterPairs();
+  // Allinea colonne (quarti “spalmati”, semifinali centrate)
   alignLikeExcel();
 }
 
-/* =========================================================
-   6) LAYOUT: wrapper coppie quarti, ordine colonne, allineamento
-   ========================================================= */
+/* — Helpers layout — */
 
-// Crea (una sola volta) un wrapper che raggruppa Qx-A e Qx-B
+// crea un wrapper per la coppia Qx-A/B e lo ritorna (idempotente)
 function ensurePairWrap(code) {
   const a = document.querySelector(`.match[data-match="${code}-A"]`);
   const b = document.querySelector(`.match[data-match="${code}-B"]`);
   if (!a || !b) return null;
 
   // già wrappati?
-  if (
-    a.parentElement.classList.contains("pair-offset") &&
-    a.parentElement === b.parentElement
-  ) {
+  if (a.parentElement.classList.contains('pair-offset') &&
+      a.parentElement === b.parentElement) {
     return a.parentElement;
   }
 
   const parent = a.parentElement;
   if (parent !== b.parentElement) return null;
 
-  const w = document.createElement("div");
-  w.className = "pair-offset";
+  const w = document.createElement('div');
+  w.className = 'pair-offset';
   parent.insertBefore(w, a);
   w.appendChild(a);
   w.appendChild(b);
   return w;
 }
 
-// Ordina i blocchi dei quarti nelle colonne come da schema:
-// sinistra: Q1 (su) poi Q4 (giù) — destra: Q2 (su) poi Q3 (giù)
+// ordina i blocchi dei quarti per avere la griglia come da schema Excel
 function placeQuarterPairs() {
-  const colQsx = document.querySelector(".q-sx .colonna");
-  const colQdx = document.querySelector(".q-dx .colonna");
+  const colQsx = document.querySelector('.q-sx .colonna');
+  const colQdx = document.querySelector('.q-dx .colonna');
 
   if (colQsx) {
-    const q1 = ensurePairWrap("Q1"); // top sinistra
-    const q4 = ensurePairWrap("Q4"); // bottom sinistra
+    const q1 = ensurePairWrap('Q1'); // top sinistra
+    const q4 = ensurePairWrap('Q4'); // bottom sinistra
     if (q1) colQsx.append(q1);
     if (q4) colQsx.append(q4);
   }
   if (colQdx) {
-    const q2 = ensurePairWrap("Q2"); // top destra
-    const q3 = ensurePairWrap("Q3"); // bottom destra
+    const q2 = ensurePairWrap('Q2'); // top destra
+    const q3 = ensurePairWrap('Q3'); // bottom destra
     if (q2) colQdx.append(q2);
     if (q3) colQdx.append(q3);
   }
 }
 
-// Allinea colonne: quarti “spalmati” e semifinali centrate
+// allinea colonne: quarti “spalmati”, semifinali centrate, altezza pari alle wildcard adiacenti
 function alignLikeExcel() {
   const getCol = sel => document.querySelector(`${sel} .colonna`);
-  const wcL = getCol(".wc-sx"), wcR = getCol(".wc-dx");
-  const qL  = getCol(".q-sx"),  sL  = getCol(".s-sx");
-  const qR  = getCol(".q-dx"),  sR  = getCol(".s-dx");
+  const wcL = getCol('.wc-sx'), wcR = getCol('.wc-dx');
+  const qL  = getCol('.q-sx'),  sL  = getCol('.s-sx');
+  const qR  = getCol('.q-dx'),  sR  = getCol('.s-dx');
 
-  [qL, qR].forEach(c => c && c.classList.add("col--spread"));
-  [sL, sR].forEach(c => c && c.classList.add("col--center"));
+  [qL, qR].forEach(c => c && c.classList.add('col--spread'));
+  [sL, sR].forEach(c => c && c.classList.add('col--center'));
 
-  if (qL) qL.style.minHeight = (wcL ? wcL.offsetHeight : 0) + "px";
-  if (sL) sL.style.minHeight = (wcL ? wcL.offsetHeight : 0) + "px";
-  if (qR) qR.style.minHeight = (wcR ? wcR.offsetHeight : 0) + "px";
-  if (sR) sR.style.minHeight = (wcR ? wcR.offsetHeight : 0) + "px";
+  if (qL) qL.style.minHeight = (wcL ? wcL.offsetHeight : 0) + 'px';
+  if (sL) sL.style.minHeight = (wcL ? wcL.offsetHeight : 0) + 'px';
+  if (qR) qR.style.minHeight = (wcR ? wcR.offsetHeight : 0) + 'px';
+  if (sR) sR.style.minHeight = (wcR ? wcR.offsetHeight : 0) + 'px';
 }
 
-// Registrato UNA sola volta (fuori da aggiornaPlayoff)
-window.addEventListener("resize", alignLikeExcel);
-
-/* (facoltativo) esport per debug/uso console */
-window.aggiornaPlayoff = aggiornaPlayoff;
-window.PICKS = PICKS;
-
-
+// registra il listener (una sola volta, funzione globale)
+window.addEventListener('resize', alignLikeExcel);
 
 /* =========================================
    FETCH CLASSIFICA e AVVIO
