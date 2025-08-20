@@ -212,23 +212,23 @@ function ensurePairWrap(code) {
 
 // --- ordina i blocchi dei quarti nelle colonne giuste (top/bottom)
 function placeQuarterPairs() {
-  const colQsx = document.querySelector('.q-sx .colonna'); // sinistra
-  const colQdx = document.querySelector('.q-dx .colonna'); // destra
+  const colQsx = document.querySelector('.q-sx .colonna');
+  const colQdx = document.querySelector('.q-dx .colonna');
 
   if (colQsx) {
-    const q1 = ensurePairWrap('Q1'); // TOP sinistra
-    const q4 = ensurePairWrap('Q4'); // BOTTOM sinistra
+    const q1 = ensurePairWrap('Q1'); // top sinistra
+    const q4 = ensurePairWrap('Q4'); // bottom sinistra
     if (q1) colQsx.append(q1);
     if (q4) colQsx.append(q4);
   }
   if (colQdx) {
-    const q2 = ensurePairWrap('Q2'); // TOP destra
-    const q3 = ensurePairWrap('Q3'); // BOTTOM destra
+    const q2 = ensurePairWrap('Q2'); // top destra
+    const q3 = ensurePairWrap('Q3'); // bottom destra
     if (q2) colQdx.append(q2);
     if (q3) colQdx.append(q3);
   }
 }
-}
+
 
 // --- allinea le colonne: i Quarti “spalmati”, le Semi centrate
 function alignLikeExcel() {
