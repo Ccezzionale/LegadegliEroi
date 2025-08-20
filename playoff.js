@@ -159,7 +159,7 @@ function aggiornaPlayoff() {
   const fill = (code, side) => {
     const data = P[code]?.[side];
     if (!data) return;
-    const slot = side === 'home' ? 'A' : 'B'; // A = sopra (home), B = sotto (away)
+    const slot = side === 'home' ? 'A' : 'B';
     const el = document.querySelector(`.match[data-match="${code}-${slot}"]`);
     if (!el) return;
 
@@ -172,12 +172,9 @@ function aggiornaPlayoff() {
     el.classList.toggle('vincente', !!won);
   };
 
-  codes.forEach(code => {
-    fill(code, 'home');
-    fill(code, 'away');
-  });
+  codes.forEach(code => { fill(code, 'home'); fill(code, 'away'); });
 
-  // Vincitore assoluto se deciso (PICKS.F)
+  // Vincitore assoluto
   const fPick = PICKS.F;
   const winnerSide = fPick && truthy(fPick.home) !== truthy(fPick.away)
     ? (truthy(fPick.home) ? 'home' : 'away')
@@ -192,23 +189,32 @@ function aggiornaPlayoff() {
       : "";
   }
 
-   function wrapPair(pairCode, className){
+  // === SOLO la soluzione “offset per blocco” ===
+  wrapPairOnce('Q1', 'pair-Q1'); // primo quarto a sinistra
+  wrapPairOnce('Q2', 'pair-Q2'); // primo quarto a destra
+}
+
+/* idempotente: non wrappa due volte, ma aggiunge la classe offset se serve */
+function wrapPairOnce(pairCode, extraClass = '') {
   const a = document.querySelector(`.match[data-match="${pairCode}-A"]`);
   const b = document.querySelector(`.match[data-match="${pairCode}-B"]`);
-  if (!a || !b || a.parentElement !== b.parentElement) return;
+  if (!a || !b) return;
 
-  // crea wrapper e inseriscilo prima del primo match
-  const w = document.createElement('div');
-  w.className = `pair-offset ${className}`;
+  // già wrappati?
+  if (a.parentElement.classList.contains('pair-offset') &&
+      a.parentElement === b.parentElement) {
+    if (extraClass) a.parentElement.classList.add(extraClass);
+    return;
+  }
+
   const parent = a.parentElement;
+  if (parent !== b.parentElement) return;
+
+  const w = document.createElement('div');
+  w.className = `pair-offset ${extraClass}`.trim();
   parent.insertBefore(w, a);
   w.appendChild(a);
   w.appendChild(b);
-}
-
-// chiamalo una volta, dopo aver montato le card
-wrapPair('Q1', 'pair-Q1');  // primo quarto a sinistra
-wrapPair('Q2', 'pair-Q2');  // primo quarto a destra
 }
 
 /* =========================================
