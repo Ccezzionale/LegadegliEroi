@@ -92,9 +92,9 @@ const PICKS = {
 /* 2) Abbinamenti Wildcard (indici 0-based nella classifica ordinata) */
 const WC_PAIRS = {
   WC1: [7, 8],   // 8ª vs 9ª
-  WC2: [4, 11],  // 5ª vs 12ª
+  WC2: [6, 9],  // 5ª vs 12ª
   WC3: [5, 10],  // 6ª vs 11ª
-  WC4: [6, 9],   // 7ª vs 10ª
+  WC4: [4, 11],   // 7ª vs 10ª
 };
 
 /* 3) Helpers */
