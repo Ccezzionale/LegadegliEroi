@@ -148,6 +148,9 @@ P.S2 = { home: winnerOf('Q2') || { name: 'Vincente Q2' }, away: winnerOf('Q3') |
 }
 
 /* 5) Render di tutte le card .match */
+/* ================================
+   5) RENDER DI TUTTE LE CARD .match
+   ================================ */
 function aggiornaPlayoff() {
   const P = computeParticipants();
   if (!Object.keys(P).length) return;
@@ -157,7 +160,9 @@ function aggiornaPlayoff() {
   const fill = (code, side) => {
     const data = P[code]?.[side];
     if (!data) return;
-    const slot = side === 'home' ? 'A' : 'B';
+
+    // A = riquadro sopra (home), B = riquadro sotto (away)
+    const slot = side === "home" ? "A" : "B";
     const el = document.querySelector(`.match[data-match="${code}-${slot}"]`);
     if (!el) return;
 
@@ -165,18 +170,24 @@ function aggiornaPlayoff() {
     el.innerHTML = creaHTMLSquadra(data.name, posText, "", false);
     applyTeamColorFromCard(el);
 
+    // evidenzia il vincitore se marcato in PICKS
     const pick = PICKS[code];
-    const won = pick && truthy(pick[side]) && !truthy(pick[side === 'home' ? 'away' : 'home']);
-    el.classList.toggle('vincente', !!won);
+    const won =
+      pick &&
+      truthy(pick[side]) &&
+      !truthy(pick[side === "home" ? "away" : "home"]);
+    el.classList.toggle("vincente", !!won);
   };
 
-  codes.forEach(code => { fill(code, 'home'); fill(code, 'away'); });
+  // popola tutte le card
+  codes.forEach(code => { fill(code, "home"); fill(code, "away"); });
 
-  // Vincitore assoluto
+  // Vincitore assoluto (se deciso in PICKS.F)
   const fPick = PICKS.F;
-  const winnerSide = fPick && truthy(fPick.home) !== truthy(fPick.away)
-    ? (truthy(fPick.home) ? 'home' : 'away')
-    : null;
+  const winnerSide =
+    fPick && truthy(fPick.home) !== truthy(fPick.away)
+      ? (truthy(fPick.home) ? "home" : "away")
+      : null;
   const champ = winnerSide ? P.F?.[winnerSide]?.name : null;
 
   const container = document.getElementById("vincitore-assoluto");
@@ -187,69 +198,84 @@ function aggiornaPlayoff() {
       : "";
   }
 
-// --- crea un wrapper per la coppia Qx-A/B e lo ritorna (idempotente)
+  // layout “a scacchiera” come lo schema Excel
+  placeQuarterPairs();
+  alignLikeExcel();
+}
+
+/* =========================================================
+   6) LAYOUT: wrapper coppie quarti, ordine colonne, allineamento
+   ========================================================= */
+
+// Crea (una sola volta) un wrapper che raggruppa Qx-A e Qx-B
 function ensurePairWrap(code) {
   const a = document.querySelector(`.match[data-match="${code}-A"]`);
   const b = document.querySelector(`.match[data-match="${code}-B"]`);
   if (!a || !b) return null;
 
   // già wrappati?
-  if (a.parentElement.classList.contains('pair-offset') &&
-      a.parentElement === b.parentElement) {
+  if (
+    a.parentElement.classList.contains("pair-offset") &&
+    a.parentElement === b.parentElement
+  ) {
     return a.parentElement;
   }
 
   const parent = a.parentElement;
   if (parent !== b.parentElement) return null;
 
-  const w = document.createElement('div');
-  w.className = 'pair-offset';
+  const w = document.createElement("div");
+  w.className = "pair-offset";
   parent.insertBefore(w, a);
   w.appendChild(a);
   w.appendChild(b);
   return w;
 }
 
-// --- ordina i blocchi dei quarti nelle colonne giuste (top/bottom)
+// Ordina i blocchi dei quarti nelle colonne come da schema:
+// sinistra: Q1 (su) poi Q4 (giù) — destra: Q2 (su) poi Q3 (giù)
 function placeQuarterPairs() {
-  const colQsx = document.querySelector('.q-sx .colonna');
-  const colQdx = document.querySelector('.q-dx .colonna');
+  const colQsx = document.querySelector(".q-sx .colonna");
+  const colQdx = document.querySelector(".q-dx .colonna");
 
   if (colQsx) {
-    const q1 = ensurePairWrap('Q1'); // top sinistra
-    const q4 = ensurePairWrap('Q4'); // bottom sinistra
+    const q1 = ensurePairWrap("Q1"); // top sinistra
+    const q4 = ensurePairWrap("Q4"); // bottom sinistra
     if (q1) colQsx.append(q1);
     if (q4) colQsx.append(q4);
   }
   if (colQdx) {
-    const q2 = ensurePairWrap('Q2'); // top destra
-    const q3 = ensurePairWrap('Q3'); // bottom destra
+    const q2 = ensurePairWrap("Q2"); // top destra
+    const q3 = ensurePairWrap("Q3"); // bottom destra
     if (q2) colQdx.append(q2);
     if (q3) colQdx.append(q3);
   }
 }
 
-
-// --- allinea le colonne: i Quarti “spalmati”, le Semi centrate
+// Allinea colonne: quarti “spalmati” e semifinali centrate
 function alignLikeExcel() {
   const getCol = sel => document.querySelector(`${sel} .colonna`);
-  const wcL = getCol('.wc-sx'), wcR = getCol('.wc-dx');
-  const qL  = getCol('.q-sx'),  sL  = getCol('.s-sx');
-  const qR  = getCol('.q-dx'),  sR  = getCol('.s-dx');
+  const wcL = getCol(".wc-sx"), wcR = getCol(".wc-dx");
+  const qL  = getCol(".q-sx"),  sL  = getCol(".s-sx");
+  const qR  = getCol(".q-dx"),  sR  = getCol(".s-dx");
 
-  // classi di comportamento
-  [qL, qR].forEach(c => c && c.classList.add('col--spread'));
-  [sL, sR].forEach(c => c && c.classList.add('col--center'));
+  [qL, qR].forEach(c => c && c.classList.add("col--spread"));
+  [sL, sR].forEach(c => c && c.classList.add("col--center"));
 
-  // altezze minime uguali a quelle delle wildcard adiacenti
-  if (qL) qL.style.minHeight = (wcL ? wcL.offsetHeight : 0) + 'px';
-  if (sL) sL.style.minHeight = (wcL ? wcL.offsetHeight : 0) + 'px';
-  if (qR) qR.style.minHeight = (wcR ? wcR.offsetHeight : 0) + 'px';
-  if (sR) sR.style.minHeight = (wcR ? wcR.offsetHeight : 0) + 'px';
+  if (qL) qL.style.minHeight = (wcL ? wcL.offsetHeight : 0) + "px";
+  if (sL) sL.style.minHeight = (wcL ? wcL.offsetHeight : 0) + "px";
+  if (qR) qR.style.minHeight = (wcR ? wcR.offsetHeight : 0) + "px";
+  if (sR) sR.style.minHeight = (wcR ? wcR.offsetHeight : 0) + "px";
 }
 
-// >>> dopo aver popolato tutte le .match:
-window.addEventListener('resize', alignLikeExcel);
+// Registrato UNA sola volta (fuori da aggiornaPlayoff)
+window.addEventListener("resize", alignLikeExcel);
+
+/* (facoltativo) esport per debug/uso console */
+window.aggiornaPlayoff = aggiornaPlayoff;
+window.PICKS = PICKS;
+
+
 
 /* =========================================
    FETCH CLASSIFICA e AVVIO
