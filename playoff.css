@@ -258,6 +258,55 @@ nav{
 
 .navbar > li{ white-space: nowrap; } /* evita che rompa su 2 righe */
 
+/* —— Card bicolore: pannello logo + pannello info —— */
+:root{
+  --logo-slab: 62px;           /* larghezza pannello logo */
+  --team-color: #123c7a;       /* fallback se non impostato per-card */
+}
+
+/* contenitore in 2 colonne, bordo unico, angoli arrotondati */
+.match{
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--logo-slab) 1fr;
+  align-items: center;
+  overflow: hidden;            /* per “attaccare” i due riquadri */
+  padding: 0;                  /* padding spostato sui contenuti */
+}
+
+/* pannello sinistro colorato (si colora via --team-color) */
+.match::before{
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--logo-slab);
+  background: var(--team-color);
+}
+
+/* usiamo il wrapper esistente ma lo “apriamo” dentro la griglia */
+.match .squadra.orizzontale{
+  display: contents;           /* img in colonna 1, testo in colonna 2 */
+}
+
+/* logo centrato nel pannello sinistro */
+.match .squadra.orizzontale img{
+  grid-column: 1;
+  justify-self: center;
+  width: var(--team-logo);
+  height: var(--team-logo);
+  object-fit: contain;
+  z-index: 1;                  /* sopra il pannello colorato */
+  filter: drop-shadow(0 0 2px rgba(0,0,0,.35));
+}
+
+/* seed + nome nel pannello destro, su bianco */
+.match .squadra.orizzontale span{
+  grid-column: 2;
+  padding: var(--team-pad-y) var(--team-pad-x);
+}
+
+/* mantieni il resto del tuo stile (bordi, shadow, vincente) */
+
 
 /* Mobile: riattivo il wrap e l'hamburger */
 @media (max-width: 768px){
