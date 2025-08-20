@@ -1,15 +1,21 @@
+/* =========================================
+   CLASSIFICA (Google Sheet)
+   ========================================= */
 const URL_CLASSIFICA_TOTALE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTduESMbJiPuCDLaAFdOHjep9GW-notjraILSyyjo6SA0xKSR0H0fgMLPNNYSwXgnGGJUyv14kjFRqv/pub?gid=691152130&single=true&output=csv";
 
-// --- normalizza: toglie seed "8°", spazi doppi, case, accenti ---
+/* =========================================
+   UTILS & COLORI SQUADRE
+   ========================================= */
+
+// normalizza: toglie seed "8°", spazi doppi, case, accenti
 const norm = (s) => (s || "")
   .toString()
   .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // accenti
   .replace(/^\s*\d+\s*°?\s*/,"")                    // "8° " iniziale
-  .replace(/\s+/g," ")                              
+  .replace(/\s+/g," ")
   .trim()
   .toLowerCase();
 
-// --- mappa colori (la tua) ---
 const TEAM_COLORS = {
   "team bartowski":         "#C1121F",
   "bayern christiansen":    "#8B0A1A",
@@ -28,7 +34,6 @@ const TEAM_COLORS = {
   "lokomotiv lipsia":       "#FACC15",
 };
 
-// --- applica colore leggendo il nome della card ---
 function applyTeamColorFromCard(cardEl){
   const nameEl = cardEl.querySelector('.squadra.orizzontale span');
   if (!nameEl) return;
@@ -37,203 +42,154 @@ function applyTeamColorFromCard(cardEl){
   cardEl.style.setProperty('--team-color', c);
 }
 
+/* =========================================
+   RENDER DELLA SQUADRA (HTML)
+   ========================================= */
 function creaHTMLSquadra(nome, posizione = "", punteggio = "", isVincente = false) {
-  const nomePulito = nome.replace(/[°]/g, "").trim();
-  const usaLogo = !nome.toLowerCase().includes("vincente") && !nome.toLowerCase().includes("classificata");
+  const nomePulito = (nome || "").replace(/[°]/g, "").trim();
+  const usaLogo = !/vincente|classificata/i.test(nome || "");
   const fileLogo = `img/${nomePulito}.png`;
   const classe = isVincente ? "vincente" : "perdente";
 
   const logoHTML = usaLogo
-    ? `<img src="${fileLogo}" alt="${nome}" onerror="this.style.display='none'">`
+    ? `<img src="${fileLogo}" alt="${nomePulito}" onerror="this.style.display='none'">`
     : "";
 
   return `
     <div class="squadra orizzontale ${classe}">
       ${logoHTML}
-      <span>${posizione} ${nome}</span>
+      <span>${posizione ? posizione + " " : ""}${nomePulito}</span>
     </div>`;
 }
 
-function creaMatchCardMobile(nomeA, nomeB, logoA, logoB, vincenteNome) {
-  const isV1 = vincenteNome === nomeA;
-  const isV2 = vincenteNome === nomeB;
+/* =========================================
+   BRACKET MANUALE (home/away)
+   - metti un valore truthy in PICKS.<match>.<home|away> per far passare
+   - top-4 direttamente ai Quarti (home)
+   - 5..12 in Wildcard
+   Convenzione UI: A = riquadro sopra (home), B = riquadro sotto (away)
+   ========================================= */
 
-  return `
-    <div class="match-card ${isV1 || isV2 ? 'vincente' : ''}">
-      <div class="team"><img src="${logoA}" onerror="this.style.display='none'"><span>${nomeA}</span></div>
-      <span class="vs">vs</span>
-      <div class="team"><img src="${logoB}" onerror="this.style.display='none'"><span>${nomeB}</span></div>
-    </div>`;
-}
+/* 1) EDITA QUI per indicare i vincitori */
+const PICKS = {
+  // Wildcard
+  WC1: { home: '', away: '' },
+  WC2: { home: '', away: '' },
+  WC3: { home: '', away: '' },
+  WC4: { home: '', away: '' },
+  // Quarti
+  Q1:  { home: '', away: '' },
+  Q2:  { home: '', away: '' },
+  Q3:  { home: '', away: '' },
+  Q4:  { home: '', away: '' },
+  // Semifinali
+  S1:  { home: '', away: '' },
+  S2:  { home: '', away: '' },
+  // Finale
+  F:   { home: '', away: '' },
+};
 
-function aggiornaPlayoffMobile() {
-  if (window.innerWidth > 768) return;
+/* 2) Abbinamenti Wildcard (indici 0-based nella classifica ordinata) */
+const WC_PAIRS = {
+  WC1: [7, 8],   // 8° vs 9°
+  WC2: [4, 11],  // 5° vs 12°
+  WC3: [5, 10],  // 6° vs 11°
+  WC4: [6, 9],   // 7° vs 10°
+};
 
-  const sezioni = {
-    WC: document.getElementById("round-wc"),
-    Q: document.getElementById("round-qf"),
-    S: document.getElementById("round-sf"),
-    F: document.getElementById("round-f")
-  };
+/* 3) Helpers */
+const truthy = v => !(v === '' || v === 0 || v === null || v === undefined || v === false);
+const stripSeed = (txt) => (txt || "").replace(/^\s*\d+\s*°\s*/, "").trim();
 
-  const rounds = window.risultati || [];
-  for (const r of rounds) {
-    let key = "";
-if (r.partita?.startsWith("WC")) key = "WC";
-else if (r.partita?.startsWith("Q")) key = "Q";
-else if (r.partita?.startsWith("S")) key = "S";
-else if (r.partita?.startsWith("F")) key = "F";
+/* 4) Costruisce tutti i partecipanti (WC → Q → S → F) in base a classifica + PICKS */
+function computeParticipants() {
+  const S = window.squadre || [];
+  if (S.length < 12) return {};
 
-    const container = sezioni[key];
-    if (!container) continue;
+  const P = {}; // partecipanti per match: { code: {home:{name,seed}, away:{...}} }
 
-    const logoA = `img/${r.squadraA.replace(/[°]/g, "").trim()}.png`;
-    const logoB = `img/${r.squadraB.replace(/[°]/g, "").trim()}.png`;
-
-    const matchHTML = creaMatchCardMobile(r.squadraA, r.squadraB, logoA, logoB, r.vincente);
-    container.insertAdjacentHTML("beforeend", matchHTML);
+  // ---- WILDCARD ----
+  for (const [code, [iH, iA]] of Object.entries(WC_PAIRS)) {
+    P[code] = {
+      home: { name: S[iH].nome, seed: iH + 1 },
+      away: { name: S[iA].nome, seed: iA + 1 },
+    };
   }
-}
 
-function aggiornaPlayoff() {
-  const mapping = {
-    "WC1-A": { idx: 0, pos: 7 },
-    "WC1-B": { idx: 1, pos: 8 },
-    "WC2-A": { idx: 3, pos: 4 },
-    "WC2-B": { idx: 2, pos: 11 },
-    "WC3-A": { idx: 4, pos: 5 },
-    "WC3-B": { idx: 5, pos: 10 },
-    "WC4-A": { idx: 6, pos: 6 },
-    "WC4-B": { idx: 7, pos: 9 },
-    "Q1-A": { id: "Q1", side: "A" },
-    "Q1-B": { id: "Q1", side: "B" },
-    "Q2-A": { id: "Q2", side: "A" },
-    "Q2-B": { id: "Q2", side: "B" },
-    "Q3-A": { id: "Q3", side: "A" },
-    "Q3-B": { id: "Q3", side: "B" },
-    "Q4-A": { id: "Q4", side: "A" },
-    "Q4-B": { id: "Q4", side: "B" },
-    "S1-A": { id: "S1", side: "A", from: ["Q1", "Q2"] },
-    "S1-B": { id: "S1", side: "B", from: ["Q1", "Q2"] },
-    "S2-A": { id: "S2", side: "A", from: ["Q3", "Q4"] },
-    "S2-B": { id: "S2", side: "B", from: ["Q3", "Q4"] },
-    "F-A": { id: "F", side: "A", from: ["S1", "S2"] },
-    "F-B": { id: "F", side: "B", from: ["S1", "S2"] },
+  // funzione per calcolare vincitore di un match (se selezionato in PICKS)
+  const winnerOf = (code) => {
+    const p = PICKS[code];
+    const m = P[code];
+    if (!p || !m) return null;
+    const h = truthy(p.home), a = truthy(p.away);
+    if (h && !a) return { name: stripSeed(m.home.name), seed: m.home.seed };
+    if (a && !h) return { name: stripSeed(m.away.name), seed: m.away.seed };
+    return null; // non deciso o ambiguità
   };
 
-  document.querySelectorAll(".match").forEach(div => {
-    const id = div.dataset.match;
-    const config = mapping[id];
-    if (!config) return;
+  // ---- QUARTI ---- (home = top-4, away = winner WCx)
+  P.Q1 = { home: { name: S[0].nome, seed: 1 }, away: winnerOf('WC1') || { name: `Vincente WC1` } };
+  P.Q2 = { home: { name: S[1].nome, seed: 2 }, away: winnerOf('WC2') || { name: `Vincente WC2` } };
+  P.Q3 = { home: { name: S[2].nome, seed: 3 }, away: winnerOf('WC3') || { name: `Vincente WC3` } };
+  P.Q4 = { home: { name: S[3].nome, seed: 4 }, away: winnerOf('WC4') || { name: `Vincente WC4` } };
 
-    const risultato = window.risultati?.find(r => r.partita === config.id || r.partita === id.replace(/-[AB]$/, ""));
-    let nome = "?", posizione = "", punteggio = "";
+  // ---- SEMIFINALI ----
+  P.S1 = { home: winnerOf('Q1') || { name: `Vincente Q1` }, away: winnerOf('Q2') || { name: `Vincente Q2` } };
+  P.S2 = { home: winnerOf('Q3') || { name: `Vincente Q3` }, away: winnerOf('Q4') || { name: `Vincente Q4` } };
 
-    if (id.includes("WC")) {
-      const squadra = window.squadre?.[config.pos]?.nome;
-      nome = risultato?.[id.endsWith("A") ? "squadraA" : "squadraB"] || squadra || "?";
-      posizione = `${config.pos + 1}°`;
-      punteggio = risultato?.[id.endsWith("A") ? "golA" : "golB"] ?? "";
+  // ---- FINALE ----
+  P.F  = { home: winnerOf('S1') || { name: `Vincente S1` }, away: winnerOf('S2') || { name: `Vincente S2` } };
 
-    } else if (id.startsWith("Q") || id.startsWith("S") || id.startsWith("F")) {
-      const teamKey = id.endsWith("A") ? "squadraA" : "squadraB";
-      nome = risultato?.[teamKey] || risultato?.vincente || `Vincente ${config.from?.join("/")}`;
-      posizione = window.squadre?.findIndex(s => s.nome === nome);
-      posizione = posizione !== -1 ? `${posizione + 1}°` : "";
-      punteggio = risultato?.[id.endsWith("A") ? "golA" : "golB"] ?? "";
-    }
+  return P;
+}
 
-    const isVincente = risultato?.vincente === nome;
-    div.innerHTML = creaHTMLSquadra(nome, posizione, punteggio, isVincente);
-    applyTeamColorFromCard(div);
+/* 5) Render di tutte le card .match */
+function aggiornaPlayoff() {
+  const P = computeParticipants();
+  if (!Object.keys(P).length) return;
 
-    if (isVincente) {
-      div.classList.add("vincente");
-    }
+  const codes = ["WC1","WC2","WC3","WC4","Q1","Q2","Q3","Q4","S1","S2","F"];
+
+  const fill = (code, side) => {
+    const data = P[code]?.[side];
+    if (!data) return;
+    const slot = side === 'home' ? 'A' : 'B'; // A = sopra (home), B = sotto (away)
+    const el = document.querySelector(`.match[data-match="${code}-${slot}"]`);
+    if (!el) return;
+
+    const posText = data.seed ? `${data.seed}°` : "";
+    el.innerHTML = creaHTMLSquadra(data.name, posText, "", false);
+    applyTeamColorFromCard(el);
+
+    const pick = PICKS[code];
+    const won = pick && truthy(pick[side]) && !truthy(pick[side === 'home' ? 'away' : 'home']);
+    el.classList.toggle('vincente', !!won);
+  };
+
+  codes.forEach(code => {
+    fill(code, 'home');
+    fill(code, 'away');
   });
 
-  const finale = window.risultati?.find(r => r.partita === "F");
-  if (finale?.vincente) {
-    const nomeVincitore = finale.vincente;
-    const posizione = window.squadre?.findIndex(s => s.nome === nomeVincitore);
-    const posizioneText = posizione >= 0 ? `${posizione + 1}°` : "";
-    const logoSrc = `img/${nomeVincitore.replace(/[°]/g, "").trim()}.png`;
+  // Vincitore assoluto se deciso (PICKS.F)
+  const fPick = PICKS.F;
+  const winnerSide = fPick && truthy(fPick.home) !== truthy(fPick.away)
+    ? (truthy(fPick.home) ? 'home' : 'away')
+    : null;
+  const champ = winnerSide ? P.F?.[winnerSide]?.name : null;
 
-    const htmlVincitore = `
-      <img src="${logoSrc}" alt="${nomeVincitore}" class="logo-vincitore" onerror="this.style.display='none'">
-      <div class="nome-vincitore">${nomeVincitore}</div>
-    `;
-    const container = document.getElementById("vincitore-assoluto");
-    if (container) container.innerHTML = htmlVincitore;
+  const container = document.getElementById("vincitore-assoluto");
+  if (container) {
+    container.innerHTML = champ
+      ? `<img src="img/${champ}.png" alt="${champ}" class="logo-vincitore" onerror="this.style.display='none'">
+         <div class="nome-vincitore">${champ}</div>`
+      : "";
   }
 }
 
-function aggiornaPlayoffMobile() {
-  if (window.innerWidth > 768) return;
-
-  const sezioni = {
-    WC: document.getElementById("round-wc"),
-    Q: document.getElementById("round-qf"),
-    S: document.getElementById("round-sf"),
-    F: document.getElementById("round-f")
-  };
-
-  const rounds = window.risultati || [];
-  for (const r of rounds) {
-    let key = "";
-    if (r.partita?.startsWith("WC")) key = "WC";
-    else if (r.partita?.startsWith("Q")) key = "Q";
-    else if (r.partita?.startsWith("S")) key = "S";
-    else if (r.partita?.startsWith("F")) key = "F";
-
-    const container = sezioni[key];
-    if (!container) continue;
-
-    const logoA = `img/${r.squadraA.replace(/[°]/g, "").trim()}.png`;
-    const logoB = `img/${r.squadraB.replace(/[°]/g, "").trim()}.png`;
-
-    const matchHTML = creaMatchCardMobile(r.squadraA, r.squadraB, logoA, logoB, r.vincente);
-    container.insertAdjacentHTML("beforeend", matchHTML);
-  }
-}
-
-function creaMatchCardMobile(nomeA, nomeB, logoA, logoB, vincenteNome) {
-  const squadraA = window.squadre?.find(s => s.nome === nomeA);
-  const squadraB = window.squadre?.find(s => s.nome === nomeB);
-  const posA = squadraA ? window.squadre.indexOf(squadraA) + 1 : "";
-  const posB = squadraB ? window.squadre.indexOf(squadraB) + 1 : "";
-
-  const risultato = window.risultati?.find(r => 
-    (r.squadraA === nomeA && r.squadraB === nomeB) || 
-    (r.squadraA === nomeB && r.squadraB === nomeA)
-  );
-
-  const golA = risultato?.squadraA === nomeA ? risultato?.golA : risultato?.golB ?? "";
-  const golB = risultato?.squadraB === nomeB ? risultato?.golB : risultato?.golA ?? "";
-
-  const isV1 = vincenteNome === nomeA;
-  const isV2 = vincenteNome === nomeB;
-
-  return `
-    <div class="match-card ${isV1 || isV2 ? 'vincente' : ''}">
-      <div class="team-line ${isV1 ? 'winner' : ''}">
-        <span class="pos">${posA ? posA + "°" : ""}</span>
-        <img src="${logoA}" onerror="this.style.display='none'">
-        <span class="nome">${nomeA}</span>
-        <span class="gol">${golA !== null ? golA : ""}</span>
-      </div>
-      <div class="vs">vs</div>
-      <div class="team-line ${isV2 ? 'winner' : ''}">
-        <span class="pos">${posB ? posB + "°" : ""}</span>
-        <img src="${logoB}" onerror="this.style.display='none'">
-        <span class="nome">${nomeB}</span>
-        <span class="gol">${golB !== null ? golB : ""}</span>
-      </div>
-    </div>
-  `;
-}
-
-
+/* =========================================
+   FETCH CLASSIFICA e AVVIO
+   ========================================= */
 fetch(URL_CLASSIFICA_TOTALE)
   .then(res => res.text())
   .then(csv => {
@@ -245,7 +201,7 @@ fetch(URL_CLASSIFICA_TOTALE)
       const colonne = righe[i].split(",").map(c => c.replace(/"/g, "").trim());
       const nome = colonne[1];
       const punti = parseInt(colonne[10]);
-      const mp = parseFloat(colonne[11].replace(",", ".")) || 0;
+      const mp = parseFloat(colonne[11]?.replace(",", ".")) || 0;
       if (!nome || isNaN(punti)) continue;
       squadre.push({ nome, punti, mp });
       if (squadre.length === 12) break;
@@ -254,9 +210,12 @@ fetch(URL_CLASSIFICA_TOTALE)
     squadre.sort((a, b) => b.punti - a.punti || b.mp - a.mp);
     window.squadre = squadre;
 
-    if (typeof aggiornaPlayoff === "function") aggiornaPlayoff();
-    if (typeof aggiornaPlayoffMobile === "function") aggiornaPlayoffMobile();
+    // Render iniziale (legge anche PICKS)
+    aggiornaPlayoff();
   })
   .catch(err => console.error("Errore nel caricamento classifica:", err));
 
+/* Facoltativo: richiamabile da console se cambi PICKS a runtime */
+window.aggiornaPlayoff = aggiornaPlayoff;
+window.PICKS = PICKS;
 
