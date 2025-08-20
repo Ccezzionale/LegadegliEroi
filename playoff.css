@@ -305,12 +305,22 @@ nav{
   padding: var(--team-pad-y) var(--team-pad-x);
 }
 
+/* Sposta GIÙ il quarto in alto a sinistra (Q1) */
 .match[data-match="Q1-A"],
 .match[data-match="Q1-B"] {
-  position: relative;      /* evita il margin-collapsing del contenitore */
-  transform: translateY(24px);  /* regola qui l'entità dello spostamento */
+  position: relative;
+  transform: translateY(24px); /* regola qui */
   z-index: 1;
 }
+
+/* Sposta GIÙ il quarto in alto a destra (Q2) */
+.match[data-match="Q2-A"],
+.match[data-match="Q2-B"] {
+  position: relative;
+  transform: translateY(24px); /* regola qui, anche diverso da Q1 se vuoi */
+  z-index: 1;
+}
+
 
 /* mantieni il resto del tuo stile (bordi, shadow, vincente) */
 
