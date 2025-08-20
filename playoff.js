@@ -191,6 +191,24 @@ function aggiornaPlayoff() {
          <div class="nome-vincitore">${champ}</div>`
       : "";
   }
+
+   function wrapPair(pairCode, className){
+  const a = document.querySelector(`.match[data-match="${pairCode}-A"]`);
+  const b = document.querySelector(`.match[data-match="${pairCode}-B"]`);
+  if (!a || !b || a.parentElement !== b.parentElement) return;
+
+  // crea wrapper e inseriscilo prima del primo match
+  const w = document.createElement('div');
+  w.className = `pair-offset ${className}`;
+  const parent = a.parentElement;
+  parent.insertBefore(w, a);
+  w.appendChild(a);
+  w.appendChild(b);
+}
+
+// chiamalo una volta, dopo aver montato le card
+wrapPair('Q1', 'pair-Q1');  // primo quarto a sinistra
+wrapPair('Q2', 'pair-Q2');  // primo quarto a destra
 }
 
 /* =========================================
