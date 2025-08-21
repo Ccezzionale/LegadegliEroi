@@ -238,7 +238,7 @@ nav{
 
 /* Coppa e logo vincitore: dimensioni fisse */
 .coppa-vittoria { display:flex; flex-direction:column; align-items:center; margin-top: 20px; }
-.coppa-vittoria .coppa-img{ width:160px !important; height:auto !important; display:block; }
+.coppa-vittoria .coppa-img{ width:250px !important; height:auto !important; display:block; }
 .logo-vincitore{ width:60px; height:auto; object-fit:contain; margin:8px 0 4px; }
 
 /* ========== MOBILE (hamburger) ========== */
