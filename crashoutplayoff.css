@@ -12,12 +12,32 @@
 }
 
 
-*{ box-sizing:border-box; }
 html,body{ height:100%; }
+
 body{
-  margin:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background:var(--bg); color:var(--text);
+  margin:0;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color:var(--text);
+
+  /* Fallback */
+  background-color: var(--bg);
+
+  /* Sfondo immagine */
+  background-image: url('img/bg_playoff.png'); /* metti qui il nome del file */
+  background-position: center top;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* opzionale, effetto “fisso” */
 }
+
+body::after{
+  content:'';
+  position: fixed; inset: 0;
+  pointer-events: none;
+  /* schiarisce appena, aumenta/diminuisci l’opacità a piacere */
+  background: rgba(255,255,255,0.05);
+}
+
 
 /* ========== NAVBAR / HEADER (come index) ========== */
 nav{ background:var(--nav); color:#fff; display:flex; align-items:center; padding:10px 20px; flex-wrap:wrap; }
