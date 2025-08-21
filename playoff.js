@@ -73,10 +73,10 @@ function creaHTMLSquadra(nome, posizione = "", punteggio = "", isVincente = fals
 /* 1) EDITA QUI per indicare i vincitori */
 const PICKS = {
   // Wildcard
-  WC1: { home: 'W', away: '' },
-  WC2: { home: '', away: 'W' },
-  WC3: { home: '', away: 'W' },
-  WC4: { home: '', away: 'W' },
+  WC1: { home: '', away: '' },
+  WC2: { home: '', away: '' },
+  WC3: { home: '', away: '' },
+  WC4: { home: '', away: '' },
   // Quarti
   Q1:  { home: '', away: '' },
   Q2:  { home: '', away: '' },
