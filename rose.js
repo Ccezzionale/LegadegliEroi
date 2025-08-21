@@ -49,7 +49,7 @@ const giocatoriFPManualiPerSquadra = {
   "wildboys78": [],
   "Desperados": [],
   "MinneSota Snakes": [],
-  "PokerMantra": [],,
+  "PokerMantra": [],
   "Minnesode Timberland": [],
   "Bayern Christiansen": [],
   "Golden Knights": [],
