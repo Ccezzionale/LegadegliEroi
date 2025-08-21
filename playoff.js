@@ -20,7 +20,7 @@ const TEAM_COLORS = {
   "team bartowski":         "#C1121F",
   "bayern christiansen":    "#8B0A1A",
   "wildboys78":             "#A07900",
-  "desperados":             "#3C4C61",
+  "desperados":             "#2E4A7F",
   "minnesode timberland":   "#00A651",
   "golden knights":         "#B4975A",
   "pokermantra":            "#5B2A86",
@@ -31,7 +31,7 @@ const TEAM_COLORS = {
   "athletic pongao":        "#C1121F",
   "riverfilo":              "#D5011D",
   "eintracht franco 126":   "#E1000F",
-  "lokomotiv lipsia":       "#FACC15",
+  "fantaugusta":            "#164E3B",
 };
 
 function applyTeamColorFromCard(cardEl){
