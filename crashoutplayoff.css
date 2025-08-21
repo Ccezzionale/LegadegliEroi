@@ -11,16 +11,6 @@
   --grid-gap: 16px;
 }
 
-html,body{ height:100%; }
-
-body{
-  margin:0;
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color:var(--text);
-
-  /* Fallback */
-  background-color: var(--bg);
-
 *{ box-sizing:border-box; } html,body{ height:100%; } body{ margin:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:var(--bg); color:var(--text); }
 
 
