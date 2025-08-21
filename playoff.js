@@ -20,7 +20,7 @@ const TEAM_COLORS = {
   "team bartowski":         "#C1121F",
   "bayern christiansen":    "#8B0A1A",
   "wildboys78":             "#A07900",
-  "desperados":             "#0B1F3A",
+  "desperados":             "#3C4C61",
   "minnesode timberland":   "#00A651",
   "golden knights":         "#B4975A",
   "pokermantra":            "#5B2A86",
@@ -73,20 +73,20 @@ function creaHTMLSquadra(nome, posizione = "", punteggio = "", isVincente = fals
 /* 1) EDITA QUI per indicare i vincitori */
 const PICKS = {
   // Wildcard
-  WC1: { home: 'W', away: '' },
-  WC2: { home: 'W', away: '' },
-  WC3: { home: '', away: 'W' },
-  WC4: { home: '', away: 'W' },
+  WC1: { home: '', away: '' },
+  WC2: { home: '', away: '' },
+  WC3: { home: '', away: '' },
+  WC4: { home: '', away: '' },
   // Quarti
-  Q1:  { home: 'W', away: '' },
-  Q2:  { home: 'W', away: '' },
-  Q3:  { home: 'W', away: '' },
-  Q4:  { home: '', away: 'W' },
+  Q1:  { home: '', away: '' },
+  Q2:  { home: '', away: '' },
+  Q3:  { home: '', away: '' },
+  Q4:  { home: '', away: '' },
   // Semifinali
-  S1:  { home: '', away: 'W' },
-  S2:  { home: '', away: 'W' },
+  S1:  { home: '', away: '' },
+  S2:  { home: '', away: '' },
   // Finale
-  F:   { home: '', away: 'W' },
+  F:   { home: '', away: '' },
 };
 
 /* 2) Abbinamenti Wildcard (indici 0-based nella classifica ordinata) */
