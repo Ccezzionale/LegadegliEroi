@@ -52,7 +52,7 @@ const giocatoriFPManualiPerSquadra = {
   "PokerMantra": [],
   "Minnesode Timberland": [],
   "Bayern Christiansen": [],
-  "Golden Knights": [sportiello],
+  "Golden Knights": ["sportiello"],
   "Ibla": [],
   "FC Disoneste": [],
   "Athletic Pongao": [],
