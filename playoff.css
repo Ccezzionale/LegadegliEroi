@@ -23,6 +23,10 @@
   /* Manopola altezze Semifinali (positivo = più in alto) */
   --semi-shift-left:  18px;
   --semi-shift-right: 18px;
+
+  /* Passaggio turno */
+  --winner-gold: #ffd36b;
+  --winner-glow: rgba(255,211,107,.65);
 }
 
 /* ========== BASE ========== */
@@ -196,9 +200,36 @@ nav{
 
 /* Evidenza vincente */
 .match.vincente{
-  border: 3px solid gold;
-  font-weight: 700;
+  border: 3px solid var(--winner-gold);
+  background: linear-gradient(180deg,#ffffff 0%, #fff6cf 100%);
+  box-shadow:
+    0 0 0 3px rgba(255,211,107,.45),   /* anello esterno */
+    0 8px 18px rgba(0,0,0,.25),        /* ombra */
+    0 0 22px var(--winner-glow);       /* alone dorato */
+  font-weight: 800;
+  color: #001f3f;
 }
+
+.match.vincente::after{
+  content: "PASSA";
+  position: absolute;
+  top: -10px; right: -10px;
+  background: var(--winner-gold);
+  color: #001f3f;
+  font-weight: 900;
+  font-size: .72rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+}
+
+@keyframes winnerPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255,211,107,.6); }
+  70%  { box-shadow: 0 0 0 10px rgba(255,211,107,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,211,107,0); }
+}
+.match.vincente{ animation: winnerPulse 1.2s ease-out 2; }
+
 
 /* Wrapper di una coppia (usato dal JS quando serve offset) */
 .pair-offset{
