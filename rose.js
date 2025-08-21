@@ -25,38 +25,38 @@ const conferencePerSquadra = {
 const giocatoriFP = new Set();
 
 const giocatoriU21PerSquadra = {
-  "Team Bartowski": ["baldanzi"],
-  "Desperados": ["fazzini"],
-  "Riverfilo": ["fabbian"],
-  "Golden Knights": ["bonny"],
-  "Fantaugusta": ["goglichidze"],
+  "Team Bartowski": [],
+  "Desperados": [],
+  "Riverfilo": [],
+  "Golden Knights": [],
+  "Fantaugusta": [],
   "FC Disoneste": [],
   "Rubinkebab": [],
-  "Eintracht Franco 126": ["coppola d."],
-  "PokerMantra": ["yildiz"],
-  "wildboys78": ["tchaouna"],
-  "Bayern Christiansen": ["castro s."],
-  "Minnesode Timberland": ["scalvini"],
-  "Athletic Pongao": ["goglichidze"],
-  "MinneSota Snakes": ["fabbian"],
-  "Ibla": ["soule'"],
-  "FC Disoneste": ["soule'"],
-  "Pandinicoccolosini": ["yildiz"]
+  "Eintracht Franco 126": [],
+  "PokerMantra": [],
+  "wildboys78": [],
+  "Bayern Christiansen": [],
+  "Minnesode Timberland": [],
+  "Athletic Pongao": [],
+  "MinneSota Snakes": [],
+  "Ibla": [],
+  "FC Disoneste": [],
+  "Pandinicoccolosini": []
 };
 
 const giocatoriFPManualiPerSquadra = {
-  "Rubinkebab": ["ranieri l."],
-  "wildboys78": ["adams c."],
-  "Desperados": ["vasquez", "dodo'"],
-  "MinneSota Snakes": ["darmian"],
-  "PokerMantra": ["n'dicka"],
-  "Minnesode Timberland": ["zortea"],
-  "Bayern Christiansen": ["paleari", "frattesi"],
-  "Golden Knights": ["terracciano", "paleari", "mandragora"],
-  "Ibla": ["skorupski", "angelino", "zambo anguissa"],
-  "FC Disoneste": ["angelino", "gatti"],
-  "Athletic Pongao": ["de roon", "weah"],
-  "Pandinicoccolosini": ["leali", "n'dicka"]
+  "Rubinkebab": [],
+  "wildboys78": [],
+  "Desperados": [],
+  "MinneSota Snakes": [],
+  "PokerMantra": [],,
+  "Minnesode Timberland": [],
+  "Bayern Christiansen": [],
+  "Golden Knights": [],
+  "Ibla": [],
+  "FC Disoneste": [],
+  "Athletic Pongao": [],
+  "Pandinicoccolosini": [],
 };
 
 
