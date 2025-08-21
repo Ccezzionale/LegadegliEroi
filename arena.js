@@ -5,7 +5,7 @@ const squadre = [
   { nome: "Team Bartowski", logo: "img/Team Bartowski.png", eliminata: false, ultimaEliminata: false },
   { nome: "Golden Knights", logo: "img/Golden Knights.png", eliminata: false, ultimaEliminata: false },
   { nome: "Ibla", logo: "img/Ibla.png", eliminata: false, ultimaEliminata: false },
-  { nome: "Lokomotiv Lipsia", logo: "img/Lokomotiv Lipsia.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Fantaugusta", logo: "img/Fantaugusta.png", eliminata: false, ultimaEliminata: false },
   { nome: "Riverfilo", logo: "img/Riverfilo.png", eliminata: false, ultimaEliminata: false },
   { nome: "Desperados", logo: "img/Desperados.png", eliminata: false, ultimaEliminata: false },
   { nome: "Wildboys 78", logo: "img/wildboys78.png", eliminata: false, ultimaEliminata: false },
