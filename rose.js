@@ -61,7 +61,7 @@ const giocatoriFPManualiPerSquadra = {
 const giocatoriFPSceltiPerSquadra = {
   "Pandinicoccolosini": ["ekkelenkamp"],
   "Ibla": ["angelino"],
-  "Rubinkebab": ["de ketelaere],
+  "Rubinkebab": ["de ketelaere]
 };
 
 const giocatoriU21SceltiPerSquadra = {
