@@ -59,15 +59,13 @@ const giocatoriFPManualiPerSquadra = {
 };
 
 const giocatoriFPSceltiPerSquadra = {
-  "Team Bartowski": [""],
-  "Desperados": [""],
-  // ...
+  "Pandinicoccolosini": ["ekkelenkamp"],
+  "Ibla": ["angelino"]
 };
 
 const giocatoriU21SceltiPerSquadra = {
-  "Team Bartowski": [""],
-  "Desperados": [""],
-  // ...
+  "Desperados": ["fazzini "],
+  "Pandinicoccolosini": ["yildiz"]
 };
 
 const URL_ROSE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSE8Q0l1pnU8NCtId51qCk8Pstat27g6JBQaU-3UKIY0ZCZicUJ1u1T-ElvuR9NK9pc2WYpunW-a4ld/pub?output=csv";
