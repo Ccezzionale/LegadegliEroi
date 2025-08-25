@@ -168,12 +168,12 @@ thead {
 
 .badge-u21 {
   display: inline-block;
-  background: gold;       /* sfondo giallo */
-  color: #000;            /* testo nero */
+  background: gold;
+  color: #000;
   font-size: 0.7em;
   font-weight: bold;
   padding: 2px 6px;
-  border-radius: 6px;     /* angoli arrotondati */
+  border-radius: 6px;
   margin-left: 4px;
 }
 
@@ -190,7 +190,12 @@ thead {
 
 .badge-u21-scelto {
   display: inline-block;
-  font-size: 0.9em;
+  background: #0074D9; /* blu */
+  color: #fff;
+  font-size: 0.75em;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 6px;
   margin-left: 4px;
 }
 
