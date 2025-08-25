@@ -4,7 +4,7 @@ const rose = {};
 const conferencePerSquadra = {
   "Team Bartowski": "Conference League",
   "Desperados": "Conference League",
-  "Riverfilo": "Conference Championship",
+  "riverfilo": "Conference Championship",
   "Golden Knights": "Conference Championship",
   "Fantaugusta": "Conference Championship",
   "Union Librino": "Conference Championship",
@@ -27,7 +27,7 @@ const giocatoriFP = new Set();
 const giocatoriU21PerSquadra = {
   "Team Bartowski": ["comuzzo", "carboni v.", "mateus lusuardi"],
   "Desperados": ["rodriguez je.", "bravo", "ramon"],
-  "Riverfilo": ["paz n.", "esposito f.p.", "akinsanmiro"],
+  "riverfilo": ["paz n.", "esposito f.p.", "akinsanmiro"],
   "Golden Knights": ["leoni", "camarda", "tiago gabriel"],
   "Fantaugusta": ["comuzzo", "bravo", "ekhator"],
   "Fc Disoneste": ["gineitis", "norton-cuffy", "mateus lusuardi"],
@@ -53,7 +53,7 @@ const giocatoriFPManualiPerSquadra = {
   "Bayern Christiansen": [],
   "Golden Knights": [],
   "Ibla": [],
-  "FC Disoneste": [],
+  "Fc Disoneste": [],
   "Athletic Pongao": [],
   "Pandinicoccolosini": [],
 };
