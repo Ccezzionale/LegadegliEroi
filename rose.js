@@ -256,8 +256,8 @@ function mostraRose() {
 <td class="nome">
   ${g.fp ? `<strong>${evidenziato}</strong>` : evidenziato}
   ${g.u21 ? '<span class="badge-u21">U21</span>' : ''}
-  ${giocatoriFPSceltiPerSquadra[nomeSquadra]?.includes(g.nome.toLowerCase()) ? '<span class="badge-fp">⭐</span>' : ''}
-  ${giocatoriU21SceltiPerSquadra[nomeSquadra]?.includes(g.nome.toLowerCase()) ? '<span class="badge-u21-scelto">🐣</span>' : ''}
+  ${giocatoriFPSceltiPerSquadra[nome]?.includes(g.nome.toLowerCase()) ? '<span class="badge-fp">⭐</span>' : ''}
+  ${giocatoriU21SceltiPerSquadra[nome]?.includes(g.nome.toLowerCase()) ? '<span class="badge-u21-scelto">🐣</span>' : ''}
 </td>
               <td>${g.squadra}</td>
             </tr>`;
