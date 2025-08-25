@@ -177,6 +177,23 @@ thead {
   margin-left: 4px;
 }
 
+.badge-fp {
+  display: inline-block;
+  background: #0074D9; /* blu */
+  color: #fff;
+  font-size: 0.75em;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin-left: 4px;
+}
+
+.badge-u21-scelto {
+  display: inline-block;
+  font-size: 0.9em;
+  margin-left: 4px;
+}
+
     @media (max-width: 768px) {
       .hamburger {
         display: block;
