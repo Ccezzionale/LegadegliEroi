@@ -199,6 +199,19 @@ thead {
   margin-left: 4px;
 }
 
+#legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  padding: 8px 12px;
+  margin-bottom: 15px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
     @media (max-width: 768px) {
       .hamburger {
         display: block;
