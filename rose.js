@@ -48,7 +48,7 @@ const giocatoriFPManualiPerSquadra = {
   "wildboys78": [],
   "Desperados": [],
   "MinneSota Snakes": [],
-  "PokerMantra": [],
+  "POKERMANTRA": [],
   "Minnesode Timberland": [],
   "Bayern Christiansen": [],
   "Golden Knights": [],
@@ -61,7 +61,7 @@ const giocatoriFPManualiPerSquadra = {
 const giocatoriFPSceltiPerSquadra = {
   "Pandinicoccolosini": ["ekkelenkamp"],
   "Ibla": ["angelino"],
-  "Rubinkebab": ["de ketelaere]
+  "Rubinkebab": ["de ketelaere"]
 };
 
 const giocatoriU21SceltiPerSquadra = {
