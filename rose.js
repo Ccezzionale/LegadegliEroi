@@ -244,7 +244,7 @@ function mostraRose() {
           return `
             <tr>
               <td>${g.ruolo}</td>
-          <td class="nome">${g.fp ? `<strong>${evidenziato}</strong>` : evidenziato} ${g.u21 ? '🅤21' : ''}</td>
+         <td class="nome">${g.fp ? `<strong>${evidenziato}</strong>` : evidenziato} ${g.u21 ? '<span class="badge-u21">U21</span>' : ''}</td>
               <td>${g.squadra}</td>
             </tr>`;
         }).join("")}
