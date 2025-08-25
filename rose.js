@@ -25,7 +25,7 @@ const conferencePerSquadra = {
 const giocatoriFP = new Set();
 
 const giocatoriU21PerSquadra = {
-  "Team Bartowski": [],
+  "Team Bartowski": ["comuzzo", "carboni v.", "mateus lusuardi"],
   "Desperados": [],
   "Riverfilo": [],
   "Golden Knights": [],
