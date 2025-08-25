@@ -60,12 +60,20 @@ const giocatoriFPManualiPerSquadra = {
 
 const giocatoriFPSceltiPerSquadra = {
   "Pandinicoccolosini": ["ekkelenkamp"],
-  "Ibla": ["angelino"]
+  "Ibla": ["angelino"],
+  "Rubinkebab": ["de ketelaere],
 };
 
 const giocatoriU21SceltiPerSquadra = {
   "Desperados": ["fazzini "],
-  "Pandinicoccolosini": ["yildiz"]
+  "Pandinicoccolosini": ["yildiz"],
+  "POKERMANTRA": ["yildiz"],
+  "Fc Disoneste": ["soulè"],
+  "Ibla": ["soulè"],
+  "Bayern Christiansen": ["castro s."],
+  "Minnesode Timberland": ["scalvini"],
+  "Eintracht Franco 126": ["casadei"]
+  
 };
 
 const URL_ROSE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSE8Q0l1pnU8NCtId51qCk8Pstat27g6JBQaU-3UKIY0ZCZicUJ1u1T-ElvuR9NK9pc2WYpunW-a4ld/pub?output=csv";
