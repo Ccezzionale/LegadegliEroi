@@ -26,22 +26,21 @@ const giocatoriFP = new Set();
 
 const giocatoriU21PerSquadra = {
   "Team Bartowski": ["comuzzo", "carboni v.", "mateus lusuardi"],
-  "Desperados": [],
-  "Riverfilo": [],
-  "Golden Knights": [],
-  "Fantaugusta": [],
-  "FC Disoneste": [],
-  "Rubinkebab": [],
-  "Eintracht Franco 126": [],
-  "PokerMantra": [],
-  "wildboys78": [],
-  "Bayern Christiansen": [],
-  "Minnesode Timberland": [],
-  "Athletic Pongao": [],
-  "MinneSota Snakes": [],
-  "Ibla": [],
-  "FC Disoneste": [],
-  "Pandinicoccolosini": []
+  "Desperados": ["rodriguez je.", "bravo", "ramon"],
+  "Riverfilo": ["paz n.", "esposito f.p.", "akinsanmiro"],
+  "Golden Knights": ["leoni", "camarda", "tiago gabriel"],
+  "Fantaugusta": ["comuzzo", "bravo", "ekhator"],
+  "FC Disoneste": ["gineitis", "norton-cuffy", "mateus lusuardi"],
+  "Rubinkebab": ["diao", "pisilli", "ahanor"],
+  "Eintracht Franco 126": ["carboni v.", "valle", "ramon"],
+  "PokerMantra": ["ordonez c.", "goglichidze", "belahyane"],
+  "wildboys78": ["jimenez a.", "castro s.", "ferguson e."],
+  "Bayern Christiansen": ["paz n.", "castro s.", "ordonez c."],
+  "Minnesode Timberland": ["diao", "ferguson e.", "pisilli"],
+  "Athletic Pongao": ["valle", "tiago gabriel", "norton-cuffy"],
+  "MinneSota Snakes": ["esposito f.p.", "akinsanmiro", "goglichidze"],
+  "Ibla": ["camarda", "belahyane", "mbambi"],
+  "Pandinicoccolosini": ["jimenez a.", "ahanor", "athekame"]
 };
 
 const giocatoriFPManualiPerSquadra = {
