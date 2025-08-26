@@ -284,6 +284,31 @@ function parseBlock(rows, s) {
   return { team, giocatori };
 }
 
+async function caricaRose() {
+  await caricaGiocatoriFP();
+  const rows = await fetchCSV(URL_ROSE);
+
+  // (debug opzionale per il primo blocco)
+  // const first = squadre[0];
+  // console.log("HDR row", first.headerRow, rows[first.headerRow]);
+  // console.log("HDR row+1", first.headerRow+1, rows[first.headerRow+1]);
+  // console.log("Cols", detectCols(rows, first.headerRow, first.col));
+  // console.log("Team", detectTeamName(rows, first.headerRow, first.col));
+
+  for (const s of squadre) {
+    const parsed = parseBlock(rows, s);
+    if (!parsed || !parsed.giocatori.length) continue;
+
+    rose[parsed.team] = {
+      logo: trovaLogo(parsed.team),
+      giocatori: parsed.giocatori
+    };
+  }
+
+  mostraRose();
+  popolaFiltri();
+}
+
 
 
 function mostraRose() {
