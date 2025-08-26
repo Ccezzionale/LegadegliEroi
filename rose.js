@@ -127,13 +127,14 @@ async function caricaRose() {
   await caricaGiocatoriFP();
   const rows = await fetchCSV(URL_ROSE);
 
-  // 👇 DEBUG: guarda prime righe del file CSV
-  console.log("Row[0]:", rows[0]);   // headerRow del primo blocco
-  console.log("Row[1]:", rows[1]);   // intestazioni Ruolo/Calciatore/...
+  // 🔎 DEBUG qui
+  console.log("Row 0 (header blocco 1):", rows[0]);
+  console.log("Row 1 (intestazioni):", rows[1]);
+  console.log("Row 2 (primo giocatore?):", rows[2]);
 
   for (const s of squadre) {
-    const nomeSquadra = getTeamNameFixed(rows, s.headerRow, s.col);
-    if (!nomeSquadra) continue;
+    const nomeSquadra = (rows[s.headerRow]?.[s.col] || "").trim();
+    console.log("DEBUG squadra:", nomeSquadra, "row:", rows[s.headerRow]);
 
     const giocatori = [];
     for (let i = s.start; i <= s.end; i++) {
