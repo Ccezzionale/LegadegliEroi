@@ -311,37 +311,72 @@ function detectTeamName(rows, headerRow, startCol) {
 }
 
 
-// parsing robusto di un blocco + fallback
+// trova la riga con le intestazioni (Ruolo/Calciatore/Squadra/...) vicino a s.start
+function detectHeaderRowInBlock(rows, s, cols) {
+  // cerca da 3 righe sopra a 3 righe sotto lo start previsto
+  const from = Math.max(0, s.start - 3);
+  const to   = s.start + 3;
+  const isHdrCell = (r,c,expect) => norm(rows[r]?.[c] || "") === expect;
+
+  const candidates = [
+    {r: s.headerRow + 1, weight: 3}, // prima scelta: come da schema storico
+    {r: s.start - 1,     weight: 2},
+    {r: s.start,         weight: 2},
+    {r: s.start + 1,     weight: 2},
+  ];
+
+  // aggiungi lo scan nella finestra
+  for (let r = from; r <= to; r++) candidates.push({r, weight: 1});
+
+  let best = null;
+  for (const {r, weight} of candidates) {
+    if (r < 0 || r >= rows.length) continue;
+    const ok =
+      isHdrCell(r, cols.ruolo,   "ruolo") &&
+      (isHdrCell(r, cols.nome,   "calciatore") || isHdrCell(r, cols.nome, "nome")) &&
+      isHdrCell(r, cols.squadra, "squadra");
+    if (ok) {
+      if (!best || weight > best.weight) best = {r, weight};
+    }
+  }
+  return best ? best.r : (s.headerRow + 1); // fallback
+}
+
+// versione che usa l’header trovato per calcolare la prima riga dati
 function parseBlock(rows, s) {
   const team = detectTeamName(rows, s.headerRow, s.col);
-  if (!team) {
-    console.warn("Team non rilevato in blocco", s);
-    return null;
-  }
+  if (!team) return null;
 
   const cols = detectCols(rows, s.headerRow, s.col);
-  // debug: vedi dove ha trovato le colonne
-  console.log("Cols per", team, cols);
+
+  // trova la riga di intestazione reale e fai partire i dati dalla riga successiva
+  const hdrRow = detectHeaderRowInBlock(rows, s, cols);
+  const dataStart = hdrRow + 1;
+  const dataEnd = s.end; // manteniamo il tuo fine-blocco
+
+  // DEBUG (puoi rimuoverlo dopo)
+  console.log(`Bloc: ${team}  hdrRow=${hdrRow}  dataStart=${dataStart}  cols=`, cols);
 
   const giocatori = [];
-  for (let r = s.start; r <= s.end; r++) {
-    const ruolo   = rows[r]?.[cols.ruolo]   || "";
-    const nome    = rows[r]?.[cols.nome]    || "";
-    const squadra = rows[r]?.[cols.squadra] || "";
-    const quota   = rows[r]?.[cols.costo]   || "";
+  for (let r = dataStart; r <= dataEnd; r++) {
+    const ruolo   = (rows[r]?.[cols.ruolo]   || "").trim();
+    const nome    = (rows[r]?.[cols.nome]    || "").trim();
+    const squadra = (rows[r]?.[cols.squadra] || "").trim();
+    const quota   = (rows[r]?.[cols.costo]   || "").trim();
 
-    if (!nome || norm(nome) === "nome") continue;
+    if (!nome || norm(nome) === "nome") continue; // salta righe vuote o header ripetuti
 
     const nomeClean = nome.toLowerCase();
     giocatori.push({
       nome, ruolo, squadra, quotazione: quota,
       fp: isFP(nome, team),
-      u21: !!giocatoriU21PerSquadra[team]?.includes(nomeClean)
+      u21: !!giocatoriU21PerSquadra[team]?.includes(nomeClean),
     });
   }
 
   return { team, giocatori };
 }
+
 
 async function caricaRose() {
   await caricaGiocatoriFP();
