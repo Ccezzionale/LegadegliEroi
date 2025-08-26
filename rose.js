@@ -236,17 +236,13 @@ function parseBlock(rows, s) {
   const cols = detectCols(rows, s.headerRow, s.col);
   const hdrRow = detectHeaderRowInBlock(rows, s, cols);
 
-  // 🔎 Cerca la prima riga dati non vuota dopo l’header
-  let startRow = hdrRow + 1;
-  while (startRow < rows.length) {
-    const ruolo = (rows[startRow]?.[cols.ruolo] || "").trim().toLowerCase();
-    const nome  = (rows[startRow]?.[cols.nome]  || "").trim().toLowerCase();
-    if (ruolo && ruolo !== "ruolo" && nome && nome !== "nome" && nome !== "calciatore") break;
-    startRow++;
-  }
+  // invece di partire per forza da hdrRow+1, partiamo da hdrRow
+  // e saltiamo in loop eventuali righe header/vuote
+  const startRow = Math.max(hdrRow, 0);
+  const endRow   = s.end;
 
-  const endRow = s.end;
-  console.log(`Bloc: ${team}  hdrRow=${hdrRow}  dataStart=${startRow}`, cols);
+  // DEBUG opzionale
+  console.log(`Bloc: ${team}  hdrRow=${hdrRow}  dataStartCandidate=${startRow}`, cols);
 
   const giocatori = [];
   for (let r = startRow; r <= endRow; r++) {
@@ -255,14 +251,26 @@ function parseBlock(rows, s) {
     const squadra = (rows[r]?.[cols.squadra] || "").trim();
     const quota   = (rows[r]?.[cols.costo]   || "").trim();
 
-    if (!nome || norm(nome) === "nome") continue;
+    // salta righe non valide (header o vuote)
+    const rn = norm(ruolo);
+    const nn = norm(nome);
+    const isHeaderLike =
+      rn === "ruolo" ||
+      nn === "nome"  ||
+      nn === "calciatore";
+
+    if (!nome || isHeaderLike) continue;
 
     giocatori.push({
-      nome, ruolo, squadra, quotazione: quota,
+      nome,
+      ruolo,
+      squadra,
+      quotazione: quota,
       fp: isFP(nome, team),
-      u21: !!giocatoriU21PerSquadra[team]?.includes(nome.toLowerCase())
+      u21: !!giocatoriU21PerSquadra[team]?.includes(nome.toLowerCase()),
     });
   }
+
   return { team, giocatori };
 }
 
