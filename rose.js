@@ -203,28 +203,62 @@ function detectCols(rows, headerRow, startCol) {
 }
 
 // prende il nome squadra guardando nella riga headerRow, nelle prime 4 celle del blocco
+// trova gli indici reali delle 4 colonne cercando nell'intestazione (headerRow o headerRow+1)
+function detectCols(rows, headerRow, startCol) {
+  const candidates = [rows[headerRow + 1] || [], rows[headerRow] || []]; // prova prima +1, poi la stessa riga
+  let ruolo=-1, nome=-1, squadra=-1, costo=-1;
+
+  const isHdr = (v) => (v || "").toLowerCase().trim();
+
+  for (const hdr of candidates) {
+    if (!hdr.length) continue;
+    // guarda fino a 12 colonne dal punto di partenza (più tolleranza)
+    for (let c = startCol; c < startCol + 12; c++) {
+      const v = isHdr(hdr[c]);
+      if (v === "ruolo") ruolo = (ruolo < 0 ? c : ruolo);
+      else if (v === "calciatore" || v === "nome") nome = (nome < 0 ? c : nome);
+      else if (v === "squadra") squadra = (squadra < 0 ? c : squadra);
+      else if (v === "costo" || v === "quotazione" || v === "prezzo") costo = (costo < 0 ? c : costo);
+    }
+    if (ruolo>=0 && nome>=0 && squadra>=0) break; // trovato un set valido
+  }
+
+  // fallback se qualcosa manca: usa la griglia storica (col, col+1, col+2, col+3)
+  if (ruolo < 0) ruolo = startCol + 0;
+  if (nome  < 0) nome  = startCol + 1;
+  if (squadra < 0) squadra = startCol + 2;
+  if (costo < 0) costo = startCol + 3;
+
+  return { ruolo, nome, squadra, costo };
+}
+
+// prende il nome squadra guardando nella riga headerRow nell'area del blocco
 function detectTeamName(rows, headerRow, startCol) {
-  for (let c = startCol; c < startCol + 4; c++) {
+  // prova 6 celle (celle unite possono lasciare buchi)
+  for (let c = startCol; c < startCol + 6; c++) {
     const v = (rows[headerRow]?.[c] || "").trim();
-    if (v && v.toLowerCase() !== "ruolo") return v;
+    const vl = v.toLowerCase();
+    if (!v) continue;
+    // escludi parole tipiche di header
+    if (["ruolo","calciatore","nome","squadra","costo","quotazione","prezzo"].includes(vl)) continue;
+    return v;
   }
   return "";
 }
 
-// parsing robusto di un blocco
+// parsing robusto di un blocco + fallback
 function parseBlock(rows, s) {
   const team = detectTeamName(rows, s.headerRow, s.col);
   if (!team) return null;
 
   const cols = detectCols(rows, s.headerRow, s.col);
-  if (cols.ruolo < 0 || cols.nome < 0 || cols.squadra < 0) return null;
 
   const giocatori = [];
   for (let r = s.start; r <= s.end; r++) {
     const ruolo   = rows[r]?.[cols.ruolo]   || "";
     const nome    = rows[r]?.[cols.nome]    || "";
     const squadra = rows[r]?.[cols.squadra] || "";
-    const quota   = cols.costo >= 0 ? (rows[r]?.[cols.costo] || "") : "";
+    const quota   = rows[r]?.[cols.costo]   || "";
 
     if (!nome || nome.toLowerCase() === "nome") continue;
 
