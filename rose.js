@@ -78,10 +78,10 @@ const giocatoriU21SceltiPerSquadra = {
 
 // GViz CSV stabile
 const URL_ROSE =
-  "https://docs.google.com/spreadsheets/d/1weMP9ajaScUSQhExCe7D7jtC7SjC9udw5ISg8f6Bezg/gviz/tq?tqx=out:csv&gid=0";
+  "https://docs.google.com/spreadsheets/d/1weMP9ajaScUSQhExCe7D7jtC7SjC9udw5ISg8f6Bezg/gviz/tq?tqx=out:csv&gid=0&cachebust=" + Date.now();
 
 const URL_QUOTAZIONI =
-  "https://docs.google.com/spreadsheets/d/1weMP9ajaScUSQhExCe7D7jtC7SjC9udw5ISg8f6Bezg/gviz/tq?tqx=out:csv&gid=2087990274";
+  "https://docs.google.com/spreadsheets/d/1weMP9ajaScUSQhExCe7D7jtC7SjC9udw5ISg8f6Bezg/gviz/tq?tqx=out:csv&gid=2087990274&cachebust=" + Date.now();
 
 const squadre = [
   { col: 0, start: 2, end: 29, headerRow: 0 },
