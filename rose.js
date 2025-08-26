@@ -186,62 +186,68 @@ function isFP(nome, squadra) {
   return false;
 }
 
-// trova gli indici reali delle 4 colonne cercando nella riga di intestazione (quella sotto al titolo squadra)
-function detectCols(rows, headerRow, startCol) {
-  const hdr = rows[headerRow + 1] || []; // riga con "Ruolo, Calciatore, Squadra, Costo"
-  let ruolo=-1, nome=-1, squadra=-1, costo=-1;
-
-  // cerca nelle prossime ~8 colonne dal punto di partenza (tollerante a spostamenti)
-  for (let c = startCol; c < startCol + 8; c++) {
-    const v = (hdr[c] || "").toLowerCase().trim();
-    if (v === "ruolo") ruolo = c;
-    else if (v === "calciatore" || v === "nome") nome = c;
-    else if (v === "squadra") squadra = c;
-    else if (v === "costo" || v === "quotazione") costo = c;
-  }
-  return { ruolo, nome, squadra, costo };
+function norm(s="") {
+  return s
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"") // senza accentate
+    .replace(/[^a-z0-9 ]+/g," ")                     // rimuovi punteggiatura
+    .replace(/\s+/g," ")                             // spazi singoli
+    .trim();
 }
 
-// prende il nome squadra guardando nella riga headerRow, nelle prime 4 celle del blocco
-// trova gli indici reali delle 4 colonne cercando nell'intestazione (headerRow o headerRow+1)
+// trova gli indici reali delle 4 colonne cercando nella riga di intestazione (quella sotto al titolo squadra)
 function detectCols(rows, headerRow, startCol) {
-  const candidates = [rows[headerRow + 1] || [], rows[headerRow] || []]; // prova prima +1, poi la stessa riga
+  const headerCandidates = [rows[headerRow], rows[headerRow + 1], rows[headerRow + 2]].filter(Boolean);
   let ruolo=-1, nome=-1, squadra=-1, costo=-1;
 
-  const isHdr = (v) => (v || "").toLowerCase().trim();
+  const isRuolo   = v => ["ruolo","ruoli"].includes(norm(v));
+  const isNome    = v => {
+    const n = norm(v);
+    return n === "calciatore" || n === "nome" || n.includes("calciatore") || n.includes("giocatore");
+  };
+  const isSquadra = v => {
+    const n = norm(v);
+    return n === "squadra" || n.includes("squadra");
+  };
+  const isCosto   = v => {
+    const n = norm(v);
+    return n === "costo" || n === "quotazione" || n === "prezzo" || n.includes("credito") || n.includes("valore");
+  };
 
-  for (const hdr of candidates) {
-    if (!hdr.length) continue;
-    // guarda fino a 12 colonne dal punto di partenza (più tolleranza)
-    for (let c = startCol; c < startCol + 12; c++) {
-      const v = isHdr(hdr[c]);
-      if (v === "ruolo") ruolo = (ruolo < 0 ? c : ruolo);
-      else if (v === "calciatore" || v === "nome") nome = (nome < 0 ? c : nome);
-      else if (v === "squadra") squadra = (squadra < 0 ? c : squadra);
-      else if (v === "costo" || v === "quotazione" || v === "prezzo") costo = (costo < 0 ? c : costo);
+  for (const hdr of headerCandidates) {
+    for (let c = startCol; c < startCol + 14; c++) {
+      const v = hdr[c] ?? "";
+      if (ruolo   < 0 && isRuolo(v))   ruolo   = c;
+      if (nome    < 0 && isNome(v))    nome    = c;
+      if (squadra < 0 && isSquadra(v)) squadra = c;
+      if (costo   < 0 && isCosto(v))   costo   = c;
     }
-    if (ruolo>=0 && nome>=0 && squadra>=0) break; // trovato un set valido
+    if (ruolo>=0 && nome>=0 && squadra>=0) break;
   }
 
-  // fallback se qualcosa manca: usa la griglia storica (col, col+1, col+2, col+3)
-  if (ruolo < 0) ruolo = startCol + 0;
-  if (nome  < 0) nome  = startCol + 1;
+  // Fallback alle posizioni storiche se qualcosa manca
+  if (ruolo   < 0) ruolo   = startCol + 0;
+  if (nome    < 0) nome    = startCol + 1;
   if (squadra < 0) squadra = startCol + 2;
-  if (costo < 0) costo = startCol + 3;
+  if (costo   < 0) costo   = startCol + 3;
 
   return { ruolo, nome, squadra, costo };
 }
 
 // prende il nome squadra guardando nella riga headerRow nell'area del blocco
 function detectTeamName(rows, headerRow, startCol) {
-  // prova 6 celle (celle unite possono lasciare buchi)
-  for (let c = startCol; c < startCol + 6; c++) {
-    const v = (rows[headerRow]?.[c] || "").trim();
-    const vl = v.toLowerCase();
-    if (!v) continue;
-    // escludi parole tipiche di header
-    if (["ruolo","calciatore","nome","squadra","costo","quotazione","prezzo"].includes(vl)) continue;
-    return v;
+  // prova su headerRow e anche headerRow-1 (alcuni incolli lasciano il nome un rigo sopra)
+  const rowsToTry = [headerRow, headerRow - 1];
+  const ban = new Set(["ruolo","calciatore","nome","squadra","costo","quotazione","prezzo","valore","crediti","crediti attuali"]);
+  for (const hr of rowsToTry) {
+    const row = rows[hr] || [];
+    for (let c = startCol; c < startCol + 8; c++) {
+      const raw = (row[c] || "").trim();
+      const n = norm(raw);
+      if (!raw) continue;
+      if (ban.has(n)) continue;
+      return raw;
+    }
   }
   return "";
 }
@@ -249,9 +255,14 @@ function detectTeamName(rows, headerRow, startCol) {
 // parsing robusto di un blocco + fallback
 function parseBlock(rows, s) {
   const team = detectTeamName(rows, s.headerRow, s.col);
-  if (!team) return null;
+  if (!team) {
+    console.warn("Team non rilevato in blocco", s);
+    return null;
+  }
 
   const cols = detectCols(rows, s.headerRow, s.col);
+  // debug: vedi dove ha trovato le colonne
+  console.log("Cols per", team, cols);
 
   const giocatori = [];
   for (let r = s.start; r <= s.end; r++) {
@@ -260,7 +271,7 @@ function parseBlock(rows, s) {
     const squadra = rows[r]?.[cols.squadra] || "";
     const quota   = rows[r]?.[cols.costo]   || "";
 
-    if (!nome || nome.toLowerCase() === "nome") continue;
+    if (!nome || norm(nome) === "nome") continue;
 
     const nomeClean = nome.toLowerCase();
     giocatori.push({
@@ -273,23 +284,6 @@ function parseBlock(rows, s) {
   return { team, giocatori };
 }
 
-async function caricaRose() {
-  await caricaGiocatoriFP();
-  const rows = await fetchCSV(URL_ROSE);
-
-  for (const s of squadre) {
-    const parsed = parseBlock(rows, s);
-    if (!parsed || !parsed.giocatori.length) continue;
-
-    rose[parsed.team] = {
-      logo: trovaLogo(parsed.team),
-      giocatori: parsed.giocatori
-    };
-  }
-
-  mostraRose();
-  popolaFiltri();
-}
 
 
 function mostraRose() {
