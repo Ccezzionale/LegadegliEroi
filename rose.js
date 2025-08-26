@@ -235,32 +235,26 @@ function parseBlock(rows, s) {
   const team = detectTeamName(rows, s.headerRow, s.col);
   if (!team) return null;
 
-  const cols = detectCols(rows, s.headerRow, s.col);
+  const cols   = detectCols(rows, s.headerRow, s.col);
   const hdrRow = detectHeaderRowInBlock(rows, s, cols);
 
-  // invece di partire per forza da hdrRow+1, partiamo da hdrRow
-  // e saltiamo in loop eventuali righe header/vuote
-  const startRow = Math.max(hdrRow, 0);
-  const endRow   = s.end;
+  // ✅ prima riga dati vera dopo l’header (salta header e eventuali righe vuote)
+  const dataStart = firstDataRow(rows, hdrRow + 1, cols);
+  const dataEnd   = s.end;
 
-  // DEBUG opzionale
-  console.log(`Bloc: ${team}  hdrRow=${hdrRow}  dataStartCandidate=${startRow}`, cols);
+  // debug, puoi tenerlo per controllare i blocchi 3/4
+  console.log(`Bloc: ${team}  hdrRow=${hdrRow}  dataStart=${dataStart}`, cols);
 
   const giocatori = [];
-  for (let r = startRow; r <= endRow; r++) {
+  for (let r = dataStart; r <= dataEnd; r++) {
     const ruolo   = (rows[r]?.[cols.ruolo]   || "").trim();
     const nome    = (rows[r]?.[cols.nome]    || "").trim();
     const squadra = (rows[r]?.[cols.squadra] || "").trim();
     const quota   = (rows[r]?.[cols.costo]   || "").trim();
 
-    // salta righe non valide (header o vuote)
-    const rn = norm(ruolo);
-    const nn = norm(nome);
-    const isHeaderLike =
-      rn === "ruolo" ||
-      nn === "nome"  ||
-      nn === "calciatore";
-
+    // salta intestazioni/righe vuote eventualmente ricomparse in mezzo
+    const rn = norm(ruolo), nn = norm(nome);
+    const isHeaderLike = rn === "ruolo" || nn === "nome" || nn === "calciatore";
     if (!nome || isHeaderLike) continue;
 
     giocatori.push({
@@ -275,6 +269,7 @@ function parseBlock(rows, s) {
 
   return { team, giocatori };
 }
+
 
 function getTeamNameFlexible(rows, headerRow, startCol){
   const banHdr = new Set(["ruolo","calciatore","nome","squadra","costo","quotazione","prezzo","valore","crediti","crediti attuali"]);
