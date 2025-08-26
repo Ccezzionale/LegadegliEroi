@@ -78,11 +78,11 @@ const squadre = [
 
 /* =============== UTILITY CSV/TESTO =============== */
 const parseCSV = (t) =>
-  t.replace(/^\uFEFF/, "")               // eventuale BOM
+  t.replace(/^\uFEFF/, "")               // BOM
    .replace(/\r/g, "")                   // CRLF -> LF
-   .split("\n")                          // **NON** .filter(Boolean)!
+   .split("\n")                          // NON rimuovere righe vuote!
    .map(r =>
-     r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/)   // split fuori da apici
+     r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/)   // split sicuro su virgole
       .map(c => c.replace(/^"|"$/g, ""))       // togli apici esterni
    );
 
@@ -282,11 +282,47 @@ async function caricaRose(){
   await caricaGiocatoriFP();
   const rows = await fetchCSV(URL_ROSE);
 
-  for (const s of squadre){
-    const parsed = parseBlock(rows, s);
-    if (!parsed || !parsed.giocatori.length) continue;
-    rose[parsed.team] = { logo: trovaLogo(parsed.team), giocatori: parsed.giocatori };
+for (const s of squadre) {
+  // se l’headerRow non esiste, salta il blocco (incolla con righe in più/meno)
+  if (!rows[s.headerRow] || rows[s.headerRow].length <= s.col) {
+    console.warn("Salto blocco: header fuori range", s);
+    continue;
   }
+
+  const nomeSquadra = (rows[s.headerRow][s.col] || "").trim();
+  if (!nomeSquadra || nomeSquadra.toLowerCase() === "ruolo") {
+    console.warn("Nome squadra vuoto in blocco", s, rows[s.headerRow]);
+    continue;
+  }
+
+  const giocatori = [];
+  for (let i = s.start; i <= s.end; i++) {
+    // se la riga non esiste (riga vuota nel CSV) vai avanti
+    const r = rows[i];
+    if (!r) continue;
+
+    const ruolo = (r[s.col]     || "").trim();
+    const nome  = (r[s.col + 1] || "").trim();
+    const team  = (r[s.col + 2] || "").trim();
+    const quota = (r[s.col + 3] || "").trim();
+
+    if (!nome || nome.toLowerCase() === "nome") continue;
+
+    const nomeClean = nome.toLowerCase();
+    giocatori.push({
+      nome,
+      ruolo,
+      squadra: team,
+      quotazione: quota,
+      fp: isFP(nome, nomeSquadra),
+      u21: !!giocatoriU21PerSquadra[nomeSquadra]?.includes(nomeClean),
+    });
+  }
+
+  if (giocatori.length) {
+    rose[nomeSquadra] = { logo: trovaLogo(nomeSquadra), giocatori };
+  }
+}
 
   mostraRose();
   popolaFiltri();
