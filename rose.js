@@ -80,7 +80,7 @@ const URL_ROSE =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vTP42SsI2qivD2FFNjq_jGNOUsuEhFBUORXQvEWvEVmUZ-IyygcY6h69Jo5pG1nJB0JYhEKd9XwCiP1/pub?gid=0&single=true&output=csv";
 
 const URL_QUOTAZIONI =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTP42SsI2qivD2FFNjq_jGNOUsuEhFBUORXQvEWvEVmUZ-IyygcY6h69Jo5pG1nJB0JYhEKd9XwCiP1/pub?gid=1264887192&single=true&output=csv;
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTP42SsI2qivD2FFNjq_jGNOUsuEhFBUORXQvEWvEVmUZ-IyygcY6h69Jo5pG1nJB0JYhEKd9XwCiP1/pub?gid=1264887192&single=true&output=csv";
 
 const squadre = [
   { col: 0, start: 2, end: 29, headerRow: 0 },
