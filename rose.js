@@ -76,31 +76,11 @@ const giocatoriU21SceltiPerSquadra = {
   
 };
 
-const parseCSV = (t) =>
-  t.replace(/^\uFEFF/,"").replace(/\r/g,"")
-   .split("\n").filter(Boolean)
-   .map(r => r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/)
-               .map(c => c.replace(/^"|"$/g,"").trim()));
-
-async function fetchCSV(url){
-  const res = await fetch(url, { cache:"no-store", redirect:"follow" });
-  if(!res.ok) throw new Error(`HTTP ${res.status} su ${url}`);
-  const txt = await res.text();
-  if(!txt) throw new Error("CSV vuoto");
-  return parseCSV(txt);
-}
-
-// Poi nei loader:
-const rowsRose = await fetchCSV(URL_ROSE);
-const rowsQuote = await fetchCSV(URL_QUOTAZIONI);
-
-
-// CSV stabile (no redirect, no 2PACX)
 const URL_ROSE =
-  "https://docs.google.com/spreadsheets/d/1weMP9ajaScUSQhExCe7D7jtC7SjC9udw5ISg8f6Bezg/gviz/tq?tqx=out:csv&gid=0&cachebust=" + Date.now();
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTP42SsI2qivD2FFNjq_jGNOUsuEhFBUORXQvEWvEVmUZ-IyygcY6h69Jo5pG1nJB0JYhEKd9XwCiP1/pub?gid=0&single=true&output=csv";
 
 const URL_QUOTAZIONI =
-  "https://docs.google.com/spreadsheets/d/1weMP9ajaScUSQhExCe7D7jtC7SjC9udw5ISg8f6Bezg/gviz/tq?tqx=out:csv&gid=2087990274&cachebust=" + Date.now();
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTP42SsI2qivD2FFNjq_jGNOUsuEhFBUORXQvEWvEVmUZ-IyygcY6h69Jo5pG1nJB0JYhEKd9XwCiP1/pub?gid=1264887192&single=true&output=csv;
 
 const squadre = [
   { col: 0, start: 2, end: 29, headerRow: 0 },
