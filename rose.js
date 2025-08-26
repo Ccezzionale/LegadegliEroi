@@ -114,6 +114,51 @@ async function fetchCSV(url){
   return parseCSV(txt);
 }
 
+// helper: prende il nome squadra cercando nella riga headerRow tra le 4 celle del blocco
+function getTeamNameFixed(rows, headerRow, startCol) {
+  for (let c = startCol; c < startCol + 4; c++) {
+    const v = (rows[headerRow]?.[c] || "").trim();
+    if (v && v.toLowerCase() !== "ruolo") return v;
+  }
+  return "";
+}
+
+async function caricaRose() {
+  await caricaGiocatoriFP();
+  const rows = await fetchCSV(URL_ROSE); // usa già il parser robusto
+
+  for (const s of squadre) {
+    const nomeSquadra = getTeamNameFixed(rows, s.headerRow, s.col);
+    if (!nomeSquadra) continue;
+
+    const giocatori = [];
+    for (let i = s.start; i <= s.end; i++) {
+      const ruolo = (rows[i]?.[s.col]     || "").trim();
+      const nome  = (rows[i]?.[s.col + 1] || "").trim();
+      const team  = (rows[i]?.[s.col + 2] || "").trim();
+      const quota = (rows[i]?.[s.col + 3] || "").trim();
+
+      if (!nome || nome.toLowerCase() === "nome") continue;
+
+      const nomeClean = nome.toLowerCase();
+      giocatori.push({
+        nome,
+        ruolo,
+        squadra: team,
+        quotazione: quota,
+        fp: isFP(nome, nomeSquadra),
+        u21: !!giocatoriU21PerSquadra[nomeSquadra]?.includes(nomeClean),
+      });
+    }
+
+    if (giocatori.length) {
+      rose[nomeSquadra] = { logo: trovaLogo(nomeSquadra), giocatori };
+    }
+  }
+
+  mostraRose();
+  popolaFiltri();
+}
 
 function trovaLogo(nomeSquadra) {
   const estensioni = [".png", ".jpg"];
