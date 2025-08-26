@@ -287,21 +287,29 @@ function detectCols(rows, headerRow, startCol) {
 
 // prende il nome squadra guardando nella riga headerRow nell'area del blocco
 function detectTeamName(rows, headerRow, startCol) {
-  // prova su headerRow e anche headerRow-1 (alcuni incolli lasciano il nome un rigo sopra)
-  const rowsToTry = [headerRow, headerRow - 1];
-  const ban = new Set(["ruolo","calciatore","nome","squadra","costo","quotazione","prezzo","valore","crediti","crediti attuali"]);
-  for (const hr of rowsToTry) {
-    const row = rows[hr] || [];
-    for (let c = startCol; c < startCol + 8; c++) {
-      const raw = (row[c] || "").trim();
-      const n = norm(raw);
-      if (!raw) continue;
-      if (ban.has(n)) continue;
-      return raw;
-    }
+  // parole da escludere (intestazioni)
+  const banHdr = /^(ruolo|calciatore|nome|squadra|costo|quotazione|prezzo|valore|crediti|crediti attuali)$/i;
+  // codici ruolo da escludere (anche composti)
+  const banRuoli = /^(p|por|d|dc|dd|ds|e|m|c|a|w|t|c;?t|m;?c|dd;?dc|dc;?dd|dc;?ds|ds;?dc)$/i;
+
+  // guarda solo sulla riga del titolo (celle unite -> un valore nelle prime 1–4 celle)
+  let candidate = "";
+  for (let c = startCol; c < startCol + 4; c++) {
+    const v = (rows[headerRow]?.[c] || "").trim();
+    if (!v) continue;
+    if (banHdr.test(v)) continue;
+    if (banRuoli.test(v)) continue;
+    candidate = v;
+    break;
   }
-  return "";
+  if (!candidate) return "";
+
+  // se la cella per sbaglio contiene " ... Ruolo" appendiciamolo via
+  candidate = candidate.replace(/\bruolo\b.*$/i, "").trim();
+
+  return candidate;
 }
+
 
 // parsing robusto di un blocco + fallback
 function parseBlock(rows, s) {
