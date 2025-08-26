@@ -276,12 +276,6 @@ function parseBlock(rows, s) {
   return { team, giocatori };
 }
 
-function norm(s=""){
-  return s.toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-    .replace(/\s+/g," ").trim();
-}
-
 function getTeamNameFlexible(rows, headerRow, startCol){
   const banHdr = new Set(["ruolo","calciatore","nome","squadra","costo","quotazione","prezzo","valore","crediti","crediti attuali"]);
   const banRuoli = /^(p|por|d|dc|dd|ds|e|m|c|a|w|t|c;?t|m;?c|dd;?dc|dc;?dd|dc;?ds|ds;?dc)$/i;
