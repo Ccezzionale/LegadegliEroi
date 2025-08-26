@@ -298,46 +298,13 @@ async function caricaRose(){
   const rows = await fetchCSV(URL_ROSE);
 
   for (const s of squadre){
-    const parsed = parseBlock(rows, s);   // <— usa la funzione che calcola la riga giusta
+    const parsed = parseBlock(rows, s);   // calcola riga d’inizio corretta
     if (!parsed || !parsed.giocatori.length) continue;
 
     rose[parsed.team] = {
       logo: trovaLogo(parsed.team),
       giocatori: parsed.giocatori
     };
-  }
-
-  console.log("Blocchi caricati:", Object.keys(rose));
-  mostraRose();
-  popolaFiltri();
-}
-
-    const giocatori = [];
-    for (let i = s.start; i <= s.end; i++){
-      const r = rows[i];
-      if (!r) continue;
-
-      // se per caso la prima riga del blocco è l’header, salta
-      if (i === s.start && norm(r[s.col]||"") === "ruolo") continue;
-
-      const ruolo = (r[s.col]     || "").trim();
-      const nome  = (r[s.col + 1] || "").trim();
-      const team  = (r[s.col + 2] || "").trim();
-      const quota = (r[s.col + 3] || "").trim();
-
-      if (!nome || norm(nome) === "nome") continue;
-
-      const nomeClean = nome.toLowerCase();
-      giocatori.push({
-        nome, ruolo, squadra: team, quotazione: quota,
-        fp: isFP(nome, nomeSquadra),
-        u21: !!giocatoriU21PerSquadra[nomeSquadra]?.includes(nomeClean),
-      });
-    }
-
-    if (giocatori.length){
-      rose[nomeSquadra] = { logo: trovaLogo(nomeSquadra), giocatori };
-    }
   }
 
   console.log("Blocchi caricati:", Object.keys(rose));
