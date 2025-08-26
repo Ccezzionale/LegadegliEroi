@@ -102,9 +102,25 @@ const squadre = [
   { col: 5, start: 219, end: 246, headerRow: 217 },
 ];
 
-const parseCSV = t =>
-  t.replace(/\r/g,"").split("\n").filter(Boolean)
-   .map(r => r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(c => c.replace(/^"|"$/g,"")));
+// Parser CSV che rispetta le virgolette e rimuove i doppi apici
+const parseCSV = (t) =>
+  t.replace(/^\uFEFF/, "")            // rimuove BOM se presente
+   .replace(/\r/g, "")
+   .split("\n")
+   .filter(Boolean)
+   .map(r =>
+     r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/) // split solo virgole "esterne"
+      .map(c => c.replace(/^"|"$/g, "").trim()) // leva apici di contorno
+   );
+
+async function fetchCSV(url){
+  const res = await fetch(url, { cache: "no-store", redirect: "follow" });
+  if(!res.ok) throw new Error(`HTTP ${res.status} su ${url}`);
+  const txt = await res.text();
+  if(!txt) throw new Error("CSV vuoto");
+  return parseCSV(txt);
+}
+
 
 
 function trovaLogo(nomeSquadra) {
@@ -124,23 +140,17 @@ function trovaLogo(nomeSquadra) {
 
 async function caricaGiocatoriFP() {
   try {
-    const response = await fetch(URL_QUOTAZIONI);
-    const text = await response.text();
-    const rows = text.split("\n").map(r => r.split(","));
+    const rows = await fetchCSV(URL_QUOTAZIONI);
     const portieriPerSquadra = {};
-
     for (let i = 1; i < rows.length; i++) {
-      const ruolo = rows[i][0]?.trim().toUpperCase();
-      const nome = rows[i][2]?.trim();
-      const squadra = rows[i][3]?.trim();
-      const quotazione = parseFloat(rows[i][4]?.replace(",", "."));
-
+      const ruolo = (rows[i][0] || "").toUpperCase();
+      const nome = rows[i][2] || "";
+      const squadra = rows[i][3] || "";
+      const quotazione = parseFloat((rows[i][4] || "").replace(",", "."));
       if (!nome || isNaN(quotazione)) continue;
       const nomeLower = nome.toLowerCase();
-
       if (ruolo === "P") {
-        if (!portieriPerSquadra[squadra]) portieriPerSquadra[squadra] = [];
-        portieriPerSquadra[squadra].push({ nome: nomeLower, quotazione });
+        (portieriPerSquadra[squadra] ||= []).push({ nome: nomeLower, quotazione });
       } else if (
         (ruolo === "D" && quotazione <= 9) ||
         (ruolo === "C" && quotazione <= 14) ||
@@ -149,26 +159,52 @@ async function caricaGiocatoriFP() {
         giocatoriFP.add(nomeLower);
       }
     }
-
     for (const squadra in portieriPerSquadra) {
       const blocco = portieriPerSquadra[squadra];
       const maxQuota = Math.max(...blocco.map(p => p.quotazione));
-      if (maxQuota <= 12) {
-        blocco.forEach(p => giocatoriFP.add(p.nome));
-      }
+      if (maxQuota <= 12) blocco.forEach(p => giocatoriFP.add(p.nome));
     }
-
-    // 🔥 Aggiunta finale: FP manuali per squadra
-    for (const [squadra, giocatori] of Object.entries(giocatoriFPManualiPerSquadra)) {
-      giocatori.forEach(nome => {
-        giocatoriFP.add(nome.toLowerCase());
-      });
+    for (const [_, giocatori] of Object.entries(giocatoriFPManualiPerSquadra)) {
+      giocatori.forEach(n => giocatoriFP.add((n || "").toLowerCase()));
     }
-
   } catch (e) {
     console.error("Errore nel caricamento FP:", e);
   }
 }
+
+async function caricaRose() {
+  await caricaGiocatoriFP();
+  const rows = await fetchCSV(URL_ROSE);
+
+  for (const s of squadre) {
+    const nomeSquadra = (rows[s.headerRow]?.[s.col] || "").trim();
+    if (!nomeSquadra || nomeSquadra.toLowerCase() === "ruolo") continue;
+
+    const giocatori = [];
+    for (let i = s.start; i <= s.end; i++) {
+      const ruolo = rows[i]?.[s.col] || "";
+      const nome = rows[i]?.[s.col + 1] || "";
+      const squadra = rows[i]?.[s.col + 2] || "";
+      const quotazione = rows[i]?.[s.col + 3] || "";
+      const nomeClean = nome.toLowerCase();
+      if (nome && nome.toLowerCase() !== "nome") {
+        giocatori.push({
+          nome, ruolo, squadra, quotazione,
+          fp: isFP(nome, nomeSquadra),
+          u21: !!giocatoriU21PerSquadra[nomeSquadra]?.includes(nomeClean)
+        });
+      }
+    }
+
+    if (giocatori.length) {
+      rose[nomeSquadra] = { logo: trovaLogo(nomeSquadra), giocatori };
+    }
+  }
+
+  mostraRose();
+  popolaFiltri();
+}
+
 
 function isFP(nome, squadra) {
   const nomeClean = nome.toLowerCase();
@@ -185,48 +221,6 @@ function isFP(nome, squadra) {
   }
 
   return false;
-}
-
-async function caricaRose() {
-  await caricaGiocatoriFP();
-  const response = await fetch(URL_ROSE);
-  const text = await response.text();
-  const rows = text.split("\n").map(r => r.split(","));
-
-  for (const s of squadre) {
-    let nomeSquadra = rows[s.headerRow]?.[s.col]?.trim();
-    if (!nomeSquadra || nomeSquadra.toLowerCase() === "ruolo") continue;
-
-    const giocatori = [];
-    for (let i = s.start; i <= s.end; i++) {
-      const ruolo = rows[i]?.[s.col]?.trim() || "";
-      const nome = rows[i]?.[s.col + 1]?.trim() || "";
-      const squadra = rows[i]?.[s.col + 2]?.trim() || "";
-      const quotazione = rows[i]?.[s.col + 3]?.trim() || "";
-      const nomeClean = nome.toLowerCase();
-
-      if (nome && nome.toLowerCase() !== "nome") {
-        giocatori.push({
-          nome,
-          ruolo,
-          squadra,
-          quotazione,
-          fp: isFP(nome, nomeSquadra),
-          u21: giocatoriU21PerSquadra[nomeSquadra]?.includes(nomeClean) || false
-        });
-      }
-    }
-
-    if (giocatori.length > 0) {
-      rose[nomeSquadra] = {
-        logo: trovaLogo(nomeSquadra),
-        giocatori
-      };
-    }
-  }
-
-  mostraRose();
-  popolaFiltri();
 }
 
 function mostraRose() {
