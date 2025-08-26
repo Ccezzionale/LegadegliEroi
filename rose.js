@@ -78,10 +78,12 @@ const squadre = [
 
 /* =============== UTILITY CSV/TESTO =============== */
 const parseCSV = (t) =>
-  t.replace(/^\uFEFF/,"").replace(/\r/g,"")
-   .split("\n").filter(Boolean)
-   .map(r => r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/)
-     .map(c => c.replace(/^"|"$/g,"").trim())
+  t.replace(/^\uFEFF/, "")               // eventuale BOM
+   .replace(/\r/g, "")                   // CRLF -> LF
+   .split("\n")                          // **NON** .filter(Boolean)!
+   .map(r =>
+     r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/)   // split fuori da apici
+      .map(c => c.replace(/^"|"$/g, ""))       // togli apici esterni
    );
 
 async function fetchCSV(url){
