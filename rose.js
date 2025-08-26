@@ -84,22 +84,22 @@ const URL_QUOTAZIONI =
   "https://docs.google.com/spreadsheets/d/1weMP9ajaScUSQhExCe7D7jtC7SjC9udw5ISg8f6Bezg/gviz/tq?tqx=out:csv&gid=2087990274&cachebust=" + Date.now();
 
 const squadre = [
-  { col: 0, start: 2, end: 29, headerRow: 0 },
-  { col: 5, start: 2, end: 29, headerRow: 0 },
-  { col: 0, start: 33, end: 60, headerRow: 31 },
-  { col: 5, start: 33, end: 60, headerRow: 31 },
-  { col: 0, start: 64, end: 91, headerRow: 62 },
-  { col: 5, start: 64, end: 91, headerRow: 62 },
-  { col: 0, start: 95, end: 122, headerRow: 93 },
-  { col: 5, start: 95, end: 122, headerRow: 93 },
-  { col: 0, start: 126, end: 153, headerRow: 124 },
-  { col: 5, start: 126, end: 153, headerRow: 124 },
-  { col: 0, start: 157, end: 184, headerRow: 155 },
-  { col: 5, start: 157, end: 184, headerRow: 155 },
-  { col: 0, start: 188, end: 215, headerRow: 186 },
-  { col: 5, start: 188, end: 215, headerRow: 186 },
-  { col: 0, start: 219, end: 246, headerRow: 217 },
-  { col: 5, start: 219, end: 246, headerRow: 217 },
+  { col: 0,  start: 1, end: 28, headerRow: 0 },   // prima era 2..29
+  { col: 5,  start: 1, end: 28, headerRow: 0 },
+  { col: 0,  start: 32, end: 59, headerRow: 30 }, // prima era 33..60
+  { col: 5,  start: 32, end: 59, headerRow: 30 },
+  { col: 0,  start: 63, end: 90, headerRow: 61 },
+  { col: 5,  start: 63, end: 90, headerRow: 61 },
+  { col: 0,  start: 94, end: 121, headerRow: 92 },
+  { col: 5,  start: 94, end: 121, headerRow: 92 },
+  { col: 0,  start: 125, end: 152, headerRow: 123 },
+  { col: 5,  start: 125, end: 152, headerRow: 123 },
+  { col: 0,  start: 156, end: 183, headerRow: 154 },
+  { col: 5,  start: 156, end: 183, headerRow: 154 },
+  { col: 0,  start: 187, end: 214, headerRow: 185 },
+  { col: 5,  start: 187, end: 214, headerRow: 185 },
+  { col: 0,  start: 218, end: 245, headerRow: 216 },
+  { col: 5,  start: 218, end: 245, headerRow: 216 },
 ];
 
 const parseCSV = t =>
