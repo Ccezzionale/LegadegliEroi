@@ -24,7 +24,7 @@ const giocatoriFP = new Set();
 
 const giocatoriU21PerSquadra = {
   "Team Bartowski": ["comuzzo", "carboni v.", "mateus lusuardi"],
-  "Desperados": ["rodriguez je.", "bravo", "ramon"],
+  "Desperados": ["ordonez c.", "bravo", "ramon"],
   "riverfilo": ["paz n.", "esposito f.p.", "akinsanmiro"],
   "Golden Knights": ["leoni", "camarda", "tiago gabriel"],
   "Fantaugusta": ["comuzzo", "bravo", "ekhator"],
@@ -33,7 +33,7 @@ const giocatoriU21PerSquadra = {
   "Eintracht Franco 126": ["carboni v.", "valle", "ramon"],
   "POKERMANTRA": ["ordonez c.", "goglichidze", "belahyane"],
   "wildboys78": ["jimenez a.", "castro s.", "ferguson e."],
-  "Bayern Christiansen": ["paz n.", "addai", "ordonez c."],
+  "Bayern Christiansen": ["paz n.", "addai", "rodriguez je."],
   "Minnesode Timberland": ["diao", "ferguson e.", "pisilli"],
   "Athletic Pongao": ["valle", "tiago gabriel", "norton-cuffy"],
   "MinneSota Snakes": ["esposito f.p.", "akinsanmiro", "goglichidze"],
