@@ -298,11 +298,19 @@ async function caricaRose(){
   const rows = await fetchCSV(URL_ROSE);
 
   for (const s of squadre){
-    const nomeSquadra = getTeamNameFlexible(rows, s.headerRow, s.col);
-    if (!nomeSquadra){
-      console.warn("Nome squadra vuoto in blocco", s, rows[s.headerRow]);
-      continue;
-    }
+    const parsed = parseBlock(rows, s);   // <— usa la funzione che calcola la riga giusta
+    if (!parsed || !parsed.giocatori.length) continue;
+
+    rose[parsed.team] = {
+      logo: trovaLogo(parsed.team),
+      giocatori: parsed.giocatori
+    };
+  }
+
+  console.log("Blocchi caricati:", Object.keys(rose));
+  mostraRose();
+  popolaFiltri();
+}
 
     const giocatori = [];
     for (let i = s.start; i <= s.end; i++){
