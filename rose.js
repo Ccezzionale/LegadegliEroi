@@ -125,7 +125,11 @@ function getTeamNameFixed(rows, headerRow, startCol) {
 
 async function caricaRose() {
   await caricaGiocatoriFP();
-  const rows = await fetchCSV(URL_ROSE); // usa già il parser robusto
+  const rows = await fetchCSV(URL_ROSE);
+
+  // 👇 DEBUG: guarda prime righe del file CSV
+  console.log("Row[0]:", rows[0]);   // headerRow del primo blocco
+  console.log("Row[1]:", rows[1]);   // intestazioni Ruolo/Calciatore/...
 
   for (const s of squadre) {
     const nomeSquadra = getTeamNameFixed(rows, s.headerRow, s.col);
@@ -159,6 +163,7 @@ async function caricaRose() {
   mostraRose();
   popolaFiltri();
 }
+
 
 function trovaLogo(nomeSquadra) {
   const estensioni = [".png", ".jpg"];
