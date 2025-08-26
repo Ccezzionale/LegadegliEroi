@@ -106,6 +106,14 @@ const parseCSV = t =>
   t.replace(/\r/g,"").split("\n").filter(Boolean)
    .map(r => r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(c => c.replace(/^"|"$/g,"")));
 
+async function fetchCSV(url){
+  const res = await fetch(url, { cache: "no-store", redirect: "follow" });
+  if (!res.ok) throw new Error(`HTTP ${res.status} su ${url}`);
+  const txt = await res.text();
+  if (!txt) throw new Error("CSV vuoto");
+  return parseCSV(txt);
+}
+
 
 function trovaLogo(nomeSquadra) {
   const estensioni = [".png", ".jpg"];
