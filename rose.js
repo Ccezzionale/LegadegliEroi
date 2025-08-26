@@ -59,7 +59,8 @@ const giocatoriFPManualiPerSquadra = {
 const giocatoriFPSceltiPerSquadra = {
   "Pandinicoccolosini": ["ekkelenkamp"],
   "Ibla": ["angelino"],
-  "Rubinkebab": ["de ketelaere"]
+  "Rubinkebab": ["de ketelaere"],
+  "Eintracht Franco 126": ["casadei"]
 };
 
 const giocatoriU21SceltiPerSquadra = {
@@ -69,8 +70,7 @@ const giocatoriU21SceltiPerSquadra = {
   "Fc Disoneste": ["soulè"],
   "Ibla": ["soulè"],
   "Bayern Christiansen": ["castro s."],
-  "Minnesode Timberland": ["scalvini"],
-  "Eintracht Franco 126": ["casadei"]
+  "Minnesode Timberland": ["scalvini"]
   
 };
 
