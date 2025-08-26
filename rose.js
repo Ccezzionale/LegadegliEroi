@@ -186,38 +186,77 @@ function isFP(nome, squadra) {
   return false;
 }
 
+// trova gli indici reali delle 4 colonne cercando nella riga di intestazione (quella sotto al titolo squadra)
+function detectCols(rows, headerRow, startCol) {
+  const hdr = rows[headerRow + 1] || []; // riga con "Ruolo, Calciatore, Squadra, Costo"
+  let ruolo=-1, nome=-1, squadra=-1, costo=-1;
+
+  // cerca nelle prossime ~8 colonne dal punto di partenza (tollerante a spostamenti)
+  for (let c = startCol; c < startCol + 8; c++) {
+    const v = (hdr[c] || "").toLowerCase().trim();
+    if (v === "ruolo") ruolo = c;
+    else if (v === "calciatore" || v === "nome") nome = c;
+    else if (v === "squadra") squadra = c;
+    else if (v === "costo" || v === "quotazione") costo = c;
+  }
+  return { ruolo, nome, squadra, costo };
+}
+
+// prende il nome squadra guardando nella riga headerRow, nelle prime 4 celle del blocco
+function detectTeamName(rows, headerRow, startCol) {
+  for (let c = startCol; c < startCol + 4; c++) {
+    const v = (rows[headerRow]?.[c] || "").trim();
+    if (v && v.toLowerCase() !== "ruolo") return v;
+  }
+  return "";
+}
+
+// parsing robusto di un blocco
+function parseBlock(rows, s) {
+  const team = detectTeamName(rows, s.headerRow, s.col);
+  if (!team) return null;
+
+  const cols = detectCols(rows, s.headerRow, s.col);
+  if (cols.ruolo < 0 || cols.nome < 0 || cols.squadra < 0) return null;
+
+  const giocatori = [];
+  for (let r = s.start; r <= s.end; r++) {
+    const ruolo   = rows[r]?.[cols.ruolo]   || "";
+    const nome    = rows[r]?.[cols.nome]    || "";
+    const squadra = rows[r]?.[cols.squadra] || "";
+    const quota   = cols.costo >= 0 ? (rows[r]?.[cols.costo] || "") : "";
+
+    if (!nome || nome.toLowerCase() === "nome") continue;
+
+    const nomeClean = nome.toLowerCase();
+    giocatori.push({
+      nome, ruolo, squadra, quotazione: quota,
+      fp: isFP(nome, team),
+      u21: !!giocatoriU21PerSquadra[team]?.includes(nomeClean)
+    });
+  }
+
+  return { team, giocatori };
+}
+
 async function caricaRose() {
-  await caricaGiocatoriFP();                 // <— qui dentro va l'await
-  const rows = await fetchCSV(URL_ROSE);     // <— anche questo
+  await caricaGiocatoriFP();
+  const rows = await fetchCSV(URL_ROSE);
 
   for (const s of squadre) {
-    const nomeSquadra = (rows[s.headerRow]?.[s.col] || "").trim();
-    if (!nomeSquadra || nomeSquadra.toLowerCase() === "ruolo") continue;
+    const parsed = parseBlock(rows, s);
+    if (!parsed || !parsed.giocatori.length) continue;
 
-    const giocatori = [];
-    for (let i = s.start; i <= s.end; i++) {
-      const ruolo = rows[i]?.[s.col] || "";
-      const nome  = rows[i]?.[s.col + 1] || "";
-      const team  = rows[i]?.[s.col + 2] || "";
-      const quota = rows[i]?.[s.col + 3] || "";
-      if (nome && nome.toLowerCase() !== "nome") {
-        const nomeClean = nome.toLowerCase();
-        giocatori.push({
-          nome, ruolo, squadra: team, quotazione: quota,
-          fp: isFP(nome, nomeSquadra),
-          u21: !!giocatoriU21PerSquadra[nomeSquadra]?.includes(nomeClean)
-        });
-      }
-    }
-
-    if (giocatori.length) {
-      rose[nomeSquadra] = { logo: trovaLogo(nomeSquadra), giocatori };
-    }
+    rose[parsed.team] = {
+      logo: trovaLogo(parsed.team),
+      giocatori: parsed.giocatori
+    };
   }
 
   mostraRose();
   popolaFiltri();
 }
+
 
 function mostraRose() {
   const container = document.getElementById("contenitore-rose");
