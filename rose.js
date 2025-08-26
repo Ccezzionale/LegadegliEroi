@@ -102,11 +102,6 @@ const squadre = [
   { col: 5, start: 219, end: 246, headerRow: 217 },
 ];
 
-const parseCSV = t =>
-  t.replace(/\r/g,"").split("\n").filter(Boolean)
-   .map(r => r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(c => c.replace(/^"|"$/g,"")));
-
-
 function trovaLogo(nomeSquadra) {
   const estensioni = [".png", ".jpg"];
   const varianti = [
