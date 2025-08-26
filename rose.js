@@ -276,54 +276,74 @@ function parseBlock(rows, s) {
   return { team, giocatori };
 }
 
+function norm(s=""){
+  return s.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/\s+/g," ").trim();
+}
+
+function getTeamNameFlexible(rows, headerRow, startCol){
+  const banHdr = new Set(["ruolo","calciatore","nome","squadra","costo","quotazione","prezzo","valore","crediti","crediti attuali"]);
+  const banRuoli = /^(p|por|d|dc|dd|ds|e|m|c|a|w|t|c;?t|m;?c|dd;?dc|dc;?dd|dc;?ds|ds;?dc)$/i;
+
+  const tryRows = [headerRow, headerRow-1, headerRow+1].filter(r => r>=0 && r<rows.length);
+  for (const r of tryRows){
+    for (let c=startCol; c<startCol+4; c++){
+      const raw = (rows[r]?.[c] || "").trim();
+      if (!raw) continue;
+      const n = norm(raw);
+      if (banHdr.has(n)) continue;
+      if (banRuoli.test(raw)) continue;
+      // togli eventuale "... Ruolo"
+      return raw.replace(/\bruolo\b.*$/i,"").trim();
+    }
+  }
+  return "";
+}
+
+
 
 /* =============== LOAD & RENDER =============== */
 async function caricaRose(){
   await caricaGiocatoriFP();
   const rows = await fetchCSV(URL_ROSE);
 
-for (const s of squadre) {
-  // se l’headerRow non esiste, salta il blocco (incolla con righe in più/meno)
-  if (!rows[s.headerRow] || rows[s.headerRow].length <= s.col) {
-    console.warn("Salto blocco: header fuori range", s);
-    continue;
+  for (const s of squadre){
+    const nomeSquadra = getTeamNameFlexible(rows, s.headerRow, s.col);
+    if (!nomeSquadra){
+      console.warn("Nome squadra vuoto in blocco", s, rows[s.headerRow]);
+      continue;
+    }
+
+    const giocatori = [];
+    for (let i = s.start; i <= s.end; i++){
+      const r = rows[i];
+      if (!r) continue;
+
+      // se per caso la prima riga del blocco è l’header, salta
+      if (i === s.start && norm(r[s.col]||"") === "ruolo") continue;
+
+      const ruolo = (r[s.col]     || "").trim();
+      const nome  = (r[s.col + 1] || "").trim();
+      const team  = (r[s.col + 2] || "").trim();
+      const quota = (r[s.col + 3] || "").trim();
+
+      if (!nome || norm(nome) === "nome") continue;
+
+      const nomeClean = nome.toLowerCase();
+      giocatori.push({
+        nome, ruolo, squadra: team, quotazione: quota,
+        fp: isFP(nome, nomeSquadra),
+        u21: !!giocatoriU21PerSquadra[nomeSquadra]?.includes(nomeClean),
+      });
+    }
+
+    if (giocatori.length){
+      rose[nomeSquadra] = { logo: trovaLogo(nomeSquadra), giocatori };
+    }
   }
 
-  const nomeSquadra = (rows[s.headerRow][s.col] || "").trim();
-  if (!nomeSquadra || nomeSquadra.toLowerCase() === "ruolo") {
-    console.warn("Nome squadra vuoto in blocco", s, rows[s.headerRow]);
-    continue;
-  }
-
-  const giocatori = [];
-  for (let i = s.start; i <= s.end; i++) {
-    // se la riga non esiste (riga vuota nel CSV) vai avanti
-    const r = rows[i];
-    if (!r) continue;
-
-    const ruolo = (r[s.col]     || "").trim();
-    const nome  = (r[s.col + 1] || "").trim();
-    const team  = (r[s.col + 2] || "").trim();
-    const quota = (r[s.col + 3] || "").trim();
-
-    if (!nome || nome.toLowerCase() === "nome") continue;
-
-    const nomeClean = nome.toLowerCase();
-    giocatori.push({
-      nome,
-      ruolo,
-      squadra: team,
-      quotazione: quota,
-      fp: isFP(nome, nomeSquadra),
-      u21: !!giocatoriU21PerSquadra[nomeSquadra]?.includes(nomeClean),
-    });
-  }
-
-  if (giocatori.length) {
-    rose[nomeSquadra] = { logo: trovaLogo(nomeSquadra), giocatori };
-  }
-}
-
+  console.log("Blocchi caricati:", Object.keys(rose));
   mostraRose();
   popolaFiltri();
 }
