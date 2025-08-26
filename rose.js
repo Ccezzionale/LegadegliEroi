@@ -232,34 +232,40 @@ function firstDataRow(rows, from, cols){
 function parseBlock(rows, s) {
   const team = detectTeamName(rows, s.headerRow, s.col);
   if (!team) return null;
+
   const cols = detectCols(rows, s.headerRow, s.col);
   const hdrRow = detectHeaderRowInBlock(rows, s, cols);
-  const startRow = firstDataRow(rows, hdrRow+1, cols);
-  const endRow = s.end;
 
-  // console.debug(`Bloc: ${team}  hdrRow=${hdrRow}  start=${startRow}`, cols);
+  // 🔎 Cerca la prima riga dati non vuota dopo l’header
+  let startRow = hdrRow + 1;
+  while (startRow < rows.length) {
+    const ruolo = (rows[startRow]?.[cols.ruolo] || "").trim().toLowerCase();
+    const nome  = (rows[startRow]?.[cols.nome]  || "").trim().toLowerCase();
+    if (ruolo && ruolo !== "ruolo" && nome && nome !== "nome" && nome !== "calciatore") break;
+    startRow++;
+  }
+
+  const endRow = s.end;
+  console.log(`Bloc: ${team}  hdrRow=${hdrRow}  dataStart=${startRow}`, cols);
 
   const giocatori = [];
-  let emptyStreak = 0;
-  for (let r=startRow; r<=endRow && emptyStreak<3; r++){
-    const ruolo=(rows[r]?.[cols.ruolo]||"").trim();
-    const nome =(rows[r]?.[cols.nome ]||"").trim();
-    const squadra=(rows[r]?.[cols.squadra]||"").trim();
-    const quota=(rows[r]?.[cols.costo]||"").trim();
+  for (let r = startRow; r <= endRow; r++) {
+    const ruolo   = (rows[r]?.[cols.ruolo]   || "").trim();
+    const nome    = (rows[r]?.[cols.nome]    || "").trim();
+    const squadra = (rows[r]?.[cols.squadra] || "").trim();
+    const quota   = (rows[r]?.[cols.costo]   || "").trim();
 
-    if (!ruolo && !nome && !squadra){ emptyStreak++; continue; }
-    emptyStreak=0;
-    if (!nome || norm(nome)==="nome") continue;
+    if (!nome || norm(nome) === "nome") continue;
 
-    const nomeClean = nome.toLowerCase();
     giocatori.push({
       nome, ruolo, squadra, quotazione: quota,
       fp: isFP(nome, team),
-      u21: !!giocatoriU21PerSquadra[team]?.includes(nomeClean)
+      u21: !!giocatoriU21PerSquadra[team]?.includes(nome.toLowerCase())
     });
   }
   return { team, giocatori };
 }
+
 
 /* =============== LOAD & RENDER =============== */
 async function caricaRose(){
