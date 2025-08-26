@@ -1,5 +1,5 @@
 // ======== CONFIG ========
-const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1pXJCNLgchygyLnGbDEsnIV3QAdPUiLcmgzMAhlzYRivXV4fnoSBW5VwiopwXEMfwk32mvdF3gWZC/pub?gid=1127607135&single=true&output=csv";
+const URL_STANDINGS = "https://docs.google.com/spreadsheets/d/1xPual_RkDPsnAW1Gy_ZCcVlAUATtquTbbym3NPk8UfI/export?format=csv&gid=1127607135";
 const LOGO_BASE_PATH = "img/";
 const LOGO_EXT = ".png";
 
