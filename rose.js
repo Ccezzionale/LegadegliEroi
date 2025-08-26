@@ -76,12 +76,11 @@ const giocatoriU21SceltiPerSquadra = {
   
 };
 
-// GViz CSV stabile
 const URL_ROSE =
-  "https://docs.google.com/spreadsheets/d/1weMP9ajaScUSQhExCe7D7jtC7SjC9udw5ISg8f6Bezg/gviz/tq?tqx=out:csv&gid=0";
+  "https://docs.google.com/spreadsheets/d/1weMP9ajaScUSQhExCe7D7jtC7SjC9udw5ISg8f6Bezg/export?format=csv&gid=0";
 
 const URL_QUOTAZIONI =
-  "https://docs.google.com/spreadsheets/d/1weMP9ajaScUSQhExCe7D7jtC7SjC9udw5ISg8f6Bezg/gviz/tq?tqx=out:csv&gid=2087990274";
+  "https://docs.google.com/spreadsheets/d/1weMP9ajaScUSQhExCe7D7jtC7SjC9udw5ISg8f6Bezg/export?format=csv&gid=2087990274";
 
 const squadre = [
   { col: 0, start: 2, end: 29, headerRow: 0 },
@@ -101,11 +100,6 @@ const squadre = [
   { col: 0, start: 219, end: 246, headerRow: 217 },
   { col: 5, start: 219, end: 246, headerRow: 217 },
 ];
-
-const parseCSV = t =>
-  t.replace(/\r/g,"").split("\n").filter(Boolean)
-   .map(r => r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(c => c.replace(/^"|"$/g,"")));
-
 
 function trovaLogo(nomeSquadra) {
   const estensioni = [".png", ".jpg"];
