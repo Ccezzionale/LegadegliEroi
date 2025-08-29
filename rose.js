@@ -64,7 +64,7 @@ const giocatoriFPSceltiPerSquadra = {
 };
 
 const giocatoriU21SceltiPerSquadra = {
-  "Desperados": ["fazzini "],
+  "Desperados": ["fazzini"],
   "Pandinicoccolosini": ["yildiz"],
   "POKERMANTRA": ["yildiz"],
   "Fc Disoneste": ["soulè"],
