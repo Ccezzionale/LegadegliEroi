@@ -145,19 +145,15 @@
 
     // --- CONFIG: un solo CSV/URL pubblicato da Google Sheet ---
 // Usa formato export stabile (niente 2PACX) con fallback via querystring (?id=...&gid=...)
-var DATASET = (function(){
-  var DEFAULT_ID = '17km50RcQysN4HKJJ8J4yTY1NDytSlW73KMTz0VvxDDw';
+var DATASET = (function () {
+  var DEFAULT_ID  = '17km50RcQysN4HKJJ8J4yTY1NDytSlW73KMTz0VvxDDw';
   var DEFAULT_GID = '0';
-  var p = new URLSearchParams(window.location.search);
-  var id = p.get('id') || DEFAULT_ID;
+  var p   = new URLSearchParams(window.location.search);
+  var id  = p.get('id')  || DEFAULT_ID;
   var gid = p.get('gid') || DEFAULT_GID;
-  return `https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`;
-})();{
-  const p = new URLSearchParams(window.location.search);
-  const id = p.get('id');
-  const gid = p.get('gid') || '0';
-  if (id) DATASET = `https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`;
+  return 'https://docs.google.com/spreadsheets/d/' + id + '/export?format=csv&gid=' + gid;
 })();
+
     /* DATASET declaration normalized below */
 
     // Riferimenti UI
