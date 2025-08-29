@@ -144,18 +144,21 @@
     // =============================
 
     // --- CONFIG: un solo CSV/URL pubblicato da Google Sheet ---
-    // Sostituisci "svincolati.csv" con l'URL CSV pubblicato del tuo foglio Google
-    // Esempio: // Usa il formato stabile senza 2PACX (export) — inserisci il tuo FILE_ID e GID
-let DATASET = "https://docs.google.com/spreadsheets/d/17km50RcQysN4HKJJ8J4yTY1NDytSlW73KMTz0VvxDDw/export?format=csv&gid=0";
-
-// Override rapido via querystring: svincolati.html?id=FILE_ID&gid=0
-(function(){
+// Usa formato export stabile (niente 2PACX) con fallback via querystring (?id=...&gid=...)
+var DATASET = (function(){
+  var DEFAULT_ID = '17km50RcQysN4HKJJ8J4yTY1NDytSlW73KMTz0VvxDDw';
+  var DEFAULT_GID = '0';
+  var p = new URLSearchParams(window.location.search);
+  var id = p.get('id') || DEFAULT_ID;
+  var gid = p.get('gid') || DEFAULT_GID;
+  return `https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`;
+})();{
   const p = new URLSearchParams(window.location.search);
   const id = p.get('id');
   const gid = p.get('gid') || '0';
   if (id) DATASET = `https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`;
 })();
-    const DATASET = "svincolati.csv";
+    /* DATASET declaration normalized below */
 
     // Riferimenti UI
     const countEl = document.getElementById('count');
