@@ -5,12 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Svincolati</title>
   <!-- Ri-uso lo stesso CSS della Draft Room -->
-  <link rel="stylesheet" href="svincolati.css" />
+  <link rel="stylesheet" href="draft.css" />
   <style>
     /* Mini ritocchi locali (facoltativi) */
     .count { text-align:center; color:#001f3f; font-weight:700; margin:10px 0; }
     .hint { text-align:center; color:#6b7280; font-size:.9rem; margin-top:4px; }
     .table-wrap { background:#fff; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,.1); padding:10px; }
+
+    /* Layout filtri: 2 colonne x 2 righe (allineati) */
+    .filters-grid{ display:grid; grid-template-columns:repeat(2, minmax(280px,1fr)); gap:16px; margin-bottom:8px; }
+    .filters-col{ display:grid; grid-template-rows:auto auto; gap:10px; }
+    .form-field label{ display:block; font-weight:600; color:#001f3f; margin-bottom:4px; }
+    .form-field input, .form-field select{ width:100%; }
+
+    @media (max-width:768px){
+      .filters-grid{ grid-template-columns:1fr; }
+    }
   </style>
 </head>
 <body>
@@ -58,11 +68,28 @@
 
   <div class="container" style="display:flex; flex-direction:column; gap:16px; padding: 0 20px 30px;">
     <div class="lista-container table-wrap">
-      <div style="display:grid; grid-template-columns: repeat(2, minmax(160px,1fr)); gap:10px; margin-bottom:8px;">
-        <div>
-          <label for="filtroSerieA">Filtra per Squadra Serie A:</label>
-          <select id="filtroSerieA"><option value="">-- Tutte --</option></select>
+      <div class="filters-grid">
+        <div class="filters-col">
+          <div class="form-field">
+            <label for="filtroSerieA">Filtra per Squadra Serie A:</label>
+            <select id="filtroSerieA"><option value="">-- Tutte --</option></select>
+          </div>
+          <div class="form-field">
+            <label for="searchGiocatore">Cerca Giocatore:</label>
+            <input id="searchGiocatore" placeholder="Digita un nome..." type="text"/>
+          </div>
         </div>
+        <div class="filters-col">
+          <div class="form-field">
+            <label for="cercaRuolo">Filtra per Ruolo:</label>
+            <input type="text" id="cercaRuolo" placeholder="Cerca ruolo..." />
+          </div>
+          <div class="form-field">
+            <label for="filtroRuolo">Seleziona Ruolo:</label>
+            <select id="filtroRuolo"><option value="">-- Tutti i Ruoli --</option></select>
+          </div>
+        </div>
+      </div>
         <div>
           <label for="filtroRuolo">Filtra per Ruolo:</label>
           <input type="text" id="cercaRuolo" placeholder="Cerca ruolo..." />
