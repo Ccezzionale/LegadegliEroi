@@ -129,249 +129,209 @@
   </script>
 
   <script>
-    // =============================
-    //  SVINCOLATI – LOGICA PAGINA (dataset unico)
-    // =============================
+// =============================
+//  SVINCOLATI – LOGICA PAGINA
+// =============================
 
-    // --- CONFIG: un solo CSV/URL pubblicato da Google Sheet ---
-// Usa formato export stabile (niente 2PACX) con fallback via querystring (?id=...&gid=...)
-var DATASET = (function(){
-  var DEFAULT_ID = '17km50RcQysN4HKJJ8J4yTY1NDytSlW73KMTz0VvxDDw';
+// URL export stabile da Google Sheets (no 2PACX) + override via ?id=...&gid=...
+var DATASET = (function () {
+  var DEFAULT_ID  = '17km50RcQysN4HKJJ8J4yTY1NDytSlW73KMTz0VvxDDw';
   var DEFAULT_GID = '0';
-  var p = new URLSearchParams(window.location.search);
-  var id = p.get('id') || DEFAULT_ID;
+  var p   = new URLSearchParams(window.location.search);
+  var id  = p.get('id')  || DEFAULT_ID;
   var gid = p.get('gid') || DEFAULT_GID;
-  return `https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`;
+  return 'https://docs.google.com/spreadsheets/d/' + id + '/export?format=csv&gid=' + gid;
 })();
-  const id = p.get('id');
-  const gid = p.get('gid') || '0';
-  if (id) DATASET = `https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`;
-})();
-    /* DATASET declaration normalized below */
 
-    // Riferimenti UI
-    const countEl = document.getElementById('count');
-    const listaGiocatori = document.getElementById('lista-giocatori');
-    const filtroRuolo = document.getElementById('filtroRuolo');
-    const filtroSerieA = document.getElementById('filtroSerieA');
-    const searchInput = document.getElementById('searchGiocatore');
-    const cercaRuolo = document.getElementById('cercaRuolo');
+// Riferimenti UI
+const countEl        = document.getElementById('count');
+const listaGiocatori = document.getElementById('lista-giocatori');
+const filtroRuolo    = document.getElementById('filtroRuolo');
+const filtroSerieA   = document.getElementById('filtroSerieA');
+const searchInput    = document.getElementById('searchGiocatore');
+const cercaRuolo     = document.getElementById('cercaRuolo');
 
-    // Stato
-    let righeSvincolati = [];   // array con duplicati preservati
-    let ruoli = new Set();
-    let squadre = new Set();
-    let ordineListaAscendente = {};
-    let eventsBound = false;
+// Stato
+let righeSvincolati = [];   // array con duplicati preservati (nessuno schiacciamento per nome)
+let ruoli = new Set();
+let squadre = new Set();
+let ordineListaAscendente = {};
+let eventsBound = false;
 
-    // Utils
-    function normalize(nome){ return (nome||'').trim().toLowerCase(); }
-    function showSpinner(show=true){ const s=document.getElementById('spinner'); if (s) s.style.display = show? 'inline-block':'none'; }
-    function urlNoCache(url){ const sep = url.includes('?') ? '&' : '?'; return `${url}${sep}_cb=${Date.now()}`; }
-    function withTimeout(promise, ms=12000){
-      return Promise.race([
-        promise,
-        new Promise((_,rej)=> setTimeout(()=>rej(new Error('timeout')), ms))
-      ]);
-    }
+// Utils
+function showSpinner(show = true){
+  const s = document.getElementById('spinner');
+  if (s) s.style.display = show ? 'inline-block' : 'none';
+}
+function urlNoCache(url){ const sep = url.includes('?') ? '&' : '?'; return url + sep + '_cb=' + Date.now(); }
+function withTimeout(promise, ms=12000){
+  return Promise.race([ promise, new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')), ms)) ]);
+}
 
-    const _controllers = { csv:null };
-    function fetchRetry(url, opt={}, tries=3, baseDelay=800, timeoutMs=12000){
-      let lastErr;
-      return new Promise(async (resolve, reject)=>{
-        for (let i=0;i<tries;i++){
-          try{
-            const res = await withTimeout(fetch(urlNoCache(url), {cache:'no-store', method:'GET', ...opt}), timeoutMs);
-            if (res.ok) return resolve(res);
-            if (![429,500,502,503,504].includes(res.status)) throw new Error(`HTTP ${res.status}`);
-            lastErr = new Error(`HTTP ${res.status}`);
-          }catch(e){ lastErr = e; }
-          const delay = baseDelay * Math.pow(2,i) + Math.random()*250; await new Promise(r=>setTimeout(r, delay));
-        }
-        reject(lastErr);
-      });
-    }
-    function abortAndFetch(key, url, tries=3, baseDelay=800, timeoutMs=12000){
-      if (_controllers[key]) _controllers[key].abort();
-      const controller = new AbortController();
-      _controllers[key] = controller;
-      return fetchRetry(url, { signal: controller.signal }, tries, baseDelay, timeoutMs)
-        .finally(()=>{ if (_controllers[key]===controller) _controllers[key]=null; });
-    }
-
-    // CSV loader + cache locale
-    async function caricaSvincolati(){
-      const KEY = `svincolati_cache_unico`;
-      const TTL = 24*60*60*1000; // 24h
-      const now = Date.now();
-
+const _controllers = { csv: null };
+function fetchRetry(url, opt={}, tries=3, baseDelay=800, timeoutMs=12000){
+  let lastErr;
+  return new Promise(async (resolve, reject)=>{
+    for (let i=0;i<tries;i++){
       try{
-        const cache = JSON.parse(localStorage.getItem(KEY) || 'null');
-        if (cache && (now - cache.time) < TTL && cache.csv){
-          parseGiocatoriCSV(cache.csv); renderLista(); return;
-        }
-      }catch{ /* ignore */ }
-
-      showSpinner(true);
-      try{
-        const res = await abortAndFetch('csv', DATASET, 3, 800, 12000);
-        const csv = await res.text();
-        localStorage.setItem(KEY, JSON.stringify({ time: now, csv }));
-        parseGiocatoriCSV(csv); renderLista();
-      }catch(err){
-        console.error('Errore caricamento CSV svincolati:', err);
-        const cache = JSON.parse(localStorage.getItem(KEY) || 'null');
-        if (cache?.csv){ parseGiocatoriCSV(cache.csv); renderLista(); }
-      }finally{ showSpinner(false); }
+        const res = await withTimeout(fetch(urlNoCache(url), { cache:'no-store', method:'GET', ...opt }), timeoutMs);
+        if (res.ok) return resolve(res);
+        if (![429,500,502,503,504].includes(res.status)) throw new Error('HTTP '+res.status);
+        lastErr = new Error('HTTP '+res.status);
+      }catch(e){ lastErr = e; }
+      const delay = baseDelay * Math.pow(2,i) + Math.random()*250;
+      await new Promise(r=>setTimeout(r, delay));
     }
+    reject(lastErr);
+  });
+}
+function abortAndFetch(key, url, tries=3, baseDelay=800, timeoutMs=12000){
+  if (_controllers[key]) _controllers[key].abort();
+  const controller = new AbortController();
+  _controllers[key] = controller;
+  return fetchRetry(url, { signal: controller.signal }, tries, baseDelay, timeoutMs)
+    .finally(()=>{ if (_controllers[key] === controller) _controllers[key] = null; });
+}
 
-    // Parser CSV semplice (senza virgole interne ai campi)
-    function parseGiocatoriCSV(csv){
-      ruoli = new Set();
-      squadre = new Set();
-      righeSvincolati = [];
-      const lines = csv.trim().split(/
-?
-/);
-      if (lines.length <= 1) return;
-      for (let i = 1; i < lines.length; i++){
-        const r = lines[i];
-        if (!r) continue;
-        const [nome, ruolo, squadra, quotazione, u21] = r.split(',');
-        if (!nome) continue;
-        righeSvincolati.push({ nome, ruolo, squadra, quotazione, u21 });
-        if (ruolo) ruoli.add(ruolo);
-        if (squadra) squadre.add(squadra);
-      }
-    };
-        if (ruolo) ruoli.add(ruolo);
-        if (squadra) squadre.add(squadra);
-      });
+// Loader CSV + cache locale
+async function caricaSvincolati(){
+  const KEY = 'svincolati_cache_unico';
+  const TTL = 24 * 60 * 60 * 1000; // 24h
+  const now = Date.now();
+
+  try{
+    const cache = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (cache && (now - cache.time) < TTL && cache.csv){
+      parseGiocatoriCSV(cache.csv); renderLista(); return;
     }
+  }catch{/* ignore */}
 
-    // Render tabella + filtri
-    function renderLista(){
-      const frag = document.createDocumentFragment();
-      righeSvincolati.forEach(({ nome, ruolo, squadra, quotazione, u21 }) => {
-        const tr = document.createElement('tr');
-        const isU21 = (u21 || '').toLowerCase() === 'u21' ? 'U21' : '';
-        tr.innerHTML = `
-          <td>${nome || ''}</td>
-          <td>${ruolo || ''}</td>
-          <td>${squadra || ''}</td>
-          <td>${parseInt(quotazione) || 0}</td>
-          <td>${isU21}</td>
-        `;
-        frag.appendChild(tr);
-      });
-      listaGiocatori.innerHTML = '';
-      listaGiocatori.appendChild(frag);
+  showSpinner(true);
+  try{
+    const res = await abortAndFetch('csv', DATASET, 3, 800, 12000);
+    const csv = await res.text();
+    localStorage.setItem(KEY, JSON.stringify({ time: now, csv }));
+    parseGiocatoriCSV(csv); renderLista();
+  }catch(err){
+    console.error('Errore caricamento CSV svincolati:', err);
+    const cache = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (cache?.csv){ parseGiocatoriCSV(cache.csv); renderLista(); }
+  }finally{ showSpinner(false); }
+}
 
-      // Popola filtri select
-      filtroRuolo.innerHTML = '<option value="">-- Tutti i Ruoli --</option>' + Array.from(ruoli).map(r=>`<option value="${r}">${r}</option>`).join('');
-      filtroSerieA.innerHTML = '<option value="">-- Tutte --</option>' + Array.from(squadre).sort((a,b)=>a.localeCompare(b)).map(s=>`<option value="${s}">${s}</option>`).join('');
+// Parser CSV (preserva duplicati riga a riga)
+function parseGiocatoriCSV(csv){
+  ruoli = new Set();
+  squadre = new Set();
+  righeSvincolati = [];
+  const lines = csv.trim().split(/\r?\n/);
+  if (lines.length <= 1) return;
+  for (let i = 1; i < lines.length; i++){
+    const r = lines[i]; if (!r) continue;
+    const [nome, ruolo, squadra, quotazione, u21] = r.split(',');
+    if (!nome) continue;
+    righeSvincolati.push({ nome, ruolo, squadra, quotazione, u21 });
+    if (ruolo) ruoli.add(ruolo);
+    if (squadra) squadre.add(squadra);
+  }
+}
 
-      // Bind filtri (una sola volta)
-      if (!eventsBound){
-        [filtroRuolo, filtroSerieA, searchInput, cercaRuolo].forEach(el=> el?.addEventListener('input', debounce(filtraLista, 150)));
-        eventsBound = true;
-      }
+// Render tabella + filtri
+function renderLista(){
+  const frag = document.createDocumentFragment();
+  righeSvincolati.forEach(({ nome, ruolo, squadra, quotazione, u21 })=>{
+    const tr = document.createElement('tr');
+    const isU21 = (u21||'').toLowerCase() === 'u21' ? 'U21' : '';
+    tr.innerHTML = `
+      <td>${nome||''}</td>
+      <td>${ruolo||''}</td>
+      <td>${squadra||''}</td>
+      <td>${parseInt(quotazione)||0}</td>
+      <td>${isU21}</td>
+    `;
+    frag.appendChild(tr);
+  });
+  listaGiocatori.innerHTML = '';
+  listaGiocatori.appendChild(frag);
 
-      filtraLista();
-      aggiornaCount();
-    })=>{
-        const tr = document.createElement('tr');
-        const isU21 = (mappaGiocatori[normalize(nome)].u21||'').toLowerCase()==='u21' ? 'U21' : '';
-        tr.innerHTML = `
-          <td>${nome||''}</td>
-          <td>${ruolo||''}</td>
-          <td>${squadra||''}</td>
-          <td>${parseInt(quotazione)||0}</td>
-          <td>${isU21}</td>
-        `;
-        frag.appendChild(tr);
-      });
-      listaGiocatori.innerHTML = '';
-      listaGiocatori.appendChild(frag);
+  // Popola select una sola volta per contenuto
+  filtroRuolo.innerHTML  = '<option value=\"\">-- Tutti i Ruoli --</option>' +
+                           Array.from(ruoli).map(r=>`<option value=\"${r}\">${r}</option>`).join('');
+  filtroSerieA.innerHTML = '<option value=\"\">-- Tutte --</option>' +
+                           Array.from(squadre).sort((a,b)=>a.localeCompare(b))
+                           .map(s=>`<option value=\"${s}\">${s}</option>`).join('');
 
-      // Popola filtri select
-      filtroRuolo.innerHTML = '<option value="">-- Tutti i Ruoli --</option>' + Array.from(ruoli).map(r=>`<option value="${r}">${r}</option>`).join('');
-      filtroSerieA.innerHTML = '<option value="">-- Tutte --</option>' + Array.from(squadre).sort((a,b)=>a.localeCompare(b)).map(s=>`<option value="${s}">${s}</option>`).join('');
+  // Bind filtri (solo una volta)
+  if (!eventsBound){
+    [filtroRuolo, filtroSerieA, searchInput, cercaRuolo].forEach(el => el?.addEventListener('input', debounce(filtraLista, 150)));
+    eventsBound = true;
+  }
 
-      // Bind filtri (una sola volta)
-      if (!eventsBound){
-        [filtroRuolo, filtroSerieA, searchInput, cercaRuolo].forEach(el=> el?.addEventListener('input', debounce(filtraLista, 150)));
-        eventsBound = true;
-      }
+  filtraLista();
+  aggiornaCount();
+}
 
-      filtraLista();
-      aggiornaCount();
+function debounce(fn, delay=150){ let t; return (...args)=>{ clearTimeout(t); t = setTimeout(()=>fn(...args), delay); }; }
+
+function filtraLista(){
+  const ruoloTesto  = (cercaRuolo.value||'').toLowerCase();
+  const ruoloSelect = (filtroRuolo.value||'').toLowerCase().split(/[,;\s]+/).filter(Boolean);
+  const squadra     = (filtroSerieA.value||'').toLowerCase();
+  const cerca       = (searchInput.value||'').toLowerCase();
+
+  Array.from(listaGiocatori.children).forEach(row=>{
+    const nome = row.children[0].textContent.toLowerCase();
+    const r    = row.children[1].textContent.toLowerCase();
+    const s    = row.children[2].textContent.toLowerCase();
+    const ruoliGioc = r.split(/[,;\s]+/).map(p=>p.trim()).filter(Boolean);
+
+    const matchInput   = !ruoloTesto || ruoliGioc.some(part => part.includes(ruoloTesto));
+    const matchSelect  = !ruoloSelect.length || ruoloSelect.some(rs => ruoliGioc.includes(rs));
+    const matchSquadra = !squadra || s === squadra;
+    const matchNome    = !cerca || nome.includes(cerca);
+
+    row.style.display = (matchInput && matchSelect && matchSquadra && matchNome) ? '' : 'none';
+  });
+  aggiornaCount();
+}
+
+function aggiornaCount(){
+  const tot = listaGiocatori.children.length;
+  let vis = 0; Array.from(listaGiocatori.children).forEach(r=>{ if (r.style.display !== 'none') vis++; });
+  countEl.textContent = `Svincolati mostrati: ${vis} / ${tot}`;
+}
+
+function ordinaLista(colonnaIndex, numerico=false){
+  const tbody = document.getElementById('lista-giocatori');
+  const righe = Array.from(tbody.querySelectorAll('tr'));
+  const asc = !ordineListaAscendente[colonnaIndex];
+  ordineListaAscendente[colonnaIndex] = asc;
+
+  document.querySelectorAll('#lista-giocatori-table thead th').forEach((th, idx)=>{
+    th.textContent = th.textContent.replace(/[\u2191\u2193]/g, '');
+    if (idx === colonnaIndex) th.textContent += asc ? ' \u2191' : ' \u2193';
+  });
+
+  righe.sort((a,b)=>{
+    const aText = a.children[colonnaIndex]?.textContent.trim();
+    const bText = b.children[colonnaIndex]?.textContent.trim();
+    if (numerico){
+      const aNum = parseFloat(aText)||0, bNum = parseFloat(bText)||0;
+      return asc ? aNum - bNum : bNum - aNum;
+    } else {
+      return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
     }
+  });
 
-    function debounce(fn, delay=150){ let t; return (...args)=>{ clearTimeout(t); t = setTimeout(()=>fn(...args), delay); }; }
+  tbody.innerHTML = '';
+  righe.forEach(r => tbody.appendChild(r));
+  filtraLista();
+}
+window.ordinaLista = ordinaLista;
 
-    function filtraLista(){
-      const ruoloTesto = (cercaRuolo.value||'').toLowerCase();
-      const ruoloSelect = (filtroRuolo.value||'').toLowerCase().split(/[,;\s]+/).filter(Boolean);
-      const squadra = (filtroSerieA.value||'').toLowerCase();
-      const cerca = (searchInput.value||'').toLowerCase();
+document.addEventListener('DOMContentLoaded', ()=>{ caricaSvincolati(); });
+</script>
 
-      Array.from(listaGiocatori.children).forEach(row=>{
-        const nome = row.children[0].textContent.toLowerCase();
-        const r = row.children[1].textContent.toLowerCase();
-        const s = row.children[2].textContent.toLowerCase();
-        const ruoliGiocatore = r.split(/[,;\s]+/).map(p=>p.trim()).filter(Boolean);
-
-        const matchInput = !ruoloTesto || ruoliGiocatore.some(part=> part.includes(ruoloTesto));
-        const matchSelect = !ruoloSelect.length || ruoloSelect.some(rs => ruoliGiocatore.includes(rs));
-        const matchSquadra = !squadra || s === squadra;
-        const matchNome = !cerca || nome.includes(cerca);
-
-        row.style.display = (matchInput && matchSelect && matchSquadra && matchNome) ? '' : 'none';
-      });
-      aggiornaCount();
-    }
-
-    function aggiornaCount(){
-      const tot = listaGiocatori.children.length;
-      let vis = 0; Array.from(listaGiocatori.children).forEach(r=>{ if (r.style.display !== 'none') vis++; });
-      countEl.textContent = `Svincolati mostrati: ${vis} / ${tot}`;
-    }
-
-    // Ordinamento tabella svincolati
-    function ordinaLista(colonnaIndex, numerico=false){
-      const tbody = document.getElementById('lista-giocatori');
-      const righe = Array.from(tbody.querySelectorAll('tr'));
-      const asc = !ordineListaAscendente[colonnaIndex];
-      ordineListaAscendente[colonnaIndex] = asc;
-
-      document.querySelectorAll('#lista-giocatori-table thead th').forEach((th, idx)=>{
-        th.textContent = th.textContent.replace(/[\u2191\u2193]/g, '');
-        if (idx===colonnaIndex) th.textContent += asc ? ' \u2191' : ' \u2193';
-      });
-
-      righe.sort((a,b)=>{
-        const aText = a.children[colonnaIndex]?.textContent.trim();
-        const bText = b.children[colonnaIndex]?.textContent.trim();
-        if (numerico){
-          const aNum = parseFloat(aText)||0, bNum = parseFloat(bText)||0;
-          return asc ? aNum - bNum : bNum - aNum;
-        }else{
-          return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
-        }
-      });
-
-      tbody.innerHTML = '';
-      righe.forEach(r=> tbody.appendChild(r));
-      filtraLista(); // mantiene i filtri attivi
-    }
-    window.ordinaLista = ordinaLista;
-
-    // Avvio
-    document.addEventListener('DOMContentLoaded', ()=>{
-      caricaSvincolati();
-    });
-  </script>
   
 </body>
 </html>
