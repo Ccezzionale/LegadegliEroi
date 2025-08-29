@@ -97,16 +97,6 @@
           </div>
         </div>
       </div>
-        <div>
-          <label for="filtroRuolo">Filtra per Ruolo:</label>
-          <input type="text" id="cercaRuolo" placeholder="Cerca ruolo..." />
-          <select id="filtroRuolo" style="margin-top:6px"><option value="">-- Tutti i Ruoli --</option></select>
-        </div>
-        <div>
-          <label for="searchGiocatore">Cerca Giocatore:</label>
-          <input id="searchGiocatore" placeholder="Digita un nome..." type="text"/>
-        </div>
-      </div>
 
       <div id="lista-giocatori-scroll">
         <table id="lista-giocatori-table">
@@ -145,15 +135,18 @@
 
     // --- CONFIG: un solo CSV/URL pubblicato da Google Sheet ---
 // Usa formato export stabile (niente 2PACX) con fallback via querystring (?id=...&gid=...)
-var DATASET = (function () {
-  var DEFAULT_ID  = '17km50RcQysN4HKJJ8J4yTY1NDytSlW73KMTz0VvxDDw';
+var DATASET = (function(){
+  var DEFAULT_ID = '17km50RcQysN4HKJJ8J4yTY1NDytSlW73KMTz0VvxDDw';
   var DEFAULT_GID = '0';
-  var p   = new URLSearchParams(window.location.search);
-  var id  = p.get('id')  || DEFAULT_ID;
+  var p = new URLSearchParams(window.location.search);
+  var id = p.get('id') || DEFAULT_ID;
   var gid = p.get('gid') || DEFAULT_GID;
-  return 'https://docs.google.com/spreadsheets/d/' + id + '/export?format=csv&gid=' + gid;
+  return `https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`;
 })();
-
+  const id = p.get('id');
+  const gid = p.get('gid') || '0';
+  if (id) DATASET = `https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`;
+})();
     /* DATASET declaration normalized below */
 
     // Riferimenti UI
@@ -165,7 +158,7 @@ var DATASET = (function () {
     const cercaRuolo = document.getElementById('cercaRuolo');
 
     // Stato
-    const mappaGiocatori = {};   // key normalizzata -> obj
+    let righeSvincolati = [];   // array con duplicati preservati
     let ruoli = new Set();
     let squadre = new Set();
     let ordineListaAscendente = {};
@@ -234,14 +227,23 @@ var DATASET = (function () {
 
     // Parser CSV semplice (senza virgole interne ai campi)
     function parseGiocatoriCSV(csv){
-      ruoli = new Set(); squadre = new Set();
-      Object.keys(mappaGiocatori).forEach(k=> delete mappaGiocatori[k]);
-      const righe = csv.trim().split(/\r?\n/).slice(1);
-      righe.forEach(r=>{
+      ruoli = new Set();
+      squadre = new Set();
+      righeSvincolati = [];
+      const lines = csv.trim().split(/
+?
+/);
+      if (lines.length <= 1) return;
+      for (let i = 1; i < lines.length; i++){
+        const r = lines[i];
+        if (!r) continue;
         const [nome, ruolo, squadra, quotazione, u21] = r.split(',');
-        if (!nome) return;
-        const key = normalize(nome);
-        mappaGiocatori[key] = { nome, ruolo, squadra, quotazione, u21 };
+        if (!nome) continue;
+        righeSvincolati.push({ nome, ruolo, squadra, quotazione, u21 });
+        if (ruolo) ruoli.add(ruolo);
+        if (squadra) squadre.add(squadra);
+      }
+    };
         if (ruolo) ruoli.add(ruolo);
         if (squadra) squadre.add(squadra);
       });
@@ -249,9 +251,35 @@ var DATASET = (function () {
 
     // Render tabella + filtri
     function renderLista(){
-      // Rigenera righe
       const frag = document.createDocumentFragment();
-      Object.values(mappaGiocatori).forEach(({nome, ruolo, squadra, quotazione})=>{
+      righeSvincolati.forEach(({ nome, ruolo, squadra, quotazione, u21 }) => {
+        const tr = document.createElement('tr');
+        const isU21 = (u21 || '').toLowerCase() === 'u21' ? 'U21' : '';
+        tr.innerHTML = `
+          <td>${nome || ''}</td>
+          <td>${ruolo || ''}</td>
+          <td>${squadra || ''}</td>
+          <td>${parseInt(quotazione) || 0}</td>
+          <td>${isU21}</td>
+        `;
+        frag.appendChild(tr);
+      });
+      listaGiocatori.innerHTML = '';
+      listaGiocatori.appendChild(frag);
+
+      // Popola filtri select
+      filtroRuolo.innerHTML = '<option value="">-- Tutti i Ruoli --</option>' + Array.from(ruoli).map(r=>`<option value="${r}">${r}</option>`).join('');
+      filtroSerieA.innerHTML = '<option value="">-- Tutte --</option>' + Array.from(squadre).sort((a,b)=>a.localeCompare(b)).map(s=>`<option value="${s}">${s}</option>`).join('');
+
+      // Bind filtri (una sola volta)
+      if (!eventsBound){
+        [filtroRuolo, filtroSerieA, searchInput, cercaRuolo].forEach(el=> el?.addEventListener('input', debounce(filtraLista, 150)));
+        eventsBound = true;
+      }
+
+      filtraLista();
+      aggiornaCount();
+    })=>{
         const tr = document.createElement('tr');
         const isU21 = (mappaGiocatori[normalize(nome)].u21||'').toLowerCase()==='u21' ? 'U21' : '';
         tr.innerHTML = `
