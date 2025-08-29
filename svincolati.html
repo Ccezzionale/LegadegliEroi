@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Svincolati</title>
   <!-- Ri-uso lo stesso CSS della Draft Room -->
-  <link rel="stylesheet" href="draft.css" />
+  <link rel="stylesheet" href="svincolati.css" />
   <style>
     /* Mini ritocchi locali (facoltativi) */
     .count { text-align:center; color:#001f3f; font-weight:700; margin:10px 0; }
@@ -145,7 +145,16 @@
 
     // --- CONFIG: un solo CSV/URL pubblicato da Google Sheet ---
     // Sostituisci "svincolati.csv" con l'URL CSV pubblicato del tuo foglio Google
-    // Esempio: const DATASET = "https://docs.google.com/spreadsheets/d/e/....../pub?output=csv";
+    // Esempio: // Usa il formato stabile senza 2PACX (export) — inserisci il tuo FILE_ID e GID
+let DATASET = "https://docs.google.com/spreadsheets/d/17km50RcQysN4HKJJ8J4yTY1NDytSlW73KMTz0VvxDDw/export?format=csv&gid=0";
+
+// Override rapido via querystring: svincolati.html?id=FILE_ID&gid=0
+(function(){
+  const p = new URLSearchParams(window.location.search);
+  const id = p.get('id');
+  const gid = p.get('gid') || '0';
+  if (id) DATASET = `https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`;
+})();
     const DATASET = "svincolati.csv";
 
     // Riferimenti UI
@@ -338,4 +347,3 @@
   </script>
 </body>
 </html>
-
