@@ -127,10 +127,9 @@
       submenuToggles.forEach(t => t.addEventListener("click", function(e){ e.preventDefault(); this.closest(".dropdown").classList.toggle("show"); }));
     });
   </script>
-
-  <script>
+<script>
 // =============================
-//  SVINCOLATI – LOGICA PAGINA
+//  SVINCOLATI – LOGICA PAGINA (live: no cache TTL, auto-refresh 1m)
 // =============================
 
 // URL export stabile da Google Sheets (no 2PACX) + override via ?id=...&gid=...
@@ -152,17 +151,19 @@ const searchInput    = document.getElementById('searchGiocatore');
 const cercaRuolo     = document.getElementById('cercaRuolo');
 
 // Stato
-let righeSvincolati = [];   // array con duplicati preservati (nessuno schiacciamento per nome)
+let righeSvincolati = [];   // duplicati preservati
 let ruoli = new Set();
 let squadre = new Set();
 let ordineListaAscendente = {};
 let eventsBound = false;
 
+// Config cache/refresh
+const CACHE_KEY = 'svincolati_cache_unico';
+const TTL = 0;                   // 0 = niente cache (sempre live)
+const AUTO_REFRESH_MS = 60*1000; // auto-refresh ogni 1 minuto
+
 // Utils
-function showSpinner(show = true){
-  const s = document.getElementById('spinner');
-  if (s) s.style.display = show ? 'inline-block' : 'none';
-}
+function showSpinner(show = true){ const s = document.getElementById('spinner'); if (s) s.style.display = show ? 'inline-block' : 'none'; }
 function urlNoCache(url){ const sep = url.includes('?') ? '&' : '?'; return url + sep + '_cb=' + Date.now(); }
 function withTimeout(promise, ms=12000){
   return Promise.race([ promise, new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')), ms)) ]);
@@ -179,8 +180,7 @@ function fetchRetry(url, opt={}, tries=3, baseDelay=800, timeoutMs=12000){
         if (![429,500,502,503,504].includes(res.status)) throw new Error('HTTP '+res.status);
         lastErr = new Error('HTTP '+res.status);
       }catch(e){ lastErr = e; }
-      const delay = baseDelay * Math.pow(2,i) + Math.random()*250;
-      await new Promise(r=>setTimeout(r, delay));
+      const delay = baseDelay * Math.pow(2,i) + Math.random()*250; await new Promise(r=>setTimeout(r, delay));
     }
     reject(lastErr);
   });
@@ -193,15 +193,13 @@ function abortAndFetch(key, url, tries=3, baseDelay=800, timeoutMs=12000){
     .finally(()=>{ if (_controllers[key] === controller) _controllers[key] = null; });
 }
 
-// Loader CSV + cache locale
+// Loader CSV (usa cache solo se TTL > 0)
 async function caricaSvincolati(){
-  const KEY = 'svincolati_cache_unico';
-  const TTL = 24 * 60 * 60 * 1000; // 24h
   const now = Date.now();
 
   try{
-    const cache = JSON.parse(localStorage.getItem(KEY) || 'null');
-    if (cache && (now - cache.time) < TTL && cache.csv){
+    const cache = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+    if (TTL > 0 && cache && (now - cache.time) < TTL && cache.csv){
       parseGiocatoriCSV(cache.csv); renderLista(); return;
     }
   }catch{/* ignore */}
@@ -210,16 +208,16 @@ async function caricaSvincolati(){
   try{
     const res = await abortAndFetch('csv', DATASET, 3, 800, 12000);
     const csv = await res.text();
-    localStorage.setItem(KEY, JSON.stringify({ time: now, csv }));
+    if (TTL > 0) localStorage.setItem(CACHE_KEY, JSON.stringify({ time: now, csv }));
     parseGiocatoriCSV(csv); renderLista();
   }catch(err){
     console.error('Errore caricamento CSV svincolati:', err);
-    const cache = JSON.parse(localStorage.getItem(KEY) || 'null');
+    const cache = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
     if (cache?.csv){ parseGiocatoriCSV(cache.csv); renderLista(); }
   }finally{ showSpinner(false); }
 }
 
-// Parser CSV (preserva duplicati riga a riga)
+// Parser CSV (preserva duplicati)
 function parseGiocatoriCSV(csv){
   ruoli = new Set();
   squadre = new Set();
@@ -242,28 +240,22 @@ function renderLista(){
   righeSvincolati.forEach(({ nome, ruolo, squadra, quotazione, u21 })=>{
     const tr = document.createElement('tr');
     const isU21 = (u21||'').toLowerCase() === 'u21' ? 'U21' : '';
-    tr.innerHTML = `
-      <td>${nome||''}</td>
-      <td>${ruolo||''}</td>
-      <td>${squadra||''}</td>
-      <td>${parseInt(quotazione)||0}</td>
-      <td>${isU21}</td>
-    `;
+    tr.innerHTML =
+      '<td>' + (nome||'') + '</td>' +
+      '<td>' + (ruolo||'') + '</td>' +
+      '<td>' + (squadra||'') + '</td>' +
+      '<td>' + (parseInt(quotazione)||0) + '</td>' +
+      '<td>' + isU21 + '</td>';
     frag.appendChild(tr);
   });
   listaGiocatori.innerHTML = '';
   listaGiocatori.appendChild(frag);
 
-  // Popola select una sola volta per contenuto
-  filtroRuolo.innerHTML  = '<option value=\"\">-- Tutti i Ruoli --</option>' +
-                           Array.from(ruoli).map(r=>`<option value=\"${r}\">${r}</option>`).join('');
-  filtroSerieA.innerHTML = '<option value=\"\">-- Tutte --</option>' +
-                           Array.from(squadre).sort((a,b)=>a.localeCompare(b))
-                           .map(s=>`<option value=\"${s}\">${s}</option>`).join('');
+  filtroRuolo.innerHTML  = '<option value=\"\">-- Tutti i Ruoli --</option>' + Array.from(ruoli).map(r=>'<option value=\"'+r+'\">'+r+'</option>').join('');
+  filtroSerieA.innerHTML = '<option value=\"\">-- Tutte --</option>' + Array.from(squadre).sort((a,b)=>a.localeCompare(b)).map(s=>'<option value=\"'+s+'\">'+s+'</option>').join('');
 
-  // Bind filtri (solo una volta)
   if (!eventsBound){
-    [filtroRuolo, filtroSerieA, searchInput, cercaRuolo].forEach(el => el?.addEventListener('input', debounce(filtraLista, 150)));
+    [filtroRuolo, filtroSerieA, searchInput, cercaRuolo].forEach(el => el && el.addEventListener('input', debounce(filtraLista, 150)));
     eventsBound = true;
   }
 
@@ -298,7 +290,7 @@ function filtraLista(){
 function aggiornaCount(){
   const tot = listaGiocatori.children.length;
   let vis = 0; Array.from(listaGiocatori.children).forEach(r=>{ if (r.style.display !== 'none') vis++; });
-  countEl.textContent = `Svincolati mostrati: ${vis} / ${tot}`;
+  countEl.textContent = 'Svincolati mostrati: ' + vis + ' / ' + tot;
 }
 
 function ordinaLista(colonnaIndex, numerico=false){
@@ -308,8 +300,8 @@ function ordinaLista(colonnaIndex, numerico=false){
   ordineListaAscendente[colonnaIndex] = asc;
 
   document.querySelectorAll('#lista-giocatori-table thead th').forEach((th, idx)=>{
-    th.textContent = th.textContent.replace(/[\u2191\u2193]/g, '');
-    if (idx === colonnaIndex) th.textContent += asc ? ' \u2191' : ' \u2193';
+    th.textContent = th.textContent.replace(/[\\u2191\\u2193]/g, '');
+    if (idx === colonnaIndex) th.textContent += asc ? ' \\u2191' : ' \\u2193';
   });
 
   righe.sort((a,b)=>{
@@ -329,9 +321,10 @@ function ordinaLista(colonnaIndex, numerico=false){
 }
 window.ordinaLista = ordinaLista;
 
-document.addEventListener('DOMContentLoaded', ()=>{ caricaSvincolati(); });
+document.addEventListener('DOMContentLoaded', ()=>{
+  caricaSvincolati();
+  setInterval(()=>{ caricaSvincolati(); }, AUTO_REFRESH_MS); // auto-refresh live
+});
 </script>
-
-  
 </body>
 </html>
