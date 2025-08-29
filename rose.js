@@ -26,7 +26,7 @@ const giocatoriU21PerSquadra = {
   "Team Bartowski": ["comuzzo", "carboni v.", "mateus lusuardi"],
   "Desperados": ["ordonez c.", "bravo", "ramon"],
   "riverfilo": ["paz n.", "esposito f.p.", "akinsanmiro"],
-  "Golden Knights": ["leoni", "camarda", "tiago gabriel"],
+  "Golden Knights": ["rodriguez je.", "camarda", "tiago gabriel"],
   "Fantaugusta": ["comuzzo", "bravo", "ekhator"],
   "Fc Disoneste": ["gineitis", "norton-cuffy", "mateus lusuardi"],
   "Rubinkebab": ["diao", "pisilli", "ahanor"],
@@ -36,7 +36,7 @@ const giocatoriU21PerSquadra = {
   "Bayern Christiansen": ["paz n.", "addai", "rodriguez je."],
   "Minnesode Timberland": ["diao", "ferguson e.", "pisilli"],
   "Athletic Pongao": ["valle", "tiago gabriel", "norton-cuffy"],
-  "MinneSota Snakes": ["esposito f.p.", "akinsanmiro", "goglichidze"],
+  "MinneSota Snakes": ["esposito f.p.", "denoon", "goglichidze"],
   "Ibla": ["camarda", "belahyane", "mbambi"],
   "Pandinicoccolosini": ["jimenez a.", "ahanor", "athekame"]
 };
