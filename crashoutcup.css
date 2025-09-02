@@ -268,3 +268,33 @@ details[open] .accordion-body { display: flex; }
   background-color: #a50d2b !important;         /* variante rosso più scuro per hover */
   color: var(--accent) !important;              /* resta giallo */
 }
+
+@media (max-width: 768px){
+  :root{
+    --bulls-red:#c5161f;  /* già definito da te */
+    --accent:#ffcc00;
+  }
+
+  /* Colore del contenitore hamburger */
+  nav .navbar{
+    background-color: var(--bulls-red) !important;
+  }
+
+  /* Colore del submenu aperto */
+  nav .navbar .submenu{
+    background-color: var(--bulls-red) !important;
+  }
+
+  /* Testo giallo sia per i link principali che per quelli del submenu */
+  nav .navbar > li > a,
+  nav .navbar .submenu a{
+    color: var(--accent) !important;
+  }
+
+  /* Hover coerente (rosso più scuro + testo giallo) */
+  nav .navbar > li > a:hover,
+  nav .navbar .submenu a:hover{
+    background-color: #a50d2b !important;
+    color: var(--accent) !important;
+  }
+}
