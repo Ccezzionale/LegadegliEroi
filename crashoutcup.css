@@ -217,7 +217,7 @@ nav {
   gap: 10px;
   padding: 12px 16px;
   background-color: #a50d2b; /* lasciato blu come richiesto */
-  color: white;
+  color: var(--accent);
   font-size: 0.9rem;
 }
 
