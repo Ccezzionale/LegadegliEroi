@@ -1,9 +1,16 @@
- body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f4f4;
-      color: #222;
-    }
+/* ===== VARIABILI ===== */
+:root{
+  --bulls-red:#c5161f;   /* rosso Chicago Bulls */
+  --accent:#ffcc00;      /* giallo/arancio */
+}
+
+/* ===== BASE ===== */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f4f4;
+  color: #222;
+}
 
 nav {
   background-color: #001f3f;
@@ -13,18 +20,22 @@ nav {
   padding: 10px 20px;
   flex-wrap: wrap;
 }
+
 .home-icon {
   font-size: 1.4rem;
   margin-right: 20px;
   text-decoration: none;
   color: white;
 }
+
 .hamburger {
   font-size: 1.5rem;
   cursor: pointer;
   margin-right: 20px;
-  display: none;
+  display: none;    /* si mostra solo in mobile */
+  color:#fff;
 }
+
 .navbar {
   list-style-type: none;
   padding: 0;
@@ -35,28 +46,33 @@ nav {
   align-items: center;
   flex-wrap: wrap;
 }
+
 .navbar li { position: relative; }
+
 .navbar a {
   text-decoration: none;
   color: white;
   padding: 8px 12px;
   display: block;
 }
+
 .navbar a:hover {
   background-color: #0074D9;
   border-radius: 6px;
 }
+
+/* Submenu: NIENTE colore globale qui, lo differenziamo per desktop/mobile */
 .submenu {
   display: none;
   position: absolute;
   top: 100%;
   left: 0;
-  background-color: #003366;
   border-radius: 4px;
   z-index: 10;
   min-width: 180px;
   flex-direction: column;
 }
+
 .submenu a { font-size: 0.95rem; }
 .dropdown.show .submenu { display: flex; }
 
@@ -74,15 +90,13 @@ nav {
 
 .page-title {
   color: #001f3f;
-  margin: 15px 0 25px; /* spazio sopra piccolo, sotto più ampio */
+  margin: 15px 0 25px;
   text-align: center;
   font-size: 2rem;
   font-weight: 800;
 }
 
-.container {
-  margin-top: 0; /* niente margine aggiuntivo */
-}
+.container { margin-top: 0; }
 
 /* Card */
 .card {
@@ -96,7 +110,7 @@ nav {
 /* Desktop table */
 .table-wrap { overflow: auto; }
 
-#tabCoppa { /* tabella-classifica */
+#tabCoppa {
   border-collapse: collapse;
   width: 100%;
   table-layout: auto;
@@ -130,7 +144,7 @@ nav {
   background-color: #eef6ff;
 }
 
-/* Logo + Nome (equivalente a .logo-nome) */
+/* Logo + Nome */
 .team {
   display: flex;
   align-items: center;
@@ -146,7 +160,7 @@ nav {
   border-radius: 50%;
 }
 
-/* Mobile – fisarmonica */
+/* ===== MOBILE vs DESKTOP SWITCH ===== */
 .mobile { display: none; }
 
 @media (max-width: 768px) {
@@ -154,7 +168,7 @@ nav {
   .mobile { display: block; }
 }
 
-/* Ogni item è un <details> */
+/* ===== LISTA MOBILE (fisarmonica) ===== */
 .mobile details {
   border-radius: 10px;
   overflow: hidden;
@@ -164,8 +178,8 @@ nav {
 
 .mobile details + details { margin-top: 10px; }
 
-/* Header del dettaglio = <summary> */
-.mobile summary {
+/* Testata riquadro mobile */
+.mobile details > summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -173,7 +187,7 @@ nav {
   padding: 12px 16px;
   font-weight: bold;
   font-size: 0.95rem;
-  background-color: #c5161f; /* blu scuro */
+  background-color: var(--bulls-red);
   color: var(--accent);
   cursor: pointer;
   list-style: none;
@@ -181,23 +195,13 @@ nav {
 
 .mobile summary::-webkit-details-marker { display: none; }
 
-:root{
-  --bulls-red:#c5161f;
-  --accent:#ffcc00; /* giallo/arancio */
-}
-mobile details > summary{
-  background-color: var(--bulls-red) !important;
-  color: var(--accent) !important;
-}
-
-.summary-left { /* wrapper a sinistra */
+.summary-left {
   display: flex;
   align-items: center;
   gap: 12px;
   min-width: 0;
 }
 
-/* Logo nel summary */
 .mobile summary .logo {
   width: 48px;
   height: 48px;
@@ -212,7 +216,7 @@ mobile details > summary{
   flex-wrap: wrap;
   gap: 10px;
   padding: 12px 16px;
-  background-color: #004080;
+  background-color: #004080; /* lasciato blu come richiesto */
   color: white;
   font-size: 0.9rem;
 }
@@ -231,49 +235,44 @@ details[open] .accordion-body { display: flex; }
   padding: 2px 8px;
   border-radius: 999px;
   border: 1px solid #e0e6ef;
-  background: #ffcc00; /* giallo/arancio */
+  background: #ffcc00;
   color: #000;
   font-weight: bold;
 }
 
-:root {
-  --bulls-red:#c5161f;   /* rosso Bulls */
-  --accent:#ffcc00;      /* giallo/arancio */
-}
-
-/* Fisarmonica mobile */
-.mobile details > summary {
-  background-color: var(--bulls-red) !important;
-  color: var(--accent) !important;
-}
-
-/* Icona hamburger sempre bianca */
-.hamburger {
-  color:#fff;
-}
-
-/* Submenu mobile */
-@media (max-width:768px) {
-  /* Navbar principale rimane blu scuro */
-  .navbar {
-    background-color:#001f3f;
+/* ===== DESKTOP: stile submenu blu ===== */
+@media (min-width: 769px){
+  .submenu{
+    background-color:#003366;
   }
+}
 
-  /* Submenu forzato rosso Bulls */
-  .navbar .submenu {
+/* ===== MOBILE: hamburger + submenu rosso ===== */
+@media (max-width: 768px) {
+  .hamburger { display: block; }
+  .navbar {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    background-color: #001f3f; /* la navbar resta blu scuro */
+    margin-top: 10px;
+  }
+  .navbar.show { display: flex; }
+  .navbar li { width: 100%; }
+
+  /* submenu dentro hamburger: rosso + testo giallo */
+  .navbar .submenu{
     position: static;
     width: 100%;
     background-color: var(--bulls-red) !important;
   }
-
-  /* Link dentro il submenu gialli */
-  .navbar .submenu a {
+  .navbar .submenu a{
     color: var(--accent) !important;
   }
-
-  /* Hover submenu */
-  .navbar .submenu a:hover {
+  .navbar .submenu a:hover{
     background-color:#a50d2b !important;
     color: var(--accent) !important;
   }
+
+  .dropdown .submenu a { padding-left: 20px; }
 }
