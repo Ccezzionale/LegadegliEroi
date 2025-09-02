@@ -237,34 +237,30 @@ details[open] .accordion-body { display: flex; }
 }
 
 @media (max-width: 768px) {
-  .hamburger { display: block; }          /* mostra l’icona */
+  .hamburger { display: block; }
   .navbar {
-    display: none;                        /* nascondi il menu */
+    display: none;
     flex-direction: column;
     width: 100%;
     background-color: #001f3f;
     margin-top: 10px;
   }
-  .navbar.show { display: flex; }         /* visibile quando clicchi hamburger */
+  .navbar.show { display: flex; }
   .navbar li { width: 100%; }
-  .submenu { position: static; width: 100%; background-color: #003366; }
+  .submenu { position: static; width: 100%; } /* tolto il colore blu */
   .dropdown .submenu a { padding-left: 20px; }
 
-  /* SOLO il pannello che si apre sotto la squadra */
+  /* override: riquadro sotto la squadra */
   nav .navbar li.dropdown .submenu {
-    background-color: var(--bulls-red) !important; /* rosso Bulls */
+    background-color: var(--bulls-red) !important;
   }
 
-  /* Testo link del submenu in giallo/arancio */
   nav .navbar li.dropdown .submenu a {
     color: var(--accent) !important;
   }
 
-  /* Hover dei link del submenu */
   nav .navbar li.dropdown .submenu a:hover {
-    background-color: #a50d2b !important; /* rosso più scuro */
+    background-color: #a50d2b !important;
     color: var(--accent) !important;
   }
 }
-
-
