@@ -233,7 +233,7 @@ details[open] .accordion-body { display: flex; }
     display: none;                        /* nascondi il menu */
     flex-direction: column;
     width: 100%;
-    background-color: #001f3f;
+    background-color: #CE1141;
     margin-top: 10px;
   }
   .navbar.show { display: flex; }         /* visibile quando clicchi hamburger */
