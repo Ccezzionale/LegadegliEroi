@@ -276,3 +276,17 @@ details[open] .accordion-body { display: flex; }
 
   .dropdown .submenu a { padding-left: 20px; }
 }
+
+nav .navbar li.dropdown > ul.submenu{
+  background-color: #c5161f !important;  /* rosso Bulls */
+}
+nav .navbar li.dropdown > ul.submenu a{
+  color: #ffcc00 !important;             /* testo giallo */
+}
+
+/* DESKTOP: solo qui li rimetti blu */
+@media (min-width: 769px){
+  nav .navbar li.dropdown > ul.submenu{
+    background-color: #003366 !important;
+  }
+}
