@@ -236,30 +236,38 @@ details[open] .accordion-body { display: flex; }
   font-weight: bold;
 }
 
-/* Fix selector: mancava il punto */
+:root{
+  --bulls-red:#c5161f;
+  --accent:#ffcc00;
+}
+
+/* FIX: selector corretto (mancava il punto) */
 .mobile details > summary{
   background-color: var(--bulls-red) !important;
   color: var(--accent) !important;
 }
 
-/* Hamburger: SOLO il pannello che si apre sotto la squadra */
-@media (max-width: 768px){
-  /* prima neutralizziamo il blu di base */
+/* Rendi visibile l'icona hamburger anche su sfondo scuro */
+.hamburger{ color:#fff; }
+
+/* MOBILE: forza SOLO il pannello che si apre sotto la squadra (submenu) */
+@media (max-width:768px){
+  /* neutralizza il blu di base se ereditato */
   nav .navbar .submenu{
     background-color: transparent !important;
   }
 
-  /* poi lo mettiamo al colore giusto quando è visibile */
-  nav .navbar li.dropdown.show > .submenu{
+  /* quando il dropdown è aperto (hai già .dropdown.show .submenu per il display) */
+  nav .navbar .dropdown.show > .submenu{
     background-color: var(--bulls-red) !important; /* rosso Bulls */
   }
 
-  nav .navbar li.dropdown.show > .submenu a{
+  nav .navbar .dropdown.show > .submenu a{
     color: var(--accent) !important;               /* testo giallo */
   }
 
-  nav .navbar li.dropdown.show > .submenu a:hover{
-    background-color: #a50d2b !important;          /* rosso più scuro */
+  nav .navbar .dropdown.show > .submenu a:hover{
+    background-color:#a50d2b !important;           /* rosso più scuro */
     color: var(--accent) !important;
   }
 }
