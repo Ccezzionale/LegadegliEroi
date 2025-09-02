@@ -250,3 +250,21 @@ details[open] .accordion-body { display: flex; }
   .submenu { position: static; width: 100%; background-color: #003366; }
   .dropdown .submenu a { padding-left: 20px; }
 }
+
+:root {
+  --bulls-red:#c5161f;
+  --accent:#ffcc00;
+}
+
+.submenu {
+  background-color: var(--bulls-red) !important; /* rosso Bulls */
+}
+
+.submenu a {
+  color: var(--accent) !important;              /* testo giallo */
+}
+
+.submenu a:hover {
+  background-color: #a50d2b !important;         /* variante rosso più scuro per hover */
+  color: var(--accent) !important;              /* resta giallo */
+}
