@@ -242,8 +242,11 @@ details[open] .accordion-body { display: flex; }
 
 /* ===== DESKTOP: stile submenu blu ===== */
 @media (min-width: 769px){
-  .submenu{
-    background-color:#003366;
+  .submenu {
+    background-color:#003366 !important;
+  }
+  nav .navbar li.dropdown > ul.submenu {
+    background-color: #003366 !important;
   }
 }
 
@@ -254,46 +257,24 @@ details[open] .accordion-body { display: flex; }
     display: none;
     flex-direction: column;
     width: 100%;
-    background-color: #001f3f; /* la navbar resta blu scuro */
+    background-color: #001f3f; /* navbar resta blu scuro */
     margin-top: 10px;
   }
   .navbar.show { display: flex; }
   .navbar li { width: 100%; }
 
   /* submenu dentro hamburger: rosso + testo giallo */
-  .navbar .submenu{
+  .navbar .submenu {
     position: static;
     width: 100%;
-    background-color: var(--bulls-red) !important;
+    background-color: #c5161f !important; /* rosso Bulls */
   }
-  .navbar .submenu a{
-    color: var(--accent) !important;
+  .navbar .submenu a {
+    color: #ffcc00 !important;             /* giallo */
   }
-  .navbar .submenu a:hover{
-    background-color:#a50d2b !important;
-    color: var(--accent) !important;
+  .navbar .submenu a:hover {
+    background-color:#a50d2b !important;   /* rosso più scuro */
+    color: #ffcc00 !important;
   }
-
   .dropdown .submenu a { padding-left: 20px; }
 }
-
-nav .navbar li.dropdown > ul.submenu{
-  background-color: #c5161f !important;  /* rosso Bulls */
-}
-nav .navbar li.dropdown > ul.submenu a{
-  color: #ffcc00 !important;             /* testo giallo */
-}
-
-/* DESKTOP: solo qui li rimetti blu */
-@media (min-width: 769px){
-  nav .navbar li.dropdown > ul.submenu{
-    background-color: #003366 !important;
-  }
-/* PROVA: forza SUBMENU sempre rosso */
-ul.submenu {
-  background-color: #c5161f !important;  /* rosso Bulls */
-}
-ul.submenu a {
-  color: #ffcc00 !important;             /* giallo */
-}
-
