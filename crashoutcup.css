@@ -289,4 +289,11 @@ nav .navbar li.dropdown > ul.submenu a{
   nav .navbar li.dropdown > ul.submenu{
     background-color: #003366 !important;
   }
+/* PROVA: forza SUBMENU sempre rosso */
+ul.submenu {
+  background-color: #c5161f !important;  /* rosso Bulls */
 }
+ul.submenu a {
+  color: #ffcc00 !important;             /* giallo */
+}
+
