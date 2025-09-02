@@ -181,6 +181,15 @@ nav {
 
 .mobile summary::-webkit-details-marker { display: none; }
 
+:root{
+  --bulls-red:#c5161f;
+  --accent:#ffcc00; /* giallo/arancio */
+}
+mobile details > summary{
+  background-color: var(--bulls-red) !important;
+  color: var(--accent) !important;
+}
+
 .summary-left { /* wrapper a sinistra */
   display: flex;
   align-items: center;
@@ -233,7 +242,7 @@ details[open] .accordion-body { display: flex; }
     display: none;                        /* nascondi il menu */
     flex-direction: column;
     width: 100%;
-    background-color: #CE1141;
+    background-color: #001f3f;
     margin-top: 10px;
   }
   .navbar.show { display: flex; }         /* visibile quando clicchi hamburger */
