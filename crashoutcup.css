@@ -174,7 +174,7 @@ nav {
   font-weight: bold;
   font-size: 0.95rem;
   background-color: #c5161f; /* blu scuro */
-  color: var(--seed-red);
+  color: var(--accent);
   cursor: pointer;
   list-style: none;
 }
