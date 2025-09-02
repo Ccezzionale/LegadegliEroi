@@ -236,38 +236,44 @@ details[open] .accordion-body { display: flex; }
   font-weight: bold;
 }
 
-:root{
-  --bulls-red:#c5161f;
-  --accent:#ffcc00;
+:root {
+  --bulls-red:#c5161f;   /* rosso Bulls */
+  --accent:#ffcc00;      /* giallo/arancio */
 }
 
-/* FIX: selector corretto (mancava il punto) */
-.mobile details > summary{
+/* Fisarmonica mobile */
+.mobile details > summary {
   background-color: var(--bulls-red) !important;
   color: var(--accent) !important;
 }
 
-/* Rendi visibile l'icona hamburger anche su sfondo scuro */
-.hamburger{ color:#fff; }
+/* Icona hamburger sempre bianca */
+.hamburger {
+  color:#fff;
+}
 
-/* MOBILE: forza SOLO il pannello che si apre sotto la squadra (submenu) */
-@media (max-width:768px){
-  /* neutralizza il blu di base se ereditato */
-  nav .navbar .submenu{
-    background-color: transparent !important;
+/* Submenu mobile */
+@media (max-width:768px) {
+  /* Navbar principale rimane blu scuro */
+  .navbar {
+    background-color:#001f3f;
   }
 
-  /* quando il dropdown è aperto (hai già .dropdown.show .submenu per il display) */
-  nav .navbar .dropdown.show > .submenu{
-    background-color: var(--bulls-red) !important; /* rosso Bulls */
+  /* Submenu forzato rosso Bulls */
+  .navbar .submenu {
+    position: static;
+    width: 100%;
+    background-color: var(--bulls-red) !important;
   }
 
-  nav .navbar .dropdown.show > .submenu a{
-    color: var(--accent) !important;               /* testo giallo */
+  /* Link dentro il submenu gialli */
+  .navbar .submenu a {
+    color: var(--accent) !important;
   }
 
-  nav .navbar .dropdown.show > .submenu a:hover{
-    background-color:#a50d2b !important;           /* rosso più scuro */
+  /* Hover submenu */
+  .navbar .submenu a:hover {
+    background-color:#a50d2b !important;
     color: var(--accent) !important;
   }
 }
