@@ -274,6 +274,7 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
     --slot: 128px;
     --finals-col: 440px;   /* come desktop (o aumenta se vuoi più spazio) */
     --grid-gap: 12px;
+    --trophy-nudge: -12px; }
   }
 
   .hamburger{ display:block; }
