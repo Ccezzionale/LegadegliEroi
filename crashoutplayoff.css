@@ -271,22 +271,19 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
   /* --- dimensioni più compatte ma stessa struttura --- */
   :root{
-    --slot: 128px;           /* gradino verticale */
-    --finals-col: 380px;     /* colonna Finals più ampia */
+    --slot: 128px;
+    --finals-col: 380px;
     --grid-gap: 12px;
   }
 
-  /* Navbar hamburger (come prima) */
   .hamburger{ display:block; }
   .navbar{ display:none; flex-direction:column; width:100%; background:var(--nav); margin-top:10px; }
   .navbar.show{ display:flex; }
   .submenu{ position:relative; background:var(--subnav); margin-left:10px; }
   .dropdown .submenu a{ padding-left:20px; }
 
-  /* NIENTE versione alternativa: nascondi eventuale mobile-list */
   .bracket-mobile{ display:none !important; }
 
-  /* Stesso bracket del desktop + scroll orizzontale */
   .cup-container{
     margin:8px 0 28px;
     padding:0 8px;
@@ -294,7 +291,6 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Mantieni la griglia a 3 colonne, ma con una larghezza minima così scorre */
   .bracket{
     display:grid !important;
     grid-template-columns:
@@ -302,43 +298,47 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
       var(--finals-col)
       minmax(320px, max-content);
     gap: var(--grid-gap);
-    min-width: 1240px; /* forza lo scroll se lo schermo è stretto */
-    position: relative; /* per i connettori */
-  }
-
-  /* Finals “split” dimensionate sul mobile */
-
-    .finals-split .match{
+    min-width: 1240px;
     position: relative;
-    z-index: 1;              /* card sopra al trofeo */
-    margin-inline: auto;     /* centrata nella colonna */
   }
-    .trophy{
+
+  /* ===== Finals centrata correttamente in mobile ===== */
+  .finals-split{
+    display: grid;
+    grid-template-rows: 1fr auto 1fr;  /* sopra | coppa | sotto */
+    align-items: center;
+    justify-items: center;
+    min-height: 520px;
+    row-gap: 16px;
+  }
+
+  /* piazzamento esplicito nelle 3 righe */
+  #finals-top    { grid-row: 1; align-self: end; }
+  #finals-trophy { grid-row: 2; align-self: center; justify-self: center; z-index: 0; }
+  #finals-bottom { grid-row: 3; align-self: start; }
+
+  /* card finals sopra al trofeo e senza margini che lo spingono */
+  .finals-split .match{
+    position: relative;
+    z-index: 1;
+    margin: 0 !important;
+    margin-inline: auto;
+  }
+
+  /* dimensioni coppa in mobile */
+  .trophy{
     width: clamp(200px, calc(var(--finals-col) - 120px), 300px);
     height: clamp(200px, calc(var(--finals-col) - 120px), 300px);
-    z-index: 0;              /* sta dietro alle card */
   }
 
-  /* Card e righe squadra più compatte */
-  .match{
-    padding:8px 10px;
-    gap:12px;
-  }
-  .team{
-    grid-template-columns: 28px 72px auto; /* seed | logo | score (round 1) */
-    gap:8px;
-  }
-  .seed{
-    width:24px; height:24px; font-size:.75rem; border-radius:6px;
-  }
+  /* card e righe squadra più compatte */
+  .match{ padding:8px 10px; gap:12px; }
+  .team{ grid-template-columns: 28px 72px auto; gap:8px; }
+  .seed{ width:24px; height:24px; font-size:.75rem; border-radius:6px; }
   .logo-wrap{ width:72px; height:72px; }
   .logo-wrap .logo{ max-width:98%; max-height:98%; }
-  .score-box{
-    width:36px; min-height:34px; padding:4px 6px;
-    font-size:1rem; border-radius:7px;
-  }
+  .score-box{ width:36px; min-height:34px; padding:4px 6px; font-size:1rem; border-radius:7px; }
 
-  /* Round 2+ (niente seed) layout logo | score più stretto */
   #left-round-2 .team, #left-round-3 .team,
   #right-round-2 .team, #right-round-3 .team,
   .finals-split .team{
@@ -346,57 +346,20 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
     gap:8px;
   }
 
-  /* Mantieni l’ordine voluto a DESTRA anche in mobile */
-  #right-round-1 .team{
-    display:flex; align-items:center; gap:8px;
-  }
+  #right-round-1 .team{ display:flex; align-items:center; gap:8px; }
   #right-round-1 .score-box{ order:1; width:36px; min-width:36px; }
   #right-round-1 .logo-wrap{ order:2; width:72px; min-width:72px; height:72px; }
-  #right-round-1 .seed     { order:3; width:24px; min-width:24px; }
+  #right-round-1 .seed{ order:3; width:24px; min-width:24px; }
 
-  #right-round-2 .team,
-  #right-round-3 .team{
+  #right-round-2 .team, #right-round-3 .team{
     display:flex; flex-direction:row-reverse; align-items:center; gap:8px;
   }
-  #right-round-2 .logo-wrap,
-  #right-round-3 .logo-wrap{ width:72px; min-width:72px; height:72px; }
-  #right-round-2 .score-box,
-  #right-round-3 .score-box{ width:36px; min-width:36px; }
+  #right-round-2 .logo-wrap, #right-round-3 .logo-wrap{ width:72px; min-width:72px; height:72px; }
+  #right-round-2 .score-box, #right-round-3 .score-box{ width:36px; min-width:36px; }
 
-  /* Label dei round un filo più piccole e ravvicinate */
   .conference .round::before{
-    top:-22px;
-    font-size:.95rem;
-    border-left-width:3px;
-    padding-left:8px;
+    top:-22px; font-size:.95rem; border-left-width:3px; padding-left:8px;
   }
 
-  /* Connettori: restano attivi (il layer usa position:relative su .bracket) */
   .wire-layer .wire{ height:3px; }
-}
-  .finals-split{
-    display: grid;
-    grid-template-rows: 1fr auto 1fr;  /* sopra | coppa | sotto */
-    align-items: center;
-    justify-items: center;
-    min-height: 520px;                  /* assicura spazio sufficiente */
-    row-gap: 16px;                      /* piccolo spazio tra le 3 righe */
-  }
-
-  /* Card ancorate ai bordi della loro riga */
-  #finals-top    { align-self: end; }   /* card superiore giù */
-  #finals-bottom { align-self: start; } /* card inferiore su  */
-
-  /* niente margini extra sulle card delle Finals */
-  #finals-top > .match,
-  #finals-bottom > .match{
-    margin: 0 !important;
-  }
-
-  /* coppa centrata e dietro alle card */
-  .trophy{
-    align-self: center;
-    justify-self: center;
-    z-index: 0;
-  }
 }
