@@ -272,9 +272,8 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   /* compatta senza cambiare struttura */
   :root{
     --slot: 128px;
-    --finals-col: 440px;   /* come desktop (o aumenta se vuoi più spazio) */
     --grid-gap: 12px;
-    --trophy-nudge: -12px; /* spostamento verso l’alto */
+    --trophy-nudge: -12px; /* micro spostamento coppa (opzionale) */
   }
 
   .hamburger{ display:block; }
@@ -292,23 +291,25 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
     -webkit-overflow-scrolling: touch;
   }
 
+  /* Colonne: sinistra | CENTRALE 750px | destra */
   .bracket{
     display:grid !important;
     grid-template-columns:
       minmax(320px, max-content)
-      var(--finals-col)
+      750px
       minmax(320px, max-content);
     gap: var(--grid-gap);
-    min-width: 1240px;
+    /* 320 + 750 + 320 + 2*gap */
+    min-width: calc(1390px + 2 * var(--grid-gap));
     position: relative;
   }
 
-  /* nudge della coppa */
+  /* piccolo nudge verticale della coppa (se serve) */
   .finals-split .trophy{
     transform: translateY(var(--trophy-nudge));
   }
 
-  /* dimensioni più compatte delle card */
+  /* card più compatte */
   .match{ padding:8px 10px; gap:12px; }
   .team{ grid-template-columns: 28px 72px auto; gap:8px; }
   .seed{ width:24px; height:24px; font-size:.75rem; border-radius:6px; }
@@ -335,8 +336,5 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   #right-round-2 .score-box, #right-round-3 .score-box{ width:36px; min-width:36px; }
 
   .conference .round::before{
-    top:-22px; font-size:.95rem; border-left-width:3px; padding-left:8px;
-  }
+    top:-22px;
 
-  .wire-layer .wire{ height:3px; }
-}
