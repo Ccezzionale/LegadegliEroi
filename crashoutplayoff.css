@@ -269,10 +269,10 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 /* ========== MOBILE ========== */
 @media (max-width: 768px){
 
-  /* --- dimensioni più compatte ma stessa struttura --- */
+  /* compatta senza cambiare struttura */
   :root{
     --slot: 128px;
-    --finals-col: 380px;
+    --finals-col: 440px;   /* come desktop (o aumenta se vuoi più spazio) */
     --grid-gap: 12px;
   }
 
@@ -302,36 +302,9 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
     position: relative;
   }
 
-  /* ===== Finals centrata correttamente in mobile ===== */
-  .finals-split{
-    display: grid;
-    grid-template-rows: 1fr auto 1fr;  /* sopra | coppa | sotto */
-    align-items: center;
-    justify-items: center;
-    min-height: 520px;
-    row-gap: 16px;
-  }
+  /* ——— NON toccare .finals-split / #finals-top / #finals-bottom ——— */
 
-  /* piazzamento esplicito nelle 3 righe */
-  #finals-top    { grid-row: 1; align-self: end; }
-  #finals-trophy { grid-row: 2; align-self: center; justify-self: center; z-index: 0; }
-  #finals-bottom { grid-row: 3; align-self: start; }
-
-  /* card finals sopra al trofeo e senza margini che lo spingono */
-  .finals-split .match{
-    position: relative;
-    z-index: 1;
-    margin: 0 !important;
-    margin-inline: auto;
-  }
-
-  /* dimensioni coppa in mobile */
-  .trophy{
-    width: clamp(200px, calc(var(--finals-col) - 120px), 300px);
-    height: clamp(200px, calc(var(--finals-col) - 120px), 300px);
-  }
-
-  /* card e righe squadra più compatte */
+  /* dimensioni più compatte delle card */
   .match{ padding:8px 10px; gap:12px; }
   .team{ grid-template-columns: 28px 72px auto; gap:8px; }
   .seed{ width:24px; height:24px; font-size:.75rem; border-radius:6px; }
