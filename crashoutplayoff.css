@@ -308,12 +308,6 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
   /* Finals “split” dimensionate sul mobile */
 
-  .finals-split{
-    grid-template-rows: minmax(160px,1fr) auto minmax(160px,1fr);
-    row-gap: 16px;
-    padding-block: 8px;
-  }
-
     .finals-split .match{
     position: relative;
     z-index: 1;              /* card sopra al trofeo */
@@ -379,4 +373,30 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 
   /* Connettori: restano attivi (il layer usa position:relative su .bracket) */
   .wire-layer .wire{ height:3px; }
+}
+  .finals-split{
+    display: grid;
+    grid-template-rows: 1fr auto 1fr;  /* sopra | coppa | sotto */
+    align-items: center;
+    justify-items: center;
+    min-height: 520px;                  /* assicura spazio sufficiente */
+    row-gap: 16px;                      /* piccolo spazio tra le 3 righe */
+  }
+
+  /* Card ancorate ai bordi della loro riga */
+  #finals-top    { align-self: end; }   /* card superiore giù */
+  #finals-bottom { align-self: start; } /* card inferiore su  */
+
+  /* niente margini extra sulle card delle Finals */
+  #finals-top > .match,
+  #finals-bottom > .match{
+    margin: 0 !important;
+  }
+
+  /* coppa centrata e dietro alle card */
+  .trophy{
+    align-self: center;
+    justify-self: center;
+    z-index: 0;
+  }
 }
