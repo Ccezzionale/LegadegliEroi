@@ -11,7 +11,13 @@
   --grid-gap: 16px;
 }
 
-*{ box-sizing:border-box; } html,body{ height:100%; } body{ margin:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:var(--bg); color:var(--text); }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg) url("sfondocrash.png") no-repeat center center fixed;
+  background-size: cover;
+  color: var(--text);
+}
 
 
 /* ========== NAVBAR / HEADER (come index) ========== */
