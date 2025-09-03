@@ -14,7 +14,7 @@
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: var(--bg) url("sfondocrash.png") no-repeat center center fixed;
+  background: var(--bg) url("sfondocrash.jpg") no-repeat center center fixed;
   background-size: cover;
   color: var(--text);
 }
