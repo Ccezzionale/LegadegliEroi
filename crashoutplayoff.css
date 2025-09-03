@@ -274,7 +274,7 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
     --slot: 128px;
     --finals-col: 440px;   /* come desktop (o aumenta se vuoi più spazio) */
     --grid-gap: 12px;
-    --trophy-nudge: -12px; }
+    --trophy-nudge: -12px; /* spostamento verso l’alto */
   }
 
   .hamburger{ display:block; }
@@ -303,7 +303,10 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
     position: relative;
   }
 
-  /* ——— NON toccare .finals-split / #finals-top / #finals-bottom ——— */
+  /* nudge della coppa */
+  .finals-split .trophy{
+    transform: translateY(var(--trophy-nudge));
+  }
 
   /* dimensioni più compatte delle card */
   .match{ padding:8px 10px; gap:12px; }
