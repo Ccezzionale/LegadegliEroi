@@ -152,6 +152,40 @@ function renderPR(res){
   if (metaTop) metaTop.textContent = `Ultima giornata inclusa: GW ${res.maxGW}`;
 }
 
+function renderPRMobile(res){
+  const wrap = document.getElementById('pr-mobile');
+  if (!wrap) return;
+
+  const html = res.ranked.map(r => {
+    const trend = r.delta>0 ? `▲ ${r.delta}` : (r.delta<0 ? `▼ ${Math.abs(r.delta)}` : '•');
+    const png = `${LOGO_DIR}${r.team}.png`;
+    const jpg = `${LOGO_DIR}${r.team}.jpg`;
+    const ph  = `${LOGO_DIR}_placeholder.png`;
+    return `
+      <div class="acc-item" onclick="this.classList.toggle('open')">
+        <div class="acc-head">
+          <span class="badge">#${r.rank}</span>
+          <img src="${png}" alt="${r.team}" loading="lazy"
+               onerror="if(!this.dataset.jpg){ this.dataset.jpg=1; this.src='${jpg}'; }
+                        else { this.onerror=null; this.src='${ph}'; }">
+          <div class="acc-title">
+            <div class="team-name">${r.team}</div>
+            <div class="sub">Score ${r.score.toFixed(1)} • Trend ${trend}</div>
+          </div>
+        </div>
+        <div class="acc-body">
+          <div><strong>Media</strong><br>${r.media.toFixed(1)}</div>
+          <div><strong>Forma (ult.5)</strong><br>${r.forma.toFixed(1)}</div>
+          <div><strong>Consistenza</strong><br>${r.cons.toFixed(1)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  wrap.innerHTML = html;
+}
+
+
 /********** HALL OF SHAME / CURIOSITA' **********/
 function median(a){ const v=a.filter(Number.isFinite).slice().sort((x,y)=>x-y); const n=v.length; return n? (n%2?v[(n-1)/2]:(v[n/2-1]+v[n/2])/2):0; }
 
@@ -405,6 +439,7 @@ function initTrend(clean, defaultTeam){
   const pr = computePower(clean);
   renderPR(pr);
   initTrend(clean, pr?.ranked?.[0]?.team);
+  renderPRMobile(pr);
 
   // Extra
   const hall = computeHall(clean);
