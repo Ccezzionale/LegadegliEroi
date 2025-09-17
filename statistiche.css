@@ -78,40 +78,64 @@ h2 { color:var(--nav); margin:28px auto 10px; text-align:center }
 /* consenti scroll orizzontale se lo schermo è stretto */
 #classifica-container { overflow-x: auto; }
 
-/* --- MOBILE: prima colonna "Squadra" sempre visibile --- */
+/* --- MOBILE: colonne sticky ordinate (# e Squadra) --- */
 @media (max-width: 768px) {
+  /* contenitore scrollabile */
   #classifica-container {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
 
-  #tabella-classifica { min-width: 900px; } /* abbastanza larga da non schiacciare tutto */
-  #tabella-classifica th, #tabella-classifica td { white-space: nowrap; }
+  /* tabella un po' larga, il resto si scrolla */
+  #tabella-classifica { min-width: 900px; border-collapse: separate; }
 
-  /* 1a colonna dati (Squadra) sticky a sinistra */
+  /* niente a capo nelle celle */
+  #tabella-classifica th,
+  #tabella-classifica td { white-space: nowrap; }
+
+  /* larghezza della colonna # (tweakabile) */
+  :root { --sticky-col1: 56px; }
+
+  /* 1ª colonna = #  => sticky a sinistra */
+  #tabella-classifica th:nth-child(1),
+  #tabella-classifica td:nth-child(1) {
+    position: sticky;
+    left: 0;
+    z-index: 4;
+    background: #fff;
+    min-width: var(--sticky-col1);
+    width: var(--sticky-col1);
+    text-align: center;
+  }
+  #tabella-classifica thead th:nth-child(1) {
+    background: #001f3f;
+    color: #fff;
+    z-index: 5;
+  }
+
+  /* 2ª colonna = Squadra  => sticky dopo la # */
   #tabella-classifica th:nth-child(2),
   #tabella-classifica td:nth-child(2) {
     position: sticky;
-    left: 0;
-    background: #fff;          /* fondo bianco per coprire quello sotto */
-    z-index: 2;
-    min-width: 220px;          /* un po’ di spazio per logo + nome */
+    left: var(--sticky-col1);
+    z-index: 3;
+    background: #fff;
+    min-width: 220px;      /* spazio per logo + nome */
     text-align: left;
     word-break: keep-all;
   }
-
-  /* header della colonna Squadra con il suo colore */
   #tabella-classifica thead th:nth-child(2) {
     background: #001f3f;
     color: #fff;
-    z-index: 3;
+    z-index: 5;
   }
 
-  /* piccolo bordo/ombra per separare la colonna sticky dal resto (opzionale) */
+  /* separatore visivo tra colonna sticky e scorrevoli (opzionale) */
   #tabella-classifica th:nth-child(2)::after,
   #tabella-classifica td:nth-child(2)::after {
     content: '';
-    position: absolute; top: 0; right: -1px; width: 1px; height: 100%;
+    position: absolute;
+    top: 0; right: -1px; width: 1px; height: 100%;
     box-shadow: 2px 0 6px rgba(0,0,0,.08);
   }
 
