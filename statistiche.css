@@ -154,3 +154,33 @@ function renderPRMobile(res){
 
   wrap.innerHTML = html;
 }
+     @media (max-width: 768px) {
+  .navbar {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .navbar.show {
+    display: flex;
+  }
+
+  .navbar li {
+    width: 100%;
+  }
+
+  .submenu {
+    position: static;
+    width: 100%;
+  }
+  .hamburger {
+    display: block;
+  }
+  .nav-left {
+  display: flex;
+  align-items: center;
+  flex-direction: row; /* 👈 FORZA l’allineamento orizzontale */
+  gap: 12px;
+}
+}
