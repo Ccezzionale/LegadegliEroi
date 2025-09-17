@@ -74,3 +74,29 @@ h2 { color:var(--nav); margin:28px auto 10px; text-align:center }
   .submenu { position:static; width:100%; }
   .hamburger { display:block; }
 }
+
+/* consenti scroll orizzontale se lo schermo è stretto */
+#classifica-container { overflow-x: auto; }
+
+/* --- FIX MOBILE --- */
+@media (max-width: 768px) {
+  /* evita che la tabella si stringa troppo: meglio scroll che andare a capo a ogni lettera */
+  #tabella-classifica { min-width: 780px; }
+
+  /* niente a capo nelle celle (soprattutto sulla colonna Squadra) */
+  #tabella-classifica th,
+  #tabella-classifica td { white-space: nowrap; }
+
+  /* colonna Squadra: niente spezzatura parola */
+  #tabella-classifica th:nth-child(2),
+  #tabella-classifica td:nth-child(2) {
+    text-align: left;
+    white-space: nowrap;
+    word-break: keep-all;   /* <-- annulla il break-word desktop */
+    max-width: 240px;       /* opzionale: limita solo per estetica */
+  }
+
+  /* riduci un filo i loghi per stare comodi */
+  .logo-nome img { width: 24px; height: 24px; }
+}
+
