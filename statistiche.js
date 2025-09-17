@@ -5,7 +5,6 @@ const DEFAULT_CSV_URL =
 // "" = tutte le fasi, altrimenti "Regular" o "Playoff"
 const PHASE_FILTER = "";
 const LOGO_DIR = "img/";
-};
 
 /********** UTILS **********/
 function slug(s){
