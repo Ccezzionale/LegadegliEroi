@@ -66,136 +66,76 @@ h2 { color:var(--nav); margin:28px auto 10px; text-align:center }
 #trendChart{ width:100% !important; height:340px !important; display:block; }
 
 
-/* Mobile */
+/* ===== MOBILE (unico blocco) ===== */
 @media (max-width: 768px) {
+  /* navbar */
   .navbar { display:none; flex-direction:column; width:100%; margin-top:10px; }
   .navbar.show { display:flex; }
   .navbar li { width:100%; }
   .submenu { position:static; width:100%; }
   .hamburger { display:block; }
-}
 
-/* consenti scroll orizzontale se lo schermo è stretto */
-#classifica-container { overflow-x: auto; }
-
-/* --- MOBILE: colonne sticky ordinate (# e Squadra) --- */
-@media (max-width: 768px) {
   /* contenitore scrollabile */
-  #classifica-container {
+  #classifica-container{
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
   }
 
-  /* tabella un po' larga, il resto si scrolla */
-  #tabella-classifica { min-width: 900px; border-collapse: separate; }
+  /* la tabella non si schiaccia: il resto scorre */
+  #tabella-classifica{
+    min-width: 920px;
+    border-collapse: separate !important;
+  }
 
   /* niente a capo nelle celle */
   #tabella-classifica th,
-  #tabella-classifica td { white-space: nowrap; }
+  #tabella-classifica td{ white-space: nowrap; }
 
-  /* larghezza della colonna # (tweakabile) */
-  :root { --sticky-col1: 56px; }
+  /* larghezza colonna # */
+  :root{ --col-num: 52px; }
 
-  /* 1ª colonna = #  => sticky a sinistra */
-  #tabella-classifica th:nth-child(1),
-  #tabella-classifica td:nth-child(1) {
+  /* 1ª colonna = #  (sticky a sinistra) */
+  #tabella-classifica thead th:nth-child(1),
+  #tabella-classifica tbody td:nth-child(1){
     position: sticky;
     left: 0;
-    z-index: 4;
+    z-index: 6;
     background: #fff;
-    min-width: var(--sticky-col1);
-    width: var(--sticky-col1);
+    width: var(--col-num);
+    min-width: var(--col-num);
+    max-width: var(--col-num);
     text-align: center;
   }
-  #tabella-classifica thead th:nth-child(1) {
+  #tabella-classifica thead th:nth-child(1){
     background: #001f3f;
     color: #fff;
-    z-index: 5;
   }
 
-  /* 2ª colonna = Squadra  => sticky dopo la # */
-  #tabella-classifica th:nth-child(2),
-  #tabella-classifica td:nth-child(2) {
+  /* 2ª colonna = Squadra  (sticky dopo la #) */
+  #tabella-classifica thead th:nth-child(2),
+  #tabella-classifica tbody td:nth-child(2){
     position: sticky;
-    left: var(--sticky-col1);
-    z-index: 3;
+    left: var(--col-num);
+    z-index: 5;
     background: #fff;
-    min-width: 220px;      /* spazio per logo + nome */
+    min-width: 230px;          /* spazio per logo + nome */
     text-align: left;
     word-break: keep-all;
   }
-  #tabella-classifica thead th:nth-child(2) {
+  #tabella-classifica thead th:nth-child(2){
     background: #001f3f;
     color: #fff;
-    z-index: 5;
   }
 
   /* separatore visivo tra colonna sticky e scorrevoli (opzionale) */
-  #tabella-classifica th:nth-child(2)::after,
-  #tabella-classifica td:nth-child(2)::after {
-    content: '';
-    position: absolute;
-    top: 0; right: -1px; width: 1px; height: 100%;
-    box-shadow: 2px 0 6px rgba(0,0,0,.08);
-  }
-
-  /* loghi un filo più piccoli su mobile */
-  .logo-nome img { width: 24px; height: 24px; }
-}
-/* --- MOBILE CLEAN: nasconde # e rende sticky "Squadra" --- */
-@media (max-width: 768px) {
-  /* contenitore scrollabile */
-  #classifica-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* la tabella non si schiaccia: il resto scorre in orizzontale */
-  #tabella-classifica {
-    min-width: 900px;
-    border-collapse: separate; /* mantieni i bordi come da stile */
-  }
-
-  /* nascondi la prima colonna (#) */
-  #tabella-classifica thead th:nth-child(1),
-  #tabella-classifica tbody td:nth-child(1) {
-    display: none;
-  }
-
-  /* niente a capo nelle celle */
-  #tabella-classifica th,
-  #tabella-classifica td {
-    white-space: nowrap;
-  }
-
-  /* "Squadra" è ora la PRIMA colonna visibile -> sticky a sinistra */
-  #tabella-classifica thead th:nth-child(2),
-  #tabella-classifica tbody td:nth-child(2) {
-    position: sticky;
-    left: 0;                 /* attacca al bordo sinistro */
-    background: #fff;        /* copri ciò che scorre sotto */
-    z-index: 5;              /* sopra alle altre celle */
-    min-width: 220px;        /* spazio per logo + nome */
-    text-align: left;
-    word-break: keep-all;
-  }
-
-  /* header "Squadra" con il suo colore */
-  #tabella-classifica thead th:nth-child(2) {
-    background: #001f3f;
-    color: #fff;
-  }
-
-  /* piccolo separatore visivo (opzionale) */
   #tabella-classifica thead th:nth-child(2)::after,
-  #tabella-classifica tbody td:nth-child(2)::after {
-    content: '';
-    position: absolute;
-    top: 0; right: -1px; width: 1px; height: 100%;
-    box-shadow: 2px 0 6px rgba(0,0,0,.08);
+  #tabella-classifica tbody td:nth-child(2)::after{
+    content:'';
+    position:absolute; top:0; right:-1px; width:1px; height:100%;
+    box-shadow:2px 0 6px rgba(0,0,0,.08);
   }
 
-  /* loghi leggermente più piccoli su mobile */
-  .logo-nome img { width: 24px; height: 24px; }
+  /* loghi un filo più piccoli */
+  .logo-nome img{ width:24px; height:24px; }
 }
-
