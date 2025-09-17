@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Statistiche - Lega degli Eroi</title>
+  <link rel="stylesheet" href="statistiche.css">
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav>
+    <span id="hamburger" class="hamburger">☰</span>
+    <a href="index.html" class="home-icon">🏠</a>
+    <ul class="navbar" id="mainMenu">
+      <li><a href="rose.html">Rose</a></li>
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Draft ▾</a>
+        <ul class="submenu">
+          <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
+          <li><a href="draft_conference.html">🟨 Conf.League</a></li>
+          <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Competizioni ▾</a>
+        <ul class="submenu">
+          <li><a href="classifica.html">📊 Classifiche</a></li>
+          <li><a href="playoff.html">🏆 Playoff</a></li>
+          <li><a href="arena.html">🏟️ Higlander</a></li>
+          <li><a href="crashoutcup.html">💥 Crash out Cup</a></li>
+          <li><a href="crashoutplayoff.html">💥 Crash out Cup - Playoff</a></li>
+          <li><a href="statistiche.html"><strong>📈 Statistiche</strong></a></li>
+        </ul>
+      </li>
+      <li><a href="svincolati.html">Svincolati</a></li>
+      <li><a href="chiamate.html">Chiamate</a></li>
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
+        <ul class="submenu">
+          <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
+          <li><a href="albo.html">🏅 Medagliere</a></li>
+        </ul>
+      </li>
+      <li><a href="regolamento.html">Regolamento</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <h1>Statistiche</h1>
+
+    <!-- POWER RANKING -->
+    <section id="classifica-container">
+      <table id="tabella-classifica">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Squadra</th>
+            <th>Score</th>
+            <th>Trend</th>
+            <th>Media (stag.)</th>
+            <th>Forma (ult.5)</th>
+            <th>Consistenza</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-pr"></tbody>
+      </table>
+      <p class="small-note">
+        Score (0–100) = 50% <u>Forma</u> (media ultime 5), 30% <u>Media stagionale</u> (tutte le giornate),
+        20% <u>Consistenza</u> (regolarità: meno oscillazioni nelle ultime 5 ⇒ valore più alto). All’inizio la Media pesa di più.
+      </p>
+    </section>
+
+    <!-- HALL OF SHAME -->
+    <h2>Hall of Shame</h2>
+    <div id="shame-worst"></div>
+    <div id="shame-lowwins"></div>
+    <div id="shame-highloss"></div>
+
+    <!-- SCULATI / SFIGATI -->
+    <h2>Sculati / Sfigati (mediana di giornata)</h2>
+    <div id="luck-most"></div>
+
+    <!-- CURIOSITÀ -->
+  <h2>Statistiche curiose</h2>
+<div id="fun-top"></div>    <!-- NEW: top 5 punteggi -->
+<div id="fun-facts"></div>  <!-- già esistente, blowout & partita tirata -->
+
+<h2>Andamento squadre</h2>
+<div class="trend-toolbar">
+  <select id="trendTeam1"></select>
+  <select id="trendTeam2"></select>
+  <label><input type="checkbox" id="trendMedian"> Mostra mediana</label>
+  <button id="trendBtn">Aggiorna</button>
+</div>
+<div class="trend-wrap">
+  <canvas id="trendChart"></canvas>
+</div>
+
+  </main>
+  
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="statistiche.js"></script>
+  <script>
+    // Navbar mobile/dropdown
+    document.addEventListener("DOMContentLoaded", function () {
+      const hamburger = document.getElementById("hamburger");
+      const mainMenu = document.getElementById("mainMenu");
+      const submenuToggles = document.querySelectorAll(".toggle-submenu");
+      hamburger?.addEventListener("click", () => mainMenu.classList.toggle("show"));
+      submenuToggles.forEach(toggle => {
+        toggle.addEventListener("click", function (e) {
+          e.preventDefault();
+          this.closest(".dropdown").classList.toggle("show");
+        });
+      });
+    });
+  </script>
+</body>
+</html>
