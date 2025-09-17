@@ -86,49 +86,37 @@ h2 { color:var(--nav); margin:28px auto 10px; text-align:center }
   #tabella-classifica{
     min-width: 920px;
     border-collapse: separate !important;
+    border-spacing: 0 !important;  /* evita sfasamenti */
   }
 
   /* niente a capo nelle celle */
   #tabella-classifica th,
   #tabella-classifica td{ white-space: nowrap; }
 
-  /* larghezza colonna # */
-  :root{ --col-num: 52px; }
-
-  /* 1ª colonna = #  (sticky a sinistra) */
+  /* NASCONDI la prima colonna (#) su mobile */
   #tabella-classifica thead th:nth-child(1),
   #tabella-classifica tbody td:nth-child(1){
-    position: sticky;
-    left: 0;
-    z-index: 6;
-    background: #fff;
-    width: var(--col-num);
-    min-width: var(--col-num);
-    max-width: var(--col-num);
-    text-align: center;
-  }
-  #tabella-classifica thead th:nth-child(1){
-    background: #001f3f;
-    color: #fff;
+    display: none !important;
   }
 
-  /* 2ª colonna = Squadra  (sticky dopo la #) */
+  /* "Squadra" = ora prima visibile -> STICKY a sinistra */
   #tabella-classifica thead th:nth-child(2),
   #tabella-classifica tbody td:nth-child(2){
     position: sticky;
-    left: var(--col-num);
-    z-index: 5;
+    left: 0;
     background: #fff;
-    min-width: 230px;          /* spazio per logo + nome */
+    z-index: 5;
+    min-width: 230px;
     text-align: left;
-    word-break: keep-all;
+    word-break: keep-all !important; /* sovrascrive il break-word desktop */
   }
   #tabella-classifica thead th:nth-child(2){
     background: #001f3f;
     color: #fff;
+    z-index: 6;
   }
 
-  /* separatore visivo tra colonna sticky e scorrevoli (opzionale) */
+  /* separatore visivo (opzionale) */
   #tabella-classifica thead th:nth-child(2)::after,
   #tabella-classifica tbody td:nth-child(2)::after{
     content:'';
@@ -136,6 +124,6 @@ h2 { color:var(--nav); margin:28px auto 10px; text-align:center }
     box-shadow:2px 0 6px rgba(0,0,0,.08);
   }
 
-  /* loghi un filo più piccoli */
+  /* loghi più piccoli su mobile */
   .logo-nome img{ width:24px; height:24px; }
 }
