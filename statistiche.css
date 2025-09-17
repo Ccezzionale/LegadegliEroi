@@ -1,9 +1,9 @@
-/* Base */
+/* ========== BASE ========== */
 :root{ --nav:#001f3f; --nav2:#003366; --navHover:#0074D9; --bg:#f4f4f4; --fg:#222; --card:#fff; --border:#ccc; }
 *{ box-sizing:border-box }
 body { margin:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:var(--bg); color:var(--fg); }
 
-/* Navbar */
+/* ========== NAVBAR ========== */
 nav { background:var(--nav); color:#fff; display:flex; align-items:center; padding:10px 20px; flex-wrap:wrap; }
 .home-icon { font-size:1.4rem; margin-right:20px; text-decoration:none; color:#fff; }
 .hamburger { font-size:1.5rem; cursor:pointer; margin-right:20px; display:none; color:#fff; }
@@ -15,25 +15,21 @@ nav { background:var(--nav); color:#fff; display:flex; align-items:center; paddi
 .dropdown.show .submenu { display:flex; }
 .submenu a { font-size:.95rem; }
 
-/* Layout */
+/* ========== LAYOUT ========== */
 main { max-width:1200px; margin:0 auto; padding:16px; }
 h1 { color:var(--nav); margin:20px 0 10px; text-align:center; font-size:2rem; }
 h2 { color:var(--nav); margin:28px auto 10px; text-align:center }
-
-/* Toolbar */
-.switcher { text-align:center; margin:20px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
-.switcher input[type="url"]{ width:min(95%,800px); max-width:100%; padding:10px; border-radius:6px; border:1px solid var(--border); background:#fff; }
-.switcher select{ padding:10px; border-radius:6px; border:1px solid var(--border); background:#fff; }
-.switcher button{ padding:10px 20px; background:var(--nav); color:#fff; border:none; border-radius:6px; cursor:pointer; }
-.switcher button:hover{ background:var(--navHover); }
 .meta-note, .small-note { color:#555; font-size:.9rem; margin:8px auto 0; text-align:center; }
 
-/* Tabella principale (PR) */
+/* ========== POWER RANKING – DESKTOP (come prima) ========== */
 #classifica-container { display:flex; flex-direction:column; align-items:center; padding:10px; }
+
+/* ⚠️ visibile su desktop */
 #tabella-classifica { border-collapse:collapse; width:100%; max-width:1200px; margin-bottom:16px; table-layout:auto; }
 #tabella-classifica thead { background:var(--nav); color:#fff; }
 #tabella-classifica th, #tabella-classifica td { padding:10px; text-align:center; }
 #tabella-classifica th:nth-child(2), #tabella-classifica td:nth-child(2){ text-align:left; white-space:normal; word-break:break-word; }
+
 .riga-classifica { background:var(--card); border:1px solid var(--border); border-radius:12px; box-shadow:0 4px 8px rgba(0,0,0,.08); }
 .logo-nome { display:flex; align-items:center; gap:8px; overflow:hidden; }
 .logo-nome img { width:32px; height:32px; object-fit:contain; border-radius:50%; background:#fff; border:1px solid #eee; }
@@ -41,146 +37,77 @@ h2 { color:var(--nav); margin:28px auto 10px; text-align:center }
 .trend.up { color:#2e7d32; font-weight:700 }
 .trend.down { color:#c62828; font-weight:700 }
 
-/* Sottotabelle (Hall, Sculati/Sfigati, Curiosità) */
+/* ========== SOTTOTABELLE (Hall, Sculati/Sfigati, Curiosità) ========== */
 .subtable { width:min(1200px,95%); margin:10px auto 22px; border-collapse:separate; border-spacing:0 6px; }
 .subtable thead th { background:var(--nav); color:#fff; padding:10px; border-radius:6px 6px 0 0; }
 .subtable tbody tr { background:#fff; border:1px solid var(--border); border-radius:12px; }
 .subtable th, .subtable td { padding:10px; text-align:left; }
 .badge { display:block; width:min(1200px,95%); margin:6px auto 0; color:var(--nav); font-weight:600; }
-
 .inline-name { display:inline-flex; align-items:center; gap:8px; }
-.mini-logo   { width:22px; height:22px; border-radius:50%; object-fit:contain; background:#fff; border:1px solid #eee; vertical-align:middle; }
+.mini-logo { width:22px; height:22px; border-radius:50%; object-fit:contain; background:#fff; border:1px solid #eee; vertical-align:middle; }
 .subtable td { vertical-align: middle; }
 
-.trend-toolbar{
-  display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
-  margin:14px 0 8px;
-}
-.trend-toolbar select, .trend-toolbar button, .trend-toolbar label{
-  padding:8px 10px; border-radius:6px; border:1px solid #ccc; background:#fff; color:#222;
-}
+/* ========== GRAFICO ANDAMENTO ========== */
+.trend-toolbar{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:14px 0 8px; }
+.trend-toolbar select, .trend-toolbar button, .trend-toolbar label{ padding:8px 10px; border-radius:6px; border:1px solid #ccc; background:#fff; color:#222; }
 .trend-toolbar button{ background:#001f3f; color:#fff; border:none; cursor:pointer }
 .trend-toolbar button:hover{ background:#0074D9 }
-
 .trend-wrap{ width:min(1200px,95%); margin:0 auto 24px; }
 #trendChart{ width:100% !important; height:340px !important; display:block; }
 
+/* ========== POWER RANKING – MOBILE (solo qui si nasconde la tabella) ========== */
+#pr-mobile { display:none; } /* nascosto su desktop */
 
-#tabella-classifica { display: none; }
+@media (max-width: 768px) {
+  /* nav mobile */
+  .navbar { display:none; flex-direction:column; width:100%; margin-top:10px; }
+  .navbar.show { display:flex; }
+  .navbar li { width:100%; }
+  .submenu { position:static; width:100%; }
+  .hamburger { display:block; }
+
+  /* PR: mostra lista mobile, nascondi tabella SOLO su mobile */
+  #tabella-classifica { display:none; }
   #pr-mobile {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px 0;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding:10px 0;
   }
   .acc-item {
-    border-radius: 12px;
-    overflow: hidden;
-    background: #003b66;
-    color: #fff;
-    border: 1px solid #00284b;
+    border-radius:12px;
+    overflow:hidden;
+    background:#003b66;
+    color:#fff;
+    border:1px solid #00284b;
   }
   .acc-head {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    cursor: pointer;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 14px;
+    cursor:pointer;
   }
   .acc-head img {
-    width: 40px; height: 40px; object-fit: contain;
-    border-radius: 50%; background: #fff; border: 1px solid #eee;
+    width:40px; height:40px; object-fit:contain;
+    border-radius:50%; background:#fff; border:1px solid #eee;
   }
   .badge {
-    background: #001f3f; color: #fff;
-    padding: 4px 8px; border-radius: 6px; font-weight: 700; font-variant-numeric: tabular-nums;
+    background:#001f3f; color:#fff;
+    padding:4px 8px; border-radius:6px; font-weight:700; font-variant-numeric:tabular-nums;
   }
-  .acc-title { display: flex; flex-direction: column; gap: 2px; }
-  .acc-title .team-name { font-weight: 700; }
-  .acc-title .sub { font-size: .9rem; opacity: .9; }
+  .acc-title { display:flex; flex-direction:column; gap:2px; }
+  .acc-title .team-name { font-weight:700; }
+  .acc-title .sub { font-size:.9rem; opacity:.9; }
   .acc-body {
-    display: none;
-    padding: 10px 14px 12px;
-    background: #004080;
-    font-size: .92rem;
-    border-top: 1px solid #003061;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0,1fr));
-    gap: 8px 12px;
+    display:none;
+    padding:10px 14px 12px;
+    background:#004080;
+    font-size:.92rem;
+    border-top:1px solid #003061;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0,1fr));
+    gap:8px 12px;
   }
-  .acc-item.open .acc-body { display: grid; }
-}
-Consiglio: rimuovi i vecchi tentativi “sticky” su mobile per evitare conflitti.
-
-2) JS (in statistiche.js)
-Definisci dove sono i loghi (come nelle altre pagine):
-
-js
-Copia codice
-const LOGO_DIR = "img/"; // es.: img/<Nome esatto>.png
-Aggiungi la funzione di render mobile:
-
-js
-Copia codice
-function renderPRMobile(res){
-  const wrap = document.getElementById('pr-mobile');
-  if (!wrap) return;
-
-  const html = res.ranked.map(r => {
-    const trend = r.delta>0 ? `▲ ${r.delta}` : (r.delta<0 ? `▼ ${Math.abs(r.delta)}` : '•');
-    const png = `${LOGO_DIR}${r.team}.png`;
-    const jpg = `${LOGO_DIR}${r.team}.jpg`;
-    const ph  = `${LOGO_DIR}_placeholder.png`;
-    return `
-      <div class="acc-item" onclick="this.classList.toggle('open')">
-        <div class="acc-head">
-          <span class="badge">#${r.rank}</span>
-          <img src="${png}" alt="${r.team}" loading="lazy"
-               onerror="if(!this.dataset.jpg){ this.dataset.jpg=1; this.src='${jpg}'; }
-                        else { this.onerror=null; this.src='${ph}'; }">
-          <div class="acc-title">
-            <div class="team-name">${r.team}</div>
-            <div class="sub">Score ${r.score.toFixed(1)} • Trend ${trend}</div>
-          </div>
-        </div>
-        <div class="acc-body">
-          <div><strong>Media</strong><br>${r.media.toFixed(1)}</div>
-          <div><strong>Forma (ult.5)</strong><br>${r.forma.toFixed(1)}</div>
-          <div><strong>Consistenza</strong><br>${r.cons.toFixed(1)}</div>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  wrap.innerHTML = html;
-}
-     @media (max-width: 768px) {
-  .navbar {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .navbar.show {
-    display: flex;
-  }
-
-  .navbar li {
-    width: 100%;
-  }
-
-  .submenu {
-    position: static;
-    width: 100%;
-  }
-  .hamburger {
-    display: block;
-  }
-  .nav-left {
-  display: flex;
-  align-items: center;
-  flex-direction: row; /* 👈 FORZA l’allineamento orizzontale */
-  gap: 12px;
-}
+  .acc-item.open .acc-body { display:grid; }
 }
