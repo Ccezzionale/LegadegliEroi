@@ -4,10 +4,7 @@ const DEFAULT_CSV_URL =
 
 // "" = tutte le fasi, altrimenti "Regular" o "Playoff"
 const PHASE_FILTER = "";
-
-/* Loghi opzionali: mappature manuali (se diverse da img/<slug>.png) */
-const TEAM_LOGOS = {
-  // "Team Bartowski": "img/team-bartowski.jpg",
+const LOGO_DIR = "img/";
 };
 
 /********** UTILS **********/
@@ -19,6 +16,21 @@ function slug(s){
 function logoFor(team){
   return TEAM_LOGOS[team] || `img/${slug(team)}.png`;
 }
+
+function logoHTML(team, mini=false){
+  const cls = mini ? 'logo-nome mini' : 'logo-nome';
+  const png = `${LOGO_DIR}${team}.png`;
+  const jpg = `${LOGO_DIR}${team}.jpg`;
+  const ph  = `${LOGO_DIR}_placeholder.png`;
+  return `
+    <div class="${cls}">
+      <img src="${png}" alt="${team}" loading="lazy"
+           onerror="if(!this.dataset.jpg){ this.dataset.jpg=1; this.src='${jpg}'; }
+                    else { this.onerror=null; this.src='${ph}'; }">
+      <span>${team}</span>
+    </div>`;
+}
+
 
 function parseNumber(s){
   if (s==null) return NaN;
@@ -125,16 +137,10 @@ function renderPR(res){
   const tbody = document.getElementById('tbody-pr');
   const rows = res.ranked.map(r=>{
     const arrow = r.delta>0?'▲':(r.delta<0?'▼':'•');
-    const cls = r.delta>0?'trend up':(r.delta<0?'trend down':'');
+    const cls   = r.delta>0?'trend up':(r.delta<0?'trend down':'');
     return `<tr class="riga-classifica">
       <td class="mono"><strong>${r.rank}</strong></td>
-      <td>
-        <div class="logo-nome">
-          <img src="${logoFor(r.team)}" alt="${r.team}"
-               onerror="this.onerror=null; this.src='img/_placeholder.png'">
-          <span>${r.team}</span>
-        </div>
-      </td>
+      <td>${logoHTML(r.team)}</td>
       <td class="mono">${r.score.toFixed(1)}</td>
       <td class="${cls}">${arrow} ${r.delta===0?'':Math.abs(r.delta)}</td>
       <td class="mono">${r.media.toFixed(0)}</td>
@@ -165,25 +171,21 @@ function computeHall(clean){
 
 /* tabella con loghi quando il col has type:'team' */
 function renderTable(containerId, title, rows, cols){
-  const el=document.getElementById(containerId); if(!el) return;
+  const el = document.getElementById(containerId); if(!el) return;
 
   function cellHTML(c, r){
     const val = r[c.key] ?? '';
     if (c.type === 'team'){
-      const src = logoFor(val);
-      return `<div class="logo-nome mini">
-                <img src="${src}" alt="${val}"
-                     onerror="this.onerror=null; this.src='img/_placeholder.png'">
-                <span>${val}</span>
-              </div>`;
+      return logoHTML(val, true); // versione mini
     }
     return c.format ? c.format(val, r) : val;
   }
 
-  const thead=`<thead><tr>${cols.map(c=>`<th>${c.label}</th>`).join('')}</tr></thead>`;
-  const tbody=`<tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${cellHTML(c, r)}</td>`).join('')}</tr>`).join('')}</tbody>`;
+  const thead = `<thead><tr>${cols.map(c=>`<th>${c.label}</th>`).join('')}</tr></thead>`;
+  const tbody = `<tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${cellHTML(c,r)}</td>`).join('')}</tr>`).join('')}</tbody>`;
   el.innerHTML = `<div class="badge">${title}</div><table class="subtable">${thead}${tbody}</table>`;
 }
+
 
 function renderHall(h){
   // 1) SOLO GW, Team (con logo) e PF
