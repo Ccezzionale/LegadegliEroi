@@ -78,25 +78,43 @@ h2 { color:var(--nav); margin:28px auto 10px; text-align:center }
 /* consenti scroll orizzontale se lo schermo è stretto */
 #classifica-container { overflow-x: auto; }
 
-/* --- FIX MOBILE --- */
+/* --- MOBILE: prima colonna "Squadra" sempre visibile --- */
 @media (max-width: 768px) {
-  /* evita che la tabella si stringa troppo: meglio scroll che andare a capo a ogni lettera */
-  #tabella-classifica { min-width: 780px; }
-
-  /* niente a capo nelle celle (soprattutto sulla colonna Squadra) */
-  #tabella-classifica th,
-  #tabella-classifica td { white-space: nowrap; }
-
-  /* colonna Squadra: niente spezzatura parola */
-  #tabella-classifica th:nth-child(2),
-  #tabella-classifica td:nth-child(2) {
-    text-align: left;
-    white-space: nowrap;
-    word-break: keep-all;   /* <-- annulla il break-word desktop */
-    max-width: 240px;       /* opzionale: limita solo per estetica */
+  #classifica-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
-  /* riduci un filo i loghi per stare comodi */
+  #tabella-classifica { min-width: 900px; } /* abbastanza larga da non schiacciare tutto */
+  #tabella-classifica th, #tabella-classifica td { white-space: nowrap; }
+
+  /* 1a colonna dati (Squadra) sticky a sinistra */
+  #tabella-classifica th:nth-child(2),
+  #tabella-classifica td:nth-child(2) {
+    position: sticky;
+    left: 0;
+    background: #fff;          /* fondo bianco per coprire quello sotto */
+    z-index: 2;
+    min-width: 220px;          /* un po’ di spazio per logo + nome */
+    text-align: left;
+    word-break: keep-all;
+  }
+
+  /* header della colonna Squadra con il suo colore */
+  #tabella-classifica thead th:nth-child(2) {
+    background: #001f3f;
+    color: #fff;
+    z-index: 3;
+  }
+
+  /* piccolo bordo/ombra per separare la colonna sticky dal resto (opzionale) */
+  #tabella-classifica th:nth-child(2)::after,
+  #tabella-classifica td:nth-child(2)::after {
+    content: '';
+    position: absolute; top: 0; right: -1px; width: 1px; height: 100%;
+    box-shadow: 2px 0 6px rgba(0,0,0,.08);
+  }
+
+  /* loghi un filo più piccoli su mobile */
   .logo-nome img { width: 24px; height: 24px; }
 }
-
