@@ -66,63 +66,91 @@ h2 { color:var(--nav); margin:28px auto 10px; text-align:center }
 #trendChart{ width:100% !important; height:340px !important; display:block; }
 
 
-/* ===== MOBILE: sticky "Squadra" con spazio riservato a sinistra ===== */
-@media (max-width: 768px) {
-  /* scroll orizzontale fluido */
-  #classifica-container{
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 8px;
+#tabella-classifica { display: none; }
+  #pr-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 0;
   }
-
-  /* LARGHEZZA riservata alla colonna Squadra (logo+nome) */
-  :root{ --stickyW: 240px; }   /* prova 220–260px se serve più/meno spazio */
-
-  /* la tabella non si schiaccia
-     e la SPOSTIAMO a destra lasciando spazio alla colonna sticky */
-  #tabella-classifica{
-    border-collapse: separate !important;
-    border-spacing: 0 !important;
-    min-width: 900px;              /* contenuto scorrevole a destra */
-    margin-left: var(--stickyW);   /* <<< spazio per la colonna fissa */
+  .acc-item {
+    border-radius: 12px;
+    overflow: hidden;
+    background: #003b66;
+    color: #fff;
+    border: 1px solid #00284b;
   }
-
-  /* niente a capo nelle celle */
-  #tabella-classifica th,
-  #tabella-classifica td{ white-space: nowrap; }
-
-  /* NASCONDI la colonna # su mobile (se la usi, puoi lasciarla visibile)
-     così "Squadra" diventa la prima colonna visibile */
-  #tabella-classifica thead th:nth-child(1),
-  #tabella-classifica tbody td:nth-child(1){
-    display: none !important;
+  .acc-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
   }
-
-  /* "Squadra" (ora 1ª visibile = nth-child(2)) diventa STICKY a sinistra */
-  #tabella-classifica thead th:nth-child(2),
-  #tabella-classifica tbody td:nth-child(2){
-    position: sticky;
-    left: 0;                           /* attacca al bordo sinistro */
-    z-index: 5;
-    background: #fff;
-    width: var(--stickyW);             /* stessa misura dello spazio riservato */
-    min-width: var(--stickyW);
-    max-width: var(--stickyW);
-    text-align: left;
-    word-break: keep-all !important;
-    box-sizing: border-box;
+  .acc-head img {
+    width: 40px; height: 40px; object-fit: contain;
+    border-radius: 50%; background: #fff; border: 1px solid #eee;
   }
-  #tabella-classifica thead th:nth-child(2){
-    background: #001f3f; color: #fff; z-index: 6;
+  .badge {
+    background: #001f3f; color: #fff;
+    padding: 4px 8px; border-radius: 6px; font-weight: 700; font-variant-numeric: tabular-nums;
   }
-
-  /* bordo/ombra a destra della colonna sticky (opzionale) */
-  #tabella-classifica thead th:nth-child(2)::after,
-  #tabella-classifica tbody td:nth-child(2)::after{
-    content:''; position:absolute; top:0; right:-1px; width:1px; height:100%;
-    box-shadow:2px 0 6px rgba(0,0,0,.08);
+  .acc-title { display: flex; flex-direction: column; gap: 2px; }
+  .acc-title .team-name { font-weight: 700; }
+  .acc-title .sub { font-size: .9rem; opacity: .9; }
+  .acc-body {
+    display: none;
+    padding: 10px 14px 12px;
+    background: #004080;
+    font-size: .92rem;
+    border-top: 1px solid #003061;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 8px 12px;
   }
+  .acc-item.open .acc-body { display: grid; }
+}
+Consiglio: rimuovi i vecchi tentativi “sticky” su mobile per evitare conflitti.
 
-  /* loghi un filo più piccoli su mobile */
-  .logo-nome img{ width:24px; height:24px; }
+2) JS (in statistiche.js)
+Definisci dove sono i loghi (come nelle altre pagine):
+
+js
+Copia codice
+const LOGO_DIR = "img/"; // es.: img/<Nome esatto>.png
+Aggiungi la funzione di render mobile:
+
+js
+Copia codice
+function renderPRMobile(res){
+  const wrap = document.getElementById('pr-mobile');
+  if (!wrap) return;
+
+  const html = res.ranked.map(r => {
+    const trend = r.delta>0 ? `▲ ${r.delta}` : (r.delta<0 ? `▼ ${Math.abs(r.delta)}` : '•');
+    const png = `${LOGO_DIR}${r.team}.png`;
+    const jpg = `${LOGO_DIR}${r.team}.jpg`;
+    const ph  = `${LOGO_DIR}_placeholder.png`;
+    return `
+      <div class="acc-item" onclick="this.classList.toggle('open')">
+        <div class="acc-head">
+          <span class="badge">#${r.rank}</span>
+          <img src="${png}" alt="${r.team}" loading="lazy"
+               onerror="if(!this.dataset.jpg){ this.dataset.jpg=1; this.src='${jpg}'; }
+                        else { this.onerror=null; this.src='${ph}'; }">
+          <div class="acc-title">
+            <div class="team-name">${r.team}</div>
+            <div class="sub">Score ${r.score.toFixed(1)} • Trend ${trend}</div>
+          </div>
+        </div>
+        <div class="acc-body">
+          <div><strong>Media</strong><br>${r.media.toFixed(1)}</div>
+          <div><strong>Forma (ult.5)</strong><br>${r.forma.toFixed(1)}</div>
+          <div><strong>Consistenza</strong><br>${r.cons.toFixed(1)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  wrap.innerHTML = html;
 }
