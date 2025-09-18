@@ -261,45 +261,60 @@ function renderHall(h){
 /********** SCULATI / SFIGATI **********/
 function computeLuck(clean){
   // mediana per GW su tutta la lega
-  const byGW=groupBy(clean,'GW'); 
-  const med=new Map();
-  for(const [gw,rows] of byGW.entries()) 
-    med.set(+gw, median(rows.map(r=>r.PointsFor)));
-
-  // inizializza tutti i team
-  const allTeams=Array.from(new Set(clean.map(r=>r.Team)));
-  const tally=new Map(allTeams.map(t=>[t,{team:t,sculati:0,sfigati:0,netto:0}]));
-
-  // funzione calcolo gol fantacalcio
-  function calcGoals(p){
-    return p < 66 ? 0 : 1 + Math.floor((p - 66) / 6);
+  const byGW = groupBy(clean,'GW'); 
+  const med = new Map();
+  for (const [gw, rows] of byGW.entries()) {
+    med.set(+gw, median(rows.map(r => r.PointsFor)));
   }
 
-  // loop
-  for(const r of clean){
-    const m=med.get(r.GW) ?? 0;
-    let sc=0, sf=0;
+  // init tally
+  const allTeams = Array.from(new Set(clean.map(r => r.Team)));
+  const tally = new Map(allTeams.map(t => [t, { team:t, sculati:0, sfigati:0, netto:0 }]));
 
-    // regola mediana
-    if(r.Result==='W' && r.PointsFor<m) sc=1;
-    if(r.Result==='L' && r.PointsFor>m) sf=1;
+  // goals & soglie
+  function goals(p){ return p < 66 ? 0 : 1 + Math.floor((p - 66) / 6); }
+  function lastSoglia(p){ return p < 66 ? null : 66 + 6 * Math.floor((p - 66) / 6); }
+  function nextSoglia(p){ return p < 66 ? 66 : 66 + 6 * (Math.floor((p - 66) / 6) + 1); }
 
-    // regola soglia gol
-    if(r.OpponentPoints!=null){
-      const gf=calcGoals(r.PointsFor);
-      const go=calcGoals(r.OpponentPoints);
-      if(r.Result==='W' && gf===go) sc=1;   // vittoria di mezzo punto
-      if(r.Result==='L' && gf===go) sf=1;   // sconfitta di mezzo punto
+  for (const r of clean){
+    const m = med.get(r.GW) ?? 0;
+    let sc = 0, sf = 0;
+
+    // 1) regola mediana
+    if (r.Result === 'W' && r.PointsFor < m) sc += 1;
+    if (r.Result === 'L' && r.PointsFor > m) sf += 1;
+
+    // 2) regola soglia gol (vittoria "di soglia")
+    if (r.OpponentPoints != null){
+      const gf = goals(r.PointsFor);
+      const go = goals(r.OpponentPoints);
+      const diffGol = gf - go;
+
+      if (diffGol === 1){
+        const ls = lastSoglia(r.PointsFor);
+        const nsOpp = nextSoglia(r.OpponentPoints);
+
+        const distWinAbove = (ls == null) ? Infinity : (r.PointsFor - ls);   // quanto sopra la soglia sta il vincitore
+        const distLoserBelow = nsOpp - r.OpponentPoints;                     // quanto sotto la soglia sta il perdente
+
+        const vittoriaDiSoglia = (distLoserBelow < 1) || (distWinAbove < 1);
+
+        if (vittoriaDiSoglia){
+          if (r.Result === 'W') sc += 1;
+          if (r.Result === 'L') sf += 1; // (in teoria qui non accade perché diffGol=1 implica che r è la parte che ha perso)
+        }
+      }
     }
 
-    if(!sc && !sf) continue;
-    const rec=tally.get(r.Team); 
-    rec.sculati+=sc; 
-    rec.sfigati+=sf; 
-    rec.netto=rec.sculati-rec.sfigati;
+    if (sc || sf){
+      const rec = tally.get(r.Team);
+      rec.sculati += sc;
+      rec.sfigati += sf;
+      rec.netto = rec.sculati - rec.sfigati;
+    }
   }
 
-  const table=Array.from(tally.values())
+  const table = Array.from(tally.values())
     .sort((a,b)=>(b.netto-a.netto)||(b.sculati-a.sculati)||a.team.localeCompare(b.team));
 
   return { table };
