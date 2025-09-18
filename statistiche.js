@@ -258,7 +258,7 @@ function renderHall(h){
 
 
 
-/********** SCULATI / SFIGATI (cumulato, robusta, soglia = solo perdente <1) **********/
+/********** SCULATI / SFIGATI (definitiva) **********/
 function computeLuck(clean){
   // parse numerico (gestisce "75,5")
   const num = v => (typeof v === 'number') ? v : parseFloat(String(v).replace(',', '.')) || 0;
@@ -284,12 +284,20 @@ function computeLuck(clean){
   // gol fantacalcio e soglie (1 gol a 66, poi ogni +6)
   function goals(p){ p=num(p); return p < 66 ? 0 : 1 + Math.floor((p - 66) / 6); }
   function nextSoglia(p){ p=num(p); return p < 66 ? 66 : 66 + 6 * (Math.floor((p - 66) / 6) + 1); }
+  function lastSoglia(p){ p=num(p); return p < 66 ? null : 66 + 6 * Math.floor((p - 66) / 6); }
 
-  // true se il perdente ha mancato la soglia per <1 punto (non vale se è esattamente sulla soglia)
-  const loserMissedByLessThanOne = (pLose) => {
-    const d = nextSoglia(pLose) - num(pLose);
-    return d > 0 && d < 1;   // esclude d==0 (sulla soglia) e d>=1
-  };
+  // true se la partita è stata decisa da una soglia gol
+  function isVittoriaDiSoglia(pWin, pLose){
+    const nsLose = nextSoglia(pLose);
+    const distLoser = nsLose - num(pLose);
+
+    const lsWin = lastSoglia(pWin);
+    const distWin = (lsWin == null) ? Infinity : (num(pWin) - lsWin);
+
+    // caso 1: perdente a <1 punto dalla soglia successiva (65.5, 71.5, 77.5…)
+    // caso 2: vincitore esattamente sulla soglia (66.0, 72.0, 78.0…)
+    return (distLoser > 0 && distLoser < 1) || distWin === 0;
+  }
 
   for (const r of clean){
     const pf = num(r.PointsFor);
@@ -299,18 +307,18 @@ function computeLuck(clean){
     let sc = 0, sf = 0;
 
     // (A) regola mediana
-    if (r.Result === 'W' && pf < m) sc += 1;   // vinci sotto mediana = sculata
-    if (r.Result === 'L' && pf > m) sf += 1;   // perdi sopra mediana = sfiga
+    if (r.Result === 'W' && pf < m) sc += 1;   // vinci sotto mediana
+    if (r.Result === 'L' && pf > m) sf += 1;   // perdi sopra mediana
 
-    // (B) regola "vittoria di soglia" — SOLO se il perdente manca la soglia per <1 punto
+    // (B) regola "vittoria di soglia"
     if (pa != null){
       const gf = goals(pf), go = goals(pa);
       const diffGol = gf - go;
 
-      if (r.Result === 'W' && diffGol === 1 && loserMissedByLessThanOne(pa)) {
+      if (r.Result === 'W' && diffGol === 1 && isVittoriaDiSoglia(pf, pa)) {
         sc += 1; // vincitore sculato di soglia
       }
-      if (r.Result === 'L' && diffGol === -1 && loserMissedByLessThanOne(pf)) {
+      if (r.Result === 'L' && diffGol === -1 && isVittoriaDiSoglia(pa, pf)) {
         sf += 1; // perdente sfigato di soglia
       }
     }
@@ -329,7 +337,7 @@ function computeLuck(clean){
   return { table };
 }
 
-// (opzionale, se ti serve)
+// opzionale per mostrare la tabella
 function renderLuckBox(l){
   renderTable('luck-most','Sculati / Sfigati (cumulato)', l.table, [
     {key:'team',label:'Team', type:'team'},
