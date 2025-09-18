@@ -261,23 +261,50 @@ function renderHall(h){
 /********** SCULATI / SFIGATI **********/
 function computeLuck(clean){
   // mediana per GW su tutta la lega
-  const byGW=groupBy(clean,'GW'); const med=new Map();
-  for(const [gw,rows] of byGW.entries()) med.set(+gw, median(rows.map(r=>r.PointsFor)));
+  const byGW=groupBy(clean,'GW'); 
+  const med=new Map();
+  for(const [gw,rows] of byGW.entries()) 
+    med.set(+gw, median(rows.map(r=>r.PointsFor)));
 
   // inizializza tutti i team
   const allTeams=Array.from(new Set(clean.map(r=>r.Team)));
   const tally=new Map(allTeams.map(t=>[t,{team:t,sculati:0,sfigati:0,netto:0}]));
 
-  for(const r of clean){
-    const m=med.get(r.GW)??0;
-    const sc=(r.Result==='W' && r.PointsFor<m)?1:0; // vinci sotto mediana
-    const sf=(r.Result==='L' && r.PointsFor>m)?1:0; // perdi sopra mediana
-    if(!sc && !sf) continue;
-    const rec=tally.get(r.Team); rec.sculati+=sc; rec.sfigati+=sf; rec.netto=rec.sculati-rec.sfigati;
+  // funzione calcolo gol fantacalcio
+  function calcGoals(p){
+    return p < 66 ? 0 : 1 + Math.floor((p - 66) / 6);
   }
-  const table=Array.from(tally.values()).sort((a,b)=>(b.netto-a.netto)||(b.sculati-a.sculati)||a.team.localeCompare(b.team));
+
+  // loop
+  for(const r of clean){
+    const m=med.get(r.GW) ?? 0;
+    let sc=0, sf=0;
+
+    // regola mediana
+    if(r.Result==='W' && r.PointsFor<m) sc=1;
+    if(r.Result==='L' && r.PointsFor>m) sf=1;
+
+    // regola soglia gol
+    if(r.OpponentPoints!=null){
+      const gf=calcGoals(r.PointsFor);
+      const go=calcGoals(r.OpponentPoints);
+      if(r.Result==='W' && gf===go) sc=1;   // vittoria di mezzo punto
+      if(r.Result==='L' && gf===go) sf=1;   // sconfitta di mezzo punto
+    }
+
+    if(!sc && !sf) continue;
+    const rec=tally.get(r.Team); 
+    rec.sculati+=sc; 
+    rec.sfigati+=sf; 
+    rec.netto=rec.sculati-rec.sfigati;
+  }
+
+  const table=Array.from(tally.values())
+    .sort((a,b)=>(b.netto-a.netto)||(b.sculati-a.sculati)||a.team.localeCompare(b.team));
+
   return { table };
 }
+
 function renderLuckBox(l){
   renderTable('luck-most','Sculati / Sfigati (cumulato)',
     l.table,
@@ -288,6 +315,7 @@ function renderLuckBox(l){
       {key:'netto',label:'Netto'}
     ]);
 }
+
 
 /********** CURIOSITÀ **********/
 function renderFunFacts(h){
