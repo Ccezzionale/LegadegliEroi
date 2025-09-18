@@ -297,41 +297,24 @@ function computeLuck(clean){
     if (r.Result === 'W' && pf < m) sc += 1;
     if (r.Result === 'L' && pf > m) sf += 1;
 
-    // 2) regola "vittoria di soglia" — simmetrica per vincitore e perdente
-    if (pa != null){
-      const gf = goals(pf);
-      const go = goals(pa);
-      const diffGol = gf - go;
+   // 2) regola "vittoria di soglia" — SOLO se il perdente manca la soglia di <1
+if (pa != null){
+  const gf = goals(pf);
+  const go = goals(pa);
+  const diffGol = gf - go;
 
-      // helper: decide se la gara è decisa di soglia dati pWin/pLose
-      const isVittoriaDiSoglia = (pWin, pLose) => {
-        const lsWin  = lastSoglia(pWin);   // soglia appena superata dal vincitore
-        const nsLose = nextSoglia(pLose);  // soglia mancata dal perdente
-        const distWinAbove   = (lsWin == null) ? Infinity : (num(pWin) - lsWin);
-        const distLoserBelow = nsLose - num(pLose);
-        return (distLoserBelow < 1) || (distWinAbove < 1);
-      };
+  // ritorna true se il perdente è a <1 punto dalla sua soglia successiva
+  const loserMissedByLessThanOne = (pLose) => {
+    const nsLose = nextSoglia(pLose);
+    return (nsLose - num(pLose)) < 1;
+  };
 
-      if (r.Result === 'W' && diffGol === 1 && isVittoriaDiSoglia(pf, pa)) {
-        sc += 1; // vincitore sculato di soglia
-      }
-      if (r.Result === 'L' && diffGol === -1 && isVittoriaDiSoglia(pa, pf)) {
-        sf += 1; // perdente sfigato di soglia
-      }
-    }
-
-    if (sc || sf){
-      const rec = tally.get(r.Team);
-      rec.sculati += sc;
-      rec.sfigati += sf;
-      rec.netto = rec.sculati - rec.sfigati;
-    }
+  if (r.Result === 'W' && diffGol === 1 && loserMissedByLessThanOne(pa)) {
+    sc += 1; // vincitore sculato di soglia
   }
-
-  const table = Array.from(tally.values())
-    .sort((a,b)=>(b.netto-a.netto)||(b.sculati-a.sculati)||a.team.localeCompare(b.team));
-
-  return { table };
+  if (r.Result === 'L' && diffGol === -1 && loserMissedByLessThanOne(pf)) {
+    sf += 1; // perdente sfigato di soglia
+  }
 }
 
 function renderLuckBox(l){
