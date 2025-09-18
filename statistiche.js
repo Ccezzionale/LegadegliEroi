@@ -258,9 +258,9 @@ function renderHall(h){
 
 
 
-/********** SCULATI / SFIGATI (robusta con soglia gol) **********/
+/********** SCULATI / SFIGATI (robusta + soglia gol simmetrica) **********/
 function computeLuck(clean){
-  // helper numerico (gestisce virgole decimali)
+  // helper numerico (gestisce "75,5")
   const num = v => (typeof v === 'number') ? v : parseFloat(String(v).replace(',', '.')) || 0;
 
   // prende i punti avversario con fallback di nomi
@@ -271,7 +271,7 @@ function computeLuck(clean){
   };
 
   // mediane per GW
-  const byGW = groupBy(clean, 'GW');
+  const byGW = groupBy(clean, 'GW'); 
   const med = new Map();
   for (const [gw, rows] of byGW.entries()){
     med.set(+gw, median(rows.map(r => num(r.PointsFor))));
@@ -288,7 +288,7 @@ function computeLuck(clean){
 
   for (const r of clean){
     const pf = num(r.PointsFor);
-    const pa = oppPts(r); // <-- usa il campo esistente
+    const pa = oppPts(r);
     const m  = med.get(r.GW) ?? 0;
 
     let sc = 0, sf = 0;
@@ -297,25 +297,26 @@ function computeLuck(clean){
     if (r.Result === 'W' && pf < m) sc += 1;
     if (r.Result === 'L' && pf > m) sf += 1;
 
-    // 2) regola "vittoria di soglia" (solo se ho i punti avversario)
+    // 2) regola "vittoria di soglia" — simmetrica per vincitore e perdente
     if (pa != null){
       const gf = goals(pf);
       const go = goals(pa);
       const diffGol = gf - go;
 
-      if (diffGol === 1){
-        const lsWin  = lastSoglia(pf);
-        const nsLoss = nextSoglia(pa);
+      // helper: decide se la gara è decisa di soglia dati pWin/pLose
+      const isVittoriaDiSoglia = (pWin, pLose) => {
+        const lsWin  = lastSoglia(pWin);   // soglia appena superata dal vincitore
+        const nsLose = nextSoglia(pLose);  // soglia mancata dal perdente
+        const distWinAbove   = (lsWin == null) ? Infinity : (num(pWin) - lsWin);
+        const distLoserBelow = nsLose - num(pLose);
+        return (distLoserBelow < 1) || (distWinAbove < 1);
+      };
 
-        const distWinAbove  = (lsWin == null) ? Infinity : (pf - lsWin); // quanto sopra soglia sta il vincitore
-        const distLoserBelow= nsLoss - pa;                               // quanto sotto soglia sta il perdente
-
-        const vittoriaDiSoglia = (distLoserBelow < 1) || (distWinAbove < 1);
-
-        if (vittoriaDiSoglia){
-          if (r.Result === 'W') sc += 1;
-          else if (r.Result === 'L') sf += 1;
-        }
+      if (r.Result === 'W' && diffGol === 1 && isVittoriaDiSoglia(pf, pa)) {
+        sc += 1; // vincitore sculato di soglia
+      }
+      if (r.Result === 'L' && diffGol === -1 && isVittoriaDiSoglia(pa, pf)) {
+        sf += 1; // perdente sfigato di soglia
       }
     }
 
@@ -331,15 +332,6 @@ function computeLuck(clean){
     .sort((a,b)=>(b.netto-a.netto)||(b.sculati-a.sculati)||a.team.localeCompare(b.team));
 
   return { table };
-}
-
-function renderLuckBox(l){
-  renderTable('luck-most','Sculati / Sfigati (cumulato)', l.table, [
-    {key:'team',label:'Team', type:'team'},
-    {key:'sculati',label:'Sculati'},
-    {key:'sfigati',label:'Sfigati'},
-    {key:'netto',label:'Netto'}
-  ]);
 }
 
 
