@@ -258,50 +258,63 @@ function renderHall(h){
 
 
 
-/********** SCULATI / SFIGATI **********/
+/********** SCULATI / SFIGATI (robusta con soglia gol) **********/
 function computeLuck(clean){
-  // mediana per GW su tutta la lega
-  const byGW = groupBy(clean,'GW'); 
+  // helper numerico (gestisce virgole decimali)
+  const num = v => (typeof v === 'number') ? v : parseFloat(String(v).replace(',', '.')) || 0;
+
+  // prende i punti avversario con fallback di nomi
+  const oppPts = r => {
+    const cands = ['OpponentPoints','PointsAgainst','OppPoints','Against','PtsAgainst'];
+    for (const k of cands) if (k in r && r[k] != null) return num(r[k]);
+    return null;
+  };
+
+  // mediane per GW
+  const byGW = groupBy(clean, 'GW');
   const med = new Map();
-  for (const [gw, rows] of byGW.entries()) {
-    med.set(+gw, median(rows.map(r => r.PointsFor)));
+  for (const [gw, rows] of byGW.entries()){
+    med.set(+gw, median(rows.map(r => num(r.PointsFor))));
   }
 
   // init tally
   const allTeams = Array.from(new Set(clean.map(r => r.Team)));
   const tally = new Map(allTeams.map(t => [t, { team:t, sculati:0, sfigati:0, netto:0 }]));
 
-  // goals & soglie
-  function goals(p){ return p < 66 ? 0 : 1 + Math.floor((p - 66) / 6); }
-  function lastSoglia(p){ return p < 66 ? null : 66 + 6 * Math.floor((p - 66) / 6); }
-  function nextSoglia(p){ return p < 66 ? 66 : 66 + 6 * (Math.floor((p - 66) / 6) + 1); }
+  // gol fantacalcio e soglie
+  function goals(p){ p=num(p); return p < 66 ? 0 : 1 + Math.floor((p - 66) / 6); }
+  function lastSoglia(p){ p=num(p); return p < 66 ? null : 66 + 6 * Math.floor((p - 66) / 6); }
+  function nextSoglia(p){ p=num(p); return p < 66 ? 66   : 66 + 6 * (Math.floor((p - 66) / 6) + 1); }
 
   for (const r of clean){
-    const m = med.get(r.GW) ?? 0;
+    const pf = num(r.PointsFor);
+    const pa = oppPts(r); // <-- usa il campo esistente
+    const m  = med.get(r.GW) ?? 0;
+
     let sc = 0, sf = 0;
 
     // 1) regola mediana
-    if (r.Result === 'W' && r.PointsFor < m) sc += 1;
-    if (r.Result === 'L' && r.PointsFor > m) sf += 1;
+    if (r.Result === 'W' && pf < m) sc += 1;
+    if (r.Result === 'L' && pf > m) sf += 1;
 
-    // 2) regola soglia gol (vittoria "di soglia")
-    if (r.OpponentPoints != null){
-      const gf = goals(r.PointsFor);
-      const go = goals(r.OpponentPoints);
+    // 2) regola "vittoria di soglia" (solo se ho i punti avversario)
+    if (pa != null){
+      const gf = goals(pf);
+      const go = goals(pa);
       const diffGol = gf - go;
 
       if (diffGol === 1){
-        const ls = lastSoglia(r.PointsFor);
-        const nsOpp = nextSoglia(r.OpponentPoints);
+        const lsWin  = lastSoglia(pf);
+        const nsLoss = nextSoglia(pa);
 
-        const distWinAbove = (ls == null) ? Infinity : (r.PointsFor - ls);   // quanto sopra la soglia sta il vincitore
-        const distLoserBelow = nsOpp - r.OpponentPoints;                     // quanto sotto la soglia sta il perdente
+        const distWinAbove  = (lsWin == null) ? Infinity : (pf - lsWin); // quanto sopra soglia sta il vincitore
+        const distLoserBelow= nsLoss - pa;                               // quanto sotto soglia sta il perdente
 
         const vittoriaDiSoglia = (distLoserBelow < 1) || (distWinAbove < 1);
 
         if (vittoriaDiSoglia){
           if (r.Result === 'W') sc += 1;
-          if (r.Result === 'L') sf += 1; // (in teoria qui non accade perché diffGol=1 implica che r è la parte che ha perso)
+          else if (r.Result === 'L') sf += 1;
         }
       }
     }
@@ -321,15 +334,14 @@ function computeLuck(clean){
 }
 
 function renderLuckBox(l){
-  renderTable('luck-most','Sculati / Sfigati (cumulato)',
-    l.table,
-    [
-      {key:'team',label:'Team', type:'team'},
-      {key:'sculati',label:'Sculati'},
-      {key:'sfigati',label:'Sfigati'},
-      {key:'netto',label:'Netto'}
-    ]);
+  renderTable('luck-most','Sculati / Sfigati (cumulato)', l.table, [
+    {key:'team',label:'Team', type:'team'},
+    {key:'sculati',label:'Sculati'},
+    {key:'sfigati',label:'Sfigati'},
+    {key:'netto',label:'Netto'}
+  ]);
 }
+
 
 
 /********** CURIOSITÀ **********/
