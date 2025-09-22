@@ -33,12 +33,12 @@ const giocatoriU21PerSquadra = {
   "Eintracht Franco 126": ["carboni v.", "valle", "ramon"],
   "POKERMANTRA": ["ordonez c.", "goglichidze", "belahyane"],
   "wildboys78": ["palestra", "castro s.", "ferguson e."],
-  "Bayern Christiansen": ["paz n.", "addai", "rodriguez je."],
+  "Bayern Christiansen": ["paz n.", "palestra", "rodriguez je."],
   "Minnesode Timberland": ["diao", "ferguson e.", "pisilli"],
   "Athletic Pongao": ["valle", "tiago gabriel", "norton-cuffy"],
   "MinneSota Snakes": ["esposito f.p.", "denoon", "goglichidze"],
   "Ibla": ["camarda", "belahyane", "mbambi"],
-  "Pandinicoccolosini": ["cham", "ahanor", "athekame"]
+  "Pandinicoccolosini": ["cham", "ahanor", "adzic"]
 };
 
 const giocatoriFPManualiPerSquadra = {
