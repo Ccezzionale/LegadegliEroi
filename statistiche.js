@@ -189,15 +189,51 @@ function renderPRMobile(res){
 /********** HALL OF SHAME / CURIOSITA' **********/
 function median(a){ const v=a.filter(Number.isFinite).slice().sort((x,y)=>x-y); const n=v.length; return n? (n%2?v[(n-1)/2]:(v[n/2-1]+v[n/2])/2):0; }
 
-function computeHall(clean){
-  const worst = clean.slice().sort((a,b)=>a.PointsFor-b.PointsFor).slice(0,10);
-  const lowWins = clean.filter(r=>r.Result==='W').slice().sort((a,b)=>a.PointsFor-b.PointsFor).slice(0,10);
-  const highLoss = clean.filter(r=>r.Result==='L').slice().sort((a,b)=>b.PointsFor-a.PointsFor).slice(0,10);
+// === CONFIG GOL ===
+const GOAL_BASE = 66;  // primo gol a 66
+const GOAL_STEP = 6;   // +1 gol ogni 6 punti
 
-  const winners = clean.filter(r=>r.PointsFor>r.PointsAgainst)
-    .map(r=>({...r, margin:r.PointsFor-r.PointsAgainst, total:r.PointsFor+r.PointsAgainst}));
-  const blowouts = winners.slice().sort((a,b)=>b.margin-a.margin).slice(0,5);
-  const closest  = winners.slice().sort((a,b)=>a.margin-b.margin).slice(0,5);
+// util numeriche robuste (gestisce "72,0")
+const toNum = x => +String(x).replace(',', '.');
+const pfToGoals = pf => {
+  const v = toNum(pf);
+  if (!Number.isFinite(v)) return 0;
+  return v < GOAL_BASE ? 0 : 1 + Math.floor((v - GOAL_BASE) / GOAL_STEP);
+};
+
+function computeHall(clean){
+  // normalizzo e calcolo esito a GOL
+  const rows = clean.map(r => {
+    const PF = toNum(r.PointsFor);
+    const PA = toNum(r.PointsAgainst);
+    const gf = pfToGoals(PF);
+    const ga = pfToGoals(PA);
+    const isDraw = gf === ga;
+    const isWin  = gf > ga;
+    const isLoss = gf < ga;
+    return { ...r, PF, PA, gf, ga, isDraw, isWin, isLoss, marginPF: PF - PA, totalPF: PF + PA };
+  });
+
+  // 10 punteggi peggiori in assoluto (PF)
+  const worst = rows.slice().sort((a,b)=> a.PF - b.PF || a.PA - b.PA || (a.GW - b.GW)).slice(0,10);
+
+  // 10 vittorie col PF più basso — ora basate su gf>ga (esclude i pareggi tipo 70 vs 68.5 = 1-1)
+  const lowWins = rows
+    .filter(r => r.isWin)
+    .sort((a,b) => a.PF - b.PF || a.PA - b.PA || (a.GW - b.GW))
+    .slice(0,10);
+
+  // 10 sconfitte col PF più alto — sconfitte a GOL, ordinate per PF desc
+  const highLoss = rows
+    .filter(r => r.isLoss)
+    .sort((a,b) => b.PF - a.PF || a.PA - b.PA || (a.GW - b.GW))
+    .slice(0,10);
+
+  // per blowouts/closest considero solo vere vittorie (opzionale, non le stai renderizzando qui)
+  const winners = rows.filter(r => r.isWin)
+    .map(r => ({ ...r, margin: r.marginPF, total: r.totalPF }));
+  const blowouts = winners.slice().sort((a,b)=> (b.gf-b.ga) - (a.gf-a.ga) || b.margin - a.margin).slice(0,5);
+  const closest  = winners.slice().sort((a,b)=> (a.gf-a.ga) - (b.gf-b.ga) || Math.abs(a.margin) - Math.abs(b.margin)).slice(0,5);
 
   return { worst, lowWins, highLoss, blowouts, closest };
 }
@@ -219,11 +255,10 @@ function renderTable(containerId, title, rows, cols){
   el.innerHTML = `<div class="badge">${title}</div><table class="subtable">${thead}${tbody}</table>`;
 }
 
-
 function renderHall(h){
   // 1) SOLO GW, Team (con logo) e PF
   renderTable('shame-worst', 'Peggiori punteggi',
-    h.worst.map(r => ({ gw: r.GW, team: r.Team, pf: r.PointsFor })),
+    h.worst.map(r => ({ gw: r.GW, team: r.Team, pf: r.PF })),
     [
       { key:'gw',   label:'GW' },
       { key:'team', label:'Team', type:'team' },      // mostra logo + nome
@@ -233,7 +268,7 @@ function renderHall(h){
 
   // 2) Vittorie col punteggio più basso (con avversario)
   renderTable('shame-lowwins', 'Vittorie col punteggio più basso',
-    h.lowWins.map(r => ({ gw: r.GW, team: r.Team, pf: r.PointsFor, opp: r.Opponent, pa: r.PointsAgainst })),
+    h.lowWins.map(r => ({ gw: r.GW, team: r.Team, pf: r.PF, opp: r.Opponent, pa: r.PA })),
     [
       { key:'gw',   label:'GW' },
       { key:'team', label:'Team', type:'team' },
@@ -245,7 +280,7 @@ function renderHall(h){
 
   // 3) Sconfitte col punteggio più alto (con avversario)
   renderTable('shame-highloss', 'Sconfitte col punteggio più alto',
-    h.highLoss.map(r => ({ gw: r.GW, team: r.Team, pf: r.PointsFor, opp: r.Opponent, pa: r.PointsAgainst })),
+    h.highLoss.map(r => ({ gw: r.GW, team: r.Team, pf: r.PF, opp: r.Opponent, pa: r.PA })),
     [
       { key:'gw',   label:'GW' },
       { key:'team', label:'Team', type:'team' },
