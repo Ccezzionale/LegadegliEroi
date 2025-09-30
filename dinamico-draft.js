@@ -80,8 +80,8 @@ function generaDraftDaCSV(classificaCSV, scambiCSV) {
   });
 
   return {
-    league: formattaDraft(applicaScambi(generaSnakeDraftBase(leagueTeams, 21), scambi, "Conference League")),
-    championship: formattaDraft(applicaScambi(generaSnakeDraftBase(champTeams, 21), scambi, "Conference Championship"))
+    league: formattaDraft(applicaScambi(generaSnakeDraftBase(leagueTeams, 23), scambi, "Conference League")),
+    championship: formattaDraft(applicaScambi(generaSnakeDraftBase(champTeams, 23), scambi, "Conference Championship"))
   };
 }
 
