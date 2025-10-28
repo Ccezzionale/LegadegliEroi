@@ -34,7 +34,7 @@ const giocatoriU21PerSquadra = {
   "POKERMANTRA": ["ordonez c.", "goglichidze", "belahyane"],
   "wildboys78": ["rodriguez je.", "tiago gabriel", "ferguson e."],
   "Bayern Christiansen": ["paz n.", "palestra", "rodriguez je."],
-  "Minnesode Timberland": ["diao", "ferguson e.", "pisilli"],
+  "Minnesode Timberland": ["diao", "ferguson e.", "britschgi"],
   "Athletic Pongao": ["valle", "tiago gabriel", "norton-cuffy"],
   "MinneSota Snakes": ["esposito f.p.", "comuzzo", "goglichidze"],
   "Ibla": ["camarda", "belahyane", "bartesaghi"],
