@@ -57,10 +57,7 @@ const giocatoriFPManualiPerSquadra = {
 };
 
 const giocatoriFPSceltiPerSquadra = {
-  "Pandinicoccolosini": ["ekkelenkamp"],
-  "Ibla": ["angelino"],
-  "Rubinkebab": ["de ketelaere"],
-  "Eintracht Franco 126": ["casadei"]
+  "Rubinkebab": ["de ketelaere"]
 };
 
 const giocatoriU21SceltiPerSquadra = {
