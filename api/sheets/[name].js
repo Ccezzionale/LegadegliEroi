@@ -1,0 +1,3 @@
+// Vercel Serverless Function (Node 18)
+// Esempio: /api/sheets/totale -> usa process.env.SHEETS_URL_TOTALE
+...
