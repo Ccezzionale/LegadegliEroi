@@ -1,6 +1,6 @@
 // supercoppa.js
 
-// ====== Trova la vincente di una semifinale leggendo i punteggi ======
+// ====== Trova la vincente di un match leggendo i punteggi ======
 function getWinner(matchKey) {
   var selector = '.match-card[data-match="' + matchKey + '"]';
   var match = document.querySelector(selector);
@@ -77,12 +77,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ===== Funzione che aggiorna la finale =====
+  // ===== aggiorna le FINALISTE dalla semifinali =====
   function updateFinal() {
     var w1 = getWinner('sf1');
     var w2 = getWinner('sf2');
 
-    // se non ci sono ancora vincitori validi, non facciamo nulla
     if (!w1 || !w2 || w1 === 'tie' || w2 === 'tie') {
       return;
     }
@@ -110,22 +109,62 @@ document.addEventListener("DOMContentLoaded", function () {
       if (w2.logoSrc) logo2.src = w2.logoSrc;
       logo2.alt = w2.logoAlt || w2.name;
     }
-
-    console.log('Finale aggiornata:', w1.name, 'vs', w2.name);
   }
 
-  // ascolta i cambi nei punteggi delle semifinali
-  var scoreBoxes = document.querySelectorAll(
+  // ===== aggiorna il CAMPIONE dalla finale =====
+  function updateChampion() {
+    var winner = getWinner('final'); // usa l'articolo con data-match="final"
+    var section = document.getElementById('supercup-winner');
+    if (!section) return;
+
+    if (!winner || winner === 'tie') {
+      // se togli i punteggi, possiamo anche nascondere la card
+      // section.hidden = true;
+      return;
+    }
+
+    section.hidden = false;
+
+    var name = document.getElementById('champion-name');
+    var sub  = document.getElementById('champion-sub');
+    var logo = document.getElementById('champion-logo');
+
+    if (name) name.textContent = winner.name;
+    if (sub)  sub.textContent  = 'Detentore della Supercoppa ' + new Date().getFullYear();
+    if (logo) {
+      if (winner.logoSrc) logo.src = winner.logoSrc;
+      logo.alt = winner.logoAlt || winner.name;
+    }
+
+    console.log('Campione Supercoppa:', winner.name);
+  }
+
+  // ascolta i cambi nelle semifinali
+  var semiScores = document.querySelectorAll(
     '.match-card[data-match="sf1"] .score-box, ' +
     '.match-card[data-match="sf2"] .score-box'
   );
-
-  for (var j = 0; j < scoreBoxes.length; j++) {
-    scoreBoxes[j].addEventListener('input', updateFinal);
-    scoreBoxes[j].addEventListener('blur', updateFinal);
+  for (var j = 0; j < semiScores.length; j++) {
+    semiScores[j].addEventListener('input', function () {
+      updateFinal();
+      // se la finale aveva già punteggi, ricalcoliamo anche il campione
+      updateChampion();
+    });
+    semiScores[j].addEventListener('blur', function () {
+      updateFinal();
+      updateChampion();
+    });
   }
 
-  // primo update (nel caso tu abbia già messo data-placeholder con i risultati)
+  // ascolta i cambi nella finale
+  var finalScores = document.querySelectorAll('#final-match .score-box');
+  for (var k = 0; k < finalScores.length; k++) {
+    finalScores[k].addEventListener('input', updateChampion);
+    finalScores[k].addEventListener('blur', updateChampion);
+  }
+
+  // primo giro: nel caso tu abbia già messo placeholder o risultati
   updateFinal();
+  updateChampion();
 });
 
