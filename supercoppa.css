@@ -264,11 +264,12 @@ nav{
 /* ===== SEZIONE CAMPIONE SUPERCOPPA ===== */
 .supercup-winner{
   max-width: 1200px;
-  margin: 0 auto 40px;
+  margin: 40px auto 40px;   /* <— prima era 0 auto 40px */
   padding: 0 16px;
   display:flex;
   justify-content:center;
 }
+
 
 .winner-card{
   position:relative;
