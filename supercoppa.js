@@ -1,6 +1,7 @@
 // supercoppa.js
 
 // ====== Trova la vincente di una semifinale leggendo i punteggi ======
+// ====== Trova la vincente di una semifinale leggendo i punteggi ======
 function getWinner(matchKey) {
   var selector = '.match-card[data-match="' + matchKey + '"]';
   var match = document.querySelector(selector);
@@ -21,20 +22,27 @@ function getWinner(matchKey) {
   var scoreAEl = rowA.querySelector('.score-box');
   var scoreBEl = rowB.querySelector('.score-box');
 
-  var scoreAText = scoreAEl ? scoreAEl.textContent : '';
-  var scoreBText = scoreBEl ? scoreBEl.textContent : '';
+  // 1) prova a leggere il testo scritto
+  var scoreAText = scoreAEl ? scoreAEl.textContent.trim() : '';
+  var scoreBText = scoreBEl ? scoreBEl.textContent.trim() : '';
 
-  var scoreA = parseInt(scoreAText.trim(), 10);
-  var scoreB = parseInt(scoreBText.trim(), 10);
+  // 2) se è vuoto, usa il data-placeholder
+  if (!scoreAText && scoreAEl) {
+    scoreAText = (scoreAEl.getAttribute('data-placeholder') || '').trim();
+  }
+  if (!scoreBText && scoreBEl) {
+    scoreBText = (scoreBEl.getAttribute('data-placeholder') || '').trim();
+  }
+
+  var scoreA = parseInt(scoreAText, 10);
+  var scoreB = parseInt(scoreBText, 10);
 
   console.log('Punteggi', matchKey, ':', scoreA, scoreB);
 
-  // se non sono numeri → niente vincente
   if (isNaN(scoreA) || isNaN(scoreB)) {
     console.log('Punteggio non numerico per', matchKey);
     return null;
   }
-  // pareggio → non so chi passa
   if (scoreA === scoreB) {
     console.log('Pareggio in', matchKey);
     return 'tie';
@@ -53,6 +61,7 @@ function getWinner(matchKey) {
     logoAlt: logoEl ? (logoEl.getAttribute('alt') || '') : ''
   };
 }
+
 
 // ====== Quando la pagina è pronta ======
 document.addEventListener("DOMContentLoaded", function () {
