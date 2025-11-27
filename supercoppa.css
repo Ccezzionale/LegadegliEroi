@@ -317,4 +317,96 @@ nav{
   .page-header p{
     font-size:.95rem;
   }
+
+  /* ===== SEZIONE CAMPIONE SUPERCOPPA ===== */
+.supercup-winner{
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  padding: 0 16px;
+  display:flex;
+  justify-content:center;
+}
+
+.winner-card{
+  position:relative;
+  width:100%;
+  max-width:520px;
+  padding:22px 20px 26px;
+  border-radius:22px;
+  background: radial-gradient(circle at top, #fef9c3, #fbbf24);
+  box-shadow:0 14px 35px rgba(0,0,0,0.35);
+  overflow:hidden;
+  text-align:center;
+}
+
+/* coppa grande sullo sfondo */
+.winner-trophy{
+  position:absolute;
+  inset:-40px -40px auto;
+  background:url("img/cup.png") center/contain no-repeat;
+  opacity:0.15;
+  pointer-events:none;
+}
+
+/* contenuto sopra la coppa */
+.winner-content{
+  position:relative;
+  z-index:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+}
+
+.winner-title{
+  font-size:1.2rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:#854d0e;
+}
+
+/* logo vincitore */
+.winner-logo-wrap{
+  width:150px;
+  height:150px;
+  border-radius:999px;
+  background:#fefce8;
+  display:grid;
+  place-items:center;
+  box-shadow:0 8px 22px rgba(0,0,0,0.35);
+  margin-top:4px;
+}
+.winner-logo{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+/* nome e sotto-titolo */
+.winner-name{
+  margin-top:8px;
+  font-size:1.4rem;
+  font-weight:800;
+  text-transform:uppercase;
+  color:#713f12;
+}
+.winner-sub{
+  font-size:.9rem;
+  color:#78350f;
+}
+
+/* mobile */
+@media (max-width: 768px){
+  .winner-card{
+    max-width: 420px;
+    padding:18px 16px 24px;
+  }
+  .winner-logo-wrap{
+    width:130px;
+    height:130px;
+  }
+  .winner-name{
+    font-size:1.2rem;
+  }
 }
