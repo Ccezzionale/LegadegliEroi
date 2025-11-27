@@ -388,10 +388,12 @@ nav{
     padding:0 10px 32px;
   }
 
-  .supercup-bracket{
-    grid-template-columns: 1fr;
-    gap:18px;
-  }
+.supercup-bracket{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  align-items:center;
+}
 
   .match-card{
     max-width:450px;
