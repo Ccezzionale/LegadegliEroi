@@ -93,16 +93,15 @@ nav{
 }
 
 .page-header h1{
-  color:#fbbf24;
+  color:var(--accent);              /* giallo/arancio */
   margin:0 0 6px;
   font-size:2.1rem;
 
+  /* alone scuro morbido attorno al testo */
 text-shadow:
-  -2px -2px 0 #001f3f,
-   2px -2px 0 #001f3f,
-  -2px  2px 0 #001f3f,
-   2px  2px 0 #001f3f;
-}
+  0 0 3px rgba(0,31,63,0.7),
+  0 2px 4px rgba(0,31,63,0.45);
+
 
 .page-header p{
   margin:0;
