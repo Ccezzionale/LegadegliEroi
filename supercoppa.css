@@ -1,0 +1,320 @@
+/* ========== PALETTE & RESET ========== */
+:root{
+  --bg:#f4f4f4;
+  --text:#222;
+  --nav:#001f3f;
+  --nav-hover:#0074D9;
+  --subnav:#003366;
+  --accent:#ffcc00;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --line:#e5e7eb;
+
+  --score-red:#c5161f;
+}
+
+*,
+*::before,
+*::after{
+  box-sizing:border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg) url("img/sfondocrash.jpg") no-repeat center center fixed;
+  background-size: cover;
+  color: var(--text);
+}
+
+/* ========== NAVBAR / HEADER (come le altre pagine) ========== */
+nav{
+  background:var(--nav);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  padding:10px 20px;
+  flex-wrap:wrap;
+}
+.home-icon{
+  font-size:1.4rem;
+  margin-right:20px;
+  text-decoration:none;
+  color:#fff;
+}
+.hamburger{
+  font-size:1.5rem;
+  cursor:pointer;
+  margin-right:20px;
+  display:none;
+}
+.navbar{
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:flex;
+  gap:15px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.navbar li{ position:relative; }
+.navbar a{
+  color:#fff;
+  text-decoration:none;
+  padding:8px 12px;
+  display:block;
+}
+.navbar a:hover{
+  background:var(--nav-hover);
+  border-radius:6px;
+}
+.submenu{
+  display:none;
+  position:absolute;
+  top:100%;
+  left:0;
+  background:var(--subnav);
+  border-radius:4px;
+  z-index:10;
+  min-width:180px;
+  flex-direction:column;
+}
+.submenu a{ font-size:.95rem; }
+.dropdown.show .submenu{ display:flex; }
+
+/* ========== HEADER PAGINA ========== */
+.page-header{
+  max-width:100%;
+  width:100%;
+  margin:28px 0 8px;
+  display:grid;
+  place-items:center;
+  text-align:center;
+}
+.page-header h1{
+  color:#ffffff;
+  margin:0 0 6px;
+  font-size:2.1rem;
+  text-shadow:2px 2px 8px rgba(0,0,0,.45);
+}
+.page-header p{
+  margin:0;
+  color:#e5e7eb;
+  font-size:1.02rem;
+}
+
+/* ========== LAYOUT SUPER COPPA ========== */
+.supercup-main{
+  max-width:1200px;
+  margin:18px auto 60px;
+  padding:0 16px 40px;
+}
+
+.supercup-bracket{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(260px, 1fr));
+  gap:24px;
+  align-items:stretch;
+  justify-items:center;
+}
+
+/* Carta match */
+.match-card{
+  background:rgba(255,255,255,0.94);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px 18px 20px;
+  box-shadow:0 10px 25px rgba(15,23,42,0.35);
+  width:100%;
+  max-width:380px;
+  backdrop-filter: blur(4px);
+}
+
+.match-card.final{
+  max-width:420px;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Titolo match */
+.match-title{
+  margin:0 0 14px;
+  font-size:1.3rem;
+  font-weight:700;
+  color:var(--nav);
+  text-align:center;
+}
+
+/* Trofeo in finale */
+.final-trophy{
+  position:absolute;
+  inset:auto -40px 35%;
+  background:url("img/cup.png") center/contain no-repeat;
+  opacity:0.08;
+  pointer-events:none;
+}
+
+/* Corpo match */
+.match-body{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+/* Riga squadra */
+.team-row{
+  display:grid;
+  grid-template-columns: auto 1fr 70px;
+  gap:12px;
+  align-items:center;
+}
+
+/* Logo gigante */
+.team-logo-wrap{
+  width:140px;
+  height:140px;
+  border-radius:999px;
+  background:radial-gradient(circle at 30% 30%, #f9fafb, #e5e7eb);
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  box-shadow:0 6px 18px rgba(15,23,42,0.35);
+}
+.team-logo{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+/* Placeholder per la finale */
+.team-logo-wrap.placeholder{
+  background:repeating-linear-gradient(
+    45deg,
+    #f3f4f6,
+    #f3f4f6 10px,
+    #e5e7eb 10px,
+    #e5e7eb 20px
+  );
+}
+.placeholder-text{
+  font-size:.95rem;
+  color:#6b7280;
+  text-align:center;
+  padding:0 8px;
+}
+
+/* Info squadra */
+.team-info{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.team-name{
+  font-size:1.05rem;
+  font-weight:700;
+  text-transform:uppercase;
+}
+.team-seed{
+  font-size:.85rem;
+  color:var(--muted);
+}
+
+/* Box punteggio */
+.score-box{
+  width:60px;
+  min-height:46px;
+  padding:6px 8px;
+  background:var(--score-red);
+  color:#fff;
+  border:2px solid #8b0f15;
+  border-radius:10px;
+  font-weight:800;
+  font-size:1.25rem;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  outline:none;
+  user-select:text;
+}
+.score-box:empty::before{
+  content:attr(data-placeholder);
+  opacity:.7;
+}
+.score-box[contenteditable="true"]:focus{
+  box-shadow:0 0 0 3px rgba(197,22,31,0.25);
+}
+
+/* Linea "vs" */
+.vs-line{
+  text-align:center;
+  font-weight:700;
+  letter-spacing:1px;
+  color:var(--muted);
+  margin:2px 0;
+}
+
+/* Nota in fondo alla pagina */
+.supercup-note{
+  margin-top:22px;
+  font-size:.9rem;
+  color:#e5e7eb;
+  text-align:center;
+}
+
+/* ========== MOBILE ========== */
+@media (max-width: 768px){
+
+  .hamburger{ display:block; }
+  .navbar{
+    display:none;
+    flex-direction:column;
+    width:100%;
+    background:var(--nav);
+    margin-top:10px;
+  }
+  .navbar.show{ display:flex; }
+  .submenu{
+    position:relative;
+    background:var(--subnav);
+    margin-left:10px;
+  }
+  .dropdown .submenu a{ padding-left:20px; }
+
+  .supercup-main{
+    padding:0 10px 32px;
+  }
+
+  .supercup-bracket{
+    grid-template-columns: 1fr;
+    gap:18px;
+  }
+
+  .match-card{
+    max-width:450px;
+    margin:0 auto;
+  }
+
+  .team-row{
+    grid-template-columns: auto 1fr 56px;
+    gap:10px;
+  }
+
+  .team-logo-wrap{
+    width:110px;
+    height:110px;
+    box-shadow:0 5px 14px rgba(15,23,42,0.35);
+  }
+
+  .score-box{
+    width:56px;
+    min-height:40px;
+    font-size:1.1rem;
+  }
+
+  .page-header h1{
+    font-size:1.8rem;
+  }
+  .page-header p{
+    font-size:.95rem;
+  }
+}
