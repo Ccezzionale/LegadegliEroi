@@ -21,11 +21,11 @@ function getWinner(matchKey) {
   var scoreAEl = rowA.querySelector('.score-box');
   var scoreBEl = rowB.querySelector('.score-box');
 
-  // 1) prova a leggere il testo scritto dentro il box
+  // 1) testo scritto nel box
   var scoreAText = scoreAEl ? scoreAEl.textContent.trim() : '';
   var scoreBText = scoreBEl ? scoreBEl.textContent.trim() : '';
 
-  // 2) se è vuoto, usa il data-placeholder (così funzionano anche i tuoi "2" e "1" messi lì)
+  // 2) se è vuoto, usa il data-placeholder
   if (!scoreAText && scoreAEl) {
     scoreAText = (scoreAEl.getAttribute('data-placeholder') || '').trim();
   }
@@ -38,14 +38,8 @@ function getWinner(matchKey) {
 
   console.log('Punteggi', matchKey, ':', scoreA, scoreB);
 
-  if (isNaN(scoreA) || isNaN(scoreB)) {
-    console.log('Punteggio non numerico per', matchKey);
-    return null;
-  }
-  if (scoreA === scoreB) {
-    console.log('Pareggio in', matchKey);
-    return 'tie';
-  }
+  if (isNaN(scoreA) || isNaN(scoreB)) return null;
+  if (scoreA === scoreB) return 'tie';
 
   var winnerRow = scoreA > scoreB ? rowA : rowB;
 
@@ -61,11 +55,10 @@ function getWinner(matchKey) {
   };
 }
 
-// ====== Quando la pagina è pronta ======
 document.addEventListener("DOMContentLoaded", function () {
   console.log('supercoppa.js caricato');
 
-  // ----- NAVBAR -----
+  // ===== NAVBAR =====
   var hamburger = document.getElementById("hamburger");
   var mainMenu = document.getElementById("mainMenu");
   var submenuToggles = document.querySelectorAll(".toggle-submenu");
@@ -84,21 +77,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ----- LOGICA SUPERCOPPA: aggiorna la finale -----
-  var btnUpdate = document.getElementById('btnUpdateFinal');
-  if (!btnUpdate) {
-    console.log('Bottone btnUpdateFinal non trovato');
-    return;
-  }
+  // ===== Funzione che aggiorna la finale =====
+  function updateFinal() {
+    var w1 = getWinner('sf1');
+    var w2 = getWinner('sf2');
 
-  btnUpdate.addEventListener('click', function () {
-    console.log('Click su Aggiorna finale');
-
-    var w1 = getWinner('sf1'); // semifinale 1
-    var w2 = getWinner('sf2'); // semifinale 2
-
+    // se non ci sono ancora vincitori validi, non facciamo nulla
     if (!w1 || !w2 || w1 === 'tie' || w2 === 'tie') {
-      alert('Controlla i punteggi delle due semifinali (devono essere numeri e non in pareggio).');
       return;
     }
 
@@ -127,5 +112,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     console.log('Finale aggiornata:', w1.name, 'vs', w2.name);
-  });
+  }
+
+  // ascolta i cambi nei punteggi delle semifinali
+  var scoreBoxes = document.querySelectorAll(
+    '.match-card[data-match="sf1"] .score-box, ' +
+    '.match-card[data-match="sf2"] .score-box'
+  );
+
+  for (var j = 0; j < scoreBoxes.length; j++) {
+    scoreBoxes[j].addEventListener('input', updateFinal);
+    scoreBoxes[j].addEventListener('blur', updateFinal);
+  }
+
+  // primo update (nel caso tu abbia già messo data-placeholder con i risultati)
+  updateFinal();
 });
+
