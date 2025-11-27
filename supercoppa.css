@@ -337,14 +337,15 @@ nav{
 
 /* coppa accanto al logo */
 .winner-cup-wrap{
-  width:90px;
-  height:90px;
+  width:150px;
+  height:150px;
   border-radius:999px;
   background:rgba(254, 252, 232, 0.9);
   display:grid;
   place-items:center;
-  box-shadow:0 6px 16px rgba(0,0,0,0.35);
+  box-shadow:0 8px 22px rgba(0,0,0,0.35);
 }
+
 .winner-cup{
   width:80%;
   height:80%;
@@ -431,8 +432,8 @@ nav{
     height:130px;
   }
   .winner-cup-wrap{
-    width:70px;
-    height:70px;
+    width:130px;
+    height:130px;
   }
   .winner-name{
     font-size:1.2rem;
