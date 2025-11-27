@@ -49,18 +49,27 @@
     </ul>
   </nav>
 
-  <!-- ===== HEADER PAGINA ===== -->
+    <!-- ===== HEADER PAGINA ===== -->
   <header class="page-header">
     <h1>Supercoppa</h1>
     <p>Final Four tra le migliori della stagione precedente. Loghi extra-large e risultati editabili.</p>
   </header>
+
+  <section class="supercup-toolbar">
+    <button id="btnUpdateFinal" class="btn-primary">
+      Aggiorna finale dalle semifinali
+    </button>
+    <span class="toolbar-note">
+      Inserisci i punteggi delle semifinali e poi clicca per caricare le finaliste.
+    </span>
+  </section>
 
   <!-- ===== BRACKET SUPERCOPPA (4 squadre) ===== -->
   <main class="supercup-main">
     <section class="supercup-bracket">
 
       <!-- SEMIFINALE 1 -->
-      <article class="match-card">
+      <article class="match-card" data-match="sf1">
         <h2 class="match-title">Semifinale 1</h2>
         <div class="match-body">
           <div class="team-row">
@@ -90,31 +99,31 @@
         </div>
       </article>
 
-      <!-- FINALE -->
-      <article class="match-card final">
+      <!-- FINALE (auto dalle semifinali) -->
+      <article class="match-card final" id="final-match">
         <h2 class="match-title">Finale Supercoppa</h2>
         <div class="final-trophy" aria-hidden="true"></div>
         <div class="match-body">
-          <div class="team-row">
-            <div class="team-logo-wrap placeholder">
-              <span class="placeholder-text">Vincente SF1</span>
+          <div class="team-row" data-final-slot="sf1">
+            <div class="team-logo-wrap">
+              <img src="" alt="" class="team-logo" id="final-logo-sf1">
             </div>
             <div class="team-info">
-              <div class="team-name">Vincente Semifinale 1</div>
-              <div class="team-seed">—</div>
+              <div class="team-name" id="final-name-sf1">Vincente Semifinale 1</div>
+              <div class="team-seed" id="final-seed-sf1">—</div>
             </div>
             <div class="score-box" contenteditable="true" data-placeholder="0"></div>
           </div>
 
           <div class="vs-line">vs</div>
 
-          <div class="team-row">
-            <div class="team-logo-wrap placeholder">
-              <span class="placeholder-text">Vincente SF2</span>
+          <div class="team-row" data-final-slot="sf2">
+            <div class="team-logo-wrap">
+              <img src="" alt="" class="team-logo" id="final-logo-sf2">
             </div>
             <div class="team-info">
-              <div class="team-name">Vincente Semifinale 2</div>
-              <div class="team-seed">—</div>
+              <div class="team-name" id="final-name-sf2">Vincente Semifinale 2</div>
+              <div class="team-seed" id="final-seed-sf2">—</div>
             </div>
             <div class="score-box" contenteditable="true" data-placeholder="0"></div>
           </div>
@@ -122,7 +131,7 @@
       </article>
 
       <!-- SEMIFINALE 2 -->
-      <article class="match-card">
+      <article class="match-card" data-match="sf2">
         <h2 class="match-title">Semifinale 2</h2>
         <div class="match-body">
           <div class="team-row">
@@ -152,6 +161,8 @@
       </article>
 
     </section>
+  </main>
+
 
     <p class="supercup-note">
       Per aggiornare le squadre della Supercoppa, ti basta cambiare
