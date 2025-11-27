@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lega degli Eroi – Supercoppa</title>
+
+  <!-- CSS della pagina -->
+  <link rel="stylesheet" href="supercoppa.css">
+</head>
+<body>
+
+  <!-- ===== NAVBAR (stessa struttura del tuo index) ===== -->
+  <nav>
+    <span id="hamburger" class="hamburger">☰</span>
+    <a href="index.html" class="home-icon">🏠</a>
+    <ul class="navbar" id="mainMenu">
+      <li><a href="rose.html">Rose</a></li>
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Draft ▾</a>
+        <ul class="submenu">
+          <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
+          <li><a href="draft_conference.html">🟨 Conf.League</a></li>
+          <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Competizioni ▾</a>
+        <ul class="submenu">
+          <li><a href="classifica.html">📊 Classifiche</a></li>
+          <li><a href="playoff.html">🏆 Playoff</a></li>
+          <li><a href="supercoppa.html">⭐ Supercoppa</a></li>
+          <li><a href="arena.html">🏟️ Highlander</a></li>
+          <li><a href="crashoutcup.html">💥 Crash out Cup</a></li>
+          <li><a href="crashoutplayoff.html">💥 Crash out Cup - Playoff</a></li>
+          <li><a href="statistiche.html">🔎 Statistiche</a></li>
+        </ul>
+      </li>
+      <li><a href="svincolati.html">Svincolati</a></li>
+      <li><a href="chiamate.html">Chiamate</a></li>
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
+        <ul class="submenu">
+          <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
+          <li><a href="albo.html">🏅 Medagliere</a></li>
+        </ul>
+      </li>
+      <li><a href="regolamento.html">Regolamento</a></li>
+    </ul>
+  </nav>
+
+  <!-- ===== HEADER PAGINA ===== -->
+  <header class="page-header">
+    <h1>Supercoppa</h1>
+    <p>Final Four tra le migliori della stagione precedente. Loghi extra-large e risultati editabili.</p>
+  </header>
+
+  <!-- ===== BRACKET SUPERCOPPA (4 squadre) ===== -->
+  <main class="supercup-main">
+    <section class="supercup-bracket">
+
+      <!-- SEMIFINALE 1 -->
+      <article class="match-card">
+        <h2 class="match-title">Semifinale 1</h2>
+        <div class="match-body">
+          <div class="team-row">
+            <div class="team-logo-wrap">
+              <!-- CAMBIA QUI NOME FILE LOGO + ALT -->
+              <img src="img/Real Mimmo.png" alt="Real Mimmo" class="team-logo">
+            </div>
+            <div class="team-info">
+              <div class="team-name">Real Mimmo</div>
+              <div class="team-seed">Campione Conf. Championship</div>
+            </div>
+            <div class="score-box" contenteditable="true" data-placeholder="0"></div>
+          </div>
+
+          <div class="vs-line">vs</div>
+
+          <div class="team-row">
+            <div class="team-logo-wrap">
+              <img src="img/Wildboys 78.png" alt="Wildboys 78" class="team-logo">
+            </div>
+            <div class="team-info">
+              <div class="team-name">Wildboys 78</div>
+              <div class="team-seed">Vincitrice Crash Out Cup</div>
+            </div>
+            <div class="score-box" contenteditable="true" data-placeholder="0"></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- FINALE -->
+      <article class="match-card final">
+        <h2 class="match-title">Finale Supercoppa</h2>
+        <div class="final-trophy" aria-hidden="true"></div>
+        <div class="match-body">
+          <div class="team-row">
+            <div class="team-logo-wrap placeholder">
+              <span class="placeholder-text">Vincente SF1</span>
+            </div>
+            <div class="team-info">
+              <div class="team-name">Vincente Semifinale 1</div>
+              <div class="team-seed">—</div>
+            </div>
+            <div class="score-box" contenteditable="true" data-placeholder="0"></div>
+          </div>
+
+          <div class="vs-line">vs</div>
+
+          <div class="team-row">
+            <div class="team-logo-wrap placeholder">
+              <span class="placeholder-text">Vincente SF2</span>
+            </div>
+            <div class="team-info">
+              <div class="team-name">Vincente Semifinale 2</div>
+              <div class="team-seed">—</div>
+            </div>
+            <div class="score-box" contenteditable="true" data-placeholder="0"></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- SEMIFINALE 2 -->
+      <article class="match-card">
+        <h2 class="match-title">Semifinale 2</h2>
+        <div class="match-body">
+          <div class="team-row">
+            <div class="team-logo-wrap">
+              <img src="img/Bayern Christiansen.png" alt="Bayern Christiansen" class="team-logo">
+            </div>
+            <div class="team-info">
+              <div class="team-name">Bayern Christiansen</div>
+              <div class="team-seed">Campione Conf. League</div>
+            </div>
+            <div class="score-box" contenteditable="true" data-placeholder="0"></div>
+          </div>
+
+          <div class="vs-line">vs</div>
+
+          <div class="team-row">
+            <div class="team-logo-wrap">
+              <img src="img/Rubin Kebab.png" alt="Rubin Kebab" class="team-logo">
+            </div>
+            <div class="team-info">
+              <div class="team-name">Rubin Kebab</div>
+              <div class="team-seed">Miglior classificata restante</div>
+            </div>
+            <div class="score-box" contenteditable="true" data-placeholder="0"></div>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <p class="supercup-note">
+      Per aggiornare le squadre della Supercoppa, ti basta cambiare
+      <strong>nome</strong>, <strong>descrizione</strong> e <strong>percorso del logo</strong>
+      nelle quattro <code>.team-row</code> delle semifinali (e, se vuoi, i testi della Finale).
+    </p>
+  </main>
+
+  <!-- JS per navbar (e in futuro eventuali extra) -->
+  <script src="supercoppa.js" defer></script>
+</body>
+</html>
