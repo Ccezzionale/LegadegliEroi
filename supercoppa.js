@@ -1,60 +1,94 @@
 // supercoppa.js
 
-// Funzione che trova la vincente di una semifinale leggendo i punteggi
+// ====== Trova la vincente di una semifinale leggendo i punteggi ======
 function getWinner(matchKey) {
-  const match = document.querySelector(`.match-card[data-match="${matchKey}"]`);
-  if (!match) return null;
+  var selector = '.match-card[data-match="' + matchKey + '"]';
+  var match = document.querySelector(selector);
+  if (!match) {
+    console.log('Match non trovato per', matchKey);
+    return null;
+  }
 
-  const rows = match.querySelectorAll('.team-row');
-  if (rows.length < 2) return null;
+  var rows = match.querySelectorAll('.team-row');
+  if (!rows || rows.length < 2) {
+    console.log('Righe squadra insufficienti per', matchKey);
+    return null;
+  }
 
-  const [rowA, rowB] = rows;
+  var rowA = rows[0];
+  var rowB = rows[1];
 
-  const scoreAEl = rowA.querySelector('.score-box');
-  const scoreBEl = rowB.querySelector('.score-box');
+  var scoreAEl = rowA.querySelector('.score-box');
+  var scoreBEl = rowB.querySelector('.score-box');
 
-  const scoreA = parseInt((scoreAEl?.textContent || '').trim(), 10);
-  const scoreB = parseInt((scoreBEl?.textContent || '').trim(), 10);
+  var scoreAText = scoreAEl ? scoreAEl.textContent : '';
+  var scoreBText = scoreBEl ? scoreBEl.textContent : '';
+
+  var scoreA = parseInt(scoreAText.trim(), 10);
+  var scoreB = parseInt(scoreBText.trim(), 10);
+
+  console.log('Punteggi', matchKey, ':', scoreA, scoreB);
 
   // se non sono numeri → niente vincente
-  if (Number.isNaN(scoreA) || Number.isNaN(scoreB)) return null;
+  if (isNaN(scoreA) || isNaN(scoreB)) {
+    console.log('Punteggio non numerico per', matchKey);
+    return null;
+  }
   // pareggio → non so chi passa
-  if (scoreA === scoreB) return 'tie';
+  if (scoreA === scoreB) {
+    console.log('Pareggio in', matchKey);
+    return 'tie';
+  }
 
-  const winnerRow = scoreA > scoreB ? rowA : rowB;
+  var winnerRow = scoreA > scoreB ? rowA : rowB;
+
+  var nameEl = winnerRow.querySelector('.team-name');
+  var seedEl = winnerRow.querySelector('.team-seed');
+  var logoEl = winnerRow.querySelector('.team-logo');
 
   return {
-    name: winnerRow.querySelector('.team-name')?.textContent.trim() || '',
-    seed: winnerRow.querySelector('.team-seed')?.textContent.trim() || '',
-    logoSrc: winnerRow.querySelector('.team-logo')?.getAttribute('src') || '',
-    logoAlt: winnerRow.querySelector('.team-logo')?.getAttribute('alt') || ''
+    name: nameEl ? nameEl.textContent.trim() : '',
+    seed: seedEl ? seedEl.textContent.trim() : '',
+    logoSrc: logoEl ? logoEl.getAttribute('src') : '',
+    logoAlt: logoEl ? (logoEl.getAttribute('alt') || '') : ''
   };
 }
 
+// ====== Quando la pagina è pronta ======
 document.addEventListener("DOMContentLoaded", function () {
-  // ===== NAVBAR =====
-  const hamburger = document.getElementById("hamburger");
-  const mainMenu = document.getElementById("mainMenu");
-  const submenuToggles = document.querySelectorAll(".toggle-submenu");
+  console.log('supercoppa.js caricato');
 
-  hamburger?.addEventListener("click", () => {
-    mainMenu.classList.toggle("show");
-  });
+  // ----- NAVBAR -----
+  var hamburger = document.getElementById("hamburger");
+  var mainMenu = document.getElementById("mainMenu");
+  var submenuToggles = document.querySelectorAll(".toggle-submenu");
 
-  submenuToggles.forEach(toggle => {
-    toggle.addEventListener("click", function (e) {
-      e.preventDefault();
-      this.closest(".dropdown")?.classList.toggle("show");
+  if (hamburger && mainMenu) {
+    hamburger.addEventListener("click", function () {
+      mainMenu.classList.toggle("show");
     });
-  });
+  }
 
-  // ===== LOGICA SUPERCOPPA: aggiorna la finale =====
-  const btnUpdate = document.getElementById('btnUpdateFinal');
-  if (!btnUpdate) return;
+  for (var i = 0; i < submenuToggles.length; i++) {
+    submenuToggles[i].addEventListener("click", function (e) {
+      e.preventDefault();
+      var dropdown = this.closest(".dropdown");
+      if (dropdown) dropdown.classList.toggle("show");
+    });
+  }
 
-  btnUpdate.addEventListener('click', () => {
-    const w1 = getWinner('sf1'); // semifinale 1
-    const w2 = getWinner('sf2'); // semifinale 2
+  // ----- LOGICA SUPERCOPPA: aggiorna la finale -----
+  var btnUpdate = document.getElementById('btnUpdateFinal');
+  if (!btnUpdate) {
+    console.log('Bottone btnUpdateFinal non trovato');
+    return;
+  }
+
+  btnUpdate.addEventListener('click', function () {
+    console.log('Click su Aggiorna finale');
+
+    var w1 = getWinner('sf1'); // semifinale 1
+    var w2 = getWinner('sf2'); // semifinale 2
 
     if (!w1 || !w2 || w1 === 'tie' || w2 === 'tie') {
       alert('Controlla i punteggi delle due semifinali (devono essere numeri e non in pareggio).');
@@ -62,9 +96,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Slot SF1 in finale
-    const name1 = document.getElementById('final-name-sf1');
-    const seed1 = document.getElementById('final-seed-sf1');
-    const logo1 = document.getElementById('final-logo-sf1');
+    var name1 = document.getElementById('final-name-sf1');
+    var seed1 = document.getElementById('final-seed-sf1');
+    var logo1 = document.getElementById('final-logo-sf1');
 
     if (name1) name1.textContent = w1.name;
     if (seed1) seed1.textContent = w1.seed || 'Finalista';
@@ -74,9 +108,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Slot SF2 in finale
-    const name2 = document.getElementById('final-name-sf2');
-    const seed2 = document.getElementById('final-seed-sf2');
-    const logo2 = document.getElementById('final-logo-sf2');
+    var name2 = document.getElementById('final-name-sf2');
+    var seed2 = document.getElementById('final-seed-sf2');
+    var logo2 = document.getElementById('final-logo-sf2');
 
     if (name2) name2.textContent = w2.name;
     if (seed2) seed2.textContent = w2.seed || 'Finalista';
@@ -84,5 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (w2.logoSrc) logo2.src = w2.logoSrc;
       logo2.alt = w2.logoAlt || w2.name;
     }
+
+    console.log('Finale aggiornata:', w1.name, 'vs', w2.name);
   });
 });
