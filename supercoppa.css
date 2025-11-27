@@ -186,7 +186,7 @@ nav{
   object-fit:contain;
 }
 
-/* Placeholder per la finale */
+/* Placeholder per la finale (se volessi usarlo) */
 .team-logo-wrap.placeholder{
   background:repeating-linear-gradient(
     45deg,
@@ -253,7 +253,7 @@ nav{
   margin:2px 0;
 }
 
-/* Nota in fondo alla pagina */
+/* Nota in fondo alla pagina (se vuoi usarla) */
 .supercup-note{
   margin-top:22px;
   font-size:.9rem;
@@ -264,12 +264,11 @@ nav{
 /* ===== SEZIONE CAMPIONE SUPERCOPPA ===== */
 .supercup-winner{
   max-width: 1200px;
-  margin: 40px auto 40px;   /* <— prima era 0 auto 40px */
+  margin: 40px auto 40px;
   padding: 0 16px;
   display:flex;
   justify-content:center;
 }
-
 
 .winner-card{
   position:relative;
@@ -310,6 +309,15 @@ nav{
   color:#854d0e;
 }
 
+/* gruppo logo squadra + coppa */
+.winner-logos{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:24px;
+  flex-wrap:wrap;
+}
+
 /* logo vincitore */
 .winner-logo-wrap{
   width:150px;
@@ -324,6 +332,22 @@ nav{
 .winner-logo{
   width:100%;
   height:100%;
+  object-fit:contain;
+}
+
+/* coppa accanto al logo */
+.winner-cup-wrap{
+  width:90px;
+  height:90px;
+  border-radius:999px;
+  background:rgba(254, 252, 232, 0.9);
+  display:grid;
+  place-items:center;
+  box-shadow:0 6px 16px rgba(0,0,0,0.35);
+}
+.winner-cup{
+  width:80%;
+  height:80%;
   object-fit:contain;
 }
 
@@ -405,6 +429,10 @@ nav{
   .winner-logo-wrap{
     width:130px;
     height:130px;
+  }
+  .winner-cup-wrap{
+    width:70px;
+    height:70px;
   }
   .winner-name{
     font-size:1.2rem;
