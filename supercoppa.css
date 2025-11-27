@@ -261,64 +261,7 @@ nav{
   text-align:center;
 }
 
-/* ========== MOBILE ========== */
-@media (max-width: 768px){
-
-  .hamburger{ display:block; }
-  .navbar{
-    display:none;
-    flex-direction:column;
-    width:100%;
-    background:var(--nav);
-    margin-top:10px;
-  }
-  .navbar.show{ display:flex; }
-  .submenu{
-    position:relative;
-    background:var(--subnav);
-    margin-left:10px;
-  }
-  .dropdown .submenu a{ padding-left:20px; }
-
-  .supercup-main{
-    padding:0 10px 32px;
-  }
-
-  .supercup-bracket{
-    grid-template-columns: 1fr;
-    gap:18px;
-  }
-
-  .match-card{
-    max-width:450px;
-    margin:0 auto;
-  }
-
-  .team-row{
-    grid-template-columns: auto 1fr 56px;
-    gap:10px;
-  }
-
-  .team-logo-wrap{
-    width:110px;
-    height:110px;
-    box-shadow:0 5px 14px rgba(15,23,42,0.35);
-  }
-
-  .score-box{
-    width:56px;
-    min-height:40px;
-    font-size:1.1rem;
-  }
-
-  .page-header h1{
-    font-size:1.8rem;
-  }
-  .page-header p{
-    font-size:.95rem;
-  }
-
-  /* ===== SEZIONE CAMPIONE SUPERCOPPA ===== */
+/* ===== SEZIONE CAMPIONE SUPERCOPPA ===== */
 .supercup-winner{
   max-width: 1200px;
   margin: 0 auto 40px;
@@ -396,8 +339,64 @@ nav{
   color:#78350f;
 }
 
-/* mobile */
+/* ========== MOBILE ========== */
 @media (max-width: 768px){
+
+  .hamburger{ display:block; }
+  .navbar{
+    display:none;
+    flex-direction:column;
+    width:100%;
+    background:var(--nav);
+    margin-top:10px;
+  }
+  .navbar.show{ display:flex; }
+  .submenu{
+    position:relative;
+    background:var(--subnav);
+    margin-left:10px;
+  }
+  .dropdown .submenu a{ padding-left:20px; }
+
+  .supercup-main{
+    padding:0 10px 32px;
+  }
+
+  .supercup-bracket{
+    grid-template-columns: 1fr;
+    gap:18px;
+  }
+
+  .match-card{
+    max-width:450px;
+    margin:0 auto;
+  }
+
+  .team-row{
+    grid-template-columns: auto 1fr 56px;
+    gap:10px;
+  }
+
+  .team-logo-wrap{
+    width:110px;
+    height:110px;
+    box-shadow:0 5px 14px rgba(15,23,42,0.35);
+  }
+
+  .score-box{
+    width:56px;
+    min-height:40px;
+    font-size:1.1rem;
+  }
+
+  .page-header h1{
+    font-size:1.8rem;
+  }
+  .page-header p{
+    font-size:.95rem;
+  }
+
+  /* piccole riduzioni per la card del campione su mobile */
   .winner-card{
     max-width: 420px;
     padding:18px 16px 24px;
