@@ -335,11 +335,20 @@ text-shadow:
   box-shadow:0 8px 22px rgba(0,0,0,0.35);
   margin-top:4px;
 }
+
 .winner-logo{
   width:100%;
   height:100%;
   object-fit:contain;
+  display:block;
 }
+
+/* se non ha src (o è vuoto) nascondi l'immagine */
+.winner-logo:not([src]),
+.winner-logo[src=""]{
+  display:none;
+}
+
 
 /* coppa accanto al logo */
 .winner-cup-wrap{
