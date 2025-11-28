@@ -28,7 +28,7 @@ const giocatoriU21PerSquadra = {
   "riverfilo": ["paz n.", "esposito f.p.", "akinsanmiro"],
   "Golden Knights": ["palestra", "camarda", "castro s."],
   "Fantaugusta": ["comuzzo", "bravo", "ekhator"],
-  "Fc Disoneste": ["gineitis", "norton-cuffy", "mateus lusuardi"],
+  "Fc Disoneste": ["gineitis", "norton-cuffy", "ziolkowski"],
   "Rubinkebab": ["diao", "pisilli", "ahanor"],
   "Eintracht Franco 126": ["carboni v.", "valle", "ramon"],
   "POKERMANTRA": ["ordonez c.", "goglichidze", "belahyane"],
