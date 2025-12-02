@@ -6,15 +6,15 @@ const LOGO_EXT = ".png";
 // PUNTEGGI (best-of-5: 0..3)
 const SCORES = {
   // Round 1 — Left
-  L1:  { home: 1, away: 2 },
-  L2:  { home: 2, away: 1 },
-  L3:  { home: 2, away: 1 },
-  L4:  { home: 2, away: 1 },
+  L1:  { home: 2, away: 2 },
+  L2:  { home: 2, away: 2 },
+  L3:  { home: 3, away: 1 },
+  L4:  { home: 3, away: 1 },
   // Round 1 — Right
-  R1:  { home: 2, away: 1 },
-  R2:  { home: 2, away: 1 },
-  R3:  { home: 2, away: 1 },
-  R4:  { home: 1, away: 2 },
+  R1:  { home: 3, away: 1 },
+  R2:  { home: 2, away: 2 },
+  R3:  { home: 3, away: 1 },
+  R4:  { home: 2, away: 2 },
   // Semifinali
   LSF1:{ home: 0, away: 0 },
   LSF2:{ home: 0, away: 0 },
