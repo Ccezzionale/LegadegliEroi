@@ -1,7 +1,7 @@
 const chiamateCSV = {
   // 🔴 LEGA UNICA - ROUND ROBIN
-  round15: "INSERISCI_URL_CSV_ROUND_ROBIN_15",
-  round16: "INSERISCI_URL_CSV_ROUND_ROBIN_16",
+  round15: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT3JULXWpbLRYmW9h08EWuzzGFjoEBwdnHipEk0UtilxTW0cse54k5Qa62tMnPmEX_e8OscCtkS6oxe/pub?gid=1279168385&single=true&output=csv",
+  round16: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQljALg6cV6GAO7R9ORDub5Hb327wvHXdU626N43BKmT0_whIVOM_Y90p5RSE34ozkuaKWs1N4Mq5Yl/pub?gid=0&single=true&output=csv",
 
   // 🟨 Conference League
   league15: "https://docs.google.com/spreadsheets/d/1gvQlVxms2Sok4Inu9cWro3lZB9bI2LlrpkjbJlaaSGQ/export?format=csv&gid=492764886",
