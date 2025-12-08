@@ -295,22 +295,28 @@ function aggiornaCount(){
   countEl.textContent = 'Svincolati mostrati: ' + vis + ' / ' + tot;
 }
 
-function ordinaLista(colonnaIndex, numerico=false){
+function ordinaLista(colonnaIndex, numerico = false) {
   const tbody = document.getElementById('lista-giocatori');
   const righe = Array.from(tbody.querySelectorAll('tr'));
+
   const asc = !ordineListaAscendente[colonnaIndex];
   ordineListaAscendente[colonnaIndex] = asc;
 
-  document.querySelectorAll('#lista-giocatori-table thead th').forEach((th, idx)=>{
-    th.textContent = th.textContent.replace(/[\\u2191\\u2193]/g, '');
-    if (idx === colonnaIndex) th.textContent += asc ? ' \\u2191' : ' \\u2193';
+  // Pulisci solo le frecce vere, non i caratteri "u2191"
+  document.querySelectorAll('#lista-giocatori-table thead th').forEach((th, idx) => {
+    th.textContent = th.textContent.replace(/[\u2191\u2193]/g, '');
+    if (idx === colonnaIndex) {
+      th.textContent += asc ? ' \u2191' : ' \u2193';  // freccia vera ↑ o ↓
+    }
   });
 
-  righe.sort((a,b)=>{
+  righe.sort((a, b) => {
     const aText = a.children[colonnaIndex]?.textContent.trim();
     const bText = b.children[colonnaIndex]?.textContent.trim();
-    if (numerico){
-      const aNum = parseFloat(aText)||0, bNum = parseFloat(bText)||0;
+
+    if (numerico) {
+      const aNum = parseFloat(aText) || 0;
+      const bNum = parseFloat(bText) || 0;
       return asc ? aNum - bNum : bNum - aNum;
     } else {
       return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
@@ -322,6 +328,7 @@ function ordinaLista(colonnaIndex, numerico=false){
   filtraLista();
 }
 window.ordinaLista = ordinaLista;
+
 
 document.addEventListener('DOMContentLoaded', ()=>{
   caricaSvincolati();
