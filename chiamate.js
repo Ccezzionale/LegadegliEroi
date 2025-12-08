@@ -1,9 +1,17 @@
-
 const chiamateCSV = {
+  // 🔴 LEGA UNICA - ROUND ROBIN
+  round15: "INSERISCI_URL_CSV_ROUND_ROBIN_15",
+  round16: "INSERISCI_URL_CSV_ROUND_ROBIN_16",
+
+  // 🟨 Conference League
   league15: "https://docs.google.com/spreadsheets/d/1gvQlVxms2Sok4Inu9cWro3lZB9bI2LlrpkjbJlaaSGQ/export?format=csv&gid=492764886",
   league16: "https://docs.google.com/spreadsheets/d/1J2bIuRs9CIEzydLw-h1DHITs1IGFi7NrLTrxMj9dhDo/export?format=csv&gid=0",
+
+  // 🟦 Conference Championship
   champ15:  "https://docs.google.com/spreadsheets/d/11BF_R13ZfF3kttSb6mVNhmpDPYbrEA3xKNkHFadp6kE/export?format=csv&gid=1279168385",
   champ16:  "https://docs.google.com/spreadsheets/d/1F_E2hP7nPr-IGdUTvUM2cPs8LYoMJ3KdHeRwsExl57k/export?format=csv&gid=0",
+
+  // ⚖️ Compensative
   compensative: "https://docs.google.com/spreadsheets/d/1W-iDerMd9cKmJpaNKdrBIfjd280rfSK8_z9ru9WzDGA/export?format=csv&gid=1119982078"
 };
 
@@ -20,7 +28,7 @@ function caricaChiamate(conference) {
       const intestazioni = righe[0];
       const dati = righe.slice(1);
 
-      if (dati.length === 1 && dati[0][0].startsWith("🔒")) {
+      if (dati.length === 1 && dati[0][0]?.startsWith("🔒")) {
         container.innerHTML = '<div class="avviso">' + dati[0][0] + '</div>';
         return;
       }
