@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chiamate Settimanali</title>
-  <style>
-    body {
+<style>
+body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f8f9fa;
   color: #212529;
@@ -44,7 +44,7 @@ h2 {
   text-align: center;
 }
 
-    .titolo-pagina {
+.titolo-pagina {
   text-align: center;
   color: #001f3f;
   font-size: 2.2rem;
@@ -92,6 +92,8 @@ h2 {
   border-radius: 8px;
   margin-top: 20px;
 }
+
+/* NAVBAR */
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -199,7 +201,21 @@ nav {
   }
 }
 
-  </style>
+/* BOTTONE SPECIALE ROUND ROBIN */
+.btn-roundrobin {
+  background-color: #FF851B;      /* arancione diverso dal blu standard */
+  font-size: 1.05rem;
+  padding: 14px 22px;
+  font-weight: 800;
+  text-transform: uppercase;
+  border-radius: 8px;
+}
+
+.btn-roundrobin:hover {
+  background-color: #e07010;
+}
+</style>
+
 </head>
 <body class="pagina-chiamate">
   <!-- NAVBAR -->
@@ -262,12 +278,26 @@ nav {
   </div>
 
   <div class="switcher">
-    <button onclick="caricaChiamate('league15')">📋 Visualizza Conference League (15:00)</button>
-    <button onclick="caricaChiamate('league16')">📋 Visualizza Conference League (16:00)</button>
-    <button onclick="caricaChiamate('champ15')">📋 Visualizza Conference Championship (15:00)</button>
-    <button onclick="caricaChiamate('champ16')">📋 Visualizza Conference Championship (16:00)</button>
-    <button onclick="caricaChiamate('compensative')">📋 Visualizza Chiamate compensative</button>
-  </div>
+  <!-- 🔴 LEGA UNICA - ROUND ROBIN (PRIMA DI TUTTO E PIÙ GRANDE) -->
+  <button class="btn-roundrobin" onclick="caricaChiamate('round15')">
+    🔥 Chiamate Round Robin (15:00)
+  </button>
+  <button class="btn-roundrobin" onclick="caricaChiamate('round16')">
+    🔥 Chiamate Round Robin (16:00)
+  </button>
+
+  <!-- 🟨 Conference League -->
+  <button onclick="caricaChiamate('league15')">📋 Visualizza Conference League (15:00)</button>
+  <button onclick="caricaChiamate('league16')">📋 Visualizza Conference League (16:00)</button>
+
+  <!-- 🟦 Conference Championship -->
+  <button onclick="caricaChiamate('champ15')">📋 Visualizza Conference Championship (15:00)</button>
+  <button onclick="caricaChiamate('champ16')">📋 Visualizza Conference Championship (16:00)</button>
+
+  <!-- ⚖️ Compensative -->
+  <button onclick="caricaChiamate('compensative')">📋 Visualizza Chiamate compensative</button>
+</div>
+
 
   <div id="chiamate-container">
     <p>⏳ Seleziona una conference per visualizzare le chiamate.</p>
