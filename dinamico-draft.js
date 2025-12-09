@@ -74,39 +74,25 @@ function applicaBonusCoppaScambio(draft, roundBonus, squadraVincitrice) {
   const round = draft[roundIndex];
   if (!round) return draft;
 
-  // 1) prima pick del round: pick con pickNumber più basso in quel round
-  let firstPick = round[0];
-  round.forEach(p => {
-    if (p.pickNumber < firstPick.pickNumber) {
-      firstPick = p;
-    }
-  });
+  // 1) PRIMA pick del roundBonus → pick più bassa del round
+  let firstPick = round.reduce((a, b) => a.pickNumber < b.pickNumber ? a : b);
 
-  // 2) ultima pick della squadra vincitrice in tutto il draft
-  let lastPick = null;
-  draft.forEach(r => {
-    r.forEach(p => {
-      if (p.team === squadraVincitrice) {
-        if (!lastPick || p.pickNumber > lastPick.pickNumber) {
-          lastPick = p;
-        }
-      }
-    });
-  });
+  // 2) pick di Rubinkebab nel roundBonus
+  let kebabPick = round.find(p => p.team === squadraVincitrice);
 
-  if (!lastPick) return draft;
+  if (!kebabPick) return draft;
 
-  // 3) scambio dei TEAM (non dei numeri!)
+  // 3) scambio dei TEAM (non dei numeri)
   const tempTeam = firstPick.team;
-  firstPick.team = lastPick.team;
-  lastPick.team = tempTeam;
+  firstPick.team = kebabPick.team;
+  kebabPick.team = tempTeam;
 
-  // flag per eventuale stile
   firstPick.bonusCoppa = true;
-  lastPick.bonusCoppa = true;
+  kebabPick.bonusCoppa = true;
 
   return draft;
 }
+
 
 // Trasforma in formato finale
 function formattaDraft(draft) {
