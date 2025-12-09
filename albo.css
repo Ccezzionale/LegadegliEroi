@@ -138,33 +138,19 @@ td:nth-child(6) {
 /* ===== ACCORDION MOBILE ===== */
 
 .accordion {
-  display: none;
+  display: none;              /* desktop: nascosto, si vede solo la tabella */
   max-width: 600px;
-  margin: 0 auto;
+  margin: 10px auto 0;
+  padding: 0 8px;
 }
 
 .accordion-item {
-  background-color: rgba(255, 255, 255, 0.95);
-  margin-bottom: 10px;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 0 6px rgba(0,0,0,0.2);
+  background-color: transparent;
+  margin-bottom: 12px;
+  border-radius: 14px;
 }
 
-/* Colori speciali top3 anche su mobile */
-.accordion-item.top1 .accordion-header {
-  background: linear-gradient(to right, #ffd700, #fff5b3);
-  color: #000;
-}
-.accordion-item.top2 .accordion-header {
-  background: linear-gradient(to right, #c0c0c0, #f3f3f3);
-  color: #000;
-}
-.accordion-item.top3 .accordion-header {
-  background: linear-gradient(to right, #cd7f32, #ffe2c4);
-  color: #000;
-}
-
+/* Header card */
 .accordion-header {
   display: flex;
   align-items: center;
@@ -174,21 +160,46 @@ td:nth-child(6) {
   color: white;
   font-weight: bold;
   font-size: 1rem;
-  border-radius: 10px 10px 0 0;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
 }
 
+/* Logo con cerchio bianco per vederlo sempre */
 .accordion-header img {
   height: 48px;
   width: 48px;
   object-fit: contain;
   flex-shrink: 0;
+  background: #ffffff;          /* cerchio bianco dietro il logo */
+  border-radius: 50%;
+  padding: 4px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.35);
 }
 
+/* Contenuto nascosto */
 .accordion-content {
-  padding: 10px 16px;
+  padding: 10px 16px 14px;
   display: none;
-  background-color: #fff;
+  background-color: #f9fafb;
+  border-radius: 0 0 14px 14px;
+  border-top: 1px solid #e5e7eb;
   font-size: 0.95rem;
+}
+
+/* Colori speciali top3 anche su mobile */
+.accordion-item.top1 .accordion-header {
+  background: linear-gradient(to right, #ffd700, #fff5b3);
+  color: #000;
+}
+
+.accordion-item.top2 .accordion-header {
+  background: linear-gradient(to right, #c0c0c0, #f3f3f3);
+  color: #000;
+}
+
+.accordion-item.top3 .accordion-header {
+  background: linear-gradient(to right, #cd7f32, #ffe2c4);
+  color: #000;
 }
 
 /* ===== NAVBAR ===== */
@@ -304,6 +315,7 @@ nav {
     box-shadow: none;
   }
 
+  /* Mobile: nascondi tabella, mostra accordion */
   table {
     display: none;
   }
