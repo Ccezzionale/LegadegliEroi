@@ -221,6 +221,8 @@ nav {
 .pick.bonus-coppa {
   border: 2px solid gold;
   font-weight: 700;
+  background: rgba(255, 215, 0, 0.15);
+  border-radius: 6px;
 }
 
 .scambio-1 {
