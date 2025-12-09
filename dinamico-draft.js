@@ -18,7 +18,9 @@ const conferencePerSquadra = {
 };
 
 // --- CONFIG BONUS COPPA ---
+// round in cui Rubinkebab prende la prima scelta
 const ROUND_BONUS_COPPA = 10;
+// qui mettiamo solo il vincitore che deve ricevere la prima del round 10
 const vincitoreCoppaPerConference = {
   "Conference League": null,
   "Conference Championship": "Rubinkebab"
@@ -33,7 +35,7 @@ function generaSnakeDraftBase(teams, rounds) {
   });
 }
 
-// Applica gli scambi
+// Applica gli scambi normali (da CSV)
 function applicaScambi(draft, scambi, conference) {
   let scambioIdCounter = 1;
 
@@ -59,37 +61,49 @@ function applicaScambi(draft, scambi, conference) {
   return draft;
 }
 
-// BONUS COPPA: aggiunge una pick in testa al round indicato
-// es: nuova Pick #73 a Rubinkebab, poi tutto da 73 in su scala di +1
-function inserisciPickCoppa(draft, roundBonus, squadra) {
-  if (!squadra) return draft;
+/**
+ * Bonus Coppa (Conference Championship):
+ * scambia il "proprietario" della PRIMA pick del roundBonus
+ * con il "proprietario" dell'ULTIMA pick della squadra vincitrice.
+ * Non cambia i numeri di pick, quindi il totale resta identico.
+ */
+function applicaBonusCoppaScambio(draft, roundBonus, squadraVincitrice) {
+  if (!squadraVincitrice) return draft;
 
   const roundIndex = roundBonus - 1;
   const round = draft[roundIndex];
   if (!round) return draft;
 
-  // numero della prima pick di quel round (es. 73)
-  const firstPickNumber = Math.min(...round.map(p => p.pickNumber));
+  // 1) prima pick del round: pick con pickNumber più basso in quel round
+  let firstPick = round[0];
+  round.forEach(p => {
+    if (p.pickNumber < firstPick.pickNumber) {
+      firstPick = p;
+    }
+  });
 
-  // shifto tutte le pick ≥ firstPickNumber di +1
+  // 2) ultima pick della squadra vincitrice in tutto il draft
+  let lastPick = null;
   draft.forEach(r => {
     r.forEach(p => {
-      if (p.pickNumber >= firstPickNumber) {
-        p.pickNumber++;
+      if (p.team === squadraVincitrice) {
+        if (!lastPick || p.pickNumber > lastPick.pickNumber) {
+          lastPick = p;
+        }
       }
     });
   });
 
-  // nuova pick bonus
-  const bonusPick = {
-    team: squadra,
-    pickNumber: firstPickNumber,
-    scambioId: null,
-    bonusCoppa: true
-  };
+  if (!lastPick) return draft;
 
-  // la metto in testa al round 10
-  round.unshift(bonusPick);
+  // 3) scambio dei TEAM (non dei numeri!)
+  const tempTeam = firstPick.team;
+  firstPick.team = lastPick.team;
+  lastPick.team = tempTeam;
+
+  // flag per eventuale stile
+  firstPick.bonusCoppa = true;
+  lastPick.bonusCoppa = true;
 
   return draft;
 }
@@ -125,17 +139,13 @@ function generaDraftDaCSV(classificaCSV, scambiCSV) {
   // --- Conference League ---
   const leagueDraftBase = generaSnakeDraftBase(leagueTeams, 23);
   applicaScambi(leagueDraftBase, scambi, "Conference League");
-  inserisciPickCoppa(
-    leagueDraftBase,
-    ROUND_BONUS_COPPA,
-    vincitoreCoppaPerConference["Conference League"]
-  );
+  // niente bonus per ora
   const league = formattaDraft(leagueDraftBase);
 
   // --- Conference Championship ---
   const champDraftBase = generaSnakeDraftBase(champTeams, 23);
   applicaScambi(champDraftBase, scambi, "Conference Championship");
-  inserisciPickCoppa(
+  applicaBonusCoppaScambio(
     champDraftBase,
     ROUND_BONUS_COPPA,
     vincitoreCoppaPerConference["Conference Championship"]
@@ -215,4 +225,3 @@ Promise.all([
 .catch(err => {
   console.error("Errore nel caricamento del draft:", err);
 });
-
