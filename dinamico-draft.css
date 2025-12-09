@@ -218,6 +218,11 @@ nav {
   border-radius: 4px;
 }
 
+.pick.bonus-coppa {
+  border: 2px solid gold;
+  font-weight: 700;
+}
+
 .scambio-1 {
   background-color: #ff9999; /* rosso chiaro */
 }
