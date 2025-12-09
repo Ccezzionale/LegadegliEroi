@@ -52,6 +52,43 @@ function applicaScambi(draft, scambi, conference) {
   return draft;
 }
 
+// 🔹 BONUS KEBA B: sposta la sua ultima pick al numero 73
+function applicaBonusRubinkebab(draftChampionship) {
+  const squadra = "Rubinkebab";
+  const targetNumber = 73;   // prima pick del round 10
+
+  // 1) trova l'ultima pick di Rubinkebab (pickNumber massimo tra le sue)
+  let lastPick = null;
+  draftChampionship.forEach(round => {
+    round.forEach(p => {
+      if (p.team === squadra) {
+        if (!lastPick || p.pickNumber > lastPick.pickNumber) {
+          lastPick = p;
+        }
+      }
+    });
+  });
+  if (!lastPick) return draftChampionship;
+
+  const oldNumber = lastPick.pickNumber; // es. 179
+  if (oldNumber === targetNumber) return draftChampionship; // già a posto
+
+  // 2) rinumera:
+  // - le pick tra 73 e oldNumber-1 vanno su di 1
+  // - la vecchia oldNumber di Kebab diventa 73
+  draftChampionship.forEach(round => {
+    round.forEach(p => {
+      if (p === lastPick) return;
+      if (p.pickNumber >= targetNumber && p.pickNumber < oldNumber) {
+        p.pickNumber++;
+      }
+    });
+  });
+
+  lastPick.pickNumber = targetNumber;
+  return draftChampionship;
+}
+
 // Trasforma in formato finale
 function formattaDraft(draft) {
   return draft.map((round, i) => ({
@@ -79,9 +116,20 @@ function generaDraftDaCSV(classificaCSV, scambiCSV) {
     return [conf, parseInt(round1), squadra1, parseInt(round2), squadra2];
   });
 
+  // --- Conference League (immutata) ---
+  const leagueDraftBase = generaSnakeDraftBase(leagueTeams, 23);
+  applicaScambi(leagueDraftBase, scambi, "Conference League");
+  const league = formattaDraft(leagueDraftBase);
+
+  // --- Conference Championship + bonus Kebab ---
+  const champDraftBase = generaSnakeDraftBase(champTeams, 23);
+  applicaScambi(champDraftBase, scambi, "Conference Championship");
+  applicaBonusRubinkebab(champDraftBase);
+  const championship = formattaDraft(champDraftBase);
+
   return {
-    league: formattaDraft(applicaScambi(generaSnakeDraftBase(leagueTeams, 23), scambi, "Conference League")),
-    championship: formattaDraft(applicaScambi(generaSnakeDraftBase(champTeams, 23), scambi, "Conference Championship"))
+    league,
+    championship
   };
 }
 
@@ -142,4 +190,3 @@ Promise.all([
 .catch(err => {
   console.error("Errore nel caricamento del draft:", err);
 });
-
