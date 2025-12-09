@@ -167,7 +167,8 @@ function generaTabellaVerticale(containerId, draftData) {
 
     draftPerSquadra[squadra].forEach(pick => {
       const scambioClass = pick.scambioId ? `scambio-${pick.scambioId}` : "";
-      html += `<div class="pick ${scambioClass}">Pick #${pick.pickNumber}</div>`;
+      const bonusClass = pick.bonusCoppa ? "bonus-coppa" : "";
+html += `<div class="pick ${scambioClass} ${bonusClass}">Pick #${pick.pickNumber}</div>`;
     });
 
     html += `</div></div>`;
