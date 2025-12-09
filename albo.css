@@ -1,34 +1,39 @@
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-size: cover;
-      color: #212529;
-      padding: 20px;
-    }
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #e9edf5;          /* leggero sfondo neutro */
+  background-size: cover;
+  color: #212529;
+  margin: 0;
+  padding: 20px;
+}
 
-    h1 {
-      text-align: center;
-      color: #001f3f;
-      margin-bottom: 30px;
-      text-transform: uppercase;
-      text-shadow: 2px 2px 6px #ffcc00;
-      letter-spacing: 1px;
-    }
+h1 {
+  text-align: center;
+  color: #001f3f;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 6px #ffcc00;
+  letter-spacing: 1px;
+  font-weight: 800;
+}
 
-    /* Desktop table */
-    table {
-      width: 95%;
-      max-width: 1000px;
-      border-collapse: separate;
-      border-spacing: 0 12px;
-      margin: 0 auto;
-      font-size: 1.1rem;
-      backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.15);
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 0 12px rgba(0,0,0,0.4);
-    }
+/* ===== TABELLA DESKTOP ===== */
 
+table {
+  width: 95%;
+  max-width: 1000px;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+  margin: 0 auto;
+  font-size: 1.05rem;
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 0 14px rgba(0,0,0,0.35);
+}
+
+/* Header tabella */
 th {
   background-color: #001f3f; /* 🔵 Blu Lega degli Eroi */
   color: #fff;
@@ -37,26 +42,60 @@ th {
   text-shadow: 1px 1px 2px #000;
   text-align: left;
 }
-    
 
-    td {
-      padding: 14px 12px;
-      text-align: left;
-      background-color: rgba(255, 255, 255, 0.85);
-      border-bottom: 2px solid #ccc;
-      vertical-align: middle;
-    }
+thead th:first-child {
+  border-top-left-radius: 18px;
+}
+thead th:last-child {
+  border-top-right-radius: 18px;
+}
 
-    tr:hover td {
-      background-color: rgba(255, 255, 255, 0.95);
-      transform: scale(1.01);
-      transition: all 0.2s ease-in-out;
-    }
+/* Righe corpo */
+tbody tr {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
 
-    .top1 td { background-color: rgba(255, 215, 0, 0.85); color: #000; font-weight: bold; }
-    .top2 td { background-color: rgba(192, 192, 192, 0.85); color: #000; font-weight: bold; }
-    .top3 td { background-color: rgba(205, 127, 50, 0.85); color: #000; font-weight: bold; }
+td {
+  padding: 14px 12px;
+  text-align: left;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-bottom: 2px solid #ccc;
+  vertical-align: middle;
+}
 
+/* Hover riga */
+tbody tr:hover td {
+  background-color: rgba(255, 255, 255, 0.98);
+}
+
+tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+/* Evidenzia TOP 3 con gradiente e banda laterale */
+.top1 td {
+  background: linear-gradient(to right, rgba(255,215,0,0.95), rgba(255,255,255,0.9));
+  color: #000;
+  font-weight: 700;
+  box-shadow: inset 4px 0 0 #b59a00;
+}
+
+.top2 td {
+  background: linear-gradient(to right, rgba(192,192,192,0.95), rgba(255,255,255,0.9));
+  color: #000;
+  font-weight: 700;
+  box-shadow: inset 4px 0 0 #808080;
+}
+
+.top3 td {
+  background: linear-gradient(to right, rgba(205,127,50,0.95), rgba(255,255,255,0.9));
+  color: #000;
+  font-weight: 700;
+  box-shadow: inset 4px 0 0 #8b5a2b;
+}
+
+/* Logo squadra */
 .logo-squadra {
   height: 48px;
   width: 48px;
@@ -66,12 +105,13 @@ th {
 
 .logo-placeholder {
   width: 48px;
-  height: 48px;     /* 👈 stesso dell'immagine */
+  height: 48px;
   display: inline-block;
   flex-shrink: 0;
 }
 
-    th:nth-child(3),
+/* Centra le colonne numeriche (oro, argento, bronzo, totale) */
+th:nth-child(3),
 th:nth-child(4),
 th:nth-child(5),
 th:nth-child(6),
@@ -82,43 +122,59 @@ td:nth-child(6) {
   text-align: center;
 }
 
+/* Nome squadra + logo */
 .nome-squadra {
   font-weight: bold;
   font-size: 1.1rem;
-  line-height: normal; /* 👈 rimuove l'offset verticale */
+  line-height: normal;
 }
-    
+
 .squadra-wrapper {
   display: flex;
   align-items: center;
-  gap: 10px; /* 👈 questo crea lo stesso spazio tra logo e nome */
+  gap: 10px;
 }
 
-    /* Mobile Accordion */
-    .accordion {
-      display: none;
-      max-width: 600px;
-      margin: 0 auto;
-    }
+/* ===== ACCORDION MOBILE ===== */
 
-    .accordion-item {
-      background-color: rgba(255, 255, 255, 0.9);
-      margin-bottom: 10px;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 0 6px rgba(0,0,0,0.2);
-    }
+.accordion {
+  display: none;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.accordion-item {
+  background-color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 6px rgba(0,0,0,0.2);
+}
+
+/* Colori speciali top3 anche su mobile */
+.accordion-item.top1 .accordion-header {
+  background: linear-gradient(to right, #ffd700, #fff5b3);
+  color: #000;
+}
+.accordion-item.top2 .accordion-header {
+  background: linear-gradient(to right, #c0c0c0, #f3f3f3);
+  color: #000;
+}
+.accordion-item.top3 .accordion-header {
+  background: linear-gradient(to right, #cd7f32, #ffe2c4);
+  color: #000;
+}
 
 .accordion-header {
   display: flex;
-  align-items: center;     /* 👈 centra verticalmente */
+  align-items: center;
   gap: 12px;
   padding: 12px 16px;
   background-color: #001f3f;
   color: white;
   font-weight: bold;
   font-size: 1rem;
-  border-radius: 8px;
+  border-radius: 10px 10px 0 0;
 }
 
 .accordion-header img {
@@ -128,11 +184,14 @@ td:nth-child(6) {
   flex-shrink: 0;
 }
 
-    .accordion-content {
-      padding: 10px 16px;
-      display: none;
-      background-color: #fff;
-    }
+.accordion-content {
+  padding: 10px 16px;
+  display: none;
+  background-color: #fff;
+  font-size: 0.95rem;
+}
+
+/* ===== NAVBAR ===== */
 
 nav {
   background-color: #001f3f;
@@ -142,6 +201,7 @@ nav {
   justify-content: space-between;
   padding: 10px 20px;
   flex-wrap: wrap;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 .nav-left {
@@ -183,11 +243,13 @@ nav {
   color: white;
   padding: 8px 12px;
   display: block;
+  border-radius: 6px;
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 
 .navbar a:hover {
   background-color: #0074D9;
-  border-radius: 6px;
+  transform: translateY(-1px);
 }
 
 .submenu {
@@ -199,6 +261,7 @@ nav {
   padding: 0;
   margin: 0;
   border-radius: 6px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
 }
 
 .dropdown.show .submenu {
@@ -209,9 +272,16 @@ nav {
   padding: 8px 16px;
 }
 
+/* ===== RESPONSIVE ===== */
+
 @media (max-width: 768px) {
   .hamburger {
     display: block;
+  }
+
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .navbar {
@@ -231,8 +301,14 @@ nav {
 
   .submenu {
     position: static;
+    box-shadow: none;
   }
 
-      table { display: none; }
-      .accordion { display: block; }
-    }
+  table {
+    display: none;
+  }
+
+  .accordion {
+    display: block;
+  }
+}
