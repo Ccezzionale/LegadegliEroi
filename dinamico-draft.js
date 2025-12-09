@@ -17,15 +17,6 @@ const conferencePerSquadra = {
   "Athletic Pongao": "Conference League"
 };
 
-// --- CONFIG BONUS COPPA ---
-// round in cui Rubinkebab prende la prima scelta
-const ROUND_BONUS_COPPA = 10;
-// qui mettiamo solo il vincitore che deve ricevere la prima del round 10
-const vincitoreCoppaPerConference = {
-  "Conference League": null,
-  "Conference Championship": "Rubinkebab"
-};
-
 // Serpentina base
 function generaSnakeDraftBase(teams, rounds) {
   let pickCounter = 1;
@@ -35,7 +26,7 @@ function generaSnakeDraftBase(teams, rounds) {
   });
 }
 
-// Applica gli scambi normali (da CSV)
+// Applica gli scambi
 function applicaScambi(draft, scambi, conference) {
   let scambioIdCounter = 1;
 
@@ -61,39 +52,6 @@ function applicaScambi(draft, scambi, conference) {
   return draft;
 }
 
-/**
- * Bonus Coppa (Conference Championship):
- * scambia il "proprietario" della PRIMA pick del roundBonus
- * con il "proprietario" dell'ULTIMA pick della squadra vincitrice.
- * Non cambia i numeri di pick, quindi il totale resta identico.
- */
-function applicaBonusCoppaScambio(draft, roundBonus, squadraVincitrice) {
-  if (!squadraVincitrice) return draft;
-
-  const roundIndex = roundBonus - 1;
-  const round = draft[roundIndex];
-  if (!round) return draft;
-
-  // 1) PRIMA pick del roundBonus → pick più bassa del round
-  let firstPick = round.reduce((a, b) => a.pickNumber < b.pickNumber ? a : b);
-
-  // 2) pick di Rubinkebab nel roundBonus
-  let kebabPick = round.find(p => p.team === squadraVincitrice);
-
-  if (!kebabPick) return draft;
-
-  // 3) scambio dei TEAM (non dei numeri)
-  const tempTeam = firstPick.team;
-  firstPick.team = kebabPick.team;
-  kebabPick.team = tempTeam;
-
-  firstPick.bonusCoppa = true;
-  kebabPick.bonusCoppa = true;
-
-  return draft;
-}
-
-
 // Trasforma in formato finale
 function formattaDraft(draft) {
   return draft.map((round, i) => ({
@@ -101,8 +59,7 @@ function formattaDraft(draft) {
     Picks: round.map(p => ({
       team: p.team,
       pickNumber: p.pickNumber,
-      scambioId: p.scambioId || null,
-      bonusCoppa: !!p.bonusCoppa
+      scambioId: p.scambioId || null
     }))
   }));
 }
@@ -122,25 +79,9 @@ function generaDraftDaCSV(classificaCSV, scambiCSV) {
     return [conf, parseInt(round1), squadra1, parseInt(round2), squadra2];
   });
 
-  // --- Conference League ---
-  const leagueDraftBase = generaSnakeDraftBase(leagueTeams, 23);
-  applicaScambi(leagueDraftBase, scambi, "Conference League");
-  // niente bonus per ora
-  const league = formattaDraft(leagueDraftBase);
-
-  // --- Conference Championship ---
-  const champDraftBase = generaSnakeDraftBase(champTeams, 23);
-  applicaScambi(champDraftBase, scambi, "Conference Championship");
-  applicaBonusCoppaScambio(
-    champDraftBase,
-    ROUND_BONUS_COPPA,
-    vincitoreCoppaPerConference["Conference Championship"]
-  );
-  const championship = formattaDraft(champDraftBase);
-
   return {
-    league,
-    championship
+    league: formattaDraft(applicaScambi(generaSnakeDraftBase(leagueTeams, 23), scambi, "Conference League")),
+    championship: formattaDraft(applicaScambi(generaSnakeDraftBase(champTeams, 23), scambi, "Conference Championship"))
   };
 }
 
@@ -154,24 +95,15 @@ function generaTabellaVerticale(containerId, draftData) {
 
   const squadre = draftData[0].Picks.map(p => p.team);
   const draftPerSquadra = {};
-  squadre.forEach(s => { draftPerSquadra[s] = []; });
+  squadre.forEach(s => draftPerSquadra[s] = []);
 
   draftData.forEach(round => {
     round.Picks.forEach(p => {
-      if (!draftPerSquadra[p.team]) {
-        draftPerSquadra[p.team] = [];
-      }
-      draftPerSquadra[p.team].push({
+      draftPerSquadra[p.team]?.push({
         pickNumber: p.pickNumber,
-        scambioId: p.scambioId,
-        bonusCoppa: p.bonusCoppa
+        scambioId: p.scambioId
       });
     });
-  });
-
-  // ordino le pick per numero
-  Object.values(draftPerSquadra).forEach(lista => {
-    lista.sort((a, b) => a.pickNumber - b.pickNumber);
   });
 
   let html = '<div class="draft-scroll"><div class="draft-columns">';
@@ -187,8 +119,7 @@ function generaTabellaVerticale(containerId, draftData) {
 
     draftPerSquadra[squadra].forEach(pick => {
       const scambioClass = pick.scambioId ? `scambio-${pick.scambioId}` : "";
-      const bonusClass = pick.bonusCoppa ? " bonus-coppa" : "";
-      html += `<div class="pick ${scambioClass}${bonusClass}">Pick #${pick.pickNumber}</div>`;
+      html += `<div class="pick ${scambioClass}">Pick #${pick.pickNumber}</div>`;
     });
 
     html += `</div></div>`;
@@ -211,3 +142,4 @@ Promise.all([
 .catch(err => {
   console.error("Errore nel caricamento del draft:", err);
 });
+
