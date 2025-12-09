@@ -85,18 +85,22 @@ function applicaBonusRubinkebab(draftChampionship) {
     });
   });
 
-  lastPick.pickNumber = targetNumber;
-  return draftChampionship;
+lastPick.pickNumber = targetNumber;
+lastPick.bonusCoppa = true;   // 👈 evidenzia questa pick
+
+return draftChampionship;
+
 }
 
 // Trasforma in formato finale
 function formattaDraft(draft) {
   return draft.map((round, i) => ({
     Round: i + 1,
-    Picks: round.map(p => ({
-      team: p.team,
-      pickNumber: p.pickNumber,
-      scambioId: p.scambioId || null
+   Picks: round.map(p => ({
+  team: p.team,
+  pickNumber: p.pickNumber,
+  scambioId: p.scambioId || null,
+  bonusCoppa: !!p.bonusCoppa
     }))
   }));
 }
@@ -149,7 +153,8 @@ function generaTabellaVerticale(containerId, draftData) {
     round.Picks.forEach(p => {
       draftPerSquadra[p.team]?.push({
         pickNumber: p.pickNumber,
-        scambioId: p.scambioId
+        scambioId: p.scambioId,
+        bonusCoppa: p.bonusCoppa
       });
     });
   });
