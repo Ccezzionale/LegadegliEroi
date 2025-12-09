@@ -1,94 +1,222 @@
+/* ===== MEDAGLIERE – LAYOUT GENERALE ===== */
 
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: radial-gradient(circle at top, #ffffff 0, #e5ecf5 40%, #cfd8e3 100%);
+  color: #222;
+  margin: 0;
+  padding: 0;
+}
+
+/* Titolo pagina */
+.titolo-pagina {
+  text-align: center;
+  color: #001f3f;
+  font-size: 2.3rem;
+  margin: 30px 0 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 6px #FFD700;
+}
+
+/* Contenitore blocchi */
 .blocchi-medagliere {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
   padding: 20px;
+  max-width: 1100px;
+  margin: 0 auto 40px auto;
 }
+
+/* ===== CARD COMPETIZIONE ===== */
 
 .blocco-competizione {
-  background-color: #001f3f; /* 🔵 blu */
+  background: linear-gradient(145deg, #001f3f, #003366);
   color: white;
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
-  width: 250px;
-  text-align: center;
+  padding: 16px 16px 12px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  width: 260px;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, translate 0.2s ease;
 }
 
+.blocco-competizione::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  top: -40px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(255,204,0,0.55) 0, transparent 60%);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.blocco-competizione:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 26px rgba(0,0,0,0.3);
+}
+
+/* Titolo competizione */
 .blocco-competizione h2 {
-  font-size: 1.2rem;
-  color: #ffcc00; /* giallo/arancio */
-  margin-bottom: 12px;
-  text-shadow: 1px 1px 2px #000; /* ombra più marcata */
-  height: 48px;
+  font-size: 1.15rem;
+  color: #ffcc00;
+  margin: 0 0 12px;
+  text-shadow: 1px 1px 3px #000;
+  height: auto;
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  line-height: 1.2;
-  padding: 0 6px;
-  border-bottom: 2px solid #ffcc00; /* bordo per definizione */
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(255,204,0,0.8);
 }
 
+.blocco-competizione h2::before {
+  content: "🏆";
+  font-size: 1.3rem;
+}
+
+/* Piccola etichetta categoria (se vuoi usarla tipo "Coppe", "Titoli" ecc.) */
+.badge-categoria {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(0,0,0,0.35);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+/* Lista squadre */
 .blocco-competizione ol {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 8px 0 0;
 }
 
+/* Riga singola del podio */
 .blocco-competizione li {
-  font-weight: bold;
-  padding: 6px 0;
+  font-weight: 600;
+  padding: 6px 8px;
+  display: grid;
+  grid-template-columns: 24px 32px 1fr;
+  align-items: center;
+  gap: 8px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  position: relative;
+}
+
+/* Badge posizione 1–3 */
+.blocco-competizione li::before {
+  content: attr(data-pos);
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.5);
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: #fff;
 }
 
+/* Logo squadra */
 .blocco-competizione li img {
-  height: 28px;
-  width: 28px;
+  height: 30px;
+  width: 30px;
   object-fit: contain;
   flex-shrink: 0;
 }
 
-.oro { background-color: #ffd70033; }
-.argento { background-color: #c0c0c033; }
-.bronzo { background-color: #cd7f3233; }
+/* Nome + medaglie */
+.nome-squadra {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 
+.nome-squadra .nome {
+  font-size: 0.9rem;
+}
+
+/* Pilloline medaglie */
+.medaglie {
+  display: flex;
+  gap: 4px;
+  font-size: 0.72rem;
+}
+
+.medal-pill {
+  padding: 1px 6px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(0,0,0,0.28);
+}
+
+.medal-pill span {
+  font-weight: 700;
+}
+
+/* Colori medaglie */
+.medal-oro    { color: #ffd700; }
+.medal-arg    { color: #e0e0e0; }
+.medal-bronzo { color: #f2b079; }
+
+/* Evidenzia le righe in base al “metallo dominante” (facoltativo) */
+.oro     { background: #ffd70026; }
+.argento { background: #c0c0c026; }
+.bronzo  { background: #cd7f3226; }
+
+/* Blocco anni */
 .blocco-competizione .anno {
   background-color: white;
   color: #222;
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: 10px;
+  padding: 8px 10px;
   margin-top: 10px;
   border: 1px solid #ddd;
+  font-size: 0.85rem;
 }
+
+.titolo-anno {
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.titolo-anno::after {
+  content: "▾";
+  font-size: 0.8rem;
+}
+
+.anno.attivo .titolo-anno::after {
+  content: "▴";
+}
+
 .anno .contenuto-anno {
   display: none;
+  margin-top: 4px;
 }
 
 .anno.attivo .contenuto-anno {
   display: block;
 }
 
-.titolo-pagina {
-  text-align: center;
-  color: #001f3f;
-  font-size: 2.2rem;
-  margin: 30px 0 20px;
-  font-weight: 700;
-  text-shadow: 2px 2px 6px #FFD700; /* giallo oro tenue */
-}
-
-
-.titolo-anno {
-  font-weight: bold;
-  cursor: pointer;
-  margin-bottom: 8px;
-}
+/* ===== NAVBAR ===== */
 
 nav {
   background-color: #001f3f;
@@ -98,6 +226,10 @@ nav {
   justify-content: space-between;
   padding: 10px 20px;
   flex-wrap: wrap;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .nav-left {
@@ -114,7 +246,7 @@ nav {
 }
 
 .hamburger {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   cursor: pointer;
   display: none;
   color: white;
@@ -139,22 +271,26 @@ nav {
   color: white;
   padding: 8px 12px;
   display: block;
+  border-radius: 6px;
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 
 .navbar a:hover {
   background-color: #0074D9;
-  border-radius: 6px;
+  transform: translateY(-1px);
 }
 
+/* Submenu */
 .submenu {
   display: none;
   position: absolute;
   top: 100%;
   background-color: #001f3f;
   list-style: none;
-  padding: 0;
+  padding: 6px 0;
   margin: 0;
   border-radius: 6px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
 }
 
 .dropdown.show .submenu {
@@ -165,9 +301,16 @@ nav {
   padding: 8px 16px;
 }
 
+/* ===== RESPONSIVE ===== */
+
 @media (max-width: 768px) {
   .hamburger {
     display: block;
+  }
+
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .navbar {
@@ -187,16 +330,16 @@ nav {
 
   .submenu {
     position: static;
+    box-shadow: none;
   }
 
   .blocchi-medagliere {
-    display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
   }
 
   .blocco-competizione {
-    width: 90% !important;
-    max-width: 400px !important;
+    width: 94% !important;
+    max-width: 420px !important;
   }
 }
