@@ -74,20 +74,41 @@ function normalize(vals){
 }
 
 /********** DATA PREP **********/
+
+function canonTeamName(name){
+  return String(name || '')
+    .trim()
+    .replace(/\s+/g,' ')
+    .toLowerCase();
+}
+
 function sanitizeRows(rows, phaseFilter){
   const filtered = rows.filter(r => !phaseFilter || r.Phase === phaseFilter)
     .map(r => {
       const GW = +r.GW || null;
-      const Team = (r.Team || '').trim();
-      const Opponent = (r.Opponent || '').trim();
-      const PF = parseNumber(r.PointsFor);
-      const PA = parseNumber(r.PointsAgainst);
-      let Result = (r.Result || '').trim();
-      if (!Result && Number.isFinite(PF) && Number.isFinite(PA)) {
-        Result = PF>PA ? 'W' : PF<PA ? 'L' : 'D';
-      }
-      return { GW, Team, Opponent, Result, PointsFor: PF, PointsAgainst: PA };
-    })
+
+const Team = (r.Team || '').trim();
+const Opponent = (r.Opponent || '').trim();
+
+const TeamKey = canonTeamName(Team);
+const OpponentKey = canonTeamName(Opponent);
+
+const PF = parseNumber(r.PointsFor);
+const PA = parseNumber(r.PointsAgainst);
+
+let Result = (r.Result || '').trim();
+if (!Result && Number.isFinite(PF) && Number.isFinite(PA)) {
+  Result = PF>PA ? 'W' : PF<PA ? 'L' : 'D';
+}
+
+return {
+  GW,
+  Team, Opponent,          // label originali (per UI e loghi)
+  TeamKey, OpponentKey,    // chiavi canoniche (per calcoli)
+  Result,
+  PointsFor: PF,
+  PointsAgainst: PA
+};
     .filter(r =>
       r.GW &&
       Number.isFinite(r.PointsFor) &&
@@ -98,7 +119,7 @@ function sanitizeRows(rows, phaseFilter){
   // dedupe Team×GW
   const seen = new Set(), out=[];
   for(const r of filtered){
-    const key = r.Team + '|' + r.GW;
+    const key = r.TeamKey + '|' + r.GW;
     if(!seen.has(key)){ seen.add(key); out.push(r); }
   }
   return out;
@@ -106,8 +127,13 @@ function sanitizeRows(rows, phaseFilter){
 
 /********** POWER RANKING **********/
 function computePower(clean){
-  const byTeam = groupBy(clean, 'Team');
+  const byTeam = groupBy(clean, 'TeamKey');
   const teams = Array.from(byTeam.keys()).filter(Boolean);
+  const labelByKey = new Map();
+for (const r of clean){
+  if (r.TeamKey && r.Team && !labelByKey.has(r.TeamKey)) labelByKey.set(r.TeamKey, r.Team);
+}
+
   const maxGW = Math.max(...clean.map(r => r.GW||0));
   const prevGW = Number.isFinite(maxGW) ? maxGW - 1 : null;
 
@@ -128,7 +154,14 @@ function computePower(clean){
 
   const now=scoreAt(maxGW), prev=prevGW>=1?scoreAt(prevGW):[];
   const prevPos=new Map(); prev.forEach((it,idx)=>prevPos.set(it.team,idx+1));
-  const ranked = now.map((it,idx)=>({ rank:idx+1, team:it.team, score:it.score, forma:it.forma, media:it.media, cons:it.cons, delta:(prevPos.get(it.team)||idx+1)-(idx+1) }));
+ const ranked = now.map((it,idx)=>({
+  rank: idx+1,
+  teamKey: it.team,
+  team: (labelByKey.get(it.team) || it.team), // nome originale
+  score: it.score, forma: it.forma, media: it.media, cons: it.cons,
+  delta: (prevPos.get(it.team)||idx+1)-(idx+1)
+}));
+
   return { ranked, maxGW };
 }
 
