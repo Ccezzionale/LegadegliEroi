@@ -102,7 +102,14 @@ function sanitizeRows(rows, phaseFilter){
         Result = PF>PA ? 'W' : PF<PA ? 'L' : 'D';
       }
 
-      return { GW, Team, Opponent, TeamKey, OpponentKey, Result, PointsFor: PF, PointsAgainst: PA };
+      return {
+        GW,
+        Team, Opponent,
+        TeamKey, OpponentKey,
+        Result,
+        PointsFor: PF,
+        PointsAgainst: PA
+      };
     })
     .filter(r =>
       r.GW &&
@@ -111,6 +118,7 @@ function sanitizeRows(rows, phaseFilter){
       !(r.PointsFor===0 && r.PointsAgainst===0)
     );
 
+  // dedupe TeamKey×GW
   const seen = new Set(), out=[];
   for(const r of filtered){
     const key = r.TeamKey + '|' + r.GW;
@@ -118,6 +126,7 @@ function sanitizeRows(rows, phaseFilter){
   }
   return out;
 }
+
 
 
 /********** POWER RANKING **********/
