@@ -83,32 +83,27 @@ function canonTeamName(name){
 }
 
 function sanitizeRows(rows, phaseFilter){
-  const filtered = rows.filter(r => !phaseFilter || r.Phase === phaseFilter)
+  const filtered = rows
+    .filter(r => !phaseFilter || r.Phase === phaseFilter)
     .map(r => {
       const GW = +r.GW || null;
 
-const Team = (r.Team || '').trim();
-const Opponent = (r.Opponent || '').trim();
+      const Team = (r.Team || '').trim();
+      const Opponent = (r.Opponent || '').trim();
 
-const TeamKey = canonTeamName(Team);
-const OpponentKey = canonTeamName(Opponent);
+      const TeamKey = canonTeamName(Team);
+      const OpponentKey = canonTeamName(Opponent);
 
-const PF = parseNumber(r.PointsFor);
-const PA = parseNumber(r.PointsAgainst);
+      const PF = parseNumber(r.PointsFor);
+      const PA = parseNumber(r.PointsAgainst);
 
-let Result = (r.Result || '').trim();
-if (!Result && Number.isFinite(PF) && Number.isFinite(PA)) {
-  Result = PF>PA ? 'W' : PF<PA ? 'L' : 'D';
-}
+      let Result = (r.Result || '').trim();
+      if (!Result && Number.isFinite(PF) && Number.isFinite(PA)) {
+        Result = PF>PA ? 'W' : PF<PA ? 'L' : 'D';
+      }
 
-return {
-  GW,
-  Team, Opponent,          // label originali (per UI e loghi)
-  TeamKey, OpponentKey,    // chiavi canoniche (per calcoli)
-  Result,
-  PointsFor: PF,
-  PointsAgainst: PA
-};
+      return { GW, Team, Opponent, TeamKey, OpponentKey, Result, PointsFor: PF, PointsAgainst: PA };
+    })
     .filter(r =>
       r.GW &&
       Number.isFinite(r.PointsFor) &&
@@ -116,7 +111,6 @@ return {
       !(r.PointsFor===0 && r.PointsAgainst===0)
     );
 
-  // dedupe Team×GW
   const seen = new Set(), out=[];
   for(const r of filtered){
     const key = r.TeamKey + '|' + r.GW;
@@ -124,6 +118,7 @@ return {
   }
   return out;
 }
+
 
 /********** POWER RANKING **********/
 function computePower(clean){
