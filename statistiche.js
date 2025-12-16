@@ -58,7 +58,7 @@ function parseCSV(text){
   const head = rows.shift().map(s=>s.trim());
   const objs = rows.filter(r=>r.length && r.some(x=>x!=="")).map(r=>{
     const o={}; for(let k=0;k<head.length;k++) o[head[k]]=(r[k]??'').trim();
-    o.GW=+o.GW||null; o.PointsFor=parseNumber(o.PointsFor); o.PointsAgainst=parseNumber(o.PointsAgainst);
+    o.GW = +(o.GW_Stagionale || o.GW) || null; o.PointsFor=parseNumber(o.PointsFor); o.PointsAgainst=parseNumber(o.PointsAgainst);
     return o;
   });
   return { head, rows: objs };
