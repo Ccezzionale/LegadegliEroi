@@ -489,25 +489,45 @@ function renderTopScores(list){
   );
 }
 
-/* ================= ANDAMENTO SQUADRE (fix) ================= */
+/* ================= ANDAMENTO SQUADRE (fix: team case-insensitive) ================= */
 let trendChart = null; // istanza Chart.js
 
-function buildTrendStructures(clean){
-  const allGW = Array.from(new Set(clean.map(r=>r.GW))).sort((a,b)=>a-b);
+function normTeamName(s){
+  return String(s || '')
+    .trim()
+    .replace(/\s+/g, ' '); // collassa doppi spazi
+}
+function teamKey(s){
+  return normTeamName(s).toLowerCase(); // chiave per dedup (case-insensitive)
+}
 
-  // mediana per GW
+function buildTrendStructures(clean){
+  // 0) Normalizza i nomi squadra: stesso team anche se cambia maiuscolo/minuscolo
+  //    Manteniamo come "display name" la prima occorrenza incontrata
+  const displayByKey = new Map();
+  for (const r of clean){
+    const key = teamKey(r.Team);
+    const disp = normTeamName(r.Team);
+    if (!displayByKey.has(key)) displayByKey.set(key, disp);
+    r.Team = displayByKey.get(key);
+  }
+
+  // 1) tutte le GW ordinate
+  const allGW = Array.from(new Set(clean.map(r => +r.GW))).sort((a,b)=>a-b);
+
+  // 2) mediana per GW
   const medByGW = new Map();
   const byGW = groupBy(clean, 'GW');
   for (const [gw, rows] of byGW.entries()){
-    medByGW.set(+gw, median(rows.map(r=> r.PointsFor)));
+    medByGW.set(+gw, median(rows.map(r => r.PointsFor)));
   }
 
-  // PF per squadra per GW
+  // 3) PF per squadra per GW
   const byTeam = groupBy(clean, 'Team');
   const teamMap = new Map();
   for (const [team, rows] of byTeam.entries()){
     const m = new Map();
-    rows.forEach(r => m.set(r.GW, r.PointsFor));
+    rows.forEach(r => m.set(+r.GW, r.PointsFor));
     teamMap.set(team, m);
   }
 
@@ -536,7 +556,9 @@ function renderTrend(structs, team1, team2, showMedian){
   const ds = [];
   if (team1) ds.push(mkDataset(team1, seriesForTeam(team1, structs)));
   if (team2 && team2 !== team1) ds.push(mkDataset(team2, seriesForTeam(team2, structs)));
-  if (showMedian) ds.push(mkDataset('Mediana GW', structs.allGW.map(gw => structs.medByGW.get(gw) ?? null), true));
+  if (showMedian) ds.push(
+    mkDataset('Mediana GW', structs.allGW.map(gw => structs.medByGW.get(gw) ?? null), true)
+  );
 
   const config = {
     type: 'line',
@@ -585,6 +607,7 @@ function initTrend(clean, defaultTeam){
 
   function draw(){ renderTrend(structs, sel1.value, sel2.value, chk.checked); }
   btn.addEventListener('click', draw);
+
   // prima render automatica
   draw();
 }
