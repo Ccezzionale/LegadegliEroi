@@ -11,8 +11,198 @@ function formattaNumero(val) {
   }
   return val;
 }
+function normTeamName(val){
+  return String(val || "").replace(/[👑🎖️💀]/g, "").trim();
+}
 
-function caricaClassifica(nomeFoglio = "Conference") {
+function parseCSVbasic(csv){
+  // NB: è il tuo stesso approccio (split su virgola). Va bene se il CSV non ha virgole dentro celle.
+  return csv.trim().split(/\r?\n/).map(r => r.split(",").map(c => c.replace(/"/g, "").trim()));
+}
+
+function toNumberSmart(x){
+  // accetta "12.5" o "12,5"
+  const s = String(x ?? "").replace(",", ".");
+  const n = parseFloat(s);
+  return Number.isFinite(n) ? n : 0;
+}
+
+async function teamPointsFromSheet(sheetName){
+  // sheetName: "Conference" o "Championship"
+  const url = URL_MAP[sheetName];
+  const text = await fetch(url).then(r => r.text());
+  const rows = parseCSVbasic(text);
+
+  const startRow = 4; // come il tuo
+  const header = rows[startRow - 1];
+  // rimuovi la colonna vuota (C) come fai tu
+  const headerFixed = [...header];
+  headerFixed.splice(2, 1);
+
+  // prova a trovare la colonna punti: prima "PT", altrimenti "Punti", altrimenti penultima (come il tuo accordion)
+  let idxPT = headerFixed.findIndex(h => h.toUpperCase() === "PT");
+  if (idxPT === -1) idxPT = headerFixed.findIndex(h => h.toLowerCase().includes("punt"));
+  
+  const map = new Map();
+
+  for (let i = startRow; i < rows.length; i++){
+    let cols = rows[i];
+
+    // merge del ".5" (copiato dal tuo)
+    if (cols.length > header.length) {
+      const ultimo = cols[cols.length - 1];
+      const penultimo = cols[cols.length - 2];
+      if (/^\d+$/.test(penultimo) && ultimo === "5") {
+        cols.splice(-2, 2, `${penultimo}.5`);
+      }
+    }
+
+    const fixed = [...cols];
+    fixed.splice(2, 1);
+
+    const team = normTeamName(fixed[1]);
+    if (!team) continue;
+
+    const pt = (idxPT !== -1) ? toNumberSmart(fixed[idxPT]) : toNumberSmart(fixed.at(-2));
+    map.set(team, pt);
+  }
+  return map;
+}
+
+  async function caricaClassifica(nomeFoglio = "Conference") {
+
+  // ✅ ROUND ROBIN = Totale - (Conference o Championship)
+  if (nomeFoglio === "Round Robin") {
+    try {
+      const [confMap, champMap] = await Promise.all([
+        teamPointsFromSheet("Conference"),
+        teamPointsFromSheet("Championship")
+      ]);
+
+      const csvTot = await fetch(URL_MAP["Totale"]).then(r => r.text());
+      const rowsTot = parseCSVbasic(csvTot);
+
+      const startRow = 1; // Totale
+      const header = rowsTot[startRow - 1];
+
+      // indici: pos = 0, squadra = 1 (come nel tuo codice)
+      const idxTeam = 1;
+
+      // colonna PT in Totale: prova a beccarla, altrimenti penultima
+      let idxPT = header.findIndex(h => String(h).replace(/"/g,"").trim().toUpperCase() === "PT");
+      if (idxPT === -1) idxPT = header.findIndex(h => String(h).toLowerCase().includes("punt"));
+      if (idxPT === -1) idxPT = header.length - 2;
+
+      // DOM reset
+      const tbody = document.querySelector("#tabella-classifica tbody");
+      const thead = document.querySelector("#tabella-classifica thead");
+      const mobile = document.getElementById("classifica-mobile");
+      tbody.innerHTML = "";
+      thead.innerHTML = "";
+      mobile.innerHTML = "";
+
+      // header "Round Robin"
+      const intestazione = ["Pos", "Squadra", "RR PT"];
+      const headerRow = document.createElement("tr");
+      intestazione.forEach(col => {
+        const th = document.createElement("th");
+        th.textContent = col;
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+
+      // build RR array
+      const rr = [];
+      for (let i = startRow; i < rowsTot.length; i++) {
+        const cols = rowsTot[i];
+        const teamRaw = cols[idxTeam];
+        const team = normTeamName(teamRaw);
+        if (!team) continue;
+
+        const ptTot = toNumberSmart(cols[idxPT]);
+        const ptConf = confMap.has(team) ? confMap.get(team) : (champMap.get(team) || 0);
+        const rrPt = ptTot - ptConf;
+
+        rr.push({ teamRaw, team, rrPt });
+      }
+
+      rr.sort((a,b) => b.rrPt - a.rrPt);
+
+      // render
+      rr.forEach((r, k) => {
+        const pos = k + 1;
+
+        // TAB
+        const tr = document.createElement("tr");
+        tr.classList.add("riga-classifica");
+        if (pos <= 4) tr.classList.add("top4");
+        if (pos > rr.length - 4) tr.classList.add("ultime4");
+
+        // Pos
+        const tdPos = document.createElement("td");
+        tdPos.textContent = pos;
+        tr.appendChild(tdPos);
+
+        // Squadra + logo
+        const tdTeam = document.createElement("td");
+        const div = document.createElement("div");
+        div.className = "logo-nome";
+        const img = document.createElement("img");
+        const name = normTeamName(r.teamRaw);
+        img.src = `img/${name}.png`;
+        img.onerror = () => (img.style.display = "none");
+        const span = document.createElement("span");
+        span.textContent = r.teamRaw;
+        div.appendChild(img);
+        div.appendChild(span);
+        tdTeam.appendChild(div);
+        tr.appendChild(tdTeam);
+
+        // RR PT
+        const tdPt = document.createElement("td");
+        tdPt.textContent = formattaNumero(r.rrPt.toFixed(2));
+        tr.appendChild(tdPt);
+
+        tbody.appendChild(tr);
+
+        // MOBILE accordion
+        const item = document.createElement("div");
+        item.className = "accordion-item";
+        if (pos <= 4) item.classList.add("top4");
+        if (pos > rr.length - 4) item.classList.add("ultime4");
+
+        const header = document.createElement("div");
+        header.className = "accordion-header";
+
+        const img2 = document.createElement("img");
+        img2.src = `img/${name}.png`;
+        img2.onerror = () => (img2.style.display = "none");
+
+        const span2 = document.createElement("span");
+        span2.innerHTML = `<strong>${pos}\u00B0 ${r.teamRaw}</strong><br><span style='font-weight:normal'>RR PT. ${formattaNumero(r.rrPt.toFixed(2))}</span>`;
+
+        header.appendChild(img2);
+        header.appendChild(span2);
+
+        const body = document.createElement("div");
+        body.className = "accordion-body";
+        const p = document.createElement("span");
+        p.innerHTML = `<strong>RR PT:</strong> ${formattaNumero(r.rrPt.toFixed(2))}`;
+        body.appendChild(p);
+
+        header.addEventListener("click", () => item.classList.toggle("active"));
+        item.appendChild(header);
+        item.appendChild(body);
+        mobile.appendChild(item);
+      });
+
+      return; // ⛔ importantissimo: non andare avanti col fetch standard
+    } catch (e) {
+      console.error("Errore Round Robin:", e);
+      return;
+    }
+  }
+
   const url = URL_MAP[nomeFoglio];
   if (!url) return;
 
@@ -126,6 +316,7 @@ function caricaClassifica(nomeFoglio = "Conference") {
 const NOMI_ESTESI = {
   "Conference": "Conference League",
   "Championship": "Conference Championship",
+  "Round Robin": "Round Robin",
   "Totale": "Totale"
 };
 
