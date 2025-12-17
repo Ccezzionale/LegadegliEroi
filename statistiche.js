@@ -429,10 +429,6 @@ function computeLuck(clean){
   return { table };
 }
 
-
-
-
-
 /********** CURIOSITÀ **********/
 function renderFunFacts(h){
   renderTable('fun-facts','Curiosità (blowout & partita più tirata)',
