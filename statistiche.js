@@ -428,7 +428,7 @@ const tally = new Map(
     }
 
     if (sc || sf){
-      const rec = tally.get(r.Team);
+      const rec = tally.get(r.TeamKey);
       rec.sculati += sc;
       rec.sfigati += sf;
       rec.netto = rec.sculati - rec.sfigati;
