@@ -167,7 +167,7 @@ async function teamPointsFromSheet(sheetName){
 
         // RR PT
         const tdPt = document.createElement("td");
-        tdPt.textContent = formattaNumero(r.rrPt.toFixed(2));
+        tdPt.textContent = Math.round(r.rrPt);
         tr.appendChild(tdPt);
 
         tbody.appendChild(tr);
@@ -186,7 +186,7 @@ async function teamPointsFromSheet(sheetName){
         img2.onerror = () => (img2.style.display = "none");
 
         const span2 = document.createElement("span");
-        span2.innerHTML = `<strong>${pos}\u00B0 ${r.teamRaw}</strong><br><span style='font-weight:normal'>RR PT. ${formattaNumero(r.rrPt.toFixed(2))}</span>`;
+        span2.innerHTML = `<strong>${pos}\u00B0 ${r.teamRaw}</strong><br><span style='font-weight:normal'>RR PT. ${Math.round(r.rrPt)}</span>`;
 
         header.appendChild(img2);
         header.appendChild(span2);
