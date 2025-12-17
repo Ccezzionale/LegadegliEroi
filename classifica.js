@@ -140,10 +140,9 @@ async function teamPointsFromSheet(sheetName){
         const pos = k + 1;
 
         // TAB
-        const tr = document.createElement("tr");
-        tr.classList.add("riga-classifica");
-        if (pos <= 4) tr.classList.add("top4");
-        if (pos > rr.length - 4) tr.classList.add("ultime4");
+       const tr = document.createElement("tr");
+tr.classList.add("riga-classifica");
+if (pos === 1) tr.classList.add("top1");
 
         // Pos
         const tdPos = document.createElement("td");
