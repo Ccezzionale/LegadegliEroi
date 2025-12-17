@@ -15,6 +15,13 @@ function normTeamName(val){
   return String(val || "").replace(/[👑🎖️💀]/g, "").trim();
 }
 
+function teamKey(val){
+  return normTeamName(val)
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function parseCSVbasic(csv){
   // NB: è il tuo stesso approccio (split su virgola). Va bene se il CSV non ha virgole dentro celle.
   return csv.trim().split(/\r?\n/).map(r => r.split(",").map(c => c.replace(/"/g, "").trim()));
@@ -60,7 +67,7 @@ async function teamPointsFromSheet(sheetName){
     const fixed = [...cols];
     fixed.splice(2, 1);
 
-    const team = normTeamName(fixed[1]);
+    const team = teamKey(fixed[1]);
     if (!team) continue;
 
     const pt = (idxPT !== -1) ? toNumberSmart(fixed[idxPT]) : toNumberSmart(fixed.at(-2));
@@ -116,7 +123,7 @@ async function teamPointsFromSheet(sheetName){
       for (let i = startRow; i < rowsTot.length; i++) {
         const cols = rowsTot[i];
         const teamRaw = cols[idxTeam];
-        const team = normTeamName(teamRaw);
+        const team = teamKey(teamRaw);
         if (!team) continue;
 
         const ptTot = toNumberSmart(cols[idxPT]);
