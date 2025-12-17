@@ -342,6 +342,16 @@ function computeLuck(clean){
     return null;
   };
 
+  // mostra la tabella sculati/sfigati
+function renderLuckBox(l){
+  renderTable('luck-most','Sculati / Sfigati (cumulato)', l.table, [
+    {key:'team',label:'Team', type:'team'},
+    {key:'sculati',label:'Sculati'},
+    {key:'sfigati',label:'Sfigati'},
+    {key:'netto',label:'Netto'}
+  ]);
+}
+
   // mediane per GW (su PointsFor)
   const byGW = groupBy(clean, 'GW');
   const med = new Map();
