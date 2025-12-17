@@ -330,7 +330,7 @@ function renderHall(h){
 
 
 
-/********** SCULATI / SFIGATI (definitiva) **********/
+/********** SCULATI / SFIGATI (fix + pareggio sculato) **********/
 function computeLuck(clean){
   // parse numerico (gestisce "75,5")
   const num = v => (typeof v === 'number') ? v : parseFloat(String(v).replace(',', '.')) || 0;
@@ -357,6 +357,10 @@ function computeLuck(clean){
   function goals(p){ p=num(p); return p < 66 ? 0 : 1 + Math.floor((p - 66) / 6); }
   function nextSoglia(p){ p=num(p); return p < 66 ? 66 : 66 + 6 * (Math.floor((p - 66) / 6) + 1); }
   function lastSoglia(p){ p=num(p); return p < 66 ? null : 66 + 6 * Math.floor((p - 66) / 6); }
+  function isOnSoglia(p){
+    const ls = lastSoglia(p);
+    return ls != null && num(p) === ls; // 66.0, 72.0, 78.0...
+  }
 
   // true se la partita è stata decisa da una soglia gol
   function isVittoriaDiSoglia(pWin, pLose){
@@ -378,21 +382,37 @@ function computeLuck(clean){
 
     let sc = 0, sf = 0;
 
-    // (A) regola mediana
-    if (r.Result === 'W' && pf < m) sc += 1;   // vinci sotto mediana
-    if (r.Result === 'L' && pf > m) sf += 1;   // perdi sopra mediana
-
-    // (B) regola "vittoria di soglia"
+    // se non ho i punti avversario, posso fare solo la regola mediana su r.Result (fallback)
+    // ma nel tuo CSV li hai, quindi normalmente entra sempre qui:
     if (pa != null){
-      const gf = goals(pf), go = goals(pa);
-      const diffGol = gf - go;
+      const gf = goals(pf);
+      const go = goals(pa);
 
-      if (r.Result === 'W' && diffGol === 1 && isVittoriaDiSoglia(pf, pa)) {
-        sc += 1; // vincitore sculato di soglia
+      const outcome = gf > go ? 'W' : gf < go ? 'L' : 'D'; // ✅ risultato corretto A GOL
+
+      // (A) regola mediana (basata sull'outcome a gol)
+      if (outcome === 'W' && pf < m) sc += 1;
+      if (outcome === 'L' && pf > m) sf += 1;
+
+      // (B) regola "vittoria di soglia" (solo se vittoria/sconfitta a gol di 1)
+      const diffGol = gf - go;
+      if (outcome === 'W' && diffGol === 1 && isVittoriaDiSoglia(pf, pa)) sc += 1;
+      if (outcome === 'L' && diffGol === -1 && isVittoriaDiSoglia(pa, pf)) sf += 1;
+
+      // (C) ✅ NUOVA: pareggio sculato / sfigato (pareggio a GOL)
+      // - se tu sei ESATTAMENTE su soglia e l'altro no => SCULATO
+      // - se l'altro è su soglia e tu no => SFIGATO
+      if (outcome === 'D'){
+        const meOn  = isOnSoglia(pf);
+        const oppOn = isOnSoglia(pa);
+        if (meOn && !oppOn) sc += 1;
+        if (!meOn && oppOn) sf += 1;
       }
-      if (r.Result === 'L' && diffGol === -1 && isVittoriaDiSoglia(pa, pf)) {
-        sf += 1; // perdente sfigato di soglia
-      }
+
+    } else {
+      // fallback raro: se manca PA, uso il Result del CSV (come prima)
+      if (r.Result === 'W' && pf < m) sc += 1;
+      if (r.Result === 'L' && pf > m) sf += 1;
     }
 
     if (sc || sf){
@@ -409,15 +429,6 @@ function computeLuck(clean){
   return { table };
 }
 
-// opzionale per mostrare la tabella
-function renderLuckBox(l){
-  renderTable('luck-most','Sculati / Sfigati (cumulato)', l.table, [
-    {key:'team',label:'Team', type:'team'},
-    {key:'sculati',label:'Sculati'},
-    {key:'sfigati',label:'Sfigati'},
-    {key:'netto',label:'Netto'}
-  ]);
-}
 
 
 
