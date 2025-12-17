@@ -350,8 +350,20 @@ function computeLuck(clean){
   }
 
   // init tally
-  const allTeams = Array.from(new Set(clean.map(r => r.Team)));
-  const tally = new Map(allTeams.map(t => [t, { team:t, sculati:0, sfigati:0, netto:0 }]));
+ const allTeams = Array.from(new Set(clean.map(r => r.TeamKey)));
+const labelByKey = new Map();
+
+// salvo un nome “umano” per ogni teamKey
+for (const r of clean){
+  if (r.TeamKey && r.Team && !labelByKey.has(r.TeamKey)){
+    labelByKey.set(r.TeamKey, r.Team);
+  }
+}
+
+const tally = new Map(
+  allTeams.map(k => [k, { teamKey:k, team:labelByKey.get(k), sculati:0, sfigati:0, netto:0 }])
+);
+
 
   // gol fantacalcio e soglie (1 gol a 66, poi ogni +6)
   function goals(p){ p=num(p); return p < 66 ? 0 : 1 + Math.floor((p - 66) / 6); }
