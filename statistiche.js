@@ -350,7 +350,7 @@ function computeLuck(clean){
   }
 
   // init tally
- const allTeams = Array.from(new Set(clean.map(r => r.TeamKey)));
+ const allTeams = Array.from(new Set(clean.map(r => r.TeamKey))).filter(Boolean);
 const labelByKey = new Map();
 
 // salvo un nome “umano” per ogni teamKey
