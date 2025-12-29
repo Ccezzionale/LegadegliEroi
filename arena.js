@@ -1,8 +1,8 @@
 
 const squadre = [
   { nome: "Rubinkebab", logo: "img/Rubinkebab.png", eliminata: false, ultimaEliminata: false },
-  { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png", eliminata: true, ultimaEliminata: true },
-  { nome: "Team Bartowski", logo: "img/Team Bartowski.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png", eliminata: true, ultimaEliminata: false },
+  { nome: "Team Bartowski", logo: "img/Team Bartowski.png", eliminata: true, ultimaEliminata: true },
   { nome: "Golden Knights", logo: "img/Golden Knights.png", eliminata: false, ultimaEliminata: false },
   { nome: "Ibla", logo: "img/Ibla.png", eliminata: false, ultimaEliminata: false },
   { nome: "Fantaugusta", logo: "img/Fantaugusta.png", eliminata: false, ultimaEliminata: false },
