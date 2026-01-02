@@ -31,7 +31,7 @@ const giocatoriU21PerSquadra = {
   "Fc Disoneste": ["gineitis", "norton-cuffy", "ziolkowski"],
   "Rubinkebab": ["diao", "pisilli", "ahanor"],
   "Eintracht Franco 126": ["carboni v.", "valle", "ramon"],
-  "PokerMantra": ["ordonez c.", "goglichidze", "belahyane"],
+  "PokerMantra": ["ziolkwoski", "goglichidze", "belahyane"],
   "wildboys78": ["rodriguez je.", "tiago gabriel", "ferguson e."],
   "Bayern Christiansen": ["paz n.", "palestra", "rodriguez je."],
   "Minnesode Timberland": ["diao", "ferguson e.", "britschgi"],
