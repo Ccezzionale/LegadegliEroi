@@ -36,7 +36,7 @@ const giocatoriU21PerSquadra = {
   "Bayern Christiansen": ["paz n.", "palestra", "rodriguez je."],
   "Minnesode Timberland": ["diao", "ferguson e.", "britschgi"],
   "Athletic Pongao": ["valle", "tiago gabriel", "norton-cuffy"],
-  "MinneSota Snakes": ["esposito f.p.", "comuzzo", "goglichidze"],
+  "MinneSota Snakes": ["esposito f.p.", "comuzzo", "ndour"],
   "Ibla": ["camarda", "belahyane", "bartesaghi"],
   "Pandinicoccolosini": ["cham", "ahanor", "adzic"]
 };
