@@ -16,10 +16,10 @@ const SCORES = {
   R3:  { home: 3, away: 1 },
   R4:  { home: 3, away: 2 },
   // Semifinali
-  LSF1:{ home: 1, away: 2 },
+  LSF1:{ home: 2, away: 2 },
   LSF2:{ home: 3, away: 0 },
   RSF1:{ home: 0, away: 3 },
-  RSF2:{ home: 2, away: 1 },
+  RSF2:{ home: 2, away: 2 },
   // Finali di Conference
   LCF: { home: 0, away: 0 },
   RCF: { home: 0, away: 0 },
