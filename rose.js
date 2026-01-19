@@ -24,10 +24,10 @@ const giocatoriFP = new Set();
 
 const giocatoriU21PerSquadra = {
   "Team Bartowski": ["denoon", "gineitis", "mateus lusuardi"],
-  "Desperados": ["ordonez c.", "bravo", "ramon"],
+  "Desperados": ["ordonez c.", "lipani", "ramon"],
   "Riverfilo": ["paz n.", "castro s.", "akinsanmiro"],
   "Golden Knights": ["palestra", "camarda", "esposito f.p."],
-  "Fantaugusta": ["comuzzo", "bravo", "ekhator"],
+  "Fantaugusta": ["comuzzo", "pisilli", "ekhator"],
   "Fc Disoneste": ["gineitis", "norton-cuffy", "ziolkowski"],
   "Rubinkebab": ["diao", "pisilli", "ahanor"],
   "Eintracht Franco 126": ["marianucci", "valle", "ramon"],
