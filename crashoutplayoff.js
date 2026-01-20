@@ -21,8 +21,8 @@ const SCORES = {
   RSF1:{ home: 0, away: 3 },
   RSF2:{ home: 2, away: 3 },
   // Finali di Conference
-  LCF: { home: 0, away: 0 },
-  RCF: { home: 0, away: 0 },
+  LCF: { home: 0, away: 1 },
+  RCF: { home: 0, away: 1 },
   // Finals
   F:   { home: 0, away: 0 },
 };
