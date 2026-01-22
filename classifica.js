@@ -34,6 +34,218 @@ function toNumberSmart(x){
   return Number.isFinite(n) ? n : 0;
 }
 
+// ====== RACE: Evoluzione classifica da "Risultati PR - Master" ======
+const RESULTS_PR_MASTER_CSV =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRhEJKfZhVb7V08KI29T_aPTR0hfx7ayIOlFjQn_v-fqgktImjXFg-QAEA6z7w5eyEh2B3w5KLpaRYz/pub?gid=1118969717&single=true&output=csv";
+
+// Se i nomi nel CSV non combaciano con i nomi dei tuoi file logo (img/Nome Squadra.png),
+// aggiungi qui le conversioni.
+// chiave = teamKey(nomeCSV), valore = nome esatto del file immagine e del display
+const TEAM_CANON = {
+  // "rubinkebab": "Rubin Kebab",
+  // "wildboys78": "Wildboys 78",
+  // "team bartowski": "Team Bartowski",
+};
+
+function canonTeamName(raw){
+  const k = teamKey(raw);
+  return TEAM_CANON[k] || normTeamName(raw);
+}
+
+const RACE_ROW_H = 46;
+let raceNodes = new Map();
+let raceDataByDay = {}; // day -> [{teamKey, teamName, pt, mp}]
+let raceMaxDay = 1;
+
+function initRaceDOM(teamNames){
+  const track = document.getElementById("raceTrack");
+  if (!track) return;
+
+  track.innerHTML = "";
+  raceNodes = new Map();
+
+  teamNames.forEach(teamName => {
+    const el = document.createElement("div");
+    el.className = "race-item";
+
+    const img = document.createElement("img");
+    img.src = `img/${teamName}.png`;
+    img.onerror = () => (img.style.display = "none");
+
+    const name = document.createElement("div");
+    name.className = "name";
+    name.textContent = teamName;
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.textContent = "PT 0 • MP 0";
+
+    el.append(img, name, meta);
+    track.appendChild(el);
+
+    raceNodes.set(teamKey(teamName), { el, meta, teamName });
+  });
+}
+
+function renderRaceDay(day){
+  const slider = document.getElementById("raceDay");
+  const label = document.getElementById("raceLabel");
+  if (!slider || !label) return;
+
+  const rows = raceDataByDay[day] || [];
+  const filled = [];
+
+  for (const [k, node] of raceNodes.entries()){
+    const found = rows.find(r => r.teamKey === k);
+    filled.push(found || { teamKey: k, teamName: node.teamName, pt: 0, mp: 0 });
+  }
+
+  filled.sort((a,b) =>
+    (b.pt - a.pt) ||
+    (b.mp - a.mp) ||
+    a.teamName.localeCompare(b.teamName)
+  );
+
+  filled.forEach((r, idx) => {
+    const node = raceNodes.get(r.teamKey);
+    if (!node) return;
+    node.el.style.transform = `translateY(${idx * RACE_ROW_H}px)`;
+    node.meta.textContent = `PT ${Math.round(r.pt)} • MP ${r.mp.toFixed(1).replace(".", ",")}`;
+  });
+
+  slider.value = day;
+  label.textContent = `Giornata ${day}`;
+}
+
+function wireRaceControls(){
+  const prev = document.getElementById("racePrev");
+  const next = document.getElementById("raceNext");
+  const slider = document.getElementById("raceDay");
+
+  if (!prev || !next || !slider) return;
+
+  slider.oninput = e => renderRaceDay(Number(e.target.value));
+  prev.onclick = () => renderRaceDay(Math.max(1, Number(slider.value) - 1));
+  next.onclick = () => renderRaceDay(Math.min(raceMaxDay, Number(slider.value) + 1));
+}
+
+function findIdx(headers, candidates){
+  const H = headers.map(h => String(h).toLowerCase().replace(/\s+/g,"").replace(/_/g,""));
+  for (const c of candidates){
+    const k = c.toLowerCase().replace(/\s+/g,"").replace(/_/g,"");
+    const idx = H.indexOf(k);
+    if (idx !== -1) return idx;
+  }
+  return -1;
+}
+
+function ptsFromResult(res){
+  const r = String(res || "").trim().toUpperCase();
+  if (r === "W") return 3;
+  if (r === "D") return 1;
+  if (r === "L") return 0;
+  return null;
+}
+
+async function loadRaceFromResults(){
+  const section = document.getElementById("raceSection");
+  if (!section) return;
+
+  let text;
+  try{
+    text = await fetch(RESULTS_PR_MASTER_CSV).then(r => r.text());
+  }catch(e){
+    console.error("Race: fetch CSV failed", e);
+    section.style.display = "none";
+    return;
+  }
+
+  const rows = parseCSVbasic(text);
+  if (!rows.length) { section.style.display = "none"; return; }
+
+  const header = rows[0];
+
+  const idxDay = findIdx(header, ["GW_Stagionale","GWStagionale","GWSeason","GWS","GW"]);
+  const idxTeam = findIdx(header, ["Team","Squadra"]);
+  const idxRes  = findIdx(header, ["Result","Risultato"]);
+  const idxPF   = findIdx(header, ["PointsFor","PF","MP","MagicPoints","PuntiFatti"]);
+  const idxPA   = findIdx(header, ["PointsAgainst","PA","PuntiSubiti"]);
+
+  if (idxDay === -1 || idxTeam === -1) {
+    console.warn("Race: colonne non trovate (servono almeno GW_Stagionale e Team).", header);
+    section.style.display = "none";
+    return;
+  }
+
+  // Raggruppo righe per giornata stagionale
+  const byDay = new Map();
+  const teamsSet = new Set();
+
+  for (let i=1; i<rows.length; i++){
+    const r = rows[i];
+    const day = parseInt(String(r[idxDay] || "").replace(/[^\d]/g,""), 10);
+    if (!Number.isFinite(day) || day <= 0) continue;
+
+    const teamName = canonTeamName(r[idxTeam]);
+    if (!teamName) continue;
+
+    const tKey = teamKey(teamName);
+    teamsSet.add(teamName);
+
+    const mpFor = (idxPF !== -1) ? toNumberSmart(r[idxPF]) : 0;
+    const mpAg  = (idxPA !== -1) ? toNumberSmart(r[idxPA]) : 0;
+
+    let pts = null;
+    if (idxRes !== -1) pts = ptsFromResult(r[idxRes]);
+    if (pts === null){
+      // fallback: deduco W/D/L confrontando PointsFor vs PointsAgainst
+      pts = mpFor > mpAg ? 3 : (mpFor < mpAg ? 0 : 1);
+    }
+
+    if (!byDay.has(day)) byDay.set(day, []);
+    byDay.get(day).push({ teamKey: tKey, teamName, pts, mp: mpFor });
+  }
+
+  // Ordino giorni e costruisco snapshot cumulati
+  const days = Array.from(byDay.keys()).sort((a,b)=>a-b);
+  raceMaxDay = days.length ? days[days.length - 1] : 1;
+
+  const teamNames = Array.from(teamsSet).sort((a,b)=>a.localeCompare(b));
+  initRaceDOM(teamNames);
+
+  const totals = new Map(); // teamKey -> {pt, mp, teamName}
+  teamNames.forEach(n => totals.set(teamKey(n), { pt:0, mp:0, teamName:n }));
+
+  raceDataByDay = {};
+  for (let d=1; d<=raceMaxDay; d++){
+    const games = byDay.get(d) || [];
+    games.forEach(g => {
+      const cur = totals.get(g.teamKey) || { pt:0, mp:0, teamName:g.teamName };
+      cur.pt += g.pts;
+      cur.mp += g.mp;
+      cur.teamName = g.teamName;
+      totals.set(g.teamKey, cur);
+    });
+
+    raceDataByDay[d] = Array.from(totals.entries()).map(([k,v]) => ({
+      teamKey: k,
+      teamName: v.teamName,
+      pt: v.pt,
+      mp: v.mp
+    }));
+  }
+
+  const slider = document.getElementById("raceDay");
+  if (slider){
+    slider.min = "1";
+    slider.max = String(raceMaxDay);
+    slider.value = "1";
+  }
+
+  wireRaceControls();
+  renderRaceDay(1);
+}
+
 async function teamPointsFromSheet(sheetName){
   // sheetName: "Conference" o "Championship"
   const url = URL_MAP[sheetName];
