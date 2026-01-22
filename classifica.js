@@ -78,22 +78,16 @@ function initRaceDOM(teamNames){
 
     const img = document.createElement("img");
     img.src = `img/${teamName}.png`;
+    img.alt = teamName;
     img.onerror = () => (img.style.display = "none");
 
-    const name = document.createElement("div");
-    name.className = "name";
-    name.textContent = teamName;
-
-    const meta = document.createElement("div");
-    meta.className = "meta";
-    meta.textContent = "PT 0 • MP 0";
-
-    el.append(img, name, meta);
+    el.appendChild(img);
     track.appendChild(el);
 
-    raceNodes.set(teamKey(teamName), { el, meta, teamName });
+    raceNodes.set(teamKey(teamName), { el, teamName });
   });
 }
+
 
 function renderRaceDay(day){
   const slider = document.getElementById("raceDay");
@@ -115,11 +109,13 @@ function renderRaceDay(day){
   );
 
   filled.forEach((r, idx) => {
-    const node = raceNodes.get(r.teamKey);
-    if (!node) return;
-    node.el.style.transform = `translateY(${idx * RACE_ROW_H}px)`;
-    node.meta.textContent = `PT ${Math.round(r.pt)} • MP ${r.mp.toFixed(1).replace(".", ",")}`;
-  });
+  const node = raceNodes.get(r.teamKey);
+  if (!node) return;
+
+  // 1° a sinistra, ultimo a destra
+  node.el.style.transform = `translate(${idx * RACE_SLOT_W}px, -50%)`;
+});
+
 
   slider.value = day;
   label.textContent = `Giornata ${day}`;
