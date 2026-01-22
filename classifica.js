@@ -41,6 +41,30 @@ const TEAM_OFFICIAL = {
   "pokermantra": "PokerMantra"
 };
 
+const TEAM_COLORS = {
+  "team bartowski":         "#C1121F",
+  "bayern christiansen":    "#8B0A1A",
+  "wildboys78":             "#A07900",
+  "desperados":             "#2E4A7F",
+  "minnesode timberland":   "#00A651",
+  "golden knights":         "#B4975A",
+  "pokermantra":            "#5B2A86",
+  "rubinkebab":             "#C27A33",
+  "pandinicoccolosini":     "#228B22",
+  "ibla":                   "#F97316",
+  "fc disoneste":           "#A78BFA",
+  "athletic pongao":        "#C1121F",
+  "riverfilo":              "#D5011D",
+  "eintracht franco 126":   "#E1000F",
+  "fantaugusta":            "#164E3B",
+};
+
+function getTeamColor(teamName){
+  const k = teamKey(teamName);
+  return TEAM_COLORS[k] || "#0074D9"; // blu default se manca
+}
+
+
 function canonTeamName(raw){
   const k = teamKey(raw);
   return TEAM_OFFICIAL[k] || normTeamName(raw);
@@ -85,8 +109,9 @@ function initRaceDOM(teamNames){
     badge.className = "pos-badge";
     badge.textContent = "";
 
-    const bar = document.createElement("div");
-    bar.className = "bar-fill";
+ const bar = document.createElement("div");
+bar.className = "bar-fill";
+bar.style.background = getTeamColor(teamName); // ✅ colore squadra
 
     const img = document.createElement("img");
     img.src = `img/${teamName}.png`;
