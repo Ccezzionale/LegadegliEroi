@@ -177,6 +177,7 @@ th, td {
   display: none;
 }
 
+/* ===== RACE (orizzontale, solo loghi) ===== */
 .race-section{
   width: 100%;
   max-width: 1200px;
@@ -218,50 +219,46 @@ th, td {
   text-align: left;
 }
 
+/* pista */
 .race-track{
   position: relative;
   width: 100%;
-  height: 760px;
+  max-width: 1200px;
+  height: 86px;
+  margin: 0 auto;
   background: #fff;
   border: 1px solid #d8d8d8;
   border-radius: 14px;
   overflow: hidden;
 }
 
+/* singolo logo */
 .race-item{
   position: absolute;
-  left: 12px;
-  right: 12px;
-  height: 42px;
+  top: 50%;
+  left: 0;
+  width: 56px;
+  height: 56px;
+  transform: translate(0, -50%);
+  transition: transform 450ms ease;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 10px;
-  border-radius: 12px;
-  background: #f7f9fc;
-  transition: transform 450ms ease;
+  justify-content: center;
+  padding: 0;            /* niente card */
+  background: transparent;
 }
 
 .race-item img{
-  width: 30px;
-  height: 30px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
   border-radius: 50%;
 }
 
-.race-item .name{
-  font-weight: 800;
-  color: #001f3f;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
+/* sicurezza: se per caso esistono ancora, non mostrarli */
+.race-item .name,
 .race-item .meta{
-  margin-left: auto;
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  opacity: .8;
+  display: none !important;
 }
 
 
