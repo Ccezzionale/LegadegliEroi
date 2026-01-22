@@ -64,7 +64,7 @@ const RACE_SLOT_W = 66; // spazio tra loghi (px)
 let raceNodes = new Map();
 let raceDataByDay = {}; // day -> [{teamKey, teamName, pt, mp}]
 let raceMaxDay = 1;
-let raceOrder = []; // ordine fisso delle squadre sull'asse X
+let raceOrder = []; // ordine colonne da sinistra a destra (posizione del giorno)
 
 
 function initRaceDOM(teamNames){
@@ -74,29 +74,34 @@ function initRaceDOM(teamNames){
   track.innerHTML = "";
   raceNodes = new Map();
 
-  // ordine fisso X (alfabetico)
+  // inizialmente ordine alfabetico, poi renderRaceDay lo cambia per giornata
   raceOrder = teamNames.slice().sort((a,b)=>a.localeCompare(b));
 
   raceOrder.forEach(teamName => {
-    const el = document.createElement("div");
-    el.className = "race-item";
+    const wrap = document.createElement("div");
+    wrap.className = "race-bar";
 
     const badge = document.createElement("div");
     badge.className = "pos-badge";
-    badge.textContent = ""; // lo riempiamo in render
+    badge.textContent = "";
+
+    const bar = document.createElement("div");
+    bar.className = "bar-fill";
 
     const img = document.createElement("img");
     img.src = `img/${teamName}.png`;
     img.alt = teamName;
     img.onerror = () => (img.style.display = "none");
 
-    el.appendChild(badge);
-    el.appendChild(img);
-    track.appendChild(el);
+    wrap.appendChild(bar);
+    wrap.appendChild(img);
+    wrap.appendChild(badge);
 
-    raceNodes.set(teamKey(teamName), { el, teamName, badge });
+    track.appendChild(wrap);
+    raceNodes.set(teamKey(teamName), { el: wrap, teamName, badge });
   });
 }
+
 
 function renderRaceDay(day){
   const track = document.getElementById("raceTrack");
@@ -106,22 +111,21 @@ function renderRaceDay(day){
 
   const rows = raceDataByDay[day] || [];
 
-  // mappe punti / mp (mp può anche non esserci, allora vale 0)
+  // mappe
   const ptMap = new Map();
-  const mpMap = new Map();
+  const mpMap = new Map(); // tie-break opzionale
   rows.forEach(r => {
     ptMap.set(r.teamKey, Number(r.pt) || 0);
     mpMap.set(r.teamKey, Number(r.mp) || 0);
   });
 
-  // max punti per scalare l'altezza
-  const maxPt = Math.max(1, ...raceOrder.map(n => ptMap.get(teamKey(n)) || 0));
-
-  // ranking del giorno: PT desc, poi MP desc, poi nome
-  const ranking = raceOrder.map(name => {
-    const k = teamKey(name);
-    return { k, name, pt: ptMap.get(k) || 0, mp: mpMap.get(k) || 0 };
-  });
+  // ranking giornata (PT desc, poi MP desc, poi nome)
+  const ranking = Array.from(raceNodes.entries()).map(([k,node]) => ({
+    k,
+    name: node.teamName,
+    pt: ptMap.get(k) || 0,
+    mp: mpMap.get(k) || 0
+  }));
 
   ranking.sort((a,b) =>
     (b.pt - a.pt) ||
@@ -129,43 +133,46 @@ function renderRaceDay(day){
     a.name.localeCompare(b.name)
   );
 
-  const rankMap = new Map();
-  ranking.forEach((r, i) => rankMap.set(r.k, i + 1));
+  // max PT per scalare altezza colonne
+  const maxPt = Math.max(1, ...ranking.map(r => r.pt));
 
-  const ICON = 56;
-  const PAD  = 12;
-
+  const PAD = 14;
+  const BASELINE = 14;
+  const ICON_AREA = 80;        // spazio “sopra” per logo+badge
   const W = track.clientWidth;
   const H = track.clientHeight;
 
-  const climbH = Math.max(0, H - ICON - PAD*2);
+  const climbH = Math.max(40, H - BASELINE - ICON_AREA); // altezza utile colonne
 
-  const n = Math.max(1, raceOrder.length);
-  const slot = (n === 1) ? 0 : (W - ICON - PAD*2) / (n - 1);
+  const n = Math.max(1, ranking.length);
 
-  raceOrder.forEach((teamName, idx) => {
-    const k = teamKey(teamName);
-    const node = raceNodes.get(k);
+  // barWidth dinamico (così con 16 squadre non si schiaccia)
+  const maxBarW = 68;
+  const minBarW = 38;
+  const slot = (W - PAD*2) / n;
+  const barW = Math.max(minBarW, Math.min(maxBarW, slot * 0.78));
+
+  // posizioni X (centrate nello slot) + badge posizione + altezza
+  ranking.forEach((r, idx) => {
+    const node = raceNodes.get(r.k);
     if (!node) return;
 
-    const pt = ptMap.get(k) || 0;
+    const x = PAD + idx * slot + (slot - barW) / 2;
 
-    // X fisso per squadra
-    const x = PAD + idx * slot;
+    // altezza proporzionale ai punti
+    const h = Math.max(10, (r.pt / maxPt) * climbH);
 
-    // Y dipende dai punti
-    const y = (pt / maxPt) * climbH;
+    node.el.style.width = `${barW}px`;
+    node.el.style.height = `${h}px`;
+    node.el.style.transform = `translateX(${x}px)`;
 
-    node.el.style.transform = `translate(${x}px, ${-y}px)`;
-
-    // badge posizione
-    const pos = rankMap.get(k) || "";
-    if (node.badge) node.badge.textContent = pos ? `${pos}°` : "";
+    if (node.badge) node.badge.textContent = `${idx + 1}°`;
   });
 
   slider.value = day;
   label.textContent = `Giornata ${day}`;
 }
+
 
 
 function wireRaceControls(){
