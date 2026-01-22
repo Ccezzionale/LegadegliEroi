@@ -74,26 +74,29 @@ function initRaceDOM(teamNames){
   track.innerHTML = "";
   raceNodes = new Map();
 
-  // ordine fisso X (alfabetico, ma puoi cambiarlo se vuoi)
+  // ordine fisso X (alfabetico)
   raceOrder = teamNames.slice().sort((a,b)=>a.localeCompare(b));
 
   raceOrder.forEach(teamName => {
     const el = document.createElement("div");
     el.className = "race-item";
 
+    const badge = document.createElement("div");
+    badge.className = "pos-badge";
+    badge.textContent = ""; // lo riempiamo in render
+
     const img = document.createElement("img");
     img.src = `img/${teamName}.png`;
     img.alt = teamName;
     img.onerror = () => (img.style.display = "none");
 
+    el.appendChild(badge);
     el.appendChild(img);
     track.appendChild(el);
 
-    raceNodes.set(teamKey(teamName), { el, teamName });
+    raceNodes.set(teamKey(teamName), { el, teamName, badge });
   });
 }
-
-
 
 function renderRaceDay(day){
   const track = document.getElementById("raceTrack");
@@ -103,12 +106,31 @@ function renderRaceDay(day){
 
   const rows = raceDataByDay[day] || [];
 
-  // mappa: teamKey -> pt
+  // mappe punti / mp (mp può anche non esserci, allora vale 0)
   const ptMap = new Map();
-  rows.forEach(r => ptMap.set(r.teamKey, Number(r.pt) || 0));
+  const mpMap = new Map();
+  rows.forEach(r => {
+    ptMap.set(r.teamKey, Number(r.pt) || 0);
+    mpMap.set(r.teamKey, Number(r.mp) || 0);
+  });
 
-  // max punti (per scalare l'altezza)
+  // max punti per scalare l'altezza
   const maxPt = Math.max(1, ...raceOrder.map(n => ptMap.get(teamKey(n)) || 0));
+
+  // ranking del giorno: PT desc, poi MP desc, poi nome
+  const ranking = raceOrder.map(name => {
+    const k = teamKey(name);
+    return { k, name, pt: ptMap.get(k) || 0, mp: mpMap.get(k) || 0 };
+  });
+
+  ranking.sort((a,b) =>
+    (b.pt - a.pt) ||
+    (b.mp - a.mp) ||
+    a.name.localeCompare(b.name)
+  );
+
+  const rankMap = new Map();
+  ranking.forEach((r, i) => rankMap.set(r.k, i + 1));
 
   const ICON = 56;
   const PAD  = 12;
@@ -116,10 +138,8 @@ function renderRaceDay(day){
   const W = track.clientWidth;
   const H = track.clientHeight;
 
-  // spazio disponibile per "salire"
   const climbH = Math.max(0, H - ICON - PAD*2);
 
-  // slot orizzontale: distribuisci i loghi su tutta la larghezza
   const n = Math.max(1, raceOrder.length);
   const slot = (n === 1) ? 0 : (W - ICON - PAD*2) / (n - 1);
 
@@ -133,11 +153,14 @@ function renderRaceDay(day){
     // X fisso per squadra
     const x = PAD + idx * slot;
 
-    // Y dipende dai punti (0 = baseline, maxPt = top)
+    // Y dipende dai punti
     const y = (pt / maxPt) * climbH;
 
-    // bottom è già 12px, quindi spostiamo in su con -y
     node.el.style.transform = `translate(${x}px, ${-y}px)`;
+
+    // badge posizione
+    const pos = rankMap.get(k) || "";
+    if (node.badge) node.badge.textContent = pos ? `${pos}°` : "";
   });
 
   slider.value = day;
