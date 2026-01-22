@@ -172,10 +172,9 @@ if (pos === 1) tr.classList.add("top1");
         tbody.appendChild(tr);
 
         // MOBILE accordion
-        const item = document.createElement("div");
-        item.className = "accordion-item";
-        if (pos <= 4) item.classList.add("top4");
-        if (pos > rr.length - 4) item.classList.add("ultime4");
+       const item = document.createElement("div");
+item.className = "accordion-item";
+if (pos === 1) item.classList.add("top1");
 
         const header = document.createElement("div");
         header.className = "accordion-header";
@@ -296,7 +295,8 @@ if (pos === 1) tr.classList.add("top1");
         img.src = `img/${team}.png`;
         img.onerror = () => (img.style.display = "none");
         const span = document.createElement("span");
-        span.innerHTML = `<strong>${colonne[0]}\u00B0 ${colonne[1]}</strong><br><span style='font-weight:normal'>PT. ${colonne.at(-2)} / MP. ${colonne.at(-1)}</span>`;
+        const posClean = String(colonne[0]).replace(/[^\d]/g, "").trim();
+        span.innerHTML = `<strong>${posClean}\u00B0 ${colonne[1]}</strong><br><span style='font-weight:normal'>PT. ${colonne.at(-2)} / MP. ${colonne.at(-1)}</span>`;
         header.appendChild(img);
         header.appendChild(span);
 
