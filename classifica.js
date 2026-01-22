@@ -41,15 +41,15 @@ const RESULTS_PR_MASTER_CSV =
 // Se i nomi nel CSV non combaciano con i nomi dei tuoi file logo (img/Nome Squadra.png),
 // aggiungi qui le conversioni.
 // chiave = teamKey(nomeCSV), valore = nome esatto del file immagine e del display
-const TEAM_CANON = {
-  // "rubinkebab": "Rubin Kebab",
-  // "wildboys78": "Wildboys 78",
-  // "team bartowski": "Team Bartowski",
+
+const TEAM_OFFICIAL = {
+  "riverfilo": "Riverfilo",
+  "pokermantra": "PokerMantra"
 };
 
 function canonTeamName(raw){
-  const k = teamKey(raw);
-  return TEAM_CANON[k] || normTeamName(raw);
+  const k = teamKey(raw);            // <-- rende tutto case-insensitive
+  return TEAM_OFFICIAL[k] || normTeamName(raw);
 }
 
 const RACE_ROW_H = 46;
@@ -147,6 +147,28 @@ function ptsFromResult(res){
   return null;
 }
 
+function fixRowToHeaderLen(row, headerLen){
+  // sistema righe tipo: 78,5 -> ["78","5"] finché la lunghezza torna uguale all’header
+  const r = [...row];
+
+  while (r.length > headerLen){
+    let merged = false;
+
+    // cerca coppie [numero intero, "5"] e le fonde in "numero.5"
+    for (let j = r.length - 1; j > 0; j--){
+      if (/^\d+$/.test(r[j - 1]) && r[j] === "5"){
+        r.splice(j - 1, 2, `${r[j - 1]}.5`);
+        merged = true;
+        break;
+      }
+    }
+
+    if (!merged) break; // evita loop infinito se non trova pattern
+  }
+
+  return r;
+}
+
 async function loadRaceFromResults(){
   const section = document.getElementById("raceSection");
   if (!section) return;
@@ -182,7 +204,7 @@ async function loadRaceFromResults(){
   const teamsSet = new Set();
 
   for (let i=1; i<rows.length; i++){
-    const r = rows[i];
+  const r = fixRowToHeaderLen(rows[i], header.length);
     const day = parseInt(String(r[idxDay] || "").replace(/[^\d]/g,""), 10);
     if (!Number.isFinite(day) || day <= 0) continue;
 
