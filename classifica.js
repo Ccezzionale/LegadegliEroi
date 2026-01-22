@@ -199,13 +199,14 @@ const ICON_AREA = isMobile ? 58 : 80;
 let W = track.clientWidth;
 const H = track.clientHeight;
 
+const ICON_AREA = isMobile ? 120 : 90;   // più aria sopra su mobile
 const climbH = Math.max(40, H - BASELINE - ICON_AREA);
 
 const n = Math.max(1, ranking.length);
 
 // su mobile: barre più strette + slot più stretto
-const maxBarW = isMobile ? 34 : 68;
-const minBarW = isMobile ? 22 : 38;
+const maxBarW = isMobile ? 30 : 68;  // prima 34
+const minBarW = isMobile ? 20 : 38;  // prima 22
 
 
 // se lo schermo è troppo stretto, abilito “canvas più largo” scrollabile
@@ -225,25 +226,25 @@ const slot = (W - PAD*2) / n;
 const barW = Math.max(minBarW, Math.min(maxBarW, slot * 0.78));
 
   // posizioni X (centrate nello slot) + badge posizione + altezza
-  ranking.forEach((r, idx) => {
-    const node = raceNodes.get(r.k);
-    if (!node) return;
+ ranking.forEach((r, idx) => {
+  const node = raceNodes.get(r.k);
+  if (!node) return;
 
-    const x = PAD + idx * slot + (slot - barW) / 2;
+  const x = PAD + idx * slot + (slot - barW) / 2;
 
-    // altezza proporzionale ai punti
-    const h = Math.max(10, (r.pt / maxPt) * climbH);
+  // altezza proporzionale ai punti
+  let h = Math.max(10, (r.pt / maxPt) * climbH);
 
-    node.el.style.width = `${barW}px`;
-    node.el.style.height = `${h}px`;
-    node.el.style.transform = `translateX(${x}px)`;
+  // ✅ evita che la 1° sfori: lascia sempre margine sopra
+  const MAX_H = climbH * (isMobile ? 0.92 : 0.96);
+  h = Math.min(h, MAX_H);
 
-    if (node.badge) node.badge.textContent = `${idx + 1}°`;
-  });
+  node.el.style.width = `${barW}px`;
+  node.el.style.height = `${h}px`;
+  node.el.style.transform = `translateX(${x}px)`;
 
-  slider.value = day;
-  label.textContent = `Giornata ${day}`;
-}
+  if (node.badge) node.badge.textContent = `${idx + 1}°`;
+});
 
 
 
