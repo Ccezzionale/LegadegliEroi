@@ -202,13 +202,19 @@ async function loadRaceFromResults(){
   // Raggruppo righe per giornata stagionale
   const byDay = new Map();
   const teamsSet = new Set();
+const seen = new Map();      // dupKey -> {count, samples:[]}
+const dups = [];             // array per console.table
 
-  const dupKey = `${day}|${tKey}`;
+const dupKey = `${day}|${tKey}`;
+
 if (seen.has(dupKey)) {
-  console.warn("DUPLICATO trovato (stesso team nella stessa giornata):", { day, teamName, row: r });
-  continue; // commenta questo continue se vuoi vedere l'effetto “sballato”
+  const obj = seen.get(dupKey);
+  obj.count += 1;
+  if (obj.samples.length < 3) obj.samples.push(r); // salva fino a 3 righe
+  seen.set(dupKey, obj);
+} else {
+  seen.set(dupKey, { count: 1, day, teamName, tKey, samples: [r] });
 }
-seen.add(dupKey);
 
   for (let i=1; i<rows.length; i++){
   const r = fixRowToHeaderLen(rows[i], header.length);
