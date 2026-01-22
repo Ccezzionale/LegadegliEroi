@@ -189,21 +189,38 @@ function renderRaceDay(day){
   // max PT per scalare altezza colonne
   const maxPt = Math.max(1, ...ranking.map(r => r.pt));
 
-  const PAD = 14;
-  const BASELINE = 14;
-  const ICON_AREA = 80;        // spazio “sopra” per logo+badge
-  const W = track.clientWidth;
-  const H = track.clientHeight;
+  const PAD = 12;
+const BASELINE = 12;
 
-  const climbH = Math.max(40, H - BASELINE - ICON_AREA); // altezza utile colonne
+// su mobile riduco l’area “logo+badge” e stringo le barre
+const isMobile = window.matchMedia("(max-width: 520px)").matches;
+const ICON_AREA = isMobile ? 58 : 80;
 
-  const n = Math.max(1, ranking.length);
+let W = track.clientWidth;
+const H = track.clientHeight;
 
-  // barWidth dinamico (così con 16 squadre non si schiaccia)
-  const maxBarW = 68;
-  const minBarW = 38;
-  const slot = (W - PAD*2) / n;
-  const barW = Math.max(minBarW, Math.min(maxBarW, slot * 0.78));
+const climbH = Math.max(40, H - BASELINE - ICON_AREA);
+
+const n = Math.max(1, ranking.length);
+
+// su mobile: barre più strette + slot più stretto
+const maxBarW = isMobile ? 40 : 68;
+const minBarW = isMobile ? 24 : 38;
+
+// se lo schermo è troppo stretto, abilito “canvas più largo” scrollabile
+// (così non si sovrappone nulla)
+const minSlot = isMobile ? 28 : 0; // 28px a squadra minimo
+const neededW = PAD*2 + n * minSlot;
+
+if (isMobile && neededW > W){
+  track.style.width = neededW + "px";   // allarga SOLO il contenuto del track
+  W = neededW;
+}else{
+  track.style.width = "100%";
+}
+
+const slot = (W - PAD*2) / n;
+const barW = Math.max(minBarW, Math.min(maxBarW, slot * 0.78));
 
   // posizioni X (centrate nello slot) + badge posizione + altezza
   ranking.forEach((r, idx) => {
