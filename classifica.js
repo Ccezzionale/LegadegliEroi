@@ -17,30 +17,25 @@ function normTeamName(val){
 }
 
 function teamKey(val){
-  return normTeamName(val)
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
+  return normTeamName(val).toLowerCase().replace(/\s+/g, " ").trim();
 }
 
 function parseCSVbasic(csv){
-  // NB: il tuo approccio per la classifica (ok con CSV "puliti")
+  // come il tuo: split semplice (ok se non ci sono virgole dentro celle)
   return csv.trim().split(/\r?\n/).map(r => r.split(",").map(c => c.replace(/"/g, "").trim()));
 }
 
 function toNumberSmart(x){
-  // accetta "12.5" o "12,5"
   const s = String(x ?? "").replace(",", ".");
   const n = parseFloat(s);
   return Number.isFinite(n) ? n : 0;
 }
 
-// =======================
-// RACE: Evoluzione classifica
-// =======================
+// ====== RACE: Evoluzione classifica da "Risultati PR - Master" ======
 const RESULTS_PR_MASTER_CSV =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRhEJKfZhVb7V08KI29T_aPTR0hfx7ayIOlFjQn_v-fqgktImjXFg-QAEA6z7w5eyEh2B3w5KLpaRYz/pub?gid=1118969717&single=true&output=csv";
 
+// Normalizzazioni nomi (case-insensitive)
 const TEAM_OFFICIAL = {
   "riverfilo": "Riverfilo",
   "pokermantra": "PokerMantra"
@@ -51,41 +46,18 @@ function canonTeamName(raw){
   return TEAM_OFFICIAL[k] || normTeamName(raw);
 }
 
-// CSV parser robusto SOLO per la race (auto-detect , o ; e gestisce virgolette)
-function parseCSVsmart(csv){
-  const lines = csv.trim().split(/\r?\n/);
-  if (!lines.length) return [];
+// Regola gol da MP (CLASSICA): 66 = 1 gol, poi +6 per ogni gol
+const GOAL_BASE = 66;
+const GOAL_STEP = 6;
 
-  const head = lines[0];
-  const delim = (head.split(";").length > head.split(",").length) ? ";" : ",";
-
-  const out = [];
-  for (const line of lines){
-    const row = [];
-    let cur = "";
-    let inQuotes = false;
-
-    for (let i = 0; i < line.length; i++){
-      const ch = line[i];
-
-      if (ch === '"'){
-        if (inQuotes && line[i+1] === '"'){ cur += '"'; i++; }
-        else inQuotes = !inQuotes;
-        continue;
-      }
-
-      if (ch === delim && !inQuotes){
-        row.push(cur.trim());
-        cur = "";
-        continue;
-      }
-
-      cur += ch;
-    }
-    row.push(cur.trim());
-    out.push(row.map(c => c.replace(/^"|"$/g,"").trim()));
+function mpToGoals(mp){
+  let g = 0;
+  let thr = GOAL_BASE;
+  while (mp >= thr){
+    g += 1;
+    thr += GOAL_STEP;
   }
-  return out;
+  return g;
 }
 
 const RACE_ROW_H = 46;
@@ -157,7 +129,6 @@ function wireRaceControls(){
   const prev = document.getElementById("racePrev");
   const next = document.getElementById("raceNext");
   const slider = document.getElementById("raceDay");
-
   if (!prev || !next || !slider) return;
 
   slider.oninput = e => renderRaceDay(Number(e.target.value));
@@ -175,16 +146,21 @@ function findIdx(headers, candidates){
   return -1;
 }
 
-function ptsFromResult(res){
-  const r = String(res || "").trim().toUpperCase();
-  if (!r) return null;
-
-  // gestisce W/D/L e anche parole tipo WIN/DRAW/LOSS
-  if (r === "W" || r === "WIN") return 3;
-  if (r === "D" || r === "DRAW") return 1;
-  if (r === "L" || r === "LOSS") return 0;
-
-  return null;
+function fixRowToHeaderLen(row, headerLen){
+  // sistema righe tipo: 78,5 -> ["78","5"] finché la lunghezza torna uguale all’header
+  const r = [...row];
+  while (r.length > headerLen){
+    let merged = false;
+    for (let j = r.length - 1; j > 0; j--){
+      if (/^\d+$/.test(r[j - 1]) && r[j] === "5"){
+        r.splice(j - 1, 2, `${r[j - 1]}.5`);
+        merged = true;
+        break;
+      }
+    }
+    if (!merged) break;
+  }
+  return r;
 }
 
 async function loadRaceFromResults(){
@@ -200,19 +176,18 @@ async function loadRaceFromResults(){
     return;
   }
 
-  const rows = parseCSVsmart(text);
+  const rows = parseCSVbasic(text);
   if (!rows.length) { section.style.display = "none"; return; }
 
   const header = rows[0];
 
-  const idxDay = findIdx(header, ["GW_Stagionale","GWStagionale","GWSeason","GWS","GW"]);
+  const idxDay  = findIdx(header, ["GW_Stagionale","GWStagionale","GWSeason","GWS","GW"]);
   const idxTeam = findIdx(header, ["Team","Squadra"]);
-  const idxRes  = findIdx(header, ["Result","Risultato"]);
   const idxPF   = findIdx(header, ["PointsFor","PF","MP","MagicPoints","PuntiFatti"]);
   const idxPA   = findIdx(header, ["PointsAgainst","PA","PuntiSubiti"]);
 
-  if (idxDay === -1 || idxTeam === -1) {
-    console.warn("Race: colonne non trovate (servono almeno GW_Stagionale e Team). Header:", header);
+  if (idxDay === -1 || idxTeam === -1 || idxPF === -1 || idxPA === -1) {
+    console.warn("Race: colonne non trovate (servono almeno GW_Stagionale, Team, PointsFor, PointsAgainst).", header);
     section.style.display = "none";
     return;
   }
@@ -220,12 +195,12 @@ async function loadRaceFromResults(){
   const byDay = new Map();
   const teamsSet = new Set();
 
-  // Anti-duplicati (day + team)
-  const seenOnce = new Set();
-  const dupReport = new Map(); // dupKey -> count
+  // dedup (day|team)
+  const seen = new Set();
+  const dups = [];
 
   for (let i=1; i<rows.length; i++){
-    const r = rows[i];
+    const r = fixRowToHeaderLen(rows[i], header.length);
 
     const day = parseInt(String(r[idxDay] || "").replace(/[^\d]/g,""), 10);
     if (!Number.isFinite(day) || day <= 0) continue;
@@ -234,32 +209,31 @@ async function loadRaceFromResults(){
     if (!teamName) continue;
 
     const tKey = teamKey(teamName);
+    const key = `${day}|${tKey}`;
+
+    if (seen.has(key)){
+      dups.push({ day, team: teamName });
+      continue;
+    }
+    seen.add(key);
+
     teamsSet.add(teamName);
 
-    const dupKey = `${day}|${tKey}`;
-    if (seenOnce.has(dupKey)){
-      dupReport.set(dupKey, (dupReport.get(dupKey) || 1) + 1);
-      continue; // evita +6, +4 ecc
-    }
-    seenOnce.add(dupKey);
+    const mpFor = toNumberSmart(r[idxPF]);
+    const mpAg  = toNumberSmart(r[idxPA]);
 
-    const mpFor = (idxPF !== -1) ? toNumberSmart(r[idxPF]) : 0;
-    const mpAg  = (idxPA !== -1) ? toNumberSmart(r[idxPA]) : 0;
+    // ✅ punti LEGA calcolati da GOL (non da MP puro)
+    const gf = mpToGoals(mpFor);
+    const ga = mpToGoals(mpAg);
 
-    let pts = null;
-    if (idxRes !== -1) pts = ptsFromResult(r[idxRes]);
-
-    // fallback: deduco dai MP se non ho W/D/L chiaro
-    if (pts === null){
-      pts = mpFor > mpAg ? 3 : (mpFor < mpAg ? 0 : 1);
-    }
+    const pts = gf > ga ? 3 : (gf < ga ? 0 : 1);
 
     if (!byDay.has(day)) byDay.set(day, []);
     byDay.get(day).push({ teamKey: tKey, teamName, pts, mp: mpFor });
   }
 
-  if (dupReport.size){
-    console.warn("Race: duplicati ignorati (stesso team nella stessa giornata).", Array.from(dupReport.entries()));
+  if (dups.length){
+    console.warn("Race: duplicati ignorati (stesso team nella stessa giornata).", dups);
   }
 
   const days = Array.from(byDay.keys()).sort((a,b)=>a-b);
@@ -268,7 +242,7 @@ async function loadRaceFromResults(){
   const teamNames = Array.from(teamsSet).sort((a,b)=>a.localeCompare(b));
   initRaceDOM(teamNames);
 
-  const totals = new Map();
+  const totals = new Map(); // teamKey -> {pt, mp, teamName}
   teamNames.forEach(n => totals.set(teamKey(n), { pt:0, mp:0, teamName:n }));
 
   raceDataByDay = {};
@@ -301,9 +275,7 @@ async function loadRaceFromResults(){
   renderRaceDay(1);
 }
 
-// =======================
-// La tua logica classifica (INVARIATA)
-// =======================
+// ====== la tua parte classifica (identica) ======
 async function teamPointsFromSheet(sheetName){
   const url = URL_MAP[sheetName];
   const text = await fetch(url).then(r => r.text());
@@ -311,7 +283,6 @@ async function teamPointsFromSheet(sheetName){
 
   const startRow = 4;
   const header = rows[startRow - 1];
-
   const headerFixed = [...header];
   headerFixed.splice(2, 1);
 
@@ -494,7 +465,6 @@ async function caricaClassifica(nomeFoglio = "Conference") {
         if (colonneGrezze.length > intestazione.length) {
           const ultimo = colonneGrezze[colonneGrezze.length - 1];
           const penultimo = colonneGrezze[colonneGrezze.length - 2];
-
           if (/^\d+$/.test(penultimo) && ultimo === "5") {
             colonneGrezze.splice(-2, 2, `${penultimo}.5`);
           }
@@ -552,9 +522,9 @@ async function caricaClassifica(nomeFoglio = "Conference") {
         body.className = "accordion-body";
         for (let j = 2; j < colonne.length; j++) {
           const label = intestazione[j];
-          const val = formattaNumero(colonne[j]);
+          const v = formattaNumero(colonne[j]);
           const p = document.createElement("span");
-          p.innerHTML = `<strong>${label}:</strong> ${val}`;
+          p.innerHTML = `<strong>${label}:</strong> ${v}`;
           body.appendChild(p);
         }
 
@@ -576,10 +546,8 @@ const NOMI_ESTESI = {
 
 window.onload = () => {
   caricaClassifica("Conference");
-  loadRaceFromResults();
+  loadRaceFromResults(); // ✅ avvia la race
 };
-
-
 
 document.querySelectorAll(".switcher button").forEach(btn => {
   btn.addEventListener("click", () => {
