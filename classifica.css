@@ -433,14 +433,16 @@ th, td {
     padding-bottom: 8px;
   }
 
-  .race-bar{
-    border-radius: 18px;         /* meno “palloncino” */
-  }
+.race-bar{
+  position: absolute;
+}
 
-  .race-bar img{
-    width: 44px;                 /* logo più piccolo */
-    height: 44px;
-  }
+.race-bar img{
+  position: absolute;
+  left: 50%;
+  top: -34px;              /* regola fine: alza/abbassa logo */
+  transform: translateX(-50%);
+}
 
   .pos-badge{
     font-size: 12px;             /* badge più piccolo */
