@@ -21,9 +21,17 @@ function teamKey(val){
 }
 
 function parseCSVbasic(csv){
-  // come il tuo: split semplice (ok se non ci sono virgole dentro celle)
-  return csv.trim().split(/\r?\n/).map(r => r.split(",").map(c => c.replace(/"/g, "").trim()));
+  if (typeof csv !== "string") {
+    console.warn("parseCSVbasic: csv non è una stringa:", csv);
+    return [];
+  }
+  const clean = csv.trim();
+  if (!clean) return [];
+  return clean
+    .split(/\r?\n/)
+    .map(r => r.split(",").map(c => (c ?? "").replace(/"/g, "").trim()));
 }
+
 
 function toNumberSmart(x){
   const s = String(x ?? "").replace(",", ".");
@@ -262,14 +270,33 @@ async function loadRaceFromResults(){
   const section = document.getElementById("raceSection");
   if (!section) return;
 
-  let text;
+  let text = "";
   try{
-    tetext = await fetchTextWithRetry(RESULTS_PR_MASTER_CSV, 3);
+    text = await fetchTextWithRetry(RESULTS_PR_MASTER_CSV, 3);
   }catch(e){
     console.error("Race: fetch CSV failed", e);
     section.style.display = "none";
     return;
   }
+
+  // ✅ sanity checks
+  if (typeof text !== "string" || !text.trim()){
+    console.error("Race: CSV vuoto o non valido:", text);
+    section.style.display = "none";
+    return;
+  }
+
+  // se arriva HTML (permessi/redirect), stop
+  const head = text.trim().slice(0, 80).toLowerCase();
+  if (head.startsWith("<!doctype") || head.startsWith("<html")){
+    console.error("Race: risposta HTML invece di CSV (permessi/redirect).");
+    console.log("Race response preview:", text.slice(0, 200));
+    section.style.display = "none";
+    return;
+  }
+
+  // debug rapido se serve
+  // console.log("Race CSV first 200 chars:", text.slice(0, 200));
 
   const rows = parseCSVbasic(text);
   if (!rows.length) { section.style.display = "none"; return; }
@@ -369,6 +396,7 @@ async function loadRaceFromResults(){
   wireRaceControls();
   renderRaceDay(1);
 }
+
 
 // ====== la tua parte classifica (identica) ======
 async function teamPointsFromSheet(sheetName){
