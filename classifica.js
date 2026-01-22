@@ -60,7 +60,7 @@ function mpToGoals(mp){
   return g;
 }
 
-const RACE_ROW_H = 46;
+const RACE_SLOT_W = 66; // spazio tra loghi (px)
 let raceNodes = new Map();
 let raceDataByDay = {}; // day -> [{teamKey, teamName, pt, mp}]
 let raceMaxDay = 1;
