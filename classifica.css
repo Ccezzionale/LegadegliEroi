@@ -418,5 +418,34 @@ th, td {
     max-width: 200px;
     padding: 12px 14px;
   }
+
+  /* ===== RACE: mobile fix ===== */
+@media (max-width: 520px){
+  .race-track{
+    height: 520px;               /* più compatto ma leggibile */
+    overflow-x: auto;            /* permette scroll se serve */
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* opzionale: un po' di padding interno */
+  .race-track{
+    padding-bottom: 8px;
+  }
+
+  .race-bar{
+    border-radius: 18px;         /* meno “palloncino” */
+  }
+
+  .race-bar img{
+    width: 44px;                 /* logo più piccolo */
+    height: 44px;
+  }
+
+  .pos-badge{
+    font-size: 12px;             /* badge più piccolo */
+    padding: 4px 8px;
+    border-radius: 12px;
+  }
 }
 
