@@ -192,21 +192,22 @@ function renderRaceDay(day){
   const PAD = 12;
 const BASELINE = 12;
 
-// su mobile riduco l’area “logo+badge” e stringo le barre
+// su mobile
 const isMobile = window.matchMedia("(max-width: 520px)").matches;
-const ICON_AREA = isMobile ? 58 : 80;
 
 let W = track.clientWidth;
 const H = track.clientHeight;
 
-const ICON_AREA = isMobile ? 120 : 90;   // più aria sopra su mobile
+// ✅ più aria sopra su mobile per evitare tagli del 1°
+const ICON_AREA = isMobile ? 120 : 90;
+
 const climbH = Math.max(40, H - BASELINE - ICON_AREA);
 
 const n = Math.max(1, ranking.length);
 
-// su mobile: barre più strette + slot più stretto
-const maxBarW = isMobile ? 30 : 68;  // prima 34
-const minBarW = isMobile ? 20 : 38;  // prima 22
+// ✅ barre più strette su mobile
+const maxBarW = isMobile ? 30 : 68;
+const minBarW = isMobile ? 20 : 38;
 
 
 // se lo schermo è troppo stretto, abilito “canvas più largo” scrollabile
