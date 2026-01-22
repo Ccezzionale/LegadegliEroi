@@ -64,6 +64,8 @@ const RACE_SLOT_W = 66; // spazio tra loghi (px)
 let raceNodes = new Map();
 let raceDataByDay = {}; // day -> [{teamKey, teamName, pt, mp}]
 let raceMaxDay = 1;
+let raceOrder = []; // ordine fisso delle squadre sull'asse X
+
 
 function initRaceDOM(teamNames){
   const track = document.getElementById("raceTrack");
@@ -72,7 +74,10 @@ function initRaceDOM(teamNames){
   track.innerHTML = "";
   raceNodes = new Map();
 
-  teamNames.forEach(teamName => {
+  // ordine fisso X (alfabetico, ma puoi cambiarlo se vuoi)
+  raceOrder = teamNames.slice().sort((a,b)=>a.localeCompare(b));
+
+  raceOrder.forEach(teamName => {
     const el = document.createElement("div");
     el.className = "race-item";
 
@@ -89,37 +94,56 @@ function initRaceDOM(teamNames){
 }
 
 
+
 function renderRaceDay(day){
+  const track = document.getElementById("raceTrack");
   const slider = document.getElementById("raceDay");
   const label = document.getElementById("raceLabel");
-  if (!slider || !label) return;
+  if (!track || !slider || !label) return;
 
   const rows = raceDataByDay[day] || [];
-  const filled = [];
 
-  for (const [k, node] of raceNodes.entries()){
-    const found = rows.find(r => r.teamKey === k);
-    filled.push(found || { teamKey: k, teamName: node.teamName, pt: 0, mp: 0 });
-  }
+  // mappa: teamKey -> pt
+  const ptMap = new Map();
+  rows.forEach(r => ptMap.set(r.teamKey, Number(r.pt) || 0));
 
-  filled.sort((a,b) =>
-    (b.pt - a.pt) ||
-    (b.mp - a.mp) ||
-    a.teamName.localeCompare(b.teamName)
-  );
+  // max punti (per scalare l'altezza)
+  const maxPt = Math.max(1, ...raceOrder.map(n => ptMap.get(teamKey(n)) || 0));
 
-  filled.forEach((r, idx) => {
-  const node = raceNodes.get(r.teamKey);
-  if (!node) return;
+  const ICON = 56;
+  const PAD  = 12;
 
-  // 1° a sinistra, ultimo a destra
-  node.el.style.transform = `translate(${idx * RACE_SLOT_W}px, -50%)`;
-});
+  const W = track.clientWidth;
+  const H = track.clientHeight;
 
+  // spazio disponibile per "salire"
+  const climbH = Math.max(0, H - ICON - PAD*2);
+
+  // slot orizzontale: distribuisci i loghi su tutta la larghezza
+  const n = Math.max(1, raceOrder.length);
+  const slot = (n === 1) ? 0 : (W - ICON - PAD*2) / (n - 1);
+
+  raceOrder.forEach((teamName, idx) => {
+    const k = teamKey(teamName);
+    const node = raceNodes.get(k);
+    if (!node) return;
+
+    const pt = ptMap.get(k) || 0;
+
+    // X fisso per squadra
+    const x = PAD + idx * slot;
+
+    // Y dipende dai punti (0 = baseline, maxPt = top)
+    const y = (pt / maxPt) * climbH;
+
+    // bottom è già 12px, quindi spostiamo in su con -y
+    node.el.style.transform = `translate(${x}px, ${-y}px)`;
+  });
 
   slider.value = day;
   label.textContent = `Giornata ${day}`;
 }
+
 
 function wireRaceControls(){
   const prev = document.getElementById("racePrev");
