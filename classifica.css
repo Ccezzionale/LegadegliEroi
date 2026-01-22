@@ -274,5 +274,19 @@ th, td {
   flex-direction: row; /* 👈 FORZA l’allineamento orizzontale */
   gap: 12px;
 }
+  .switcher {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 16px;
+  }
+
+  .switcher button {
+    margin: 0;                 /* toglie i margini inline */
+    flex: 1 1 calc(50% - 10px);/* 2 per riga */
+    max-width: 200px;
+    padding: 12px 14px;
+  }
 }
 
