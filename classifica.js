@@ -227,27 +227,29 @@ const slot = (W - PAD*2) / n;
 const barW = Math.max(minBarW, Math.min(maxBarW, slot * 0.78));
 
   // posizioni X (centrate nello slot) + badge posizione + altezza
- ranking.forEach((r, idx) => {
-  const node = raceNodes.get(r.k);
-  if (!node) return;
+  ranking.forEach((r, idx) => {
+    const node = raceNodes.get(r.k);
+    if (!node) return;
 
-  const x = PAD + idx * slot + (slot - barW) / 2;
+    const x = PAD + idx * slot + (slot - barW) / 2;
 
-  // altezza proporzionale ai punti
-  let h = Math.max(10, (r.pt / maxPt) * climbH);
+    // altezza proporzionale ai punti
+    let h = Math.max(10, (r.pt / maxPt) * climbH);
 
-  // ✅ evita che la 1° sfori: lascia sempre margine sopra
-  const MAX_H = climbH * (isMobile ? 0.92 : 0.96);
-  h = Math.min(h, MAX_H);
+    // ✅ evita che la 1° sfori: lascia sempre margine sopra
+    const MAX_H = climbH * (isMobile ? 0.92 : 0.96);
+    h = Math.min(h, MAX_H);
 
-  node.el.style.width = `${barW}px`;
-  node.el.style.height = `${h}px`;
-  node.el.style.transform = `translateX(${x}px)`;
+    node.el.style.width = `${barW}px`;
+    node.el.style.height = `${h}px`;
+    node.el.style.transform = `translateX(${x}px)`;
 
-  if (node.badge) node.badge.textContent = `${idx + 1}°`;
-});
+    if (node.badge) node.badge.textContent = `${idx + 1}°`;
+  });
 
-
+  slider.value = day;
+  label.textContent = `Giornata ${day}`;
+}
 
 function wireRaceControls(){
   const prev = document.getElementById("racePrev");
