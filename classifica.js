@@ -203,6 +203,13 @@ async function loadRaceFromResults(){
   const byDay = new Map();
   const teamsSet = new Set();
 
+  const dupKey = `${day}|${tKey}`;
+if (seen.has(dupKey)) {
+  console.warn("DUPLICATO trovato (stesso team nella stessa giornata):", { day, teamName, row: r });
+  continue; // commenta questo continue se vuoi vedere l'effetto “sballato”
+}
+seen.add(dupKey);
+
   for (let i=1; i<rows.length; i++){
   const r = fixRowToHeaderLen(rows[i], header.length);
     const day = parseInt(String(r[idxDay] || "").replace(/[^\d]/g,""), 10);
