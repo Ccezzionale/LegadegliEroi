@@ -204,12 +204,14 @@ const climbH = Math.max(40, H - BASELINE - ICON_AREA);
 const n = Math.max(1, ranking.length);
 
 // su mobile: barre più strette + slot più stretto
-const maxBarW = isMobile ? 40 : 68;
-const minBarW = isMobile ? 24 : 38;
+const maxBarW = isMobile ? 34 : 68;
+const minBarW = isMobile ? 22 : 38;
+
 
 // se lo schermo è troppo stretto, abilito “canvas più largo” scrollabile
 // (così non si sovrappone nulla)
-const minSlot = isMobile ? 28 : 0; // 28px a squadra minimo
+// più distanza su mobile: niente sovrapposizioni loghi
+const minSlot = isMobile ? 74 : 0;   // <-- prima 28, ora 74 (puoi anche 78/82 se vuoi)
 const neededW = PAD*2 + n * minSlot;
 
 if (isMobile && neededW > W){
