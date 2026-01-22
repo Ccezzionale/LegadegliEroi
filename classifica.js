@@ -538,7 +538,11 @@ const NOMI_ESTESI = {
   "Totale": "Totale"
 };
 
-window.onload = () => caricaClassifica("Conference");
+window.onload = () => {
+  caricaClassifica("Conference");
+  loadRaceFromResults();   // ✅ avvia la race
+};
+
 
 document.querySelectorAll(".switcher button").forEach(btn => {
   btn.addEventListener("click", () => {
