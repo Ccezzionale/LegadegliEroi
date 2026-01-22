@@ -31,6 +31,26 @@ function toNumberSmart(x){
   return Number.isFinite(n) ? n : 0;
 }
 
+// ✅ METTILA QUI (helper condiviso)
+async function fetchTextWithRetry(url, tries = 3) {
+  const bust = (url.includes("?") ? "&" : "?") + "nocache=" + Date.now();
+  const finalUrl = url + bust;
+
+  for (let i = 0; i < tries; i++) {
+    try {
+      const res = await fetch(finalUrl, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.text();
+    } catch (e) {
+      if (i === tries - 1) throw e;
+      await new Promise(r => setTimeout(r, 400 * (i + 1)));
+    }
+  }
+}
+
+
+
+
 // ====== RACE: Evoluzione classifica da "Risultati PR - Master" ======
 const RESULTS_PR_MASTER_CSV =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRhEJKfZhVb7V08KI29T_aPTR0hfx7ayIOlFjQn_v-fqgktImjXFg-QAEA6z7w5eyEh2B3w5KLpaRYz/pub?gid=1118969717&single=true&output=csv";
@@ -244,7 +264,7 @@ async function loadRaceFromResults(){
 
   let text;
   try{
-    text = await fetch(RESULTS_PR_MASTER_CSV).then(r => r.text());
+    tetext = await fetchTextWithRetry(RESULTS_PR_MASTER_CSV, 3);
   }catch(e){
     console.error("Race: fetch CSV failed", e);
     section.style.display = "none";
@@ -353,7 +373,7 @@ async function loadRaceFromResults(){
 // ====== la tua parte classifica (identica) ======
 async function teamPointsFromSheet(sheetName){
   const url = URL_MAP[sheetName];
-  const text = await fetch(url).then(r => r.text());
+  const text = await fetchTextWithRetry(url, 3);
   const rows = parseCSVbasic(text);
 
   const startRow = 4;
