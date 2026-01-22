@@ -177,7 +177,7 @@ th, td {
   display: none;
 }
 
-/* ===== RACE (orizzontale, solo loghi) ===== */
+/* ===== RACE (orizzontale, loghi che salgono in base ai punti) ===== */
 .race-section{
   width: 100%;
   max-width: 1200px;
@@ -219,12 +219,12 @@ th, td {
   text-align: left;
 }
 
-/* pista */
+/* "grafico" */
 .race-track{
   position: relative;
   width: 100%;
   max-width: 1200px;
-  height: 86px;
+  height: 320px;                 /* 👈 altezza grafico */
   margin: 0 auto;
   background: #fff;
   border: 1px solid #d8d8d8;
@@ -232,19 +232,29 @@ th, td {
   overflow: hidden;
 }
 
-/* singolo logo */
+/* linea di base */
+.race-track::after{
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  height: 2px;
+  background: #001f3f;
+  opacity: .15;
+}
+
+/* logo */
 .race-item{
   position: absolute;
-  top: 50%;
+  bottom: 12px;                  /* ancorato alla base */
   left: 0;
   width: 56px;
   height: 56px;
-  transform: translate(0, -50%);
   transition: transform 450ms ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;            /* niente card */
   background: transparent;
 }
 
@@ -255,7 +265,7 @@ th, td {
   border-radius: 50%;
 }
 
-/* sicurezza: se per caso esistono ancora, non mostrarli */
+/* sicurezza: niente nome/meta */
 .race-item .name,
 .race-item .meta{
   display: none !important;
