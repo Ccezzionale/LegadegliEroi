@@ -6,11 +6,12 @@ const URL_MAP = {
 
 function formattaNumero(val) {
   if (!isNaN(val) && val.toString().includes(".")) {
-    const num = parseFloat(val).toFixed(2); // Limita a 2 decimali
+    const num = parseFloat(val).toFixed(2);
     return num.replace(".", ",");
   }
   return val;
 }
+
 function normTeamName(val){
   return String(val || "").replace(/[👑🎖️💀]/g, "").trim();
 }
@@ -23,7 +24,7 @@ function teamKey(val){
 }
 
 function parseCSVbasic(csv){
-  // NB: è il tuo stesso approccio (split su virgola). Va bene se il CSV non ha virgole dentro celle.
+  // NB: il tuo approccio per la classifica (ok con CSV "puliti")
   return csv.trim().split(/\r?\n/).map(r => r.split(",").map(c => c.replace(/"/g, "").trim()));
 }
 
@@ -34,13 +35,11 @@ function toNumberSmart(x){
   return Number.isFinite(n) ? n : 0;
 }
 
-// ====== RACE: Evoluzione classifica da "Risultati PR - Master" ======
+// =======================
+// RACE: Evoluzione classifica
+// =======================
 const RESULTS_PR_MASTER_CSV =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRhEJKfZhVb7V08KI29T_aPTR0hfx7ayIOlFjQn_v-fqgktImjXFg-QAEA6z7w5eyEh2B3w5KLpaRYz/pub?gid=1118969717&single=true&output=csv";
-
-// Se i nomi nel CSV non combaciano con i nomi dei tuoi file logo (img/Nome Squadra.png),
-// aggiungi qui le conversioni.
-// chiave = teamKey(nomeCSV), valore = nome esatto del file immagine e del display
 
 const TEAM_OFFICIAL = {
   "riverfilo": "Riverfilo",
@@ -48,8 +47,45 @@ const TEAM_OFFICIAL = {
 };
 
 function canonTeamName(raw){
-  const k = teamKey(raw);            // <-- rende tutto case-insensitive
+  const k = teamKey(raw);
   return TEAM_OFFICIAL[k] || normTeamName(raw);
+}
+
+// CSV parser robusto SOLO per la race (auto-detect , o ; e gestisce virgolette)
+function parseCSVsmart(csv){
+  const lines = csv.trim().split(/\r?\n/);
+  if (!lines.length) return [];
+
+  const head = lines[0];
+  const delim = (head.split(";").length > head.split(",").length) ? ";" : ",";
+
+  const out = [];
+  for (const line of lines){
+    const row = [];
+    let cur = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++){
+      const ch = line[i];
+
+      if (ch === '"'){
+        if (inQuotes && line[i+1] === '"'){ cur += '"'; i++; }
+        else inQuotes = !inQuotes;
+        continue;
+      }
+
+      if (ch === delim && !inQuotes){
+        row.push(cur.trim());
+        cur = "";
+        continue;
+      }
+
+      cur += ch;
+    }
+    row.push(cur.trim());
+    out.push(row.map(c => c.replace(/^"|"$/g,"").trim()));
+  }
+  return out;
 }
 
 const RACE_ROW_H = 46;
@@ -141,32 +177,14 @@ function findIdx(headers, candidates){
 
 function ptsFromResult(res){
   const r = String(res || "").trim().toUpperCase();
-  if (r === "W") return 3;
-  if (r === "D") return 1;
-  if (r === "L") return 0;
+  if (!r) return null;
+
+  // gestisce W/D/L e anche parole tipo WIN/DRAW/LOSS
+  if (r === "W" || r === "WIN") return 3;
+  if (r === "D" || r === "DRAW") return 1;
+  if (r === "L" || r === "LOSS") return 0;
+
   return null;
-}
-
-function fixRowToHeaderLen(row, headerLen){
-  // sistema righe tipo: 78,5 -> ["78","5"] finché la lunghezza torna uguale all’header
-  const r = [...row];
-
-  while (r.length > headerLen){
-    let merged = false;
-
-    // cerca coppie [numero intero, "5"] e le fonde in "numero.5"
-    for (let j = r.length - 1; j > 0; j--){
-      if (/^\d+$/.test(r[j - 1]) && r[j] === "5"){
-        r.splice(j - 1, 2, `${r[j - 1]}.5`);
-        merged = true;
-        break;
-      }
-    }
-
-    if (!merged) break; // evita loop infinito se non trova pattern
-  }
-
-  return r;
 }
 
 async function loadRaceFromResults(){
@@ -182,7 +200,7 @@ async function loadRaceFromResults(){
     return;
   }
 
-  const rows = parseCSVbasic(text);
+  const rows = parseCSVsmart(text);
   if (!rows.length) { section.style.display = "none"; return; }
 
   const header = rows[0];
@@ -194,30 +212,21 @@ async function loadRaceFromResults(){
   const idxPA   = findIdx(header, ["PointsAgainst","PA","PuntiSubiti"]);
 
   if (idxDay === -1 || idxTeam === -1) {
-    console.warn("Race: colonne non trovate (servono almeno GW_Stagionale e Team).", header);
+    console.warn("Race: colonne non trovate (servono almeno GW_Stagionale e Team). Header:", header);
     section.style.display = "none";
     return;
   }
 
-  // Raggruppo righe per giornata stagionale
   const byDay = new Map();
   const teamsSet = new Set();
-const seen = new Map();      // dupKey -> {count, samples:[]}
-const dups = [];             // array per console.table
 
-const dupKey = `${day}|${tKey}`;
-
-if (seen.has(dupKey)) {
-  const obj = seen.get(dupKey);
-  obj.count += 1;
-  if (obj.samples.length < 3) obj.samples.push(r); // salva fino a 3 righe
-  seen.set(dupKey, obj);
-} else {
-  seen.set(dupKey, { count: 1, day, teamName, tKey, samples: [r] });
-}
+  // Anti-duplicati (day + team)
+  const seenOnce = new Set();
+  const dupReport = new Map(); // dupKey -> count
 
   for (let i=1; i<rows.length; i++){
-  const r = fixRowToHeaderLen(rows[i], header.length);
+    const r = rows[i];
+
     const day = parseInt(String(r[idxDay] || "").replace(/[^\d]/g,""), 10);
     if (!Number.isFinite(day) || day <= 0) continue;
 
@@ -227,13 +236,21 @@ if (seen.has(dupKey)) {
     const tKey = teamKey(teamName);
     teamsSet.add(teamName);
 
+    const dupKey = `${day}|${tKey}`;
+    if (seenOnce.has(dupKey)){
+      dupReport.set(dupKey, (dupReport.get(dupKey) || 1) + 1);
+      continue; // evita +6, +4 ecc
+    }
+    seenOnce.add(dupKey);
+
     const mpFor = (idxPF !== -1) ? toNumberSmart(r[idxPF]) : 0;
     const mpAg  = (idxPA !== -1) ? toNumberSmart(r[idxPA]) : 0;
 
     let pts = null;
     if (idxRes !== -1) pts = ptsFromResult(r[idxRes]);
+
+    // fallback: deduco dai MP se non ho W/D/L chiaro
     if (pts === null){
-      // fallback: deduco W/D/L confrontando PointsFor vs PointsAgainst
       pts = mpFor > mpAg ? 3 : (mpFor < mpAg ? 0 : 1);
     }
 
@@ -241,14 +258,17 @@ if (seen.has(dupKey)) {
     byDay.get(day).push({ teamKey: tKey, teamName, pts, mp: mpFor });
   }
 
-  // Ordino giorni e costruisco snapshot cumulati
+  if (dupReport.size){
+    console.warn("Race: duplicati ignorati (stesso team nella stessa giornata).", Array.from(dupReport.entries()));
+  }
+
   const days = Array.from(byDay.keys()).sort((a,b)=>a-b);
   raceMaxDay = days.length ? days[days.length - 1] : 1;
 
   const teamNames = Array.from(teamsSet).sort((a,b)=>a.localeCompare(b));
   initRaceDOM(teamNames);
 
-  const totals = new Map(); // teamKey -> {pt, mp, teamName}
+  const totals = new Map();
   teamNames.forEach(n => totals.set(teamKey(n), { pt:0, mp:0, teamName:n }));
 
   raceDataByDay = {};
@@ -281,28 +301,28 @@ if (seen.has(dupKey)) {
   renderRaceDay(1);
 }
 
+// =======================
+// La tua logica classifica (INVARIATA)
+// =======================
 async function teamPointsFromSheet(sheetName){
-  // sheetName: "Conference" o "Championship"
   const url = URL_MAP[sheetName];
   const text = await fetch(url).then(r => r.text());
   const rows = parseCSVbasic(text);
 
-  const startRow = 4; // come il tuo
+  const startRow = 4;
   const header = rows[startRow - 1];
-  // rimuovi la colonna vuota (C) come fai tu
+
   const headerFixed = [...header];
   headerFixed.splice(2, 1);
 
-  // prova a trovare la colonna punti: prima "PT", altrimenti "Punti", altrimenti penultima (come il tuo accordion)
   let idxPT = headerFixed.findIndex(h => h.toUpperCase() === "PT");
   if (idxPT === -1) idxPT = headerFixed.findIndex(h => h.toLowerCase().includes("punt"));
-  
+
   const map = new Map();
 
   for (let i = startRow; i < rows.length; i++){
     let cols = rows[i];
 
-    // merge del ".5" (copiato dal tuo)
     if (cols.length > header.length) {
       const ultimo = cols[cols.length - 1];
       const penultimo = cols[cols.length - 2];
@@ -323,9 +343,8 @@ async function teamPointsFromSheet(sheetName){
   return map;
 }
 
-  async function caricaClassifica(nomeFoglio = "Conference") {
+async function caricaClassifica(nomeFoglio = "Conference") {
 
-  // ✅ ROUND ROBIN = Totale - (Conference o Championship)
   if (nomeFoglio === "Round Robin") {
     try {
       const [confMap, champMap] = await Promise.all([
@@ -336,18 +355,14 @@ async function teamPointsFromSheet(sheetName){
       const csvTot = await fetch(URL_MAP["Totale"]).then(r => r.text());
       const rowsTot = parseCSVbasic(csvTot);
 
-      const startRow = 1; // Totale
+      const startRow = 1;
       const header = rowsTot[startRow - 1];
-
-      // indici: pos = 0, squadra = 1 (come nel tuo codice)
       const idxTeam = 1;
 
-      // colonna PT in Totale: prova a beccarla, altrimenti penultima
       let idxPT = header.findIndex(h => String(h).replace(/"/g,"").trim().toUpperCase() === "PT");
       if (idxPT === -1) idxPT = header.findIndex(h => String(h).toLowerCase().includes("punt"));
       if (idxPT === -1) idxPT = header.length - 2;
 
-      // DOM reset
       const tbody = document.querySelector("#tabella-classifica tbody");
       const thead = document.querySelector("#tabella-classifica thead");
       const mobile = document.getElementById("classifica-mobile");
@@ -355,7 +370,6 @@ async function teamPointsFromSheet(sheetName){
       thead.innerHTML = "";
       mobile.innerHTML = "";
 
-      // header "Round Robin"
       const intestazione = ["Pos", "Squadra", "RR PT"];
       const headerRow = document.createElement("tr");
       intestazione.forEach(col => {
@@ -365,7 +379,6 @@ async function teamPointsFromSheet(sheetName){
       });
       thead.appendChild(headerRow);
 
-      // build RR array
       const rr = [];
       for (let i = startRow; i < rowsTot.length; i++) {
         const cols = rowsTot[i];
@@ -382,21 +395,17 @@ async function teamPointsFromSheet(sheetName){
 
       rr.sort((a,b) => b.rrPt - a.rrPt);
 
-      // render
       rr.forEach((r, k) => {
         const pos = k + 1;
 
-        // TAB
-       const tr = document.createElement("tr");
-tr.classList.add("riga-classifica");
-if (pos === 1) tr.classList.add("top1");
+        const tr = document.createElement("tr");
+        tr.classList.add("riga-classifica");
+        if (pos === 1) tr.classList.add("top1");
 
-        // Pos
         const tdPos = document.createElement("td");
         tdPos.textContent = pos;
         tr.appendChild(tdPos);
 
-        // Squadra + logo
         const tdTeam = document.createElement("td");
         const div = document.createElement("div");
         div.className = "logo-nome";
@@ -411,17 +420,15 @@ if (pos === 1) tr.classList.add("top1");
         tdTeam.appendChild(div);
         tr.appendChild(tdTeam);
 
-        // RR PT
         const tdPt = document.createElement("td");
         tdPt.textContent = Math.round(r.rrPt);
         tr.appendChild(tdPt);
 
         tbody.appendChild(tr);
 
-        // MOBILE accordion
-       const item = document.createElement("div");
-item.className = "accordion-item";
-if (pos === 1) item.classList.add("top1");
+        const item = document.createElement("div");
+        item.className = "accordion-item";
+        if (pos === 1) item.classList.add("top1");
 
         const header = document.createElement("div");
         header.className = "accordion-header";
@@ -448,7 +455,7 @@ if (pos === 1) item.classList.add("top1");
         mobile.appendChild(item);
       });
 
-      return; // ⛔ importantissimo: non andare avanti col fetch standard
+      return;
     } catch (e) {
       console.error("Errore Round Robin:", e);
       return;
@@ -481,26 +488,20 @@ if (pos === 1) item.classList.add("top1");
       });
       thead.appendChild(headerRow);
 
-     for (let i = startRow; i < righe.length; i++) {
-  const colonneGrezze = righe[i].split(",").map(c => c.replace(/"/g, "").trim());
+      for (let i = startRow; i < righe.length; i++) {
+        const colonneGrezze = righe[i].split(",").map(c => c.replace(/"/g, "").trim());
 
-  // 🔍 DEBUG: stampa la riga originale e le colonne
-  if (colonneGrezze.includes("5")) {
-  }
+        if (colonneGrezze.length > intestazione.length) {
+          const ultimo = colonneGrezze[colonneGrezze.length - 1];
+          const penultimo = colonneGrezze[colonneGrezze.length - 2];
 
-  // MERGE punto bonus se "5" è colonna extra
-  if (colonneGrezze.length > intestazione.length) {
-    const ultimo = colonneGrezze[colonneGrezze.length - 1];
-    const penultimo = colonneGrezze[colonneGrezze.length - 2];
+          if (/^\d+$/.test(penultimo) && ultimo === "5") {
+            colonneGrezze.splice(-2, 2, `${penultimo}.5`);
+          }
+        }
 
-    if (/^\d+$/.test(penultimo) && ultimo === "5") {
-      colonneGrezze.splice(-2, 2, `${penultimo}.5`);
-    }
-  }
-
-  const colonne = [...colonneGrezze];
-
-  if (nomeFoglio !== "Totale") colonne.splice(2, 1);
+        const colonne = [...colonneGrezze];
+        if (nomeFoglio !== "Totale") colonne.splice(2, 1);
 
         const tr = document.createElement("tr");
         tr.classList.add("riga-classifica");
@@ -575,8 +576,9 @@ const NOMI_ESTESI = {
 
 window.onload = () => {
   caricaClassifica("Conference");
-  loadRaceFromResults();   // ✅ avvia la race
+  loadRaceFromResults();
 };
+
 
 
 document.querySelectorAll(".switcher button").forEach(btn => {
@@ -586,3 +588,4 @@ document.querySelectorAll(".switcher button").forEach(btn => {
     caricaClassifica(nomeFoglio);
   });
 });
+
