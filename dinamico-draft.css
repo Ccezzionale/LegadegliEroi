@@ -354,3 +354,69 @@ nav {
   border-radius: 4px;
 }
 
+  :root{
+  --draft-header-h: 130px;
+  --draft-picks-top: 16px;
+  --round-col-w: 92px;
+}
+
+.draft-block{
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+/* colonna round a sinistra */
+.rounds-col{
+  width: var(--round-col-w);
+  flex: 0 0 var(--round-col-w);
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 12px 8px;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* spazio per allineare i round sotto l’header delle card */
+.rounds-col .rounds-spacer{
+  height: calc(var(--draft-header-h) + var(--draft-picks-top));
+}
+
+.rounds-col .round{
+  padding: 4px 8px;
+  margin: 2px 0;
+  border-radius: 4px;
+  text-align: left;
+  font-weight: 700;
+  color: #001f3f;
+  background: #f8f9fa;
+  border-left: 4px solid #FFD700;
+}
+
+/* lo scroll orizzontale deve stare SOLO sulle card */
+.draft-scroll-x{
+  overflow-x: auto;
+  width: 100%;
+}
+
+/* mobile */
+@media (max-width: 768px){
+  :root{
+    --draft-header-h: 80px;
+    --draft-picks-top: 8px;
+    --round-col-w: 72px;
+  }
+
+  .rounds-col{
+    padding: 8px 6px;
+  }
+
+  .rounds-col .round{
+    font-size: 0.7rem;
+    padding: 2px 6px;
+  }
+}
+
+
