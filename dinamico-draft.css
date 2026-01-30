@@ -294,6 +294,38 @@ nav {
   width: 100%;
 }
 
+ /* ✅ allinea esattamente Round e Pick: stessa spaziatura */
+.draft-picks{
+  gap: 4px;              /* tieni il gap */
+}
+
+.draft-picks .pick{
+  margin: 0;             /* 🔥 togli il margin che sommava spazio */
+}
+
+/* ✅ anche la colonna Round usa lo stesso gap */
+.rounds-col{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rounds-col .round{
+  margin: 0;             /* 🔥 idem: niente margin, gap gestisce tutto */
+}
+
+/* (opzionale ma consigliato) evita che la pick “bonus” cambi altezza */
+.pick{
+  box-sizing: border-box;
+  border: 2px solid transparent;   /* tutti hanno lo stesso spessore */
+}
+
+.pick.bonus-coppa{
+  border-color: gold;              /* evidenzio senza cambiare altezza */
+  background: rgba(255, 215, 0, 0.15);
+  font-weight: 700;
+}
+
 
 /* =========================
    MOBILE (solo 1 media)
@@ -347,11 +379,11 @@ nav {
     text-align: center;
   }
 
-  .draft-picks .pick{
-    font-size: 0.7rem;
-    padding: 2px 4px;
-    margin: 1px 0;
-  }
+.draft-picks .pick{
+  font-size: 0.7rem;
+  padding: 2px 4px;
+  margin: 0;
+}
 
   /* rounds più compatti */
   :root{
@@ -391,4 +423,3 @@ nav {
     background: #f8f9fa;
     border-radius: 4px;
   }
-}
