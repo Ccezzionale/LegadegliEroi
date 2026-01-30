@@ -387,11 +387,11 @@ nav {
 }
 
   /* rounds più compatti */
-  :root{
-    --draft-header-h: 80px;
-    --draft-picks-top: 8px;
-    --round-col-w: 72px;
-  }
+:root{
+  --draft-header-h: 80px;
+  --draft-picks-top: 16px; /* prima 8 -> scende i Round */
+  --round-col-w: 72px;
+}
 
   .rounds-col{ padding: 8px 6px; }
 
