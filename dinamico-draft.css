@@ -317,11 +317,12 @@ nav {
 /* (opzionale ma consigliato) evita che la pick “bonus” cambi altezza */
 .pick{
   box-sizing: border-box;
-  border: 2px solid transparent;   /* tutti hanno lo stesso spessore */
+  border: 0; /* ✅ niente bordo: non cambia altezza */
 }
 
 .pick.bonus-coppa{
-  border-color: gold;              /* evidenzio senza cambiare altezza */
+  outline: 2px solid gold;          /* ✅ evidenzia senza cambiare layout */
+  outline-offset: 0;
   background: rgba(255, 215, 0, 0.15);
   font-weight: 700;
 }
