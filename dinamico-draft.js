@@ -182,6 +182,31 @@ html += `<div class="pick ${scambioClass} ${bonusClass}">Pick #${pick.pickNumber
   html += '</div></div>';
   container.innerHTML = html;
 }
+function renderRounds(draftContainerId, roundsColId) {
+  const container = document.getElementById(draftContainerId);
+  const roundsCol = document.getElementById(roundsColId);
+  if (!container || !roundsCol) return;
+
+  const cards = container.querySelectorAll(".draft-card");
+  if (!cards.length) return;
+
+  // quante pick/righe (prendo il massimo per sicurezza)
+  let maxRounds = 0;
+  cards.forEach(card => {
+    const n = card.querySelectorAll(".draft-picks .pick").length;
+    if (n > maxRounds) maxRounds = n;
+  });
+
+  // costruisco colonna: spacer (per allinearla sotto header) + Round 1..N
+  roundsCol.innerHTML = `<div class="rounds-spacer"></div>`;
+  for (let r = 1; r <= maxRounds; r++) {
+    const row = document.createElement("div");
+    row.className = "round";
+    row.textContent = `Round ${r}`;
+    roundsCol.appendChild(row);
+  }
+}
+
 
 // Fetch classifica totale + scambi
 Promise.all([
@@ -190,9 +215,15 @@ Promise.all([
 ])
 .then(([classificaCSV, scambiCSV]) => {
   const draft = generaDraftDaCSV(classificaCSV, scambiCSV);
+
   generaTabellaVerticale("draft-league", draft.league);
   generaTabellaVerticale("draft-championship", draft.championship);
+
+  // ✅ round a sinistra (DOPO che le card esistono)
+  renderRounds("draft-league", "rounds-league");
+  renderRounds("draft-championship", "rounds-championship");
 })
+
 .catch(err => {
   console.error("Errore nel caricamento del draft:", err);
 });
