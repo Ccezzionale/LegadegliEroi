@@ -420,7 +420,8 @@
       const ruoliGioc = r.split(/[,;\s]+/).map(p => p.trim()).filter(Boolean);
 
       const matchInput   = !ruoloTesto || ruoliGioc.some(part => part.includes(ruoloTesto));
-      const matchSelect  = !roloSelect.length || ruoloSelect.some(rs => ruoliGioc.includes(rs));
+     const matchSelect  = !ruoloSelect.length || ruoloSelect.some(rs => ruoliGioc.includes(rs));
+
       const matchSquadra = !squadra || s === squadra;
       const matchNome    = !cerca || nome.includes(cerca);
 
