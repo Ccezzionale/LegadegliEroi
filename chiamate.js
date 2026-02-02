@@ -1,46 +1,66 @@
+// =====================
+// CSV SOURCES
+// =====================
+
+// ✅ Round Robin: ORA legge dal tab "chiamate" (quello popolato dal tuo Apps Script)
+const ROUND_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT3JULXWpbLRYmW9h08EWuzzGFjoEBwdnHipEk0UtilxTW0cse54k5Qa62tMnPmEX_e8OscCtkS6oxe/pub?gid=1279168385&single=true&output=csv";
+
+// 🟨 / 🟦 Per ora teniamo i vecchi CSV (li userai o li migri l'anno prossimo)
 const chiamateCSV = {
-  // 🔴 LEGA UNICA - ROUND ROBIN
-  round15: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT3JULXWpbLRYmW9h08EWuzzGFjoEBwdnHipEk0UtilxTW0cse54k5Qa62tMnPmEX_e8OscCtkS6oxe/pub?gid=1279168385&single=true&output=csv",
-  round16: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQljALg6cV6GAO7R9ORDub5Hb327wvHXdU626N43BKmT0_whIVOM_Y90p5RSE34ozkuaKWs1N4Mq5Yl/pub?gid=0&single=true&output=csv",
+  round: ROUND_CSV_URL,
 
-  // 🟨 Conference League
-  league15: "https://docs.google.com/spreadsheets/d/1gvQlVxms2Sok4Inu9cWro3lZB9bI2LlrpkjbJlaaSGQ/export?format=csv&gid=492764886",
-  league16: "https://docs.google.com/spreadsheets/d/1J2bIuRs9CIEzydLw-h1DHITs1IGFi7NrLTrxMj9dhDo/export?format=csv&gid=0",
+  // Conference League (legacy)
+  league: "https://docs.google.com/spreadsheets/d/1gvQlVxms2Sok4Inu9cWro3lZB9bI2LlrpkjbJlaaSGQ/export?format=csv&gid=492764886",
 
-  // 🟦 Conference Championship
-  champ15:  "https://docs.google.com/spreadsheets/d/11BF_R13ZfF3kttSb6mVNhmpDPYbrEA3xKNkHFadp6kE/export?format=csv&gid=1279168385",
-  champ16:  "https://docs.google.com/spreadsheets/d/1F_E2hP7nPr-IGdUTvUM2cPs8LYoMJ3KdHeRwsExl57k/export?format=csv&gid=0",
-
-  // ⚖️ Compensative
-  compensative: "https://docs.google.com/spreadsheets/d/1W-iDerMd9cKmJpaNKdrBIfjd280rfSK8_z9ru9WzDGA/export?format=csv&gid=1119982078"
+  // Conference Championship (legacy)
+  champ: "https://docs.google.com/spreadsheets/d/11BF_R13ZfF3kttSb6mVNhmpDPYbrEA3xKNkHFadp6kE/export?format=csv&gid=1279168385"
 };
 
-function caricaChiamate(conference) {
+
+// =====================
+// LOAD + RENDER
+// =====================
+function caricaChiamate(tipo) {
   const container = document.getElementById("chiamate-container");
   container.innerHTML = "<p>⏳ Caricamento in corso...</p>";
-  const url = chiamateCSV[conference];
-  if (!url) return;
 
-  fetch(url)
-    .then(response => response.text())
+  const url = chiamateCSV[tipo];
+  if (!url || url.includes("INCOLLA_QUI")) {
+    container.innerHTML = '<p style="color:red;">⚠️ URL CSV non configurato per: ' + tipo + '</p>';
+    return;
+  }
+
+  fetch(url + (url.includes("?") ? "&" : "?") + "_cb=" + Date.now(), { cache: "no-store" })
+    .then(r => r.text())
     .then(csv => {
-      const righe = csv.split("\n").map(r => r.split(","));
-      const intestazioni = righe[0];
-      const dati = righe.slice(1);
-
-      if (dati.length === 1 && dati[0][0]?.startsWith("🔒")) {
-        container.innerHTML = '<div class="avviso">' + dati[0][0] + '</div>';
+      // parsing semplice (va bene se nel CSV non hai virgole nei campi)
+      const righe = csv.trim().split("\n").map(r => r.split(","));
+      if (!righe.length) {
+        container.innerHTML = "<p>Nessun dato.</p>";
         return;
       }
 
+      // se il foglio è in lock mode
+      // (es: prima cella contiene 🔒 ...)
+      if (righe.length === 1 && (righe[0][0] || "").startsWith("🔒")) {
+        container.innerHTML = '<div class="avviso">' + righe[0][0] + '</div>';
+        return;
+      }
+
+      const intestazioni = righe[0];
+      const dati = righe.slice(1);
+
       let html = '<table><thead><tr>';
-      intestazioni.forEach(t => html += '<th>' + t + '</th>');
+      intestazioni.forEach(t => html += '<th>' + esc(t) + '</th>');
       html += '</tr></thead><tbody>';
+
       dati.forEach(r => {
-        if (r.length > 1 && r[1].trim() !== '') {
-          html += '<tr>' + r.map(v => '<td>' + v + '</td>').join('') + '</tr>';
+        // evita righe vuote
+        if (r.length > 1 && (r[1] || "").trim() !== "") {
+          html += '<tr>' + r.map(v => '<td>' + esc(v) + '</td>').join('') + '</tr>';
         }
       });
+
       html += '</tbody></table>';
       container.innerHTML = html;
     })
@@ -49,3 +69,14 @@ function caricaChiamate(conference) {
       console.error(err);
     });
 }
+
+// helper anti HTML injection
+function esc(s){
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
