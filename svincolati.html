@@ -544,47 +544,51 @@
     cpMsg.style.color = ok ? "#0a7a2f" : "#b00020";
   }
 
-  async function submitCall(){
-    const team = cpTeam.value;
-    const callType = cpType.value;
-    const dropped = cpDrop.value;
+async function submitCall(){
+  const team = cpTeam.value;
+  const callType = cpType.value;
+  const drop = document.getElementById("cpDrop")?.value || "";
 
-    if (!selectedRowData?.nome) return setCallMsg("Seleziona un giocatore.");
-    if (!team) return setCallMsg("Seleziona una squadra.");
-    if (!dropped) return setCallMsg("Seleziona il giocatore svincolato.");
-
-    cpSubmit.disabled = true;
-    setCallMsg("Invio in corso…", true);
-
-    const payload = {
-      ts: new Date().toISOString(),
-      team,
-      callType,
-      player: selectedRowData.nome,
-      ruolo: selectedRowData.ruolo,
-      squadraSerieA: selectedRowData.squadra,
-      quotazione: selectedRowData.quotazione,
-      u21: selectedRowData.u21,
-      dropped
-    };
-
-    try{
-      await fetch(CALL_ENDPOINT, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      });
-
-      setCallMsg("Chiamata registrata ✅", true);
-      setTimeout(closeCallPanel, 700);
-    }catch(e){
-      console.error(e);
-      setCallMsg("Errore invio chiamata. Riprova.");
-    }finally{
-      cpSubmit.disabled = false;
-    }
+  if (!selectedRowData?.nome) return setCallMsg("Seleziona un giocatore.");
+  if (!team) return setCallMsg("Seleziona una squadra.");
+  if (!drop) return setCallMsg("Seleziona il giocatore da svincolare.");
+  if (!CALL_ENDPOINT || CALL_ENDPOINT.includes("INCOLLA_QUI")) {
+    return setCallMsg("CALL_ENDPOINT non configurato.");
   }
+
+  cpSubmit.disabled = true;
+  setCallMsg("Invio in corso…", true);
+
+  const payload = {
+    ts: new Date().toISOString(),
+    team,
+    callType,
+    player: selectedRowData.nome,     // chiamato
+    dropped: drop,                    // ✅ svincolato
+    ruolo: selectedRowData.ruolo,
+    squadraSerieA: selectedRowData.squadra,
+    quotazione: selectedRowData.quotazione,
+    u21: selectedRowData.u21
+  };
+
+  try{
+    await fetch(CALL_ENDPOINT, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+
+    setCallMsg("Chiamata registrata ✅", true);
+    setTimeout(closeCallPanel, 700);
+  }catch(e){
+    console.error(e);
+    setCallMsg("Errore invio chiamata. Riprova.");
+  }finally{
+    cpSubmit.disabled = false;
+  }
+}
+
 
   // =============================
   // DOM READY
