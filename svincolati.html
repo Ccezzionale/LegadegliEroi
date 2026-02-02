@@ -313,7 +313,7 @@ function buildU21Map(){
   return out;
 }
 
-const U21_MAP = buildU21Map();
+let U21_MAP = {};
   
 
   // =============================
@@ -647,6 +647,7 @@ async function submitCall(){
 
     // carica rose e popola squadre (se vuoi auto-allineato al foglio)
     await ensureRostersLoaded();
+    U21_MAP = buildU21Map();
     fillTeamSelectFromRosters();
 
     // selezione squadra → popola svincolato
