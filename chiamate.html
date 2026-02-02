@@ -4,343 +4,242 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chiamate Settimanali</title>
-<style>
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f9fa;
-  color: #212529;
-  margin: 0;
-  padding: 20px;
-}
 
-h2 {
-  text-align: center;
-  color: #001f3f;
-  font-size: 2rem;
-  margin-top: 30px;
-  text-transform: uppercase;
-  font-weight: 700;
-}
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+      color: #212529;
+      margin: 0;
+      padding: 20px;
+    }
 
-.moduli-container, .switcher {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  margin: 20px 0;
-}
+    .titolo-pagina {
+      text-align: center;
+      color: #001f3f;
+      font-size: 2.2rem;
+      margin: 30px 0 20px;
+      font-weight: 700;
+      text-shadow: 2px 2px 6px #FFD700;
+    }
 
-.bottone-chiamata, .switcher button {
-  background-color: #0074D9;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-weight: bold;
-  border-radius: 6px;
-  text-decoration: none;
-  cursor: pointer;
-  width: 90%;
-  max-width: 500px;
-  text-align: center;
-}
+    /* SWITCHER */
+    .switcher {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+    }
 
-.titolo-pagina {
-  text-align: center;
-  color: #001f3f;
-  font-size: 2.2rem;
-  margin: 30px 0 20px;
-  font-weight: 700;
-  text-shadow: 2px 2px 6px #FFD700; /* giallo oro tenue */
-}
+    .switcher button {
+      background-color: #0074D9;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+    }
 
-.bottone-chiamata:hover, .switcher button:hover {
-  background-color: #005fa3;
-}
+    .switcher button:hover { background-color: #005fa3; }
 
-#chiamate-container {
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 10px;
-  font-size: 0.95rem;
-}
+    .btn-roundrobin {
+      background-color: #FF851B !important;
+      font-weight: 800;
+      text-transform: uppercase;
+      border-radius: 8px;
+    }
+    .btn-roundrobin:hover { background-color: #e07010 !important; }
 
-#chiamate-container table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
+    /* CONTAINER TABELLA */
+    #chiamate-container {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 10px;
+      font-size: 0.95rem;
+    }
 
-#chiamate-container th,
-#chiamate-container td {
-  border: 1px solid #ccc;
-  padding: 10px;
-  text-align: center;
-}
+    #chiamate-container table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
 
-#chiamate-container thead {
-  background-color: #001f3f;
-  color: white;
-}
+    #chiamate-container th,
+    #chiamate-container td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
 
-  .btn-roundrobin {
-  background-color: #FF851B !important;
-  color: white;
-  border: none;
-  padding: 14px 22px;
-  font-weight: 800;
-  border-radius: 8px;
-  text-align: center;
-  width: 90%;
-  max-width: 500px;
-  text-transform: uppercase;
-  cursor: pointer;
-}
+    #chiamate-container thead {
+      background-color: #001f3f;
+      color: white;
+    }
 
-.btn-roundrobin:hover {
-  background-color: #e07010 !important;
-}
+    /* NAVBAR (uguale al tuo) */
+    body { background-color: #f4f4f4; color: #222; }
 
-.avviso {
-  background-color: #001f3f;
-  color: white;
-  padding: 12px;
-  text-align: center;
-  font-weight: bold;
-  border-radius: 8px;
-  margin-top: 20px;
-}
+    nav {
+      background-color: #001f3f;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      flex-wrap: wrap;
+    }
 
-/* NAVBAR */
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f4f4f4;
-  color: #222;
-}
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
 
-nav {
-  background-color: #001f3f;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 20px;
-  flex-wrap: wrap;
-}
+    .home-icon {
+      font-size: 1.4rem;
+      text-decoration: none;
+      color: white;
+    }
 
-.nav-left {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  flex-wrap: wrap;
-}
+    .hamburger {
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: none;
+      color: white;
+    }
 
-.home-icon {
-  font-size: 1.4rem;
-  text-decoration: none;
-  color: white;
-}
+    .navbar {
+      list-style-type: none;
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+      flex-wrap: wrap;
+    }
 
-.hamburger {
-  font-size: 1.5rem;
-  cursor: pointer;
-  display: none;
-  color: white;
-}
+    .navbar li { position: relative; }
 
-.navbar {
-  list-style-type: none;
-  display: flex;
-  gap: 15px;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  flex-wrap: wrap;
-}
+    .navbar a {
+      text-decoration: none;
+      color: white;
+      padding: 8px 12px;
+      display: block;
+    }
 
-.navbar li {
-  position: relative;
-}
+    .navbar a:hover {
+      background-color: #0074D9;
+      border-radius: 6px;
+    }
 
-.navbar a {
-  text-decoration: none;
-  color: white;
-  padding: 8px 12px;
-  display: block;
-}
+    .submenu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      background-color: #001f3f;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      border-radius: 6px;
+    }
 
-.navbar a:hover {
-  background-color: #0074D9;
-  border-radius: 6px;
-}
+    .dropdown.show .submenu { display: block; }
+    .submenu li a { padding: 8px 16px; }
 
-.submenu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  background-color: #001f3f;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  border-radius: 6px;
-}
-
-.dropdown.show .submenu {
-  display: block;
-}
-
-.submenu li a {
-  padding: 8px 16px;
-}
-
-@media (max-width: 768px) {
-  .hamburger {
-    display: block;
-  }
-
-  .navbar {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .navbar.show {
-    display: flex;
-  }
-
-  .navbar li {
-    width: 100%;
-  }
-
-  .submenu {
-    position: static;
-  }
-}
-
-/* BOTTONE SPECIALE ROUND ROBIN */
-.btn-roundrobin {
-  background-color: #FF851B;      /* arancione diverso dal blu standard */
-  font-size: 1.05rem;
-  padding: 14px 22px;
-  font-weight: 800;
-  text-transform: uppercase;
-  border-radius: 8px;
-}
-
-.btn-roundrobin:hover {
-  background-color: #e07010;
-}
-</style>
-
+    @media (max-width: 768px) {
+      .hamburger { display: block; }
+      .navbar {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        margin-top: 10px;
+      }
+      .navbar.show { display: flex; }
+      .navbar li { width: 100%; }
+      .submenu { position: static; }
+    }
+  </style>
 </head>
+
 <body class="pagina-chiamate">
+
   <!-- NAVBAR -->
- <nav>
-  <div class="nav-left">
-    <span id="hamburger" class="hamburger">☰</span>
-    <a href="index.html" class="home-icon">🏠</a>
-    <ul class="navbar" id="mainMenu">
-      <li><a href="rose.html">Rose</a></li>
-    <li class="dropdown">
-      <a href="#" class="toggle-submenu">Draft ▾</a>
-      <ul class="submenu">
-        <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
-        <li><a href="draft_conference.html">🟨 Conf.League</a></li>
-        <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+  <nav>
+    <div class="nav-left">
+      <span id="hamburger" class="hamburger">☰</span>
+      <a href="index.html" class="home-icon">🏠</a>
+
+      <ul class="navbar" id="mainMenu">
+        <li><a href="rose.html">Rose</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">Draft ▾</a>
+          <ul class="submenu">
+            <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
+            <li><a href="draft_conference.html">🟨 Conf.League</a></li>
+            <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">Competizioni ▾</a>
+          <ul class="submenu">
+            <li><a href="classifica.html">📊 Classifiche</a></li>
+            <li><a href="playoff.html">🏆 Playoff</a></li>
+            <li><a href="arena.html">🏟️ Higlander</a></li>
+            <li><a href="crashoutcup.html">💥 Crash out Cup</a></li>
+            <li><a href="crashoutplayoff.html">💥 Crash out Cup - Playoff</a></li>
+            <li><a href="supercoppa.html">⭐ Supercoppa</a></li>
+            <li><a href="statistiche.html">🔎 Statistiche</a></li>
+          </ul>
+        </li>
+
+        <li><a href="svincolati.html">Svincolati</a></li>
+        <li><a href="chiamate.html">Chiamate</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
+          <ul class="submenu">
+            <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
+            <li><a href="albo.html">🏅 Medagliere</a></li>
+          </ul>
+        </li>
+
+        <li><a href="regolamento.html">Regolamento</a></li>
       </ul>
-    </li>
-    <li class="dropdown">
-      <a href="#" class="toggle-submenu">Competizioni ▾</a>
-      <ul class="submenu">
-        <li><a href="classifica.html">📊 Classifiche</a></li>
-        <li><a href="playoff.html">🏆 Playoff</a></li>
-        <li><a href="arena.html">🏟️ Higlander</a></li>
-         <li><a href="crashoutcup.html">💥 Crash out Cup</a></li>
-        <li><a href="crashoutplayoff.html">💥 Crash out Cup - Playoff</a></li>
-        <li><a href="supercoppa.html">⭐ Supercoppa</a></li>
-         <li><a href="statistiche.html">🔎 Statistiche</a></li>
-      </ul>
-    </li>
-    <li><a href="svincolati.html">Svincolati</a></li>
-    <li><a href="chiamate.html">Chiamate</a></li>
-    <li class="dropdown">
-      <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
-      <ul class="submenu">
-   <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
-      <li><a href="albo.html">🏅  Medagliere</a></li>
-    </ul>
-      <li><a href="regolamento.html">Regolamento</a></li>
-  </div>
-</nav>
-  
+    </div>
+  </nav>
+
   <h1 class="titolo-pagina">Waiver Wire</h1>
 
-  <div class="moduli-container">
+  <!-- ✅ SOLO VISUALIZZA -->
+  <div class="switcher">
+    <button class="btn-roundrobin" onclick="caricaChiamate('round')">
+      🔥 Visualizza Chiamate Round Robin
+    </button>
 
-  <!-- 🔥🔥 ROUND ROBIN - NUOVI COMPILA -->
-  <a class="bottone-chiamata btn-roundrobin"
-     href="https://docs.google.com/forms/d/e/1FAIpQLScgGZ2M5ozNizLwh3RSXNuq58oqCo_rbEIA6cuEXCy79zFmyA/viewform?usp=dialog"
-     target="_blank">
-      ➕ Compila chiamata 15:00 - Round Robin
-  </a>
+    <button onclick="caricaChiamate('league')">
+      📋 Visualizza Conference League
+    </button>
 
-  <a class="bottone-chiamata btn-roundrobin"
-     href="https://docs.google.com/forms/d/e/1FAIpQLSdYx2wxLj1v7IQJaLti9sT_0_f6gfa4xGEcl6KKMlI9vEjqLA/viewform?usp=dialog"
-     target="_blank">
-      ➕ Compila chiamata 16:00 - Round Robin
-  </a>
-
-  <!-- 🟦 VECCHIE CHIAMATE (archivio) -->
-  <a class="bottone-chiamata" href="https://docs.google.com/forms/d/e/1FAIpQLSdxOpFrvWkhi6TrhryrIVJUeMISAxo-CatGtw8TuNApRyU8Yg/viewform?usp=dialog" target="_blank">
-    ➕ Compila chiamata 15:00 - Conference Championship
-  </a>
-  <a class="bottone-chiamata" href="https://docs.google.com/forms/d/e/1FAIpQLScR411PT9pvIZ9SxoFeiKKwbI_Mk0r5USa-rk6Egv0ZyOnSSQ/viewform?usp=dialog" target="_blank">
-    ➕ Compila chiamata 16:00 - Conference Championship
-  </a>
-  <a class="bottone-chiamata" href="https://docs.google.com/forms/d/e/1FAIpQLScNaxnbpVmIW_t23uvRqLkRy6sDrzyEvQQ-mpLDkk67DVDLag/viewform?usp=dialog" target="_blank">
-    ➕ Compila chiamata 15:00 - Conference League
-  </a>
-  <a class="bottone-chiamata" href="https://docs.google.com/forms/d/e/1FAIpQLSfwpZkHssyd3GVJodKLwGJjNttEe-qvMqqCRE50LiTp6bH2jA/viewform?usp=dialog" target="_blank">
-    ➕ Compila chiamata 16:00 - Conference League
-  </a>
-  <a class="bottone-chiamata" href="https://docs.google.com/forms/d/e/1FAIpQLScsxzLjF9Vj32Wqeu6ItHoOTwclHwi3HH8q6iEdS7O8n2iUuw/viewform?usp=dialog" target="_blank">
-    ➕ Compila chiamata Compensativa
-  </a>
-
-</div>
-
-
-<div class="switcher">
-
-  <!-- 🔥 VISUALIZZA ROUND ROBIN -->
-  <button class="btn-roundrobin" onclick="caricaChiamate('round15')">
-    🔥 Chiamate Round Robin (15:00)
-  </button>
-
-  <button class="btn-roundrobin" onclick="caricaChiamate('round16')">
-    🔥 Chiamate Round Robin (16:00)
-  </button>
-
-  <!-- 🟨 Conference League -->
-  <button onclick="caricaChiamate('league15')">📋 Visualizza Conference League (15:00)</button>
-  <button onclick="caricaChiamate('league16')">📋 Visualizza Conference League (16:00)</button>
-
-  <!-- 🟦 Conference Championship -->
-  <button onclick="caricaChiamate('champ15')">📋 Visualizza Conference Championship (15:00)</button>
-  <button onclick="caricaChiamate('champ16')">📋 Visualizza Conference Championship (16:00)</button>
-
-  <!-- ⚖️ Compensative -->
-  <button onclick="caricaChiamate('compensative')">📋 Visualizza Chiamate compensative</button>
-</div>
-
+    <button onclick="caricaChiamate('champ')">
+      📋 Visualizza Conference Championship
+    </button>
+  </div>
 
   <div id="chiamate-container">
-    <p>⏳ Seleziona una conference per visualizzare le chiamate.</p>
+    <p>⏳ Seleziona una modalità per visualizzare le chiamate.</p>
   </div>
 
   <script src="chiamate.js"></script>
+
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const hamburger = document.getElementById("hamburger");
