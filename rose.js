@@ -26,7 +26,7 @@ const giocatoriU21PerSquadra = {
   "Team Bartowski": ["denoon", "gineitis", "mateus lusuardi"],
   "Desperados": ["ordonez c.", "lipani", "ramon"],
   "Riverfilo": ["paz n.", "castro s.", "akinsanmiro"],
-  "Golden Knights": ["palestra", "camarda", "esposito f.p."],
+  "Golden Knights": ["palestra", "otoa", "esposito f.p."],
   "Fantaugusta": ["comuzzo", "pisilli", "ekhator"],
   "Fc Disoneste": ["gineitis", "norton-cuffy", "ziolkowski"],
   "Rubinkebab": ["diao", "pisilli", "ahanor"],
