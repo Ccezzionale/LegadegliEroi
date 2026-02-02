@@ -23,6 +23,13 @@
     #lista-giocatori td.player-cell{ cursor:pointer; font-weight:700; color:#001f3f; }
     #lista-giocatori td.player-cell:hover{ text-decoration: underline; }
 
+
+    /* Nota: alcuni browser ignorano gli stili sulle option. L’emoji nel testo è la cosa più affidabile. */
+#cpDrop option[data-u21="1"]{
+  font-weight: 800;
+  color: #0a7a2f;
+}
+
     .callPanel{
       position: fixed;
       right: 16px;
@@ -185,6 +192,9 @@
   <!-- 1) carica il loader rose (SOLO dati) -->
   <script src="rose_calls_data.js?v=1"></script>
 
+  <script src="rose.js?v=1"></script>
+
+
   <!-- 2) NAV -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -281,6 +291,30 @@
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#39;");
   }
+
+  // Normalizza stringhe per match "umano": minuscole, niente accenti, spazi puliti, punteggiatura rimossa
+function normKey(s){
+  return String(s ?? "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")   // via accenti
+    .replace(/[^a-z0-9]+/g, " ")                       // via punteggiatura -> spazio
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+// Costruisci una mappa U21 con chiavi normalizzate (sia squadre che giocatori)
+function buildU21Map(){
+  // giocatoriU21PerSquadra deve esistere (dal tuo rose.js)
+  const src = (typeof giocatoriU21PerSquadra !== "undefined") ? giocatoriU21PerSquadra : {};
+  const out = {};
+  Object.entries(src).forEach(([team, arr]) => {
+    out[normKey(team)] = (arr || []).map(normKey);
+  });
+  return out;
+}
+
+const U21_MAP = buildU21Map();
+  
 
   // =============================
   // Fetch retry
@@ -489,31 +523,45 @@
       teams.map(t => `<option value="${t.replace(/"/g,'&quot;')}">${t}</option>`).join("");
   }
 
-  function populateDropSelect(teamName){
-    if (!teamName) {
-      cpDrop.disabled = true;
-      cpDrop.innerHTML = `<option value="">Seleziona prima una squadra…</option>`;
-      return;
-    }
-
-    const roster = (ROSE_CACHE && ROSE_CACHE[teamName] && ROSE_CACHE[teamName].giocatori)
-      ? ROSE_CACHE[teamName].giocatori : [];
-
-    if (!roster.length) {
-      cpDrop.disabled = true;
-      cpDrop.innerHTML = `<option value="">Nessun giocatore trovato per ${teamName}</option>`;
-      return;
-    }
-
-    cpDrop.disabled = false;
-    cpDrop.innerHTML =
-      `<option value="" selected>Scegli chi svincoli…</option>` +
-      roster.map(g => {
-        const nome = (g.nome || "").trim();
-        const label = [g.nome, g.ruolo ? `(${g.ruolo})` : "", g.squadra ? `- ${g.squadra}` : ""].filter(Boolean).join(" ");
-        return `<option value="${nome.replace(/"/g,'&quot;')}">${label}</option>`;
-      }).join("");
+function populateDropSelect(teamName){
+  if (!teamName) {
+    cpDrop.disabled = true;
+    cpDrop.innerHTML = `<option value="">Seleziona prima una squadra…</option>`;
+    return;
   }
+
+  const roster = (ROSE_CACHE && ROSE_CACHE[teamName] && ROSE_CACHE[teamName].giocatori)
+    ? ROSE_CACHE[teamName].giocatori : [];
+
+  if (!roster.length) {
+    cpDrop.disabled = true;
+    cpDrop.innerHTML = `<option value="">Nessun giocatore trovato per ${teamName}</option>`;
+    return;
+  }
+
+  // ✅ U21 set per quella squadra (match anche se maiuscole/punti/spazi cambiano)
+  const teamKey = normKey(teamName);
+  const u21Set = new Set(U21_MAP[teamKey] || []);
+
+  cpDrop.disabled = false;
+  cpDrop.innerHTML =
+    `<option value="" selected>Scegli chi svincoli…</option>` +
+    roster.map(g => {
+      const nome = (g.nome || "").trim();
+      const isU21 = u21Set.has(normKey(nome));
+
+      const badge = isU21 ? " 🟢U21" : "";
+      const label = [
+        g.nome,
+        g.ruolo ? `(${g.ruolo})` : "",
+        g.squadra ? `- ${g.squadra}` : ""
+      ].filter(Boolean).join(" ") + badge;
+
+      // data-u21 per tentare stile su alcuni browser
+      return `<option data-u21="${isU21 ? "1" : "0"}" value="${nome.replace(/"/g,'&quot;')}">${label}</option>`;
+    }).join("");
+}
+
 
   // =============================
   // Chiamate panel
