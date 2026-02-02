@@ -595,26 +595,31 @@
   //  DOM READY
   // =============================
   document.addEventListener('DOMContentLoaded', () => {
-    // click sul nome giocatore → apri pannello
-    listaGiocatori.addEventListener("click", (e) => {
-      const td = e.target.closest("td.player-cell");
-      if (!td) return;
 
-      openCallPanel({
-        nome: td.dataset.nome,
-        ruolo: td.dataset.ruolo,
-        squadra: td.dataset.squadra,
-        quotazione: td.dataset.quotazione,
-        u21: td.dataset.u21
-      });
+  // 🔥 warm-up Apps Script (serve solo a svegliarlo)
+  fetch(CALL_ENDPOINT + "?ping=1", { method: "GET", mode: "no-cors" }).catch(()=>{});
+
+  // click sul nome giocatore → apri pannello
+  listaGiocatori.addEventListener("click", (e) => {
+    const td = e.target.closest("td.player-cell");
+    if (!td) return;
+
+    openCallPanel({
+      nome: td.dataset.nome,
+      ruolo: td.dataset.ruolo,
+      squadra: td.dataset.squadra,
+      quotazione: td.dataset.quotazione,
+      u21: td.dataset.u21
     });
-
-    cpClose.addEventListener("click", closeCallPanel);
-    cpSubmit.addEventListener("click", submitCall);
-
-    caricaSvincolati();
-    setInterval(() => { caricaSvincolati(); }, AUTO_REFRESH_MS);
   });
+
+  cpClose.addEventListener("click", closeCallPanel);
+  cpSubmit.addEventListener("click", submitCall);
+
+  caricaSvincolati();
+  setInterval(() => { caricaSvincolati(); }, AUTO_REFRESH_MS);
+});
+
   </script>
 
 </body>
