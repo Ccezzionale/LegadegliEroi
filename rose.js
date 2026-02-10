@@ -23,7 +23,7 @@ const conferencePerSquadra = {
 const giocatoriFP = new Set();
 
 const giocatoriU21PerSquadra = {
-  "Team Bartowski": ["denoon", "gineitis", "mateus lusuardi"],
+  "Team Bartowski": ["denoon", "gineitis", "athekame"],
   "Desperados": ["ordonez c.", "lipani", "ramon"],
   "Riverfilo": ["paz n.", "castro s.", "akinsanmiro"],
   "Golden Knights": ["palestra", "otoa", "esposito f.p."],
@@ -31,7 +31,7 @@ const giocatoriU21PerSquadra = {
   "Fc Disoneste": ["gineitis", "norton-cuffy", "ziolkowski"],
   "Rubinkebab": ["diao", "pisilli", "ahanor"],
   "Eintracht Franco 126": ["marianucci", "valle", "ramon"],
-  "PokerMantra": ["ziolkowski", "goglichidze", "belahyane"],
+  "PokerMantra": ["ziolkowski", "marianucci", "belahyane"],
   "wildboys78": ["rodriguez je.", "tiago gabriel", "ferguson e."],
   "Bayern Christiansen": ["paz n.", "palestra", "rodriguez je."],
   "Minnesode Timberland": ["diao", "ferguson e.", "britschgi"],
