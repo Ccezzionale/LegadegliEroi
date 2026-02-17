@@ -438,6 +438,68 @@ function buildStatsBlocks(article){
 
 buildClassificaHTML(rows)
 
+function buildClassificaHTML(rows){
+  if (!rows || !rows.length) {
+    return `<div class="small">Classifica non disponibile.</div>`;
+  }
+
+  const sample = rows.find(r => Object.values(r).some(v => String(v).trim() !== "")) || rows[0];
+
+  const colTeam = findColByCandidates(sample, ["Squadra", "Team", "Club", "Nome"]);
+  const teamKey = colTeam || Object.keys(sample)[0];
+
+  const colG  = "G";
+  const colPt = "Pt.";
+  const colMP = "Pt. Totali";
+
+  const clean = rows.filter(r => norm(r[teamKey]) !== "");
+
+  const ordered = clean.slice().sort((a,b) => {
+    const aPt = toNum(a[colPt]);
+    const bPt = toNum(b[colPt]);
+    if (Number.isFinite(aPt) && Number.isFinite(bPt) && bPt !== aPt) return bPt - aPt;
+
+    const aMP = toNum(a[colMP]);
+    const bMP = toNum(b[colMP]);
+    if (Number.isFinite(aMP) && Number.isFinite(bMP) && bMP !== aMP) return bMP - aMP;
+
+    return norm(a[teamKey]).localeCompare(norm(b[teamKey]));
+  });
+
+  const body = ordered.map((r, i) => {
+    const team = norm(r[teamKey]);
+    const g  = toNum(r[colG]);
+    const pt = toNum(r[colPt]);
+    const mp = toNum(r[colMP]);
+
+    return `
+      <tr>
+        <td class="small">${i + 1}</td>
+        <td><b>${team}</b></td>
+        <td class="score">${Number.isFinite(g) ? g.toFixed(0) : "-"}</td>
+        <td class="score">${Number.isFinite(pt) ? pt.toFixed(0) : "-"}</td>
+        <td class="score small">${Number.isFinite(mp) ? mp.toFixed(1) : "-"}</td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Squadra</th>
+          <th>G</th>
+          <th>Pt.</th>
+          <th>Pt. Totali</th>
+        </tr>
+      </thead>
+      <tbody>${body}</tbody>
+    </table>
+  `;
+}
+
+
 // render manuale (HTML)
 function renderManualHTML(gw, manual, stats){
   const title = manual.title ? manual.title : `GW ${gw} | Editoriale`;
