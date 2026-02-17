@@ -305,6 +305,14 @@ th, td {
   display: none; /* metti block se vuoi anche i punti stampati */
 }
 
+.pos-badge{
+  white-space: nowrap;
+  font-size: 12px;
+  padding: 4px 6px;
+}
+.pos-badge small{
+  font-size: 10px;
+}
 
 
 @media (max-width: 768px) {
