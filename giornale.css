@@ -1,26 +1,54 @@
 :root{
-  --paper:#fbfaf6;
-  --ink:#141414;
-  --muted:#5a5a5a;
-  --rule:rgba(0,0,0,.18);
+  /* Palette app (bianco/blu) */
+  --navy:#123c7a;      /* blu principale */
+  --blue:#1e56b3;      /* blu accento */
+  --gold:#ffcc00;      /* oro highlight (ok tenerlo) */
 
-  --navy:#001f3f;
-  --blue:#0074D9;
-  --gold:#ffcc00;
+  /* Superfici */
+  --paper:#fbfcff;     /* carta chiara */
+  --ink:#0f172a;       /* testo */
+  --muted:#64748b;     /* testo secondario */
+
+  /* Bordi/linee (più soft) */
+  --rule:rgba(18,60,122,.18);
 
   --radius:14px;
-  --shadow: 0 10px 30px rgba(0,0,0,.08);
+  --shadow: 0 10px 30px rgba(15,23,42,.08);
 }
+
 
 *{box-sizing:border-box}
 body{
   margin:0;
   color:var(--ink);
   background:
-    radial-gradient(1200px 600px at 10% 0%, rgba(0,116,217,.08), transparent 60%),
-    radial-gradient(900px 500px at 90% 10%, rgba(255,204,0,.10), transparent 55%),
-    #eef1f7;
+    radial-gradient(1200px 600px at 10% 0%, rgba(30,86,179,.10), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(18,60,122,.10), transparent 55%),
+    #eef3ff;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+.brand .name, .h1, .block h3{
+  color: var(--navy);
+}
+
+.toolbar button{
+  background: var(--navy);
+  border-color: rgba(18,60,122,.35);
+  color:#fff;
+}
+.toolbar button:hover{
+  background: var(--blue);
+}
+.toolbar button.active{
+  background: rgba(30,86,179,.12);
+  border-color: rgba(30,86,179,.35);
+  color: var(--navy);
+}
+
+/* Editoriale meno “giallo” e più “app” */
+.editorial{
+  background: rgba(30,86,179,.06);
+  border: 1px dashed rgba(18,60,122,.35);
 }
 
 /* Container */
