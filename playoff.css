@@ -35,10 +35,16 @@ html, body{ height:100%; }
 body{
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow-x: auto;
+  overflow-x: hidden;
   background: #071a3b url("img/champions-bg.png") center / cover no-repeat fixed;
   color: #222;
 }
+
+.bracket-wrap{
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
 
 /* Titolo principale: gradiente bianco→oro */
 .titolo-pagina{
