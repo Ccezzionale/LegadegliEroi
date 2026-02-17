@@ -436,68 +436,7 @@ function buildStatsBlocks(article){
     return { matchHTML, premiHTML, resultsTableHTML, standingsHTML, pagelleHTML };
 }
 
-function buildClassificaHTML(rows){
-  if (!rows || !rows.length) {
-    return `<div class="small">Classifica non disponibile.</div>`;
-  }
-
-  // prova a riconoscere le colonne
-  const sample = rows.find(r => Object.values(r).some(v => String(v).trim() !== "")) || rows[0];
-
-  const colPos = findColByCandidates(sample, ["Pos", "Posizione", "#", "Rank"]);
-  const colTeam = findColByCandidates(sample, ["Squadra", "Team", "Nome", "Club"]);
-  const colPts = findColByCandidates(sample, ["Punti", "Pts", "Points"]);
-  const colPF  = findColByCandidates(sample, ["PF", "PuntiFatti", "PointsFor", "Fatti"]);
-  const colPS  = findColByCandidates(sample, ["PS", "PuntiSubiti", "PointsAgainst", "Subiti"]);
-
-  // fallback se qualche colonna non è trovata
-  const teamKey = colTeam || Object.keys(sample)[0];
-
-  // filtra righe “vuote”
-  const clean = rows.filter(r => norm(r[teamKey]) !== "");
-
-  // se non c'è pos, ordina per punti (se c'è), altrimenti lascia
-  let ordered = clean.slice();
-  if (colPos) {
-    ordered.sort((a,b) => toNum(a[colPos]) - toNum(b[colPos]));
-  } else if (colPts) {
-    ordered.sort((a,b) => (toNum(b[colPts]) - toNum(a[colPts])));
-  }
-
-  const body = ordered.map((r, i) => {
-    const pos = colPos ? norm(r[colPos]) : String(i+1);
-    const team = norm(r[teamKey]);
-    const pts = colPts ? toNum(r[colPts]) : NaN;
-    const pf = colPF ? toNum(r[colPF]) : NaN;
-    const ps = colPS ? toNum(r[colPS]) : NaN;
-
-    return `
-      <tr>
-        <td class="small">${pos}</td>
-        <td><b>${team}</b></td>
-        <td class="score">${Number.isFinite(pts) ? pts.toFixed(0) : "-"}</td>
-        <td class="score small">${Number.isFinite(pf) ? pf.toFixed(1) : "-"}</td>
-        <td class="score small">${Number.isFinite(ps) ? ps.toFixed(1) : "-"}</td>
-      </tr>
-    `;
-  }).join("");
-
-  return `
-    <table class="table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Squadra</th>
-          <th>Pts</th>
-          <th>PF</th>
-          <th>PS</th>
-        </tr>
-      </thead>
-      <tbody>${body}</tbody>
-    </table>
-  `;
-}
-
+buildClassificaHTML(rows)
 
 // render manuale (HTML)
 function renderManualHTML(gw, manual, stats){
