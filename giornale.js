@@ -330,6 +330,54 @@ function renderAutoHTML(article){
   `;
 }
 
+function renderStatsOnlyHTML(article){
+  const linesMatch = article.matches
+    .map(m => `<li><b>${m.home}</b> ${m.aPoints.toFixed(1)} - ${m.bPoints.toFixed(1)} <b>${m.away}</b> <span class="muted">(scarto ${m.margin.toFixed(1)})</span></li>`)
+    .join("");
+
+  const pagelle = article.teamStats
+    .sort((a,b) => b.pf - a.pf)
+    .map(t => {
+      const v = voteFromPoints(t.pf);
+      return `<li><b>${t.name}</b> <span class="pill">${v.toFixed(1)}</span> <span class="muted">${commentForVote(v)}</span> <span class="muted">(${t.pf.toFixed(1)} PF)</span></li>`;
+    })
+    .join("");
+
+  const mow = article.matchOfWeek
+    ? `<p><b>${article.matchOfWeek.home}</b> ${article.matchOfWeek.aPoints.toFixed(1)} - ${article.matchOfWeek.bPoints.toFixed(1)} <b>${article.matchOfWeek.away}</b>
+       <span class="muted">(scarto ${article.matchOfWeek.margin.toFixed(1)})</span></p>`
+    : `<p class="muted">Nessun match trovato per questa giornata.</p>`;
+
+  return `
+    <div>
+      <div class="section grid2">
+        <div>
+          <h3>🔥 Match della Settimana</h3>
+          ${mow}
+        </div>
+        <div>
+          <h3>🏆 Premi discutibili</h3>
+          <ul class="list">
+            <li><b>Re:</b> ${article.top.team} (${article.top.pf.toFixed(1)})</li>
+            <li><b>Pagliaccio d’Oro:</b> ${article.flop.team} (${article.flop.pf.toFixed(1)})</li>
+            ${article.thief ? `<li><b>Ladro:</b> ${article.thief.winner} (vittoria con ${article.thief.winnerPts.toFixed(1)}, scarto ${article.thief.margin.toFixed(1)})</li>` : `<li class="muted">Nessun ladro (evento raro).</li>`}
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>📌 Risultati</h3>
+        <ul class="list">${linesMatch}</ul>
+      </div>
+
+      <div class="section">
+        <h3>📝 Pagelle</h3>
+        <ul class="list">${pagelle}</ul>
+      </div>
+    </div>
+  `;
+}
+
 // render manuale (HTML)
 function renderManualHTML(gw, manual, statsArticleHTML){
   const title = manual.title ? manual.title : `GW ${gw} | Editoriale`;
