@@ -212,3 +212,140 @@ body{
 /* lists in sidebar */
 .ul{margin:0;padding-left:18px}
 .ul li{margin:6px 0}
+
+
+/* =========================
+   GIORNALE TRASH - THEME APP
+   (bianco/blu Lega degli Eroi)
+   ========================= */
+
+:root{
+  --app-blue: #123c7a;      /* blu principale */
+  --app-blue-2: #1e56b3;    /* blu accento */
+  --app-sky: #eaf2ff;       /* azzurrino chiaro */
+  --app-ink: #0f172a;       /* testo scuro */
+  --app-muted: #64748b;     /* testo secondario */
+  --app-border: #d6e3ff;    /* bordi soft */
+  --app-card: #ffffff;      /* card */
+  --app-paper: #fbfcff;     /* sfondo pagina */
+}
+
+/* Sfondo pagina + cornice “app” */
+body{
+  background: linear-gradient(180deg, var(--app-sky), #ffffff 55%);
+  color: var(--app-ink);
+}
+
+.page, .wrap, .container{
+  background: var(--app-paper);
+}
+
+/* Header top (titolo gazzetta) */
+header, .topbar, .masthead{
+  background: #fff;
+  border-bottom: 1px solid var(--app-border);
+}
+
+h1, .title, .h1{
+  color: var(--app-blue);
+  letter-spacing: .3px;
+}
+
+/* Pills / chip (Lega degli Eroi, data, GW) */
+.pill, .chip, .kicker{
+  background: var(--app-sky);
+  color: var(--app-blue);
+  border: 1px solid var(--app-border);
+  font-weight: 700;
+}
+
+/* Bottoni (Aggiorna, etc.) */
+button, .btn{
+  background: var(--app-blue);
+  color: #fff;
+  border: 1px solid var(--app-blue);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 700;
+}
+button:hover, .btn:hover{
+  background: var(--app-blue-2);
+  border-color: var(--app-blue-2);
+}
+
+/* Select GW */
+select{
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  padding: 8px 10px;
+  background: #fff;
+  color: var(--app-ink);
+}
+
+/* Card / blocchi */
+.block{
+  background: var(--app-card);
+  border: 1px solid var(--app-border);
+  border-radius: 16px;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, .06);
+}
+
+/* Editoriale: leggero “paper” ma con bordo app */
+.block.editorial{
+  background: linear-gradient(180deg, #fffdf6, #ffffff 40%);
+  border-color: #f1e6c8;
+}
+
+/* Titoli sezione */
+.block h3{
+  color: var(--app-blue);
+  letter-spacing: .2px;
+}
+
+/* Tabelle */
+.table{
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+  background: #fff;
+}
+.table thead th{
+  background: var(--app-sky);
+  color: var(--app-blue);
+  border-bottom: 1px solid var(--app-border);
+  font-weight: 800;
+}
+.table tbody td{
+  border-bottom: 1px solid #eef4ff;
+}
+.table tbody tr:last-child td{
+  border-bottom: 0;
+}
+
+/* Badge numeri (Re/Pagliaccio/Ladro) */
+.badge{
+  background: var(--app-sky);
+  color: var(--app-blue);
+  border: 1px solid var(--app-border);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-weight: 800;
+}
+.badge.gold{
+  background: #fff2c6;
+  color: #7a5a00;
+  border-color: #ffe08a;
+}
+.badge.blue{
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+/* Testi secondari */
+.muted, .small, .subline{
+  color: var(--app-muted);
+}
