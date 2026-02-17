@@ -1,291 +1,214 @@
-/* =========================================
-   GIORNALE TRASH - CSS dedicato
-   Palette: Navy / Blue / Gold
-   ========================================= */
-
-/* ---- Theme tokens ---- */
 :root{
-  --bg: #f4f6fb;
-  --card: #ffffff;
-  --text: #17202a;
-  --muted: rgba(23, 32, 42, .70);
+  --paper:#fbfaf6;
+  --ink:#141414;
+  --muted:#5a5a5a;
+  --rule:rgba(0,0,0,.18);
 
-  --navy: #001f3f;
-  --navy-2: #003366;
-  --blue: #0074D9;
-  --gold: #ffcc00;
+  --navy:#001f3f;
+  --blue:#0074D9;
+  --gold:#ffcc00;
 
-  --border: rgba(0,0,0,.12);
-  --shadow: 0 10px 24px rgba(0,0,0,.08);
-  --shadow-soft: 0 6px 14px rgba(0,0,0,.06);
-
-  --radius: 16px;
-  --radius-sm: 12px;
+  --radius:14px;
+  --shadow: 0 10px 30px rgba(0,0,0,.08);
 }
 
-/* ---- Base ---- */
-*{ box-sizing: border-box; }
-html, body{ height: 100%; }
-
+*{box-sizing:border-box}
 body{
-  margin: 0;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: radial-gradient(1200px 600px at 15% 0%, rgba(0,116,217,.08), transparent 60%),
-              radial-gradient(900px 500px at 85% 10%, rgba(255,204,0,.10), transparent 55%),
-              var(--bg);
-  color: var(--text);
-}
-
-/* ---- Optional: keep your existing navbar look, slightly refined ---- */
-nav{
-  background: linear-gradient(90deg, var(--navy), #002a55);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  padding: 10px 18px;
-  flex-wrap: wrap;
-  border-bottom: 1px solid rgba(255,255,255,.08);
-}
-
-.home-icon{
-  font-size: 1.35rem;
-  margin-right: 16px;
-  text-decoration: none;
-  color: #fff;
-}
-
-.hamburger{
-  font-size: 1.55rem;
-  cursor: pointer;
-  margin-right: 16px;
-  display: none;
-  user-select: none;
-}
-
-.navbar{
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.navbar li{ position: relative; }
-
-.navbar a{
-  text-decoration: none;
-  color: #fff;
-  padding: 8px 12px;
-  display: block;
-  border-radius: 10px;
-  transition: background .15s ease, transform .15s ease;
-}
-
-.navbar a:hover{
-  background: rgba(0,116,217,.35);
-  transform: translateY(-1px);
-}
-
-.submenu{
-  display: none;
-  position: absolute;
-  top: 110%;
-  left: 0;
-  background: var(--navy-2);
-  border-radius: 12px;
-  z-index: 10;
-  min-width: 190px;
-  padding: 6px;
-  border: 1px solid rgba(255,255,255,.08);
-  box-shadow: var(--shadow-soft);
-  flex-direction: column;
-}
-
-.submenu a{
-  font-size: .95rem;
-  border-radius: 10px;
-}
-
-.dropdown.show .submenu{ display: flex; }
-
-/* ---- Page layout ---- */
-.wrap{
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 18px;
-}
-
-.card{
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  box-shadow: var(--shadow-soft);
-}
-
-/* ---- Toolbar ---- */
-.toolbar{
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
-}
-
-.pill{
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 13px;
-  border: 1px solid var(--border);
-  background: linear-gradient(180deg, #fff, rgba(255,255,255,.85));
-}
-
-.pill.primary{
-  color: #fff;
-  border: 1px solid rgba(255,255,255,.12);
-  background: linear-gradient(180deg, rgba(0,116,217,.95), rgba(0,31,63,.95));
-}
-
-.row{
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-select, button{
-  padding: 9px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(0,0,0,.18);
-  background: #fff;
-  color: var(--text);
-}
-
-button{
-  cursor: pointer;
-  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
-}
-
-button:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(0,0,0,.08);
-}
-
-button.active{
-  border-color: rgba(0,0,0,.32);
-  background: linear-gradient(180deg, rgba(255,204,0,.35), rgba(255,255,255,1));
-  font-weight: 700;
-}
-
-#status{ font-size: 13px; color: var(--muted); }
-.error{ color: #b00020 !important; }
-
-/* ---- Typography “editoriale” ---- */
-.title{
-  font-size: 28px;
-  margin: 10px 0 6px;
-  letter-spacing: .2px;
-  line-height: 1.15;
-  color: var(--navy);
-}
-
-.subtitle{
-  opacity: .8;
-  margin: 0 0 12px;
-}
-
-/* Manual block */
-.manualBox{
-  padding: 14px;
-  border-radius: var(--radius-sm);
-  border: 1px dashed rgba(0,31,63,.35);
+  margin:0;
+  color:var(--ink);
   background:
-    linear-gradient(180deg, rgba(0,116,217,.06), transparent 55%),
+    radial-gradient(1200px 600px at 10% 0%, rgba(0,116,217,.08), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(255,204,0,.10), transparent 55%),
+    #eef1f7;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Container */
+.wrap{max-width:1100px;margin:0 auto;padding:18px}
+
+/* ===== Masthead (testata) ===== */
+.masthead{
+  background:var(--paper);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+.mast-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 16px;
+  border-bottom:1px solid var(--rule);
+  background:
+    linear-gradient(90deg, rgba(0,31,63,.08), transparent 40%),
+    linear-gradient(270deg, rgba(255,204,0,.10), transparent 45%);
+}
+
+.brand{
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+}
+.brand .name{
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight:900;
+  letter-spacing:.5px;
+  font-size:22px;
+  text-transform:uppercase;
+}
+.brand .tag{
+  font-size:12px;
+  color:var(--muted);
+  border:1px solid var(--rule);
+  border-radius:999px;
+  padding:3px 8px;
+  background:#fff;
+}
+.meta{
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;
+  font-size:12px;color:var(--muted);
+}
+.meta .chip{
+  border:1px solid var(--rule);
+  border-radius:999px;
+  padding:3px 8px;
+  background:#fff;
+}
+
+/* ===== Toolbar ===== */
+.toolbar{
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  padding:12px 16px;
+  background:#fff;
+}
+.toolbar label{font-size:12px;color:var(--muted)}
+.toolbar select,.toolbar button{
+  padding:8px 10px;border-radius:12px;border:1px solid var(--rule);background:#fff;
+}
+.toolbar button{cursor:pointer}
+.toolbar button.active{
+  border-color:rgba(0,0,0,.35);
+  background:linear-gradient(180deg, rgba(255,204,0,.30), #fff);
+  font-weight:700;
+}
+#status{font-size:12px;color:var(--muted)}
+.error{color:#b00020 !important}
+
+/* ===== Layout “giornale” ===== */
+.paper{
+  background:var(--paper);
+  padding:16px;
+  border-top:1px solid var(--rule);
+}
+
+.lede{
+  border-bottom:1px solid var(--rule);
+  padding-bottom:14px;
+  margin-bottom:14px;
+}
+.h1{
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight:900;
+  font-size:34px;
+  line-height:1.05;
+  margin:8px 0 6px;
+  text-transform:uppercase;
+}
+.kicker{
+  display:inline-block;
+  font-size:12px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--navy);
+  background:rgba(0,116,217,.10);
+  border:1px solid rgba(0,116,217,.22);
+  padding:4px 8px;
+  border-radius:999px;
+}
+.subline{
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* columns */
+.columns{
+  display:grid;
+  grid-template-columns: 1.6fr .9fr;
+  gap:14px;
+}
+@media (max-width: 900px){
+  .columns{grid-template-columns:1fr}
+}
+
+/* blocks */
+.block{
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  background:#fff;
+  padding:12px;
+}
+.block + .block{margin-top:12px}
+
+.block h3{
+  margin:0 0 8px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size:18px;
+  text-transform:uppercase;
+  letter-spacing:.03em;
+}
+.block p{margin:0 0 10px; color:var(--ink); line-height:1.55}
+
+.hr{height:1px;background:var(--rule);border:0;margin:12px 0}
+
+/* Manual editorial box */
+.editorial{
+  background:
+    linear-gradient(180deg, rgba(0,31,63,.05), transparent 70%),
     rgba(255,204,0,.05);
+  border:1px dashed rgba(0,31,63,.30);
 }
 
-.manualBox b{ color: var(--navy); }
-.manualBox a{ color: var(--blue); }
-
-/* Sections */
-.section{ margin-top: 16px; }
-.section h3{
-  margin: 0 0 10px;
-  font-size: 1.05rem;
-  color: var(--navy);
+/* Results as “tabellino” */
+.table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
 }
-
-.muted{ color: var(--muted); }
-
-/* Lists & tables (for stats block) */
-.list{ margin: 0; padding-left: 18px; }
-.list li{ margin: 6px 0; }
-
-.grid2{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+.table th{
+  text-align:left;
+  padding:8px 6px;
+  border-bottom:1px solid var(--rule);
+  color:var(--muted);
+  font-weight:700;
+  text-transform:uppercase;
+  font-size:11px;
+  letter-spacing:.08em;
 }
-@media (max-width: 760px){
-  .grid2{ grid-template-columns: 1fr; }
+.table td{
+  padding:8px 6px;
+  border-bottom:1px solid rgba(0,0,0,.08);
+  vertical-align:top;
 }
+.table tr:last-child td{border-bottom:0}
+.score{
+  font-variant-numeric: tabular-nums;
+  white-space:nowrap;
+  font-weight:800;
+}
+.small{color:var(--muted); font-size:12px}
 
-/* Badges inside content */
+/* badges */
 .badge{
-  display: inline-block;
-  padding: 3px 8px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-  border: 1px solid rgba(0,0,0,.14);
-  background: rgba(0,0,0,.04);
+  display:inline-block;
+  padding:3px 8px;
+  border-radius:999px;
+  border:1px solid var(--rule);
+  font-size:12px;
+  background:#fff;
 }
-.badge.gold{
-  background: rgba(255,204,0,.35);
-  border-color: rgba(255,204,0,.55);
-}
-.badge.blue{
-  background: rgba(0,116,217,.18);
-  border-color: rgba(0,116,217,.28);
-}
+.badge.gold{border-color:rgba(255,204,0,.55); background:rgba(255,204,0,.25)}
+.badge.blue{border-color:rgba(0,116,217,.25); background:rgba(0,116,217,.12)}
 
-/* Little separator */
-.hr{
-  height: 1px;
-  background: rgba(0,0,0,.10);
-  border: 0;
-  margin: 14px 0;
-}
-
-/* Note */
-.note{
-  font-size: 13px;
-  color: var(--muted);
-  margin-top: 8px;
-}
-
-/* ---- Mobile navbar behavior ---- */
-@media (max-width: 768px){
-  .hamburger{ display: block; }
-  .navbar{
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    background: rgba(0,31,63,.98);
-    margin-top: 10px;
-    padding: 8px;
-    border-radius: 12px;
-  }
-  .navbar.show{ display: flex; }
-  .submenu{
-    position: relative;
-    top: auto;
-    left: auto;
-    box-shadow: none;
-    margin-left: 10px;
-  }
-  .dropdown .submenu a{ padding-left: 18px; }
-}
+/* lists in sidebar */
+.ul{margin:0;padding-left:18px}
+.ul li{margin:6px 0}
