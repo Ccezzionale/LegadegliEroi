@@ -11,6 +11,9 @@ const STATS_CSV_URL =
 const MANUAL_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vTIIcMsU01jJD0WJ8bz_V3rhlYXQOTpU0q8rnFaGzeG1edoqIVk9U3WaIb1WvCBKkrm8ciWYRgdY1ae/pub?output=csv";
 
+const CLASSIFICA_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTduESMbJiPuCDLaAFdOHjep9GW-notjraILSyyjo6SA0xKSR0H0fgMLPNNYSwXgnGGJUyv14kjFRqv/pub?gid=691152130&single=true&output=csv";
+
 // Mapping colonne (stats)
 const COL = {
   gw: "GW_Stagionale",
@@ -380,7 +383,37 @@ function buildStatsBlocks(article){
     </table>
   `;
 
-  return { matchHTML, premiHTML, resultsTableHTML, pagelleHTML };
+    // Classifica di giornata: ordina per PF (poi PA)
+  const standingsRows = article.teamStats
+    .slice()
+    .sort((a,b) => (b.pf - a.pf) || (a.pa - b.pa))
+    .map((t, idx) => `
+      <tr>
+        <td class="small">${idx + 1}</td>
+        <td><b>${t.name}</b></td>
+        <td class="score">${t.w}-${t.l}${t.t ? `-${t.t}` : ""}</td>
+        <td class="score">${t.pf.toFixed(1)}</td>
+        <td class="score small">${t.pa.toFixed(1)}</td>
+      </tr>
+    `).join("");
+
+  const standingsHTML = `
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Squadra</th>
+          <th>W-L(-T)</th>
+          <th>PF</th>
+          <th>PA</th>
+        </tr>
+      </thead>
+      <tbody>${standingsRows}</tbody>
+    </table>
+  `;
+
+
+    return { matchHTML, premiHTML, resultsTableHTML, standingsHTML, pagelleHTML };
 }
 
 // render manuale (HTML)
@@ -403,16 +436,21 @@ function renderManualHTML(gw, manual, stats){
           <p>${text}</p>
         </div>
 
-        <div class="block">
-          <h3>Risultati</h3>
-          ${stats.resultsTableHTML}
-        </div>
+      <div class="block">
+  <h3>Risultati</h3>
+  ${stats.resultsTableHTML}
+</div>
 
-        <div class="block">
-          <h3>Pagelle</h3>
-          ${stats.pagelleHTML}
-        </div>
-      </div>
+<div class="block">
+  <h3>Classifica</h3>
+  ${stats.standingsHTML}
+</div>
+
+<div class="block">
+  <h3>Pagelle</h3>
+  ${stats.pagelleHTML}
+</div>
+
 
       <div>
         <div class="block">
