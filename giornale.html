@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Giornale | Lega degli Eroi</title>
+
+  <!-- riusa il tuo CSS principale -->
+  <link rel="stylesheet" href="main.css" />
+
+  <style>
+    /* mini stile locale, senza rompere main.css */
+    .page-wrap { max-width: 980px; margin: 0 auto; padding: 18px; }
+    .toolbar { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom: 14px; }
+    .badge { padding:6px 10px; border-radius: 999px; font-size: 13px; border:1px solid rgba(0,0,0,.15); }
+    .card { background: #fff; border:1px solid rgba(0,0,0,.12); border-radius: 14px; padding: 16px; }
+    .title { font-size: 26px; margin: 8px 0 4px; }
+    .subtitle { opacity: .8; margin: 0 0 12px; }
+    .section { margin-top: 14px; }
+    .section h3 { margin: 0 0 8px; }
+    .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    @media (max-width: 760px){ .grid2 { grid-template-columns: 1fr; } }
+    .list { margin: 0; padding-left: 18px; }
+    .muted { opacity:.8; }
+    select { padding: 8px 10px; border-radius: 10px; border:1px solid rgba(0,0,0,.18); }
+    button { padding: 8px 12px; border-radius: 10px; border:1px solid rgba(0,0,0,.18); background: #fff; cursor:pointer; }
+    .error { color: #b00020; }
+  </style>
+</head>
+
+<body>
+  <!-- se hai una navbar comune, incollala qui -->
+  <div class="page-wrap">
+    <div class="toolbar">
+      <span class="badge">🗞️ Giornale Trash</span>
+      <label for="gwSelect" class="muted">Giornata</label>
+      <select id="gwSelect"></select>
+      <button id="btnReload">Aggiorna</button>
+      <span id="status" class="muted"></span>
+    </div>
+
+    <div id="output" class="card">
+      Caricamento in corso…
+    </div>
+  </div>
+
+  <script src="giornale.js"></script>
+</body>
+</html>
