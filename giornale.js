@@ -568,12 +568,14 @@ function setStatus(msg, isErr=false){
   el.className = isErr ? "error" : "muted";
 }
 
-function setViewMode(mode){
-  VIEW_MODE = mode;
-  $("btnViewManual").classList.toggle("active", mode === "manual");
-  $("btnViewAuto").classList.toggle("active", mode === "auto");
+function setViewMode(){
+  VIEW_MODE = "manual";
+  // se i bottoni esistono, li nascondo o li disattivo
+  $("btnViewManual")?.remove();
+  $("btnViewAuto")?.remove();
   renderCurrent();
 }
+
 
 function getAllGWs(data){
   const set = new Set();
@@ -624,12 +626,17 @@ function renderCurrent(){
   }
 
   // Manuale ma non c’è testo: fallback bozza completa
-  if (VIEW_MODE === "manual" && !manual){
-    const auto = buildAutoArticle(STATS_DATA, gw);
-    out.innerHTML = renderAutoHTML(auto);
-    setStatus(`GW ${gw} | Bozza (manca manuale)`);
-    return;
-  }
+// Manuale anche se non c'è testo: mostra placeholder + stats
+if (VIEW_MODE === "manual" && !manual){
+  const auto = buildAutoArticle(STATS_DATA, gw);
+  const statsBlocks = buildStatsBlocks(auto);
+  statsBlocks.classificaHTML = buildClassificaHTML(CLASSIFICA_DATA);
+
+  out.innerHTML = renderManualHTML(gw, { title:"", text:"", updatedAt:"" }, statsBlocks);
+  setStatus(`GW ${gw} | Manuale ✅ + Stats`);
+  return;
+}
+
 
   // View bozza
   const auto = buildAutoArticle(STATS_DATA, gw);
@@ -669,9 +676,17 @@ async function loadAll(){
   CURRENT_GW = gws[gws.length - 1];
   fillGWSelect(gws, CURRENT_GW);
 
-  const hasManual = MANUAL_MAP.has(Number(CURRENT_GW));
-  setViewMode(hasManual ? "manual" : "auto");
+  setViewMode(); // sempre manuale (senza bottoni)
+} // ✅ QUESTA GRAFFA MANCAVA
+
+async function reloadKeepingGW(){
+  const gw = Number($("gwSelect").value || CURRENT_GW);
+  await loadAll();
+  CURRENT_GW = gw;
+  $("gwSelect").value = String(gw);
+  renderCurrent();
 }
+
 
 
 async function reloadKeepingGW(){
@@ -697,9 +712,6 @@ $("btnReload").addEventListener("click", async () => {
     $("output").innerHTML = `<p class="error">${e.message}</p>`;
   }
 });
-
-$("btnViewManual").addEventListener("click", () => setViewMode("manual"));
-$("btnViewAuto").addEventListener("click", () => setViewMode("auto"));
 
 // Boot
 (async () => {
