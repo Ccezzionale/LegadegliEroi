@@ -330,80 +330,105 @@ function renderAutoHTML(article){
   `;
 }
 
-function renderStatsOnlyHTML(article){
-  const linesMatch = article.matches
-    .map(m => `<li><b>${m.home}</b> ${m.aPoints.toFixed(1)} - ${m.bPoints.toFixed(1)} <b>${m.away}</b> <span class="muted">(scarto ${m.margin.toFixed(1)})</span></li>`)
-    .join("");
+function buildStatsBlocks(article){
+  // Match of the week
+  const matchHTML = article.matchOfWeek
+    ? `<div><b>${article.matchOfWeek.home}</b> <span class="score">${article.matchOfWeek.aPoints.toFixed(1)} - ${article.matchOfWeek.bPoints.toFixed(1)}</span> <b>${article.matchOfWeek.away}</b>
+       <div class="small">Scarto ${article.matchOfWeek.margin.toFixed(1)}</div></div>`
+    : `<div class="small">Nessun match trovato.</div>`;
 
-  const pagelle = article.teamStats
-    .sort((a,b) => b.pf - a.pf)
-    .map(t => {
-      const v = voteFromPoints(t.pf);
-      return `<li><b>${t.name}</b> <span class="pill">${v.toFixed(1)}</span> <span class="muted">${commentForVote(v)}</span> <span class="muted">(${t.pf.toFixed(1)} PF)</span></li>`;
-    })
-    .join("");
-
-  const mow = article.matchOfWeek
-    ? `<p><b>${article.matchOfWeek.home}</b> ${article.matchOfWeek.aPoints.toFixed(1)} - ${article.matchOfWeek.bPoints.toFixed(1)} <b>${article.matchOfWeek.away}</b>
-       <span class="muted">(scarto ${article.matchOfWeek.margin.toFixed(1)})</span></p>`
-    : `<p class="muted">Nessun match trovato per questa giornata.</p>`;
-
-  return `
-    <div>
-      <div class="section grid2">
-        <div>
-          <h3>🔥 Match della Settimana</h3>
-          ${mow}
-        </div>
-        <div>
-          <h3>🏆 Premi discutibili</h3>
-          <ul class="list">
-            <li><b>Re:</b> ${article.top.team} (${article.top.pf.toFixed(1)})</li>
-            <li><b>Pagliaccio d’Oro:</b> ${article.flop.team} (${article.flop.pf.toFixed(1)})</li>
-            ${article.thief ? `<li><b>Ladro:</b> ${article.thief.winner} (vittoria con ${article.thief.winnerPts.toFixed(1)}, scarto ${article.thief.margin.toFixed(1)})</li>` : `<li class="muted">Nessun ladro (evento raro).</li>`}
-          </ul>
-        </div>
-      </div>
-
-      <div class="section">
-        <h3>📌 Risultati</h3>
-        <ul class="list">${linesMatch}</ul>
-      </div>
-
-      <div class="section">
-        <h3>📝 Pagelle</h3>
-        <ul class="list">${pagelle}</ul>
-      </div>
-    </div>
+  // Premi
+  const premiHTML = `
+    <ul class="ul">
+      <li><b>Re:</b> ${article.top.team} <span class="badge gold">${article.top.pf.toFixed(1)}</span></li>
+      <li><b>Pagliaccio d’Oro:</b> ${article.flop.team} <span class="badge">${article.flop.pf.toFixed(1)}</span></li>
+      ${article.thief ? `<li><b>Ladro:</b> ${article.thief.winner} <span class="badge blue">${article.thief.winnerPts.toFixed(1)}</span> <span class="small">(scarto ${article.thief.margin.toFixed(1)})</span></li>` : `<li class="small">Nessun ladro (evento raro).</li>`}
+    </ul>
   `;
+
+  // Results table
+  const rows = article.matches.map(m => `
+    <tr>
+      <td><b>${m.home}</b> vs <b>${m.away}</b><div class="small">scarto ${m.margin.toFixed(1)}</div></td>
+      <td class="score">${m.aPoints.toFixed(1)} - ${m.bPoints.toFixed(1)}</td>
+    </tr>
+  `).join("");
+
+  const resultsTableHTML = `
+    <table class="table">
+      <thead><tr><th>Partita</th><th>Punti</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+
+  // Pagelle list “giornale”
+  const pagelleHTML = `
+    <table class="table">
+      <thead><tr><th>Squadra</th><th>Voto</th><th>Nota</th></tr></thead>
+      <tbody>
+        ${article.teamStats
+          .sort((a,b) => b.pf - a.pf)
+          .map(t => {
+            const v = voteFromPoints(t.pf);
+            return `<tr>
+              <td><b>${t.name}</b><div class="small">${t.pf.toFixed(1)} PF</div></td>
+              <td><span class="badge">${v.toFixed(1)}</span></td>
+              <td class="small">${commentForVote(v)}</td>
+            </tr>`;
+          }).join("")}
+      </tbody>
+    </table>
+  `;
+
+  return { matchHTML, premiHTML, resultsTableHTML, pagelleHTML };
 }
 
 // render manuale (HTML)
-function renderManualHTML(gw, manual, statsArticleHTML){
+function renderManualHTML(gw, manual, stats){
   const title = manual.title ? manual.title : `GW ${gw} | Editoriale`;
   const subtitle = manual.updatedAt ? `Aggiornato: ${manual.updatedAt}` : "Editoriale manuale";
   const text = manual.text || "<i>(Nessun testo manuale inserito)</i>";
 
   return `
-    <div>
-      <div class="pill">Manuale</div>
-      <h1 class="title">${title}</h1>
-      <p class="subtitle">${subtitle}</p>
+    <div class="lede">
+      <span class="kicker">EDIZIONE MANUALE</span>
+      <div class="h1">${title}</div>
+      <div class="subline">${subtitle}</div>
+    </div>
 
-      <div class="manualBox">
-        ${text}
+    <div class="columns">
+      <div>
+        <div class="block editorial">
+          <h3>Editoriale</h3>
+          <p>${text}</p>
+        </div>
+
+        <div class="block">
+          <h3>Risultati</h3>
+          ${stats.resultsTableHTML}
+        </div>
+
+        <div class="block">
+          <h3>Pagelle</h3>
+          ${stats.pagelleHTML}
+        </div>
       </div>
 
-      <div class="section" style="margin-top:16px;">
-        <h3>📊 Statistiche (auto)</h3>
-        <div class="muted" style="margin-bottom:8px;">
-          Sotto trovi risultati/premi/pagelle generati dai dati della GW ${gw}.
+      <div>
+        <div class="block">
+          <h3>Match della settimana</h3>
+          ${stats.matchHTML}
         </div>
-        ${statsArticleHTML}
+
+        <div class="block">
+          <h3>Premi discutibili</h3>
+          ${stats.premiHTML}
+        </div>
       </div>
     </div>
   `;
 }
+
 
 
 // -------------------------------------
@@ -458,20 +483,23 @@ function renderCurrent(){
   const gw = Number(CURRENT_GW);
   const manual = MANUAL_MAP.get(gw);
 
-  // Default: se c'è manuale e siamo in view manual -> manuale
-if (VIEW_MODE === "manual" && manual){
-  const auto = buildAutoArticle(STATS_DATA, gw);
-const statsOnlyHTML = renderStatsOnlyHTML(auto);
-out.innerHTML = renderManualHTML(gw, manual, statsOnlyHTML);
-  setStatus(`GW ${gw} | Manuale ✅ + Stats`);
-  return;
-}
+  // chips masthead (se esistono)
+  const d = new Date().toLocaleDateString("it-IT", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+  const chipDate = document.getElementById("chipDate");
+  const chipGW = document.getElementById("chipGW");
+  if (chipDate) chipDate.textContent = d;
+  if (chipGW) chipGW.textContent = `GW ${gw}`;
 
+  // Manuale + stats (stile giornale)
+  if (VIEW_MODE === "manual" && manual){
+    const auto = buildAutoArticle(STATS_DATA, gw);
+    const statsBlocks = buildStatsBlocks(auto);
+    out.innerHTML = renderManualHTML(gw, manual, statsBlocks);
+    setStatus(`GW ${gw} | Manuale ✅ + Stats`);
+    return;
+  }
 
-
-
-  
-  // Se manuale non c'è ma sei in manual -> fallback bozza
+  // Manuale ma non c’è testo: fallback bozza completa
   if (VIEW_MODE === "manual" && !manual){
     const auto = buildAutoArticle(STATS_DATA, gw);
     out.innerHTML = renderAutoHTML(auto);
@@ -479,11 +507,12 @@ out.innerHTML = renderManualHTML(gw, manual, statsOnlyHTML);
     return;
   }
 
-  // View auto
+  // View bozza
   const auto = buildAutoArticle(STATS_DATA, gw);
   out.innerHTML = renderAutoHTML(auto);
   setStatus(`GW ${gw} | Bozza ✅`);
 }
+
 
 async function loadAll(){
   if (STATS_CSV_URL.includes("INCOLLA_QUI")) {
