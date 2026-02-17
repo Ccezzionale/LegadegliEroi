@@ -24,7 +24,7 @@ const SCORES = {
   LCF: { home: 1, away: 3 },
   RCF: { home: 3, away: 1 },
   // Finals
-  F:   { home: 0, away: 0 },
+  F:   { home: 0, away: 1 },
 };
 
 // ======== UTILS ========
