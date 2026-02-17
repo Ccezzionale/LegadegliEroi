@@ -33,30 +33,37 @@
 
 <body>
   <div class="wrap">
-    <div class="toolbar">
-      <span class="pill">🗞️ Giornale Trash</span>
-
-      <div class="row">
-        <label for="gwSelect" class="muted">Giornata</label>
-        <select id="gwSelect"></select>
-        <button id="btnReload">Aggiorna</button>
+  <div class="masthead">
+    <div class="mast-top">
+      <div class="brand">
+        <div class="name">Giornale Trash</div>
+        <div class="tag">Lega degli Eroi</div>
       </div>
-
-      <div class="row">
-        <button id="btnViewManual" class="active">Manuale</button>
-        <button id="btnViewAuto">Bozza</button>
+      <div class="meta">
+        <div class="chip" id="chipDate">Data</div>
+        <div class="chip" id="chipGW">GW</div>
       </div>
-
-      <span id="status" class="muted"></span>
     </div>
 
-    <div id="output" class="card">Caricamento…</div>
+    <div class="toolbar">
+      <span class="badge blue">Edizione</span>
 
-    <div class="note muted">
-      Suggerimento: scrivi il testo manuale nel tab <b>Giornale</b>. Se per una GW non c’è testo, l’app usa la bozza automatica.
+      <label for="gwSelect">Giornata</label>
+      <select id="gwSelect"></select>
+      <button id="btnReload">Aggiorna</button>
+
+      <button id="btnViewManual" class="active">Manuale</button>
+      <button id="btnViewAuto">Bozza</button>
+
+      <span id="status"></span>
+    </div>
+
+    <div id="output" class="paper">
+      Caricamento…
     </div>
   </div>
+</div>
+<script src="giornale.js"></script>
 
-  <script src="giornale.js"></script>
 </body>
 </html>
