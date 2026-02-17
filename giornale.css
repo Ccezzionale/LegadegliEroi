@@ -1,0 +1,291 @@
+/* =========================================
+   GIORNALE TRASH - CSS dedicato
+   Palette: Navy / Blue / Gold
+   ========================================= */
+
+/* ---- Theme tokens ---- */
+:root{
+  --bg: #f4f6fb;
+  --card: #ffffff;
+  --text: #17202a;
+  --muted: rgba(23, 32, 42, .70);
+
+  --navy: #001f3f;
+  --navy-2: #003366;
+  --blue: #0074D9;
+  --gold: #ffcc00;
+
+  --border: rgba(0,0,0,.12);
+  --shadow: 0 10px 24px rgba(0,0,0,.08);
+  --shadow-soft: 0 6px 14px rgba(0,0,0,.06);
+
+  --radius: 16px;
+  --radius-sm: 12px;
+}
+
+/* ---- Base ---- */
+*{ box-sizing: border-box; }
+html, body{ height: 100%; }
+
+body{
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: radial-gradient(1200px 600px at 15% 0%, rgba(0,116,217,.08), transparent 60%),
+              radial-gradient(900px 500px at 85% 10%, rgba(255,204,0,.10), transparent 55%),
+              var(--bg);
+  color: var(--text);
+}
+
+/* ---- Optional: keep your existing navbar look, slightly refined ---- */
+nav{
+  background: linear-gradient(90deg, var(--navy), #002a55);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 10px 18px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.home-icon{
+  font-size: 1.35rem;
+  margin-right: 16px;
+  text-decoration: none;
+  color: #fff;
+}
+
+.hamburger{
+  font-size: 1.55rem;
+  cursor: pointer;
+  margin-right: 16px;
+  display: none;
+  user-select: none;
+}
+
+.navbar{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.navbar li{ position: relative; }
+
+.navbar a{
+  text-decoration: none;
+  color: #fff;
+  padding: 8px 12px;
+  display: block;
+  border-radius: 10px;
+  transition: background .15s ease, transform .15s ease;
+}
+
+.navbar a:hover{
+  background: rgba(0,116,217,.35);
+  transform: translateY(-1px);
+}
+
+.submenu{
+  display: none;
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: var(--navy-2);
+  border-radius: 12px;
+  z-index: 10;
+  min-width: 190px;
+  padding: 6px;
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: var(--shadow-soft);
+  flex-direction: column;
+}
+
+.submenu a{
+  font-size: .95rem;
+  border-radius: 10px;
+}
+
+.dropdown.show .submenu{ display: flex; }
+
+/* ---- Page layout ---- */
+.wrap{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 18px;
+}
+
+.card{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+/* ---- Toolbar ---- */
+.toolbar{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.pill{
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, #fff, rgba(255,255,255,.85));
+}
+
+.pill.primary{
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.12);
+  background: linear-gradient(180deg, rgba(0,116,217,.95), rgba(0,31,63,.95));
+}
+
+.row{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+select, button{
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.18);
+  background: #fff;
+  color: var(--text);
+}
+
+button{
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+
+button:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0,0,0,.08);
+}
+
+button.active{
+  border-color: rgba(0,0,0,.32);
+  background: linear-gradient(180deg, rgba(255,204,0,.35), rgba(255,255,255,1));
+  font-weight: 700;
+}
+
+#status{ font-size: 13px; color: var(--muted); }
+.error{ color: #b00020 !important; }
+
+/* ---- Typography “editoriale” ---- */
+.title{
+  font-size: 28px;
+  margin: 10px 0 6px;
+  letter-spacing: .2px;
+  line-height: 1.15;
+  color: var(--navy);
+}
+
+.subtitle{
+  opacity: .8;
+  margin: 0 0 12px;
+}
+
+/* Manual block */
+.manualBox{
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed rgba(0,31,63,.35);
+  background:
+    linear-gradient(180deg, rgba(0,116,217,.06), transparent 55%),
+    rgba(255,204,0,.05);
+}
+
+.manualBox b{ color: var(--navy); }
+.manualBox a{ color: var(--blue); }
+
+/* Sections */
+.section{ margin-top: 16px; }
+.section h3{
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+  color: var(--navy);
+}
+
+.muted{ color: var(--muted); }
+
+/* Lists & tables (for stats block) */
+.list{ margin: 0; padding-left: 18px; }
+.list li{ margin: 6px 0; }
+
+.grid2{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 760px){
+  .grid2{ grid-template-columns: 1fr; }
+}
+
+/* Badges inside content */
+.badge{
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid rgba(0,0,0,.14);
+  background: rgba(0,0,0,.04);
+}
+.badge.gold{
+  background: rgba(255,204,0,.35);
+  border-color: rgba(255,204,0,.55);
+}
+.badge.blue{
+  background: rgba(0,116,217,.18);
+  border-color: rgba(0,116,217,.28);
+}
+
+/* Little separator */
+.hr{
+  height: 1px;
+  background: rgba(0,0,0,.10);
+  border: 0;
+  margin: 14px 0;
+}
+
+/* Note */
+.note{
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+/* ---- Mobile navbar behavior ---- */
+@media (max-width: 768px){
+  .hamburger{ display: block; }
+  .navbar{
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    background: rgba(0,31,63,.98);
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 12px;
+  }
+  .navbar.show{ display: flex; }
+  .submenu{
+    position: relative;
+    top: auto;
+    left: auto;
+    box-shadow: none;
+    margin-left: 10px;
+  }
+  .dropdown .submenu a{ padding-left: 18px; }
+}
