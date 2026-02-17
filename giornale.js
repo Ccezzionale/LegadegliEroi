@@ -331,11 +331,9 @@ function renderAutoHTML(article){
 }
 
 // render manuale (HTML)
-function renderManualHTML(gw, manual){
+function renderManualHTML(gw, manual, statsArticleHTML){
   const title = manual.title ? manual.title : `GW ${gw} | Editoriale`;
   const subtitle = manual.updatedAt ? `Aggiornato: ${manual.updatedAt}` : "Editoriale manuale";
-
-  // Il testo può contenere HTML leggero (br, b, i, ul, li, ecc.)
   const text = manual.text || "<i>(Nessun testo manuale inserito)</i>";
 
   return `
@@ -347,9 +345,18 @@ function renderManualHTML(gw, manual){
       <div class="manualBox">
         ${text}
       </div>
+
+      <div class="section" style="margin-top:16px;">
+        <h3>📊 Statistiche (auto)</h3>
+        <div class="muted" style="margin-bottom:8px;">
+          Sotto trovi risultati/premi/pagelle generati dai dati della GW ${gw}.
+        </div>
+        ${statsArticleHTML}
+      </div>
     </div>
   `;
 }
+
 
 // -------------------------------------
 // UI flow
@@ -404,11 +411,14 @@ function renderCurrent(){
   const manual = MANUAL_MAP.get(gw);
 
   // Default: se c'è manuale e siamo in view manual -> manuale
-  if (VIEW_MODE === "manual" && manual){
-    out.innerHTML = renderManualHTML(gw, manual);
-    setStatus(`GW ${gw} | Manuale ✅`);
-    return;
-  }
+if (VIEW_MODE === "manual" && manual){
+  const auto = buildAutoArticle(STATS_DATA, gw);
+  const autoHTML = renderAutoHTML(auto); // contiene già statistiche
+  out.innerHTML = renderManualHTML(gw, manual, autoHTML);
+  setStatus(`GW ${gw} | Manuale ✅ + Stats`);
+  return;
+}
+
 
   // Se manuale non c'è ma sei in manual -> fallback bozza
   if (VIEW_MODE === "manual" && !manual){
