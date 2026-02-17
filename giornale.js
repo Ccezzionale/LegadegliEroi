@@ -502,12 +502,12 @@ function buildClassificaHTML(rows){
 // render manuale (HTML)
 function renderManualHTML(gw, manual, stats){
   const title = manual.title ? manual.title : `GW ${gw} | Editoriale`;
-  const subtitle = manual.updatedAt ? `Aggiornato: ${manual.updatedAt}` : "Editoriale manuale";
+  const subtitle = manual.updatedAt ? `Aggiornato: ${manual.updatedAt}` : "Editoriale";
   const text = manual.text || "<i>(Nessun testo manuale inserito)</i>";
 
   return `
     <div class="lede">
-      <span class="kicker">EDIZIONE MANUALE</span>
+      <span class="kicker">Lega degli Eroi</span>
       <div class="h1">${title}</div>
       <div class="subline">${subtitle}</div>
     </div>
