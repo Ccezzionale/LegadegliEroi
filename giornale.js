@@ -461,13 +461,16 @@ function renderCurrent(){
   // Default: se c'è manuale e siamo in view manual -> manuale
 if (VIEW_MODE === "manual" && manual){
   const auto = buildAutoArticle(STATS_DATA, gw);
-  const autoHTML = renderAutoHTML(auto); // contiene già statistiche
-  out.innerHTML = renderManualHTML(gw, manual, autoHTML);
+const statsOnlyHTML = renderStatsOnlyHTML(auto);
+out.innerHTML = renderManualHTML(gw, manual, statsOnlyHTML);
   setStatus(`GW ${gw} | Manuale ✅ + Stats`);
   return;
 }
 
 
+
+
+  
   // Se manuale non c'è ma sei in manual -> fallback bozza
   if (VIEW_MODE === "manual" && !manual){
     const auto = buildAutoArticle(STATS_DATA, gw);
