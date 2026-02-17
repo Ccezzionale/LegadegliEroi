@@ -20,7 +20,9 @@ const COL = {
   team: "Team",
   opp: "Opponent",
   pf: "PointsFor",
-  pa: "PointsAgainst"
+  pa: "PointsAgainst",
+  gf: "GoalsFor",        // <-- cambia con il nome reale colonna
+  ga: "GoalsAgainst"     // <-- cambia con il nome reale colonna
 };
 
 // Mapping colonne (manuale)
@@ -159,6 +161,8 @@ function buildMatchesForGW(data, gw){
     const winner = pf > pa ? A : (pa > pf ? B : null);
     const loser  = pf > pa ? B : (pa > pf ? A : null);
     const margin = Math.abs(pf - pa);
+    const gf = toNum(r[COL.gf]);
+    const ga = toNum(r[COL.ga]);
 
     matches.push({
       gw,
@@ -170,6 +174,7 @@ function buildMatchesForGW(data, gw){
 
   return matches;
 }
+
 
 function buildTeamStats(matches){
   const m = new Map();
@@ -353,6 +358,13 @@ function renderAutoHTML(article){
   `;
 }
 
+function magicToGoals(mp){
+  if (!Number.isFinite(mp)) return 0;
+  if (mp < 66) return 0;
+  return 1 + Math.floor((mp - 66) / 6);
+}
+
+
 function buildStatsBlocks(article){
   // Match of the week
   const matchHTML = article.matchOfWeek
@@ -370,12 +382,18 @@ function buildStatsBlocks(article){
   `;
 
   // Results table
-  const rows = article.matches.map(m => `
+  const rows = article.matches.map(m => {
+  const hg = magicToGoals(m.aPoints);
+  const ag = magicToGoals(m.bPoints);
+
+  return `
     <tr>
       <td><b>${m.home}</b> vs <b>${m.away}</b><div class="small">scarto ${m.margin.toFixed(1)}</div></td>
-      <td class="score">${m.aPoints.toFixed(1)} - ${m.bPoints.toFixed(1)}</td>
+      <td class="score">${hg} - ${ag}</td>
     </tr>
-  `).join("");
+  `;
+}).join("");
+
 
   const resultsTableHTML = `
     <table class="table">
