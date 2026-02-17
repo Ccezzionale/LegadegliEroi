@@ -321,7 +321,7 @@ function renderAutoHTML(article){
       <p class="subtitle">${article.subtitle}</p>
 
       <div class="section">
-        <h3>🧨 Editoriale</h3>
+        <h3>🧨 Il punto di Costantino</h3>
         <p>${article.editorial}</p>
       </div>
 
