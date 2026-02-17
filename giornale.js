@@ -516,7 +516,7 @@ function renderManualHTML(gw, manual, stats){
       <!-- COLONNA SINISTRA -->
       <div>
         <div class="block editorial">
-          <h3>Editoriale</h3>
+          <h3>Il punto di Costantino</h3>
           <p>${text}</p>
         </div>
 
