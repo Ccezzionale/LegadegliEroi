@@ -35,14 +35,26 @@ html, body{ height:100%; }
 body{
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow-x: hidden;
   background: #071a3b url("img/champions-bg.png") center / cover no-repeat fixed;
   color: #222;
+  overflow-x: hidden; /* una sola volta */
 }
 
+/* wrapper che scrolla orizzontalmente */
 .bracket-wrap{
+  max-width: 100vw;
   overflow-x: auto;
   overflow-y: visible;
+  -webkit-overflow-scrolling: touch; /* mobile iOS */
+}
+
+/* bracket resta largo quanto serve */
+.bracket{
+  display: flex;
+  align-items: flex-start;
+  gap: var(--col-gap);
+  width: max-content;
+  padding: 40px;
 }
 
 
