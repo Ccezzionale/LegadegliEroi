@@ -1,35 +1,56 @@
-// =========================
-// GIORNALE TRASH - Lega degli Eroi
-// Usa il CSV pubblicato delle statistiche / calendario
-// =========================
+// =====================================
+// GIORNALE TRASH - Manuale + Bozza
+// =====================================
 
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRhEJKfZhVb7V08KI29T_aPTR0hfx7ayIOlFjQn_v-fqgktImjXFg-QAEA6z7w5eyEh2B3w5KLpaRYz/pub?gid=1118969717&single=true&output=csv";
+// 1) INCOLLA QUI il CSV delle statistiche (risultati / calendario)
+// (quello che avevi: .../pub?...&output=csv)
+const STATS_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRhEJKfZhVb7V08KI29T_aPTR0hfx7ayIOlFjQn_v-fqgktImjXFg-QAEA6z7w5eyEh2B3w5KLpaRYz/pub?gid=1118969717&single=true&output=csv";
 
-// Se i nomi colonne nel CSV sono diversi, mappali qui.
+// 2) CSV del tab Giornale (manuale) - già ok
+const MANUAL_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTIIcMsU01jJD0WJ8bz_V3rhlYXQOTpU0q8rnFaGzeG1edoqIVk9U3WaIb1WvCBKkrm8ciWYRgdY1ae/pub?output=csv";
+
+// Mapping colonne (stats)
 const COL = {
   gw: "GW",
   team: "Team",
   opp: "Opponent",
   pf: "PointsFor",
-  pa: "PointsAgainst",
-  result: "Result" // W/L (se non c'è, lo calcoliamo da pf vs pa)
+  pa: "PointsAgainst"
 };
 
-// ---------- helpers ----------
-function norm(s){ return String(s ?? "").trim(); }
+// Mapping colonne (manuale)
+const MAN = {
+  gw: "GW",
+  title: "Titolo_manual",
+  text: "Testo_manual",
+  updated: "UpdatedAt"
+};
+
+// -------------------------------------
+// Helpers
+// -------------------------------------
+const $ = (id) => document.getElementById(id);
+
+function norm(v){ return String(v ?? "").trim(); }
 function toNum(x){
   const v = String(x ?? "").trim().replace(",", ".");
   const n = Number(v);
   return Number.isFinite(n) ? n : NaN;
 }
+function gwNum(v){
+  const m = String(v ?? "").match(/\d+/);
+  return m ? Number(m[0]) : NaN;
+}
+function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
 
-// CSV parser semplice (compatibile con campi quotati)
+// CSV parser robusto (quote + virgole)
 function parseCSV(text){
   const rows = [];
   let row = [], cur = "", inQ = false;
   for (let i=0; i<text.length; i++){
-    const ch = text[i];
-    const nxt = text[i+1];
+    const ch = text[i], nxt = text[i+1];
     if (ch === '"' && inQ && nxt === '"'){ cur += '"'; i++; continue; }
     if (ch === '"'){ inQ = !inQ; continue; }
     if (!inQ && ch === ","){ row.push(cur); cur=""; continue; }
@@ -57,50 +78,43 @@ function rowsToObjects(rows){
   });
 }
 
-// ---------- trash phrases ----------
-function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
-
-function headlineFactory(ctx){
-  const { upset, bigMargin, topTeam, flopTeam } = ctx;
-  const base = [
-    `GIORNATA ${ctx.gw}: CAOS E CONFETTI (MA SOLO PER QUALCUNO)`,
-    `GIORNATA ${ctx.gw}: IL CALCIO È SEMPLICE, POI ARRIVANO LORO`,
-    `GIORNATA ${ctx.gw}: SI RIDE, SI PIANGE, SI RESETTA IL CERVELLO`,
-    `GIORNATA ${ctx.gw}: STATISTICHE URLANO, CUORI PURE`
-  ];
-  if (upset) return `SCANDALO SPORTIVO: ${upset.winner} FA IL COLPO GROSSO`;
-  if (bigMargin) return `MASSACRO A PORTE APERTE: ${bigMargin.winner} FA SPOLVERO DI ${bigMargin.loser}`;
-  if (topTeam) return `DOMINIO ASSOLUTO: ${topTeam} FA PAURA (E PURE UN PO' SCHIFO)`;
-  if (flopTeam) return `CRONACA NERA: ${flopTeam} È DISPERSA, RICERCE IN CORSO`;
-  return pick(base);
+async function fetchCSV(url){
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Fetch fallita (${res.status})`);
+  const text = await res.text();
+  const rows = parseCSV(text);
+  return rowsToObjects(rows);
 }
 
-function editorialFactory(ctx){
-  const openers = [
-    "Si entra in giornata e si esce con un mal di testa elegante.",
-    "La scienza dice: numeri. Il fantacalcio dice: offese creative.",
-    "Questa giornata ha avuto la delicatezza di un frigorifero che cade dalle scale."
-  ];
-  const mids = [
-    `Il re è ${ctx.topTeam} con ${ctx.topPF.toFixed(1)} punti: roba da togliere la patente agli altri.`,
-    `Il fondo del barile lo firma ${ctx.flopTeam} con ${ctx.flopPF.toFixed(1)}: presente solo con il badge.`,
-    ctx.bigMargin
-      ? `Nel frattempo ${ctx.bigMargin.winner} ha steso ${ctx.bigMargin.loser} con uno scarto di ${ctx.bigMargin.margin.toFixed(1)}: chiamate il prete e un fisioterapista.`
-      : `Scarti contenuti? Sì, come la rabbia trattenuta in ufficio.`
-  ];
-  const closers = [
-    "Ora tutti a dire “settimana prossima svolto”. Certo. Come no.",
-    "Appuntamento alla prossima, con nuove illusioni e vecchi traumi.",
-    "Se vi sentite male, è normale: è fantacalcio. Idratatevi."
-  ];
-  return `${pick(openers)} ${pick(mids)} ${pick(closers)}`;
+// -------------------------------------
+// Manual overrides
+// -------------------------------------
+async function loadManualMap(){
+  const data = await fetchCSV(MANUAL_CSV_URL);
+  const map = new Map(); // gw -> {title,text,updatedAt}
+  for (const r of data){
+    const g = gwNum(r[MAN.gw]);
+    if (!Number.isFinite(g)) continue;
+
+    const title = norm(r[MAN.title]);
+    const text  = norm(r[MAN.text]);
+    const upd   = norm(r[MAN.updated]);
+
+    if (title || text){
+      map.set(g, { title, text, updatedAt: upd });
+    }
+  }
+  return map;
 }
 
-// ---------- build matches ----------
+// -------------------------------------
+// Stats -> match list (dedup)
+// -------------------------------------
 function buildMatchesForGW(data, gw){
   // filtro giornata
-  const rows = data.filter(r => norm(r[COL.gw]) === String(gw));
-  // ogni match è duplicato (team e opponent). Dedup con una chiave ordinata.
+  const rows = data.filter(r => gwNum(r[COL.gw]) === Number(gw));
+
+  // dedup: ogni match è doppio (Team/Opponent)
   const seen = new Set();
   const matches = [];
 
@@ -109,12 +123,12 @@ function buildMatchesForGW(data, gw){
     const B = norm(r[COL.opp]);
     const pf = toNum(r[COL.pf]);
     const pa = toNum(r[COL.pa]);
-
     if (!A || !B || !Number.isFinite(pf) || !Number.isFinite(pa)) continue;
 
     const key = [A, B].sort().join("||");
-    // dedup prendendo SOLO la riga in cui A < B alfabeticamente (stabile)
     if (seen.has(key)) continue;
+
+    // prendiamo una riga "stabile": A alfabeticamente <= B
     if (A > B) continue;
 
     seen.add(key);
@@ -130,28 +144,63 @@ function buildMatchesForGW(data, gw){
       winner, loser, margin
     });
   }
+
   return matches;
 }
 
 function buildTeamStats(matches){
-  const team = new Map();
-  for (const m of matches){
-    const add = (name, pts, oppPts) => {
-      if (!team.has(name)) team.set(name, { name, pf: 0, pa: 0, w:0, l:0, t:0 });
-      const t = team.get(name);
-      t.pf += pts; t.pa += oppPts;
-      if (pts > oppPts) t.w++;
-      else if (pts < oppPts) t.l++;
-      else t.t++;
-    };
-    add(m.home, m.aPoints, m.bPoints);
-    add(m.away, m.bPoints, m.aPoints);
+  const m = new Map();
+  const add = (name, pf, pa) => {
+    if (!m.has(name)) m.set(name, { name, pf: 0, pa: 0, w:0, l:0, t:0 });
+    const t = m.get(name);
+    t.pf += pf; t.pa += pa;
+    if (pf > pa) t.w++;
+    else if (pf < pa) t.l++;
+    else t.t++;
+  };
+
+  for (const game of matches){
+    add(game.home, game.aPoints, game.bPoints);
+    add(game.away, game.bPoints, game.aPoints);
   }
-  return Array.from(team.values());
+
+  return Array.from(m.values());
+}
+
+// -------------------------------------
+// Trash generators (bozza)
+// -------------------------------------
+function headline(ctx){
+  const { upset, bigMargin, topTeam, flopTeam, gw } = ctx;
+  if (upset) return `SCANDALO SPORTIVO (GW ${gw}): ${upset.winner} FA IL COLPO GROSSO`;
+  if (bigMargin) return `GW ${gw}: MASSACRO A PORTE APERTE, ${bigMargin.winner} SMONTA ${bigMargin.loser}`;
+  if (topTeam) return `GW ${gw}: ${topTeam} FA PAURA (E GLI ALTRI FANNO SCUSE)`;
+  if (flopTeam) return `GW ${gw}: ${flopTeam} DISPERSA, AVVISTATA SOLO IN BASSA CLASSIFICA`;
+  return `GW ${gw}: CAOS, DRAMMI E PUNTI LANCIATI DALLA FINESTRA`;
+}
+
+function editorial(ctx){
+  const openers = [
+    "Settimana intensa: anche i numeri hanno chiesto ferie.",
+    "Giornata con la delicatezza di una chat di condominio.",
+    "Qui non si gioca: si sopravvive."
+  ];
+  const mids = [
+    `Il re è ${ctx.topTeam} con ${ctx.topPF.toFixed(1)}: prestazione da far firmare ai notai.`,
+    `Il fondo del barile lo firma ${ctx.flopTeam} con ${ctx.flopPF.toFixed(1)}: presente solo col badge.`,
+    ctx.bigMargin
+      ? `${ctx.bigMargin.winner} ha steso ${ctx.bigMargin.loser} di ${ctx.bigMargin.margin.toFixed(1)}: intervento necessario (psicologico).`
+      : "Scarti stretti? Sì, come la pazienza a fine mese."
+  ];
+  const closers = [
+    "Ora tutti a promettere la rimonta. Va bene, ci crediamo.",
+    "Ci vediamo alla prossima, con nuove illusioni e vecchi traumi.",
+    "Idratatevi: qui si suda anche da seduti."
+  ];
+  return `${pick(openers)} ${pick(mids)} ${pick(closers)}`;
 }
 
 function voteFromPoints(p){
-  // scala “trash” morbida
   if (p >= 85) return 10;
   if (p >= 80) return 9;
   if (p >= 75) return 8;
@@ -160,60 +209,110 @@ function voteFromPoints(p){
   if (p >= 60) return 5;
   return 4;
 }
-
 function commentForVote(v){
   const map = {
-    10: ["Ha giocato con l’algoritmo in tasca.", "Giornata illegale, ma bella da vedere."],
-    9:  ["Quasi perfetto: ha lasciato solo briciole.", "Prestazione da far firmare ai notai."],
-    8:  ["Solido, cattivo, inevitabile.", "Ha fatto il suo e pure quello degli altri."],
-    7:  ["Buono, senza poesia ma con punti.", "Ha vinto anche senza charme."],
-    6:  ["Sufficienza: presenza scenica minima, risultato massimo.", "Ha portato a casa la pagnotta."],
-    5:  ["Ha camminato. Ogni tanto ha corso. Fine.", "Prestazione “ok”, tipo caffè annacquato."],
-    4:  ["Presente solo con il badge.", "Ha perso pure contro il proprio entusiasmo."]
+    10: ["Giornata illegale, ma splendida.", "Ha giocato con l’algoritmo in tasca."],
+    9:  ["Quasi perfetto: ha lasciato briciole.", "Prestazione da denuncia (degli altri)."],
+    8:  ["Solido e cattivo.", "Ha fatto il suo e anche quello altrui."],
+    7:  ["Buono, senza poesia ma con punti.", "Ha vinto pure senza charme."],
+    6:  ["Sufficienza con faccia tosta.", "Ha portato a casa la pagnotta."],
+    5:  ["Caffè annacquato, ma bevibile.", "Ha camminato. Ogni tanto ha corso."],
+    4:  ["Presente solo col badge.", "Ha perso pure contro l’entusiasmo."]
   };
-  return pick(map[v] || ["Giornata indescrivibile."]);
+  return pick(map[v] || ["Indescrivibile."]);
 }
 
-function buildArticleHTML(ctx){
-  const linesMatch = ctx.matches
+// costruisce la bozza automatica
+function buildAutoArticle(data, gw){
+  const matches = buildMatchesForGW(data, gw);
+  const teamStats = buildTeamStats(matches);
+
+  let topTeam=null, topPF=-Infinity;
+  let flopTeam=null, flopPF=Infinity;
+  for (const t of teamStats){
+    if (t.pf > topPF){ topPF = t.pf; topTeam = t.name; }
+    if (t.pf < flopPF){ flopPF = t.pf; flopTeam = t.name; }
+  }
+
+  const matchClose = matches.slice().sort((a,b) => a.margin - b.margin)[0] || null;
+  const matchBlow  = matches.slice().sort((a,b) => b.margin - a.margin)[0] || null;
+
+  const upset = matches.find(m => m.winner && Math.min(m.aPoints, m.bPoints) < 68) || null;
+
+  const thief = matches
+    .filter(m => m.winner)
+    .map(m => {
+      const winnerPts = (m.winner === m.home) ? m.aPoints : m.bPoints;
+      return { ...m, winnerPts };
+    })
+    .sort((a,b) => (a.winnerPts - b.winnerPts) || (a.margin - b.margin))[0] || null;
+
+  const ctx = {
+    gw,
+    matches,
+    teamStats,
+    topTeam, topPF: Number.isFinite(topPF) ? topPF : 0,
+    flopTeam, flopPF: Number.isFinite(flopPF) ? flopPF : 0,
+    matchOfWeek: matchClose,
+    bigMargin: matchBlow && matchBlow.winner ? { winner: matchBlow.winner, loser: matchBlow.loser, margin: matchBlow.margin } : null,
+    upset: upset && upset.winner ? { winner: upset.winner } : null,
+    thief: thief ? { winner: thief.winner, winnerPts: thief.winnerPts, margin: thief.margin } : null,
+  };
+
+  return {
+    title: headline(ctx),
+    subtitle: new Date().toLocaleDateString("it-IT", { weekday:"long", year:"numeric", month:"long", day:"numeric" }),
+    editorial: editorial(ctx),
+    matches,
+    teamStats,
+    matchOfWeek: matchClose,
+    top: { team: ctx.topTeam, pf: ctx.topPF },
+    flop: { team: ctx.flopTeam, pf: ctx.flopPF },
+    thief: ctx.thief
+  };
+}
+
+// render bozza (HTML)
+function renderAutoHTML(article){
+  const linesMatch = article.matches
     .map(m => `<li><b>${m.home}</b> ${m.aPoints.toFixed(1)} - ${m.bPoints.toFixed(1)} <b>${m.away}</b> <span class="muted">(scarto ${m.margin.toFixed(1)})</span></li>`)
     .join("");
 
-  const pagelle = ctx.teamStats
+  const pagelle = article.teamStats
     .sort((a,b) => b.pf - a.pf)
     .map(t => {
       const v = voteFromPoints(t.pf);
-      return `<li><b>${t.name}</b> <span class="badge">${v.toFixed(1)}</span> <span class="muted">${commentForVote(v)}</span> <span class="muted">(${t.pf.toFixed(1)} PF)</span></li>`;
+      return `<li><b>${t.name}</b> <span class="pill">${v.toFixed(1)}</span> <span class="muted">${commentForVote(v)}</span> <span class="muted">(${t.pf.toFixed(1)} PF)</span></li>`;
     })
     .join("");
 
-  const matchWeek = ctx.matchOfWeek
-    ? `<p><b>${ctx.matchOfWeek.home}</b> ${ctx.matchOfWeek.aPoints.toFixed(1)} - ${ctx.matchOfWeek.bPoints.toFixed(1)} <b>${ctx.matchOfWeek.away}</b> <span class="muted">(scarto ${ctx.matchOfWeek.margin.toFixed(1)})</span><br>
-       <span class="muted">${ctx.matchOfWeek.margin <= 1 ? "Finale al fotofinish: qui anche un refuso poteva ribaltarla." : "Gara con contatto fisico emotivo garantito."}</span></p>`
+  const mow = article.matchOfWeek
+    ? `<p><b>${article.matchOfWeek.home}</b> ${article.matchOfWeek.aPoints.toFixed(1)} - ${article.matchOfWeek.bPoints.toFixed(1)} <b>${article.matchOfWeek.away}</b>
+       <span class="muted">(scarto ${article.matchOfWeek.margin.toFixed(1)})</span></p>`
     : `<p class="muted">Nessun match trovato per questa giornata.</p>`;
 
   return `
     <div>
-      <div class="badge">GW ${ctx.gw}</div>
-      <h1 class="title">${ctx.headline}</h1>
-      <p class="subtitle">${ctx.dateStr}</p>
+      <div class="pill">Bozza automatica</div>
+      <h1 class="title">${article.title}</h1>
+      <p class="subtitle">${article.subtitle}</p>
 
       <div class="section">
         <h3>🧨 Editoriale</h3>
-        <p>${ctx.editorial}</p>
+        <p>${article.editorial}</p>
       </div>
 
       <div class="section grid2">
         <div>
           <h3>🔥 Match della Settimana</h3>
-          ${matchWeek}
+          ${mow}
         </div>
         <div>
           <h3>🏆 Premi discutibili</h3>
           <ul class="list">
-            <li><b>Re della Giornata:</b> ${ctx.topTeam} (${ctx.topPF.toFixed(1)})</li>
-            <li><b>Pagliaccio d’Oro:</b> ${ctx.flopTeam} (${ctx.flopPF.toFixed(1)})</li>
-            ${ctx.thief ? `<li><b>Ladro del Giorno:</b> ${ctx.thief.winner} (vittoria con ${ctx.thief.winnerPts.toFixed(1)} e scarto ${ctx.thief.margin.toFixed(1)})</li>` : `<li class="muted">Nessun “ladro” individuato (miracolo).</li>`}
+            <li><b>Re:</b> ${article.top.team} (${article.top.pf.toFixed(1)})</li>
+            <li><b>Pagliaccio d’Oro:</b> ${article.flop.team} (${article.flop.pf.toFixed(1)})</li>
+            ${article.thief ? `<li><b>Ladro:</b> ${article.thief.winner} (vittoria con ${article.thief.winnerPts.toFixed(1)}, scarto ${article.thief.margin.toFixed(1)})</li>` : `<li class="muted">Nessun ladro (evento raro).</li>`}
           </ul>
         </div>
       </div>
@@ -231,124 +330,162 @@ function buildArticleHTML(ctx){
   `;
 }
 
-// ---------- main ----------
-async function loadData(){
-  const res = await fetch(CSV_URL, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Fetch fallita: ${res.status}`);
-  const text = await res.text();
-  const rows = parseCSV(text);
-  return rowsToObjects(rows);
+// render manuale (HTML)
+function renderManualHTML(gw, manual){
+  const title = manual.title ? manual.title : `GW ${gw} | Editoriale`;
+  const subtitle = manual.updatedAt ? `Aggiornato: ${manual.updatedAt}` : "Editoriale manuale";
+
+  // Il testo può contenere HTML leggero (br, b, i, ul, li, ecc.)
+  const text = manual.text || "<i>(Nessun testo manuale inserito)</i>";
+
+  return `
+    <div>
+      <div class="pill">Manuale</div>
+      <h1 class="title">${title}</h1>
+      <p class="subtitle">${subtitle}</p>
+
+      <div class="manualBox">
+        ${text}
+      </div>
+    </div>
+  `;
+}
+
+// -------------------------------------
+// UI flow
+// -------------------------------------
+let STATS_DATA = [];
+let MANUAL_MAP = new Map();
+let CURRENT_GW = null;
+let VIEW_MODE = "manual"; // "manual" | "auto"
+
+function setStatus(msg, isErr=false){
+  const el = $("status");
+  el.textContent = msg || "";
+  el.className = isErr ? "error" : "muted";
+}
+
+function setViewMode(mode){
+  VIEW_MODE = mode;
+  $("btnViewManual").classList.toggle("active", mode === "manual");
+  $("btnViewAuto").classList.toggle("active", mode === "auto");
+  renderCurrent();
 }
 
 function getAllGWs(data){
   const set = new Set();
   for (const r of data){
-    const g = norm(r[COL.gw]);
-    if (g) set.add(g);
+    const n = gwNum(r[COL.gw]);
+    if (Number.isFinite(n)) set.add(n);
   }
-  // sort numerico se possibile
-  return Array.from(set).sort((a,b) => Number(a) - Number(b));
-}
-
-function buildContextForGW(data, gw){
-  const matches = buildMatchesForGW(data, gw);
-  const teamStats = buildTeamStats(matches);
-
-  let topTeam = null, topPF = -Infinity;
-  let flopTeam = null, flopPF = Infinity;
-
-  for (const t of teamStats){
-    if (t.pf > topPF){ topPF = t.pf; topTeam = t.name; }
-    if (t.pf < flopPF){ flopPF = t.pf; flopTeam = t.name; }
-  }
-
-  // match of week: scarto più piccolo (thriller). Se vuoi massacro, cambia sort.
-  const matchOfWeek = matches.slice().sort((a,b) => a.margin - b.margin)[0] || null;
-
-  // big margin (massacro)
-  const bigMargin = matches.slice().sort((a,b) => b.margin - a.margin)[0] || null;
-
-  // upset (euristica trash: vince chi fa meno di 68 ma vince comunque, oppure scarto minimo)
-  const upset = matches.find(m => (Math.min(m.aPoints, m.bPoints) < 68 && m.winner)) || null;
-
-  // thief: vince col punteggio più basso possibile + margin piccolo
-  const thiefCand = matches
-    .filter(m => m.winner)
-    .map(m => {
-      const winnerPts = (m.winner === m.home) ? m.aPoints : m.bPoints;
-      return { ...m, winnerPts };
-    })
-    .sort((a,b) => (a.winnerPts - b.winnerPts) || (a.margin - b.margin))[0] || null;
-
-  const ctx = {
-    gw,
-    matches,
-    teamStats,
-    topTeam, topPF: Number.isFinite(topPF) ? topPF : 0,
-    flopTeam, flopPF: Number.isFinite(flopPF) ? flopPF : 0,
-    matchOfWeek,
-    bigMargin: bigMargin && bigMargin.winner ? { winner: bigMargin.winner, loser: bigMargin.loser, margin: bigMargin.margin } : null,
-    upset: upset && upset.winner ? { winner: upset.winner } : null,
-    thief: thiefCand ? { winner: thiefCand.winner, winnerPts: thiefCand.winnerPts, margin: thiefCand.margin } : null,
-    dateStr: new Date().toLocaleDateString("it-IT", { weekday:"long", year:"numeric", month:"long", day:"numeric" })
-  };
-
-  ctx.headline = headlineFactory(ctx);
-  ctx.editorial = editorialFactory(ctx);
-
-  return ctx;
+  return Array.from(set).sort((a,b) => a - b);
 }
 
 function fillGWSelect(gws, selected){
-  const sel = document.getElementById("gwSelect");
+  const sel = $("gwSelect");
   sel.innerHTML = "";
   for (const g of gws){
     const opt = document.createElement("option");
-    opt.value = g;
+    opt.value = String(g);
     opt.textContent = `GW ${g}`;
-    if (String(g) === String(selected)) opt.selected = true;
+    if (Number(g) === Number(selected)) opt.selected = true;
     sel.appendChild(opt);
   }
 }
 
-function setStatus(msg, isErr=false){
-  const el = document.getElementById("status");
-  el.textContent = msg || "";
-  el.className = isErr ? "error" : "muted";
+function renderCurrent(){
+  const out = $("output");
+  if (!CURRENT_GW){
+    out.innerHTML = `<p class="error">Nessuna GW disponibile.</p>`;
+    return;
+  }
+
+  const gw = Number(CURRENT_GW);
+  const manual = MANUAL_MAP.get(gw);
+
+  // Default: se c'è manuale e siamo in view manual -> manuale
+  if (VIEW_MODE === "manual" && manual){
+    out.innerHTML = renderManualHTML(gw, manual);
+    setStatus(`GW ${gw} | Manuale ✅`);
+    return;
+  }
+
+  // Se manuale non c'è ma sei in manual -> fallback bozza
+  if (VIEW_MODE === "manual" && !manual){
+    const auto = buildAutoArticle(STATS_DATA, gw);
+    out.innerHTML = renderAutoHTML(auto);
+    setStatus(`GW ${gw} | Bozza (manca manuale)`);
+    return;
+  }
+
+  // View auto
+  const auto = buildAutoArticle(STATS_DATA, gw);
+  out.innerHTML = renderAutoHTML(auto);
+  setStatus(`GW ${gw} | Bozza ✅`);
 }
 
-async function render(gwOverride=null){
+async function loadAll(){
+  if (STATS_CSV_URL.includes("INCOLLA_QUI")) {
+    throw new Error("Devi impostare STATS_CSV_URL con il tuo link CSV delle statistiche.");
+  }
+
+  setStatus("Carico statistiche…");
+  STATS_DATA = await fetchCSV(STATS_CSV_URL);
+
+  setStatus("Carico giornale manuale…");
+  try {
+    MANUAL_MAP = await loadManualMap();
+  } catch(e){
+    console.warn("Manuale non disponibile:", e.message);
+    MANUAL_MAP = new Map();
+  }
+
+  const gws = getAllGWs(STATS_DATA);
+  if (!gws.length) throw new Error("Nessuna GW trovata nel CSV statistiche.");
+
+  CURRENT_GW = gws[gws.length - 1];
+  fillGWSelect(gws, CURRENT_GW);
+
+  // Se esiste manuale per l’ultima GW, partiamo in manuale, altrimenti bozza
+  const hasManual = MANUAL_MAP.has(Number(CURRENT_GW));
+  setViewMode(hasManual ? "manual" : "auto");
+}
+
+async function reloadKeepingGW(){
+  const gw = Number($("gwSelect").value || CURRENT_GW);
+  await loadAll();
+  CURRENT_GW = gw;
+  $("gwSelect").value = String(gw);
+  renderCurrent();
+}
+
+// Listeners
+$("gwSelect").addEventListener("change", (e) => {
+  CURRENT_GW = Number(e.target.value);
+  renderCurrent();
+});
+
+$("btnReload").addEventListener("click", async () => {
   try{
-    setStatus("Carico dati…");
-    const data = await loadData();
-
-    const gws = getAllGWs(data);
-    if (!gws.length) throw new Error("Nessuna GW trovata nel CSV.");
-
-    const gw = gwOverride ?? gws[gws.length - 1]; // ultima giornata
-    fillGWSelect(gws, gw);
-
-    setStatus("Cucino il trash…");
-    const ctx = buildContextForGW(data, gw);
-
-    const out = document.getElementById("output");
-    out.innerHTML = buildArticleHTML(ctx);
-
-    setStatus(`Pronto ✅ (GW ${gw})`);
+    await reloadKeepingGW();
   } catch(e){
     console.error(e);
     setStatus(`Errore: ${e.message}`, true);
-    document.getElementById("output").innerHTML = `<p class="error">Non riesco a generare il giornale. ${e.message}</p>`;
+    $("output").innerHTML = `<p class="error">${e.message}</p>`;
   }
-}
-
-document.getElementById("gwSelect").addEventListener("change", (e) => {
-  render(e.target.value);
-});
-document.getElementById("btnReload").addEventListener("click", () => {
-  const gw = document.getElementById("gwSelect").value;
-  render(gw);
 });
 
-// avvio
-render();
+$("btnViewManual").addEventListener("click", () => setViewMode("manual"));
+$("btnViewAuto").addEventListener("click", () => setViewMode("auto"));
+
+// Boot
+(async () => {
+  try{
+    await loadAll();
+    renderCurrent();
+  } catch(e){
+    console.error(e);
+    setStatus(`Errore: ${e.message}`, true);
+    $("output").innerHTML = `<p class="error">${e.message}</p>`;
+  }
+})();
