@@ -244,7 +244,10 @@ const barW = Math.max(minBarW, Math.min(maxBarW, slot * 0.78));
     node.el.style.height = `${h}px`;
     node.el.style.transform = `translateX(${x}px)`;
 
-    if (node.badge) node.badge.textContent = `${idx + 1}°`;
+    if (node.badge) {
+  node.badge.textContent = `${idx + 1}° · ${r.pt} pt`;
+  node.badge.title = `MP: ${Math.round(r.mp)}`; // tooltip opzionale
+}
   });
 
   slider.value = day;
