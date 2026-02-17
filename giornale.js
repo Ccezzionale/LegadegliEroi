@@ -13,7 +13,7 @@ const MANUAL_CSV_URL =
 
 // Mapping colonne (stats)
 const COL = {
-  gw: "GW",
+  gw: "GW_Stagionale",
   team: "Team",
   opp: "Opponent",
   pf: "PointsFor",
