@@ -23,28 +23,31 @@ body{
   margin:0;
   color:var(--ink);
   background:
-    radial-gradient(1200px 600px at 10% 0%, rgba(30,86,179,.10), transparent 60%),
-    radial-gradient(900px 500px at 90% 10%, rgba(18,60,122,.10), transparent 55%),
-    #eef3ff;
+    radial-gradient(1200px 600px at 10% 0%, rgba(0,116,217,.08), transparent 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(255,204,0,.10), transparent 55%),
+    #f4f4f4; /* come index */
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
+
 .brand .name, .h1, .block h3{
   color: var(--navy);
 }
 
 .toolbar button{
   background: var(--navy);
-  border-color: rgba(18,60,122,.35);
   color:#fff;
+  border-color: rgba(255,255,255,.18);
 }
 .toolbar button:hover{
   background: var(--blue);
 }
 .toolbar button.active{
-  background: rgba(30,86,179,.12);
-  border-color: rgba(30,86,179,.35);
+  background: rgba(0,116,217,.12);
+  border-color: rgba(0,116,217,.35);
   color: var(--navy);
+  font-weight: 800;
 }
+
 
 /* Editoriale meno “giallo” e più “app” */
 .editorial{
