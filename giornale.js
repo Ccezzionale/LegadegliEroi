@@ -89,6 +89,26 @@ async function fetchCSV(url){
   return rowsToObjects(rows);
 }
 
+function normKey(s){
+  return String(s ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "");
+}
+
+function findColByCandidates(obj, candidates){
+  const keys = Object.keys(obj || {});
+  const normKeys = keys.map(k => ({ raw: k, norm: normKey(k) }));
+
+  for (const cand of candidates){
+    const c = normKey(cand);
+    const hit = normKeys.find(x => x.norm === c || x.norm.includes(c));
+    if (hit) return hit.raw;
+  }
+  return null;
+}
+
+
 // -------------------------------------
 // Manual overrides
 // -------------------------------------
@@ -416,6 +436,69 @@ function buildStatsBlocks(article){
     return { matchHTML, premiHTML, resultsTableHTML, standingsHTML, pagelleHTML };
 }
 
+function buildClassificaHTML(rows){
+  if (!rows || !rows.length) {
+    return `<div class="small">Classifica non disponibile.</div>`;
+  }
+
+  // prova a riconoscere le colonne
+  const sample = rows.find(r => Object.values(r).some(v => String(v).trim() !== "")) || rows[0];
+
+  const colPos = findColByCandidates(sample, ["Pos", "Posizione", "#", "Rank"]);
+  const colTeam = findColByCandidates(sample, ["Squadra", "Team", "Nome", "Club"]);
+  const colPts = findColByCandidates(sample, ["Punti", "Pts", "Points"]);
+  const colPF  = findColByCandidates(sample, ["PF", "PuntiFatti", "PointsFor", "Fatti"]);
+  const colPS  = findColByCandidates(sample, ["PS", "PuntiSubiti", "PointsAgainst", "Subiti"]);
+
+  // fallback se qualche colonna non è trovata
+  const teamKey = colTeam || Object.keys(sample)[0];
+
+  // filtra righe “vuote”
+  const clean = rows.filter(r => norm(r[teamKey]) !== "");
+
+  // se non c'è pos, ordina per punti (se c'è), altrimenti lascia
+  let ordered = clean.slice();
+  if (colPos) {
+    ordered.sort((a,b) => toNum(a[colPos]) - toNum(b[colPos]));
+  } else if (colPts) {
+    ordered.sort((a,b) => (toNum(b[colPts]) - toNum(a[colPts])));
+  }
+
+  const body = ordered.map((r, i) => {
+    const pos = colPos ? norm(r[colPos]) : String(i+1);
+    const team = norm(r[teamKey]);
+    const pts = colPts ? toNum(r[colPts]) : NaN;
+    const pf = colPF ? toNum(r[colPF]) : NaN;
+    const ps = colPS ? toNum(r[colPS]) : NaN;
+
+    return `
+      <tr>
+        <td class="small">${pos}</td>
+        <td><b>${team}</b></td>
+        <td class="score">${Number.isFinite(pts) ? pts.toFixed(0) : "-"}</td>
+        <td class="score small">${Number.isFinite(pf) ? pf.toFixed(1) : "-"}</td>
+        <td class="score small">${Number.isFinite(ps) ? ps.toFixed(1) : "-"}</td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Squadra</th>
+          <th>Pts</th>
+          <th>PF</th>
+          <th>PS</th>
+        </tr>
+      </thead>
+      <tbody>${body}</tbody>
+    </table>
+  `;
+}
+
+
 // render manuale (HTML)
 function renderManualHTML(gw, manual, stats){
   const title = manual.title ? manual.title : `GW ${gw} | Editoriale`;
@@ -430,28 +513,30 @@ function renderManualHTML(gw, manual, stats){
     </div>
 
     <div class="columns">
+      <!-- COLONNA SINISTRA -->
       <div>
         <div class="block editorial">
           <h3>Editoriale</h3>
           <p>${text}</p>
         </div>
 
-      <div class="block">
-  <h3>Risultati</h3>
-  ${stats.resultsTableHTML}
-</div>
+        <div class="block">
+          <h3>Risultati</h3>
+          ${stats.resultsTableHTML}
+        </div>
 
-<div class="block">
-  <h3>Classifica</h3>
-  ${stats.standingsHTML}
-</div>
+        <div class="block">
+          <h3>Classifica Totale</h3>
+          ${stats.classificaHTML || `<div class="small">Classifica non disponibile.</div>`}
+        </div>
 
-<div class="block">
-  <h3>Pagelle</h3>
-  ${stats.pagelleHTML}
-</div>
+        <div class="block">
+          <h3>Pagelle</h3>
+          ${stats.pagelleHTML}
+        </div>
+      </div>
 
-
+      <!-- COLONNA DESTRA -->
       <div>
         <div class="block">
           <h3>Match della settimana</h3>
@@ -468,7 +553,6 @@ function renderManualHTML(gw, manual, stats){
 }
 
 
-
 // -------------------------------------
 // UI flow
 // -------------------------------------
@@ -476,6 +560,7 @@ let STATS_DATA = [];
 let MANUAL_MAP = new Map();
 let CURRENT_GW = null;
 let VIEW_MODE = "manual"; // "manual" | "auto"
+let CLASSIFICA_DATA = [];
 
 function setStatus(msg, isErr=false){
   const el = $("status");
@@ -532,6 +617,7 @@ function renderCurrent(){
   if (VIEW_MODE === "manual" && manual){
     const auto = buildAutoArticle(STATS_DATA, gw);
     const statsBlocks = buildStatsBlocks(auto);
+    statsBlocks.classificaHTML = buildClassificaHTML(CLASSIFICA_DATA);
     out.innerHTML = renderManualHTML(gw, manual, statsBlocks);
     setStatus(`GW ${gw} | Manuale ✅ + Stats`);
     return;
@@ -553,6 +639,15 @@ function renderCurrent(){
 
 
 async function loadAll(){
+
+  setStatus("Carico classifica…");
+  try {
+    CLASSIFICA_DATA = await fetchCSV(CLASSIFICA_CSV_URL);
+  } catch (e) {
+    console.warn("Classifica non disponibile:", e.message);
+    CLASSIFICA_DATA = [];
+  }
+
   if (STATS_CSV_URL.includes("INCOLLA_QUI")) {
     throw new Error("Devi impostare STATS_CSV_URL con il tuo link CSV delle statistiche.");
   }
@@ -574,10 +669,10 @@ async function loadAll(){
   CURRENT_GW = gws[gws.length - 1];
   fillGWSelect(gws, CURRENT_GW);
 
-  // Se esiste manuale per l’ultima GW, partiamo in manuale, altrimenti bozza
   const hasManual = MANUAL_MAP.has(Number(CURRENT_GW));
   setViewMode(hasManual ? "manual" : "auto");
 }
+
 
 async function reloadKeepingGW(){
   const gw = Number($("gwSelect").value || CURRENT_GW);
