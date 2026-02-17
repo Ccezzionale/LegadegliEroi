@@ -288,16 +288,30 @@ body{
 .logo-vincitore{ width:60px; height:auto; object-fit:contain; margin:8px 0 4px; }
 
 /* ========== MOBILE (hamburger) ========== */
-@media (max-width: 768px){
-  .hamburger{ display:block; cursor:pointer; }
-  .navbar{
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    gap: 0;
-    padding: 8px 16px;
-  }
-  .navbar.show{ display:flex; }
-  .submenu{ position: static; margin-left: 20px; background:#002244; }
-}
+    @media (max-width: 768px) {
+      .hamburger {
+        display: block;
+      }
 
+      .navbar {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #001f3f;
+        margin-top: 10px;
+      }
+
+      .navbar.show {
+        display: flex;
+      }
+
+      .submenu {
+        position: relative;
+        background-color: #003366;
+        margin-left: 10px;
+      }
+
+      .dropdown .submenu a {
+        padding-left: 20px;
+      }
+    }
