@@ -382,17 +382,18 @@ function buildStatsBlocks(article){
   `;
 
   // Results table
-  const rows = article.matches.map(m => {
+const rows = article.matches.map(m => {
   const hg = magicToGoals(m.aPoints);
   const ag = magicToGoals(m.bPoints);
 
   return `
     <tr>
-      <td><b>${m.home}</b> vs <b>${m.away}</b><div class="small">scarto ${m.margin.toFixed(1)}</div></td>
+      <td><b>${m.home}</b> vs <b>${m.away}</b></td>
       <td class="score">${hg} - ${ag}</td>
     </tr>
   `;
 }).join("");
+
 
 
   const resultsTableHTML = `
