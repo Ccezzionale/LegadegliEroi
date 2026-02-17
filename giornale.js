@@ -436,7 +436,6 @@ function buildStatsBlocks(article){
     return { matchHTML, premiHTML, resultsTableHTML, standingsHTML, pagelleHTML };
 }
 
-buildClassificaHTML(rows)
 
 function buildClassificaHTML(rows){
   if (!rows || !rows.length) {
