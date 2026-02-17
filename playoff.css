@@ -66,11 +66,16 @@ nav{
   color: #fff;
   display: flex;
   align-items: center;
-  flex-wrap: nowrap;          /* una sola riga */
+  flex-wrap: nowrap;   /* una sola riga */
   gap: 12px;
   min-height: 56px;
   padding: 10px 20px;
+
+  position: sticky;
+  top: 0;
+  z-index: 9999;
 }
+
 .home-icon{
   font-size: 1.6rem;
   margin-right: 12px;
