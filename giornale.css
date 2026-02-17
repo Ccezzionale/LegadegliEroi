@@ -1,19 +1,20 @@
 :root{
-  /* Palette app (bianco/blu) */
-  --navy:#123c7a;      /* blu principale */
-  --blue:#1e56b3;      /* blu accento */
-  --gold:#ffcc00;      /* oro highlight (ok tenerlo) */
+  /* === Palette APP (presa dall'index) === */
+  --navy:#001f3f;
+  --blue:#0074D9;
+  --navy-2:#003366;
+  --gold:#ffcc00;
 
-  /* Superfici */
+  /* === Superfici/testi === */
   --paper:#fbfcff;     /* carta chiara */
-  --ink:#0f172a;       /* testo */
-  --muted:#64748b;     /* testo secondario */
+  --ink:#222;          /* testo come index */
+  --muted:#5a5a5a;
 
-  /* Bordi/linee (più soft) */
-  --rule:rgba(18,60,122,.18);
+  /* linee/bordi soft (tinta navy) */
+  --rule:rgba(0,31,63,.18);
 
   --radius:14px;
-  --shadow: 0 10px 30px rgba(15,23,42,.08);
+  --shadow: 0 10px 30px rgba(0,0,0,.08);
 }
 
 
