@@ -306,14 +306,6 @@ function renderAutoHTML(article){
     .map(m => `<li><b>${m.home}</b> ${m.aPoints.toFixed(1)} - ${m.bPoints.toFixed(1)} <b>${m.away}</b> <span class="muted">(scarto ${m.margin.toFixed(1)})</span></li>`)
     .join("");
 
-  const pagelle = article.teamStats
-    .sort((a,b) => b.pf - a.pf)
-    .map(t => {
-      const v = voteFromPoints(t.pf);
-      return `<li><b>${t.name}</b> <span class="pill">${v.toFixed(1)}</span> <span class="muted">${commentForVote(v)}</span> <span class="muted">(${t.pf.toFixed(1)} PF)</span></li>`;
-    })
-    .join("");
-
   const mow = article.matchOfWeek
     ? `<p><b>${article.matchOfWeek.home}</b> ${article.matchOfWeek.aPoints.toFixed(1)} - ${article.matchOfWeek.bPoints.toFixed(1)} <b>${article.matchOfWeek.away}</b>
        <span class="muted">(scarto ${article.matchOfWeek.margin.toFixed(1)})</span></p>`
@@ -348,11 +340,6 @@ function renderAutoHTML(article){
       <div class="section">
         <h3>📌 Risultati</h3>
         <ul class="list">${linesMatch}</ul>
-      </div>
-
-      <div class="section">
-        <h3>📝 Pagelle</h3>
-        <ul class="list">${pagelle}</ul>
       </div>
     </div>
   `;
@@ -403,25 +390,6 @@ const rows = article.matches.map(m => {
     </table>
   `;
 
-  // Pagelle list “giornale”
-  const pagelleHTML = `
-    <table class="table">
-      <thead><tr><th>Squadra</th><th>Voto</th><th>Nota</th></tr></thead>
-      <tbody>
-        ${article.teamStats
-          .sort((a,b) => b.pf - a.pf)
-          .map(t => {
-            const v = voteFromPoints(t.pf);
-            return `<tr>
-              <td><b>${t.name}</b><div class="small">${t.pf.toFixed(1)} PF</div></td>
-              <td><span class="badge">${v.toFixed(1)}</span></td>
-              <td class="small">${commentForVote(v)}</td>
-            </tr>`;
-          }).join("")}
-      </tbody>
-    </table>
-  `;
-
     // Classifica di giornata: ordina per PF (poi PA)
   const standingsRows = article.teamStats
     .slice()
@@ -452,7 +420,8 @@ const rows = article.matches.map(m => {
   `;
 
 
-    return { matchHTML, premiHTML, resultsTableHTML, standingsHTML, pagelleHTML };
+    return { matchHTML, premiHTML, resultsTableHTML, standingsHTML };
+
 }
 
 
@@ -547,11 +516,6 @@ function renderManualHTML(gw, manual, stats){
         <div class="block">
           <h3>Classifica Totale</h3>
           ${stats.classificaHTML || `<div class="small">Classifica non disponibile.</div>`}
-        </div>
-
-        <div class="block">
-          <h3>Pagelle</h3>
-          ${stats.pagelleHTML}
         </div>
       </div>
 
