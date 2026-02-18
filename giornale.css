@@ -1,355 +1,300 @@
+/* ============================
+   GIORNALE TRASH - CLEAN THEME
+   (bianco/blu Lega degli Eroi)
+   ============================ */
+
+/* ====== THEME TOKENS ====== */
 :root{
-  /* === Palette APP (presa dall'index) === */
-  --navy:#001f3f;
-  --blue:#0074D9;
-  --navy-2:#003366;
-  --gold:#ffcc00;
+  /* Brand */
+  --blue:      #123c7a;
+  --blue-2:    #1e56b3;
+  --sky:       #eaf2ff;
+  --gold:      #ffcc00;
 
-  /* === Superfici/testi === */
-  --paper:#fbfcff;     /* carta chiara */
-  --ink:#222;          /* testo come index */
-  --muted:#5a5a5a;
+  /* Surfaces */
+  --paper:     #fbfcff;
+  --card:      #ffffff;
 
-  /* linee/bordi soft (tinta navy) */
-  --rule:rgba(0,31,63,.18);
+  /* Text */
+  --ink:       #0f172a;
+  --muted:     #64748b;
 
-  --radius:14px;
-  --shadow: 0 10px 30px rgba(0,0,0,.08);
+  /* Lines + radius + shadow */
+  --border:    #d6e3ff;
+  --rule:      rgba(18,60,122,.14);
+  --radius:    16px;
+  --shadow:    0 12px 28px rgba(15,23,42,.08);
+
+  /* Spacing */
+  --pad:       16px;
 }
 
+/* ====== BASE ====== */
+*{ box-sizing:border-box; }
 
-*{box-sizing:border-box}
 body{
   margin:0;
-  color:var(--ink);
-  background:
-    radial-gradient(1200px 600px at 10% 0%, rgba(0,116,217,.08), transparent 60%),
-    radial-gradient(900px 500px at 90% 10%, rgba(255,204,0,.10), transparent 55%),
-    #f4f4f4; /* come index */
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--sky), #ffffff 55%);
 }
 
-.brand .name, .h1, .block h3{
-  color: var(--navy);
-}
+/* Utility */
+.muted{ color: var(--muted); }
+.small{ color: var(--muted); font-size:12px; }
+.error{ color:#b00020 !important; }
 
-.toolbar button{
-  background: var(--navy);
-  color:#fff;
-  border-color: rgba(255,255,255,.18);
-}
-.toolbar button:hover{
-  background: var(--blue);
-}
-.toolbar button.active{
-  background: rgba(0,116,217,.12);
-  border-color: rgba(0,116,217,.35);
-  color: var(--navy);
+.score{
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
   font-weight: 800;
 }
 
-
-/* Editoriale meno “giallo” e più “app” */
-.editorial{
-  background: rgba(30,86,179,.06);
-  border: 1px dashed rgba(18,60,122,.35);
+/* ====== LAYOUT CONTAINER ====== */
+.wrap{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 18px;
 }
 
-/* Container */
-.wrap{max-width:1100px;margin:0 auto;padding:18px}
-
-/* ===== Masthead (testata) ===== */
+/* ====== MASTHEAD (CORNICE) ====== */
 .masthead{
-  background:var(--paper);
-  border:1px solid var(--rule);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  overflow:hidden;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
+/* Top bar */
 .mast-top{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:12px 16px;
-  border-bottom:1px solid var(--rule);
+  gap: 12px;
+  padding: 12px var(--pad);
+  border-bottom: 1px solid var(--border);
   background:
-    linear-gradient(90deg, rgba(0,31,63,.08), transparent 40%),
-    linear-gradient(270deg, rgba(255,204,0,.10), transparent 45%);
+    linear-gradient(90deg, rgba(18,60,122,.07), transparent 42%),
+    linear-gradient(270deg, rgba(255,204,0,.10), transparent 45%),
+    #fff;
 }
 
 .brand{
-  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  flex-wrap:wrap;
 }
 .brand .name{
   font-family: Georgia, "Times New Roman", serif;
-  font-weight:900;
-  letter-spacing:.5px;
-  font-size:22px;
-  text-transform:uppercase;
+  font-weight: 900;
+  letter-spacing: .6px;
+  font-size: 22px;
+  text-transform: uppercase;
+  color: var(--blue);
 }
 .brand .tag{
-  font-size:12px;
-  color:var(--muted);
-  border:1px solid var(--rule);
-  border-radius:999px;
-  padding:3px 8px;
-  background:#fff;
-}
-.meta{
-  display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;
-  font-size:12px;color:var(--muted);
-}
-.meta .chip{
-  border:1px solid var(--rule);
-  border-radius:999px;
-  padding:3px 8px;
-  background:#fff;
-}
-
-/* ===== Toolbar ===== */
-.toolbar{
-  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
-  padding:12px 16px;
-  background:#fff;
-}
-.toolbar label{font-size:12px;color:var(--muted)}
-.toolbar select,.toolbar button{
-  padding:8px 10px;border-radius:12px;border:1px solid var(--rule);background:#fff;
-}
-.toolbar button{cursor:pointer}
-.toolbar button.active{
-  border-color:rgba(0,0,0,.35);
-  background:linear-gradient(180deg, rgba(255,204,0,.30), #fff);
-  font-weight:700;
-}
-#status{font-size:12px;color:var(--muted)}
-.error{color:#b00020 !important}
-
-/* ===== Layout “giornale” ===== */
-.paper{
-  background:var(--paper);
-  padding:16px;
-  border-top:1px solid var(--rule);
-}
-
-.lede{
-  border-bottom:1px solid var(--rule);
-  padding-bottom:14px;
-  margin-bottom:14px;
-}
-.h1{
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight:900;
-  font-size:34px;
-  line-height:1.05;
-  margin:8px 0 6px;
-  text-transform:uppercase;
-}
-.kicker{
-  display:inline-block;
-  font-size:12px;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  color:var(--navy);
-  background:rgba(0,116,217,.10);
-  border:1px solid rgba(0,116,217,.22);
-  padding:4px 8px;
-  border-radius:999px;
-}
-.subline{
-  color:var(--muted);
-  font-size:13px;
-}
-
-/* columns */
-.columns{
-  display:grid;
-  grid-template-columns: 1.6fr .9fr;
-  gap:14px;
-}
-@media (max-width: 900px){
-  .columns{grid-template-columns:1fr}
-}
-
-/* blocks */
-.block{
-  border:1px solid var(--rule);
-  border-radius:var(--radius);
-  background:#fff;
-  padding:12px;
-}
-.block + .block{margin-top:12px}
-
-.block h3{
-  margin:0 0 8px;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size:18px;
-  text-transform:uppercase;
-  letter-spacing:.03em;
-}
-.block p{margin:0 0 10px; color:var(--ink); line-height:1.55}
-
-.hr{height:1px;background:var(--rule);border:0;margin:12px 0}
-
-/* Manual editorial box */
-.editorial{
-  background:
-    linear-gradient(180deg, rgba(0,31,63,.05), transparent 70%),
-    rgba(255,204,0,.05);
-  border:1px dashed rgba(0,31,63,.30);
-}
-
-/* Results as “tabellino” */
-.table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:13px;
-}
-.table th{
-  text-align:left;
-  padding:8px 6px;
-  border-bottom:1px solid var(--rule);
-  color:var(--muted);
-  font-weight:700;
-  text-transform:uppercase;
-  font-size:11px;
-  letter-spacing:.08em;
-}
-.table td{
-  padding:8px 6px;
-  border-bottom:1px solid rgba(0,0,0,.08);
-  vertical-align:top;
-}
-.table tr:last-child td{border-bottom:0}
-.score{
-  font-variant-numeric: tabular-nums;
-  white-space:nowrap;
-  font-weight:800;
-}
-.small{color:var(--muted); font-size:12px}
-
-/* badges */
-.badge{
-  display:inline-block;
-  padding:3px 8px;
-  border-radius:999px;
-  border:1px solid var(--rule);
-  font-size:12px;
-  background:#fff;
-}
-.badge.gold{border-color:rgba(255,204,0,.55); background:rgba(255,204,0,.25)}
-.badge.blue{border-color:rgba(0,116,217,.25); background:rgba(0,116,217,.12)}
-
-/* lists in sidebar */
-.ul{margin:0;padding-left:18px}
-.ul li{margin:6px 0}
-
-
-/* =========================
-   GIORNALE TRASH - THEME APP
-   (bianco/blu Lega degli Eroi)
-   ========================= */
-
-:root{
-  --app-blue: #123c7a;      /* blu principale */
-  --app-blue-2: #1e56b3;    /* blu accento */
-  --app-sky: #eaf2ff;       /* azzurrino chiaro */
-  --app-ink: #0f172a;       /* testo scuro */
-  --app-muted: #64748b;     /* testo secondario */
-  --app-border: #d6e3ff;    /* bordi soft */
-  --app-card: #ffffff;      /* card */
-  --app-paper: #fbfcff;     /* sfondo pagina */
-}
-
-/* Sfondo pagina + cornice “app” */
-body{
-  background: linear-gradient(180deg, var(--app-sky), #ffffff 55%);
-  color: var(--app-ink);
-}
-
-.page, .wrap, .container{
-  background: var(--app-paper);
-}
-
-/* Header top (titolo gazzetta) */
-header, .topbar, .masthead{
-  background: #fff;
-  border-bottom: 1px solid var(--app-border);
-}
-
-h1, .title, .h1{
-  color: var(--app-blue);
-  letter-spacing: .3px;
-}
-
-/* Pills / chip (Lega degli Eroi, data, GW) */
-.pill, .chip, .kicker{
-  background: var(--app-sky);
-  color: var(--app-blue);
-  border: 1px solid var(--app-border);
-  font-weight: 700;
-}
-
-/* Bottoni (Aggiorna, etc.) */
-button, .btn{
-  background: var(--app-blue);
-  color: #fff;
-  border: 1px solid var(--app-blue);
+  font-size: 12px;
+  color: var(--muted);
+  border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 8px 12px;
-  font-weight: 700;
-}
-button:hover, .btn:hover{
-  background: var(--app-blue-2);
-  border-color: var(--app-blue-2);
+  padding: 3px 8px;
+  background:#fff;
 }
 
-/* Select GW */
+.meta{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  font-size:12px;
+  color: var(--muted);
+}
+.chip{
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: #fff;
+}
+
+/* ====== TOOLBAR ====== */
+.toolbar{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  padding: 12px var(--pad);
+  background:#fff;
+  border-bottom: 1px solid var(--border);
+}
+
+.toolbar label{
+  font-size: 12px;
+  color: var(--muted);
+}
+
 select{
-  border: 1px solid var(--app-border);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 8px 10px;
   background: #fff;
-  color: var(--app-ink);
+  color: var(--ink);
 }
 
-/* Card / blocchi */
+button{
+  cursor:pointer;
+  background: var(--blue);
+  color: #fff;
+  border: 1px solid var(--blue);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 800;
+}
+button:hover{
+  background: var(--blue-2);
+  border-color: var(--blue-2);
+}
+
+#status{
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ====== CONTENT WRAPPER ====== */
+.paper{
+  background: transparent; /* contenuto dentro masthead */
+  padding: var(--pad);
+}
+
+/* ====== LEDE ====== */
+.lede{
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+}
+
+.kicker{
+  display:inline-block;
+  font-size: 12px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--blue);
+  background: var(--sky);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.h1{
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 900;
+  font-size: 34px;
+  line-height: 1.06;
+  margin: 10px 0 6px;
+  color: var(--blue);
+  letter-spacing: .6px;
+  text-transform: uppercase; /* se vuoi più elegante: metti none */
+}
+
+.subline{
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ====== GRID COLUMNS ====== */
+.columns{
+  display:grid;
+  grid-template-columns: 1.6fr .9fr;
+  gap: 18px;
+}
+@media (max-width: 900px){
+  .columns{ grid-template-columns: 1fr; }
+}
+
+/* ====== BLOCKS ====== */
 .block{
-  background: var(--app-card);
-  border: 1px solid var(--app-border);
-  border-radius: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   box-shadow: 0 10px 22px rgba(15, 23, 42, .06);
+  padding: 16px;
 }
 
-/* Editoriale: leggero “paper” ma con bordo app */
-.block.editorial{
+.block + .block{
+  margin-top: 14px;
+}
+
+.block h3{
+  margin: 0 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: .22px;
+}
+
+.block p{
+  margin: 0 0 10px;
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+/* Editoriale (paper + bordo caldo) */
+.block.editorial,
+.editorial{
   background: linear-gradient(180deg, #fffdf6, #ffffff 40%);
   border-color: #f1e6c8;
 }
-
-/* Titoli sezione */
-.block h3{
-  color: var(--app-blue);
-  letter-spacing: .2px;
+.editorial p,
+.editorial .content,
+.editorial .text,
+#manualText,
+#testoManual{
+  white-space: pre-line;
 }
 
-/* Tabelle */
+/* Divider */
+.hr{
+  height:1px;
+  background: var(--border);
+  border:0;
+  margin: 12px 0;
+}
+
+/* ====== TABLES ====== */
 .table{
+  width:100%;
   border-collapse: separate;
   border-spacing: 0;
-  width: 100%;
-  overflow: hidden;
-  border: 1px solid var(--app-border);
+  border: 1px solid var(--border);
   border-radius: 14px;
+  overflow: hidden;
   background: #fff;
+  font-size: 13px;
 }
+
+.table th,
+.table td{
+  padding: 10px 12px;
+  vertical-align: top;
+}
+
 .table thead th{
-  background: var(--app-sky);
-  color: var(--app-blue);
-  border-bottom: 1px solid var(--app-border);
-  font-weight: 800;
+  background: var(--sky);
+  color: var(--blue);
+  border-bottom: 1px solid var(--border);
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: .08em;
+
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
+
 .table tbody td{
   border-bottom: 1px solid #eef4ff;
 }
@@ -357,35 +302,68 @@ select{
   border-bottom: 0;
 }
 
-/* Badge numeri (Re/Pagliaccio/Ladro) */
-.badge{
-  background: var(--app-sky);
-  color: var(--app-blue);
-  border: 1px solid var(--app-border);
-  border-radius: 999px;
-  padding: 2px 8px;
-  font-weight: 800;
+/* Zebra */
+.table tbody tr:nth-child(even){
+  background: rgba(18,60,122,.03);
 }
+
+/* Mobile: tables scroll horizontally if needed */
+@media (max-width: 720px){
+  .table{
+    display:block;
+    overflow-x:auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ====== BADGES ====== */
+.badge{
+  display:inline-block;
+  background: var(--sky);
+  color: var(--blue);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .badge.gold{
   background: #fff2c6;
   color: #7a5a00;
   border-color: #ffe08a;
 }
+
 .badge.blue{
   background: #dbeafe;
   color: #1d4ed8;
   border-color: #bfdbfe;
 }
 
-/* Testi secondari */
-.muted, .small, .subline{
-  color: var(--app-muted);
+/* ====== LISTS (SIDEBAR) ====== */
+.ul{
+  margin: 0;
+  padding-left: 18px;
+}
+.ul li{
+  margin: 8px 0;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(18,60,122,.10);
+}
+.ul li:last-child{
+  border-bottom: 0;
 }
 
-.editorial p,
-.editorial .content,
-.editorial .text,
-#manualText,
-#testoManual {
-  white-space: pre-line;
+/* Optional: small “pill” style if you use it somewhere */
+.pill{
+  display:inline-block;
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: var(--sky);
+  color: var(--blue);
+  border: 1px solid var(--border);
+  font-weight: 800;
+  font-size: 12px;
 }
+
