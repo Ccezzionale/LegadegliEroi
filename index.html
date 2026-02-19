@@ -116,13 +116,22 @@ body{
   background: transparent; /* fuori è blu */
 }
 
-.home-wrap h1,
-.home-wrap p{
-  color: #fff;              /* testo bianco sul blu */
+.home-wrap h1{
+  color: var(--paper); /* oppure #ffffff se lo vuoi più “sparato” */
+  text-shadow:
+    0 2px 0 rgba(0,0,0,.25),
+    0 0 10px rgba(255,204,0,.55),
+    0 0 22px rgba(255,204,0,.35);
 }
 
-.home-wrap h1{
-  text-shadow: none;        /* opzionale: su blu rende meglio senza glow giallo */
+/* se lo vuoi proprio “come prima” (blu pieno) */
+.home-wrap h1.is-classic{
+  color: #001f3f;
+  text-shadow: 2px 2px 8px #ffcc00;
+}
+
+.home-wrap p{
+  color: #fff;              /* testo bianco sul blu */
 }
 
 
@@ -217,7 +226,7 @@ body{
   </nav>
 
   <main class="home-wrap">
-    <h1>Benvenuto nella Lega degli Eroi</h1>
+    <h1 class="is-classic">Benvenuto nella Lega degli Eroi</h1>
     <p>Seleziona una sezione dal menu.</p>
 
   <iframe
