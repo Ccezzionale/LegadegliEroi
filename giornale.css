@@ -366,4 +366,33 @@ button:hover{
   font-weight: 800;
   font-size: 12px;
 }
+/* ====== FIX MOBILE: testo tagliato a fine riga ====== */
+@media (max-width: 720px){
+
+  /* evita che il contenitore “clip” il testo quando qualcosa sfora */
+  .masthead{
+    overflow: visible;
+  }
+
+  /* se ti serve comunque arrotondamento + clip, applicalo al contenuto interno */
+  .mast-top,
+  .toolbar,
+  .paper{
+    overflow: hidden; /* clip solo delle sezioni, non dell’intero foglio */
+  }
+
+  /* fai spezzare correttamente parole lunghe/quote/nomi */
+  .block,
+  .block p,
+  .editorial,
+  .editorial p,
+  .editorial .content,
+  .editorial .text,
+  #manualText,
+  #testoManual{
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
+  }
+}
 
