@@ -63,8 +63,9 @@ body{
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  overflow: hidden;
+  overflow: visible; /* <-- cambia qui */
 }
+
 
 /* Top bar */
 .mast-top{
@@ -367,57 +368,31 @@ button:hover{
   font-size: 12px;
 }
 /* ====== FIX MOBILE: testo tagliato a fine riga ====== */
-/* ===== FIX: parole tagliate su mobile ===== */
-@media (max-width: 720px){
+/* ===== FIX MOBILE: testo che viene “rasato” a fine riga ===== */
+@media (max-width: 760px){
 
-  /* la ghigliottina: spesso taglia l’ultima lettera */
+  html, body{ overflow-x: hidden; }
+
+  /* niente ghigliottina */
   .masthead{ overflow: visible; }
 
-  /* se serve clip per gli angoli arrotondati, clippa solo le “sezioni” */
+  /* clip SOLO per le sezioni che devono rispettare i bordi arrotondati */
   .mast-top,
-  .toolbar,
-  .paper{
+  .toolbar{
     overflow: hidden;
   }
 
-  /* wrap aggressivo sul testo dell’editoriale (e su tutto il contenuto card) */
-  .block,
-  .block *{
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .editorial,
-  .editorial p,
-  .editorial .content,
-  .editorial .text,
-  #manualText,
-  #testoManual{
-    white-space: pre-line;       /* mantiene i ritorni a capo */
-    overflow-wrap: anywhere;     /* spezza anche parole lunghe */
-    word-break: break-word;
-    hyphens: auto;
-  }
-
-   /* ===== FIX ANDROID/MOBILE: lettere tagliate a fine riga ===== */
-@media (max-width: 720px){
-
-  html, body{
-    overflow-x: hidden;     /* niente micro-scroll laterale */
-  }
-
-  .masthead{
-    overflow: visible;      /* evita clipping del testo */
-  }
-
-  /* un pelo di respiro a destra (spesso risolve il “taglio” delle ultime lettere) */
+  /* 2px di aria a destra: salva l’ultima lettera su Android */
   .paper{
     padding-right: calc(var(--pad) + 2px);
   }
 
-  /* sicurezza extra: niente elementi che sforano */
-  .wrap, .paper, .columns, .block{
+  /* wrap sicuro */
+  #output, .paper, .block, .block p{
     max-width: 100%;
     min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
   }
 }
