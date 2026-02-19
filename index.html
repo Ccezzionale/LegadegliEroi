@@ -125,10 +125,16 @@ body{
 }
 
 /* se lo vuoi proprio “come prima” (blu pieno) */
+/* Titolo home: ORO/ARANCIO + glow BLU */
 .home-wrap h1.is-classic{
-  color: #001f3f;
-  text-shadow: 2px 2px 8px #ffcc00;
+  color: #ffcc00; /* oro */
+  text-shadow:
+    0 2px 0 rgba(0,0,0,.35),        /* un filo di profondità */
+    0 0 10px rgba(0,116,217,.55),   /* glow blu */
+    0 0 22px rgba(0,116,217,.35),   /* glow blu largo */
+    0 0 38px rgba(0,31,63,.55);     /* halo navy */
 }
+
 
 .home-wrap p{
   color: #fff;              /* testo bianco sul blu */
