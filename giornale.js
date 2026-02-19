@@ -727,74 +727,52 @@ async function reloadKeepingGW(){
 // Listeners + Boot (UNICA VERSIONE) - ROBUSTO
 // -------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
-  const gwSelect = $("gwSelect");
+  const gwSelect  = $("gwSelect");
   const btnReload = $("btnReload");
-  const output = $("output");
-  const status = $("status");
+  const output    = $("output");
+  const status    = $("status");
 
-  if (!output) console.warn("Manca #output in HTML");
-  if (!status) console.warn("Manca #status in HTML");
-  if (!gwSelect) console.warn("Manca #gwSelect in HTML");
+  if (!output)  console.warn("Manca #output in HTML");
+  if (!status)  console.warn("Manca #status in HTML");
+  if (!gwSelect)  console.warn("Manca #gwSelect in HTML");
   if (!btnReload) console.warn("Manca #btnReload in HTML");
 
   // listeners (solo se esistono)
-  if (gwSelect) {
-    gwSelect.addEventListener("change", (e) => {
-      CURRENT_GW = Number(e.target.value);
-      renderCurrent();
-    });
-  }
+  gwSelect?.addEventListener("change", (e) => {
+    CURRENT_GW = Number(e.target.value);
+    renderCurrent();
+  });
 
-  if (btnReload) {
-    btnReload.addEventListener("click", async () => {
-      try{
-        setStatus("Aggiorno…");
-        await reloadKeepingGW();
-        saveCacheFromDom();
-        setStatus("Aggiornato ✅");
-        setTimeout(() => setStatus(""), 1200);
-      }catch(e){
-        console.error(e);
-        setStatus(`Errore: ${e.message}`, true);
-        if (output) output.innerHTML = `<p class="error">${e.message}</p>`;
-      }
-    });
-  }
-
-  // refresh silenzioso (background)
-  async function silentRefresh(){
+  btnReload?.addEventListener("click", async () => {
     try{
-      setStatus("");
-      await loadAll();
-      renderCurrent();
+      setStatus("Aggiorno…");
+      await reloadKeepingGW();
+      saveCacheFromDom();
+      setStatus("Aggiornato ✅");
+      setTimeout(() => setStatus(""), 1200);
+    }catch(e){
+      console.error(e);
+      setStatus(`Errore: ${e.message}`, true);
+      output && (output.innerHTML = `<p class="error">${e.message}</p>`);
+    }
+  });
+
+  // BOOT: mostra cache subito, poi inizializza SEMPRE stato (GW/select)
+  (async () => {
+    try{
+      const hadCache = showCachedIfAny(); // mostra HTML se c'è
+
+      if (!hadCache) setStatus("Caricamento…");
+      else setStatus("");
+
+      await loadAll();      // popola STATS_DATA, MANUAL_MAP, CLASSIFICA_DATA, CURRENT_GW, select
+      renderCurrent();      // ora CURRENT_GW esiste
       saveCacheFromDom();
       setStatus("");
     }catch(e){
       console.error(e);
-      setStatus("");
-    }
-  }
-
-  // BOOT: mostra cache subito, poi aggiorna se serve
-  (async () => {
-    try{
-      const hadCache = showCachedIfAny();
-
-      if (!hadCache) {
-        setStatus("Caricamento…");
-        await loadAll();
-        renderCurrent();
-        saveCacheFromDom();
-        setStatus("");
-      } else {
-        setStatus("");
-        if (shouldAutoRefresh()) silentRefresh(); // background
-      }
-    }catch(e){
-      console.error(e);
       setStatus(`Errore: ${e.message}`, true);
-      if (output) output.innerHTML = `<p class="error">${e.message}</p>`;
+      output && (output.innerHTML = `<p class="error">${e.message}</p>`);
     }
   })();
 });
-
