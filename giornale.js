@@ -33,6 +33,43 @@ const MAN = {
   updated: "UpdatedAt"
 };
 
+// =====================
+// CACHE + AUTO REFRESH (istantaneo per gli utenti)
+// =====================
+const CACHE_KEY_HTML = "giornale_cache_html_v1";
+const CACHE_KEY_TS   = "giornale_cache_ts_v1";
+
+// ogni quanto provare a rinfrescare in automatico (12 ore)
+const AUTO_REFRESH_MS = 12 * 60 * 60 * 1000;
+
+function showCachedIfAny() {
+  const cached = localStorage.getItem(CACHE_KEY_HTML);
+  if (!cached) return false;
+
+  const output = document.getElementById("output");
+  if (output) output.innerHTML = cached;
+
+  // se c’è HTML ma manca TS, mettiamo un TS “ora”
+  if (!localStorage.getItem(CACHE_KEY_TS)) {
+    localStorage.setItem(CACHE_KEY_TS, Date.now().toString());
+  }
+  return true;
+}
+
+
+function saveCacheFromDom() {
+  const output = document.getElementById("output");
+  if (!output) return;
+  localStorage.setItem(CACHE_KEY_HTML, output.innerHTML);
+  localStorage.setItem(CACHE_KEY_TS, Date.now().toString());
+}
+
+function shouldAutoRefresh() {
+  const ts = Number(localStorage.getItem(CACHE_KEY_TS) || "0");
+  return !ts || (Date.now() - ts) > AUTO_REFRESH_MS;
+}
+
+
 // -------------------------------------
 // Helpers
 // -------------------------------------
@@ -630,7 +667,7 @@ if (VIEW_MODE === "manual" && !manual){
 
 async function loadAll(){
 
-  setStatus("Carico classifica…");
+  setStatus("Aggiorno…");
   try {
     CLASSIFICA_DATA = await fetchCSV(CLASSIFICA_CSV_URL);
   } catch (e) {
@@ -642,10 +679,8 @@ async function loadAll(){
     throw new Error("Devi impostare STATS_CSV_URL con il tuo link CSV delle statistiche.");
   }
 
-  setStatus("Carico statistiche…");
   STATS_DATA = await fetchCSV(STATS_CSV_URL);
 
-  setStatus("Carico giornale manuale…");
   try {
     MANUAL_MAP = await loadManualMap();
   } catch(e){
@@ -670,17 +705,11 @@ async function reloadKeepingGW(){
   renderCurrent();
 }
 
+// -------------------------------------
+// Listeners + Boot (UNICA VERSIONE)
+// -------------------------------------
 
-
-async function reloadKeepingGW(){
-  const gw = Number($("gwSelect").value || CURRENT_GW);
-  await loadAll();
-  CURRENT_GW = gw;
-  $("gwSelect").value = String(gw);
-  renderCurrent();
-}
-
-// Listeners
+// listeners (una sola volta)
 $("gwSelect").addEventListener("change", (e) => {
   CURRENT_GW = Number(e.target.value);
   renderCurrent();
@@ -688,20 +717,54 @@ $("gwSelect").addEventListener("change", (e) => {
 
 $("btnReload").addEventListener("click", async () => {
   try{
-    await reloadKeepingGW();
-  } catch(e){
+    setStatus("Aggiorno…");
+    await reloadKeepingGW();   // fa loadAll() + mantiene GW
+    saveCacheFromDom();        // salva la pagina pronta
+    setStatus("Aggiornato ✅");
+    setTimeout(() => setStatus(""), 1200);
+  }catch(e){
     console.error(e);
     setStatus(`Errore: ${e.message}`, true);
     $("output").innerHTML = `<p class="error">${e.message}</p>`;
   }
 });
 
-// Boot
+// refresh silenzioso (background)
+async function silentRefresh(){
+  try{
+    setStatus("");         // niente spam
+    await loadAll();       // fetch dati
+    renderCurrent();       // render finale
+    saveCacheFromDom();    // salva cache aggiornata
+    setStatus("");
+  }catch(e){
+    console.error(e);
+    setStatus("");         // non disturbare: resta la cache
+  }
+}
+
+// BOOT: mostra cache subito, poi aggiorna se serve
 (async () => {
   try{
-    await loadAll();
-    renderCurrent();
-  } catch(e){
+    const hadCache = showCachedIfAny();
+
+    if (!hadCache) {
+      // prima visita / cache vuota
+      setStatus("Caricamento…");
+      await loadAll();
+      renderCurrent();
+      saveCacheFromDom();
+      setStatus("");
+    } else {
+      // pagina pronta per l'utente
+      setStatus("");
+
+      // aggiorna solo se la cache è “vecchia”
+      if (shouldAutoRefresh()) {
+        silentRefresh(); // non await: parte in background
+      }
+    }
+  }catch(e){
     console.error(e);
     setStatus(`Errore: ${e.message}`, true);
     $("output").innerHTML = `<p class="error">${e.message}</p>`;
