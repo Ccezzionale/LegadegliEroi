@@ -723,69 +723,78 @@ async function reloadKeepingGW(){
   $("gwSelect").value = String(gw);
   renderCurrent();
 }
-
 // -------------------------------------
-// Listeners + Boot (UNICA VERSIONE)
+// Listeners + Boot (UNICA VERSIONE) - ROBUSTO
 // -------------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+  const gwSelect = $("gwSelect");
+  const btnReload = $("btnReload");
+  const output = $("output");
+  const status = $("status");
 
-// listeners (una sola volta)
-$("gwSelect").addEventListener("change", (e) => {
-  CURRENT_GW = Number(e.target.value);
-  renderCurrent();
-});
+  if (!output) console.warn("Manca #output in HTML");
+  if (!status) console.warn("Manca #status in HTML");
+  if (!gwSelect) console.warn("Manca #gwSelect in HTML");
+  if (!btnReload) console.warn("Manca #btnReload in HTML");
 
-$("btnReload").addEventListener("click", async () => {
-  try{
-    setStatus("Aggiorno…");
-    await reloadKeepingGW();   // fa loadAll() + mantiene GW
-    saveCacheFromDom();        // salva la pagina pronta
-    setStatus("Aggiornato ✅");
-    setTimeout(() => setStatus(""), 1200);
-  }catch(e){
-    console.error(e);
-    setStatus(`Errore: ${e.message}`, true);
-    $("output").innerHTML = `<p class="error">${e.message}</p>`;
+  // listeners (solo se esistono)
+  if (gwSelect) {
+    gwSelect.addEventListener("change", (e) => {
+      CURRENT_GW = Number(e.target.value);
+      renderCurrent();
+    });
   }
-});
 
-// refresh silenzioso (background)
-async function silentRefresh(){
-  try{
-    setStatus("");         // niente spam
-    await loadAll();       // fetch dati
-    renderCurrent();       // render finale
-    saveCacheFromDom();    // salva cache aggiornata
-    setStatus("");
-  }catch(e){
-    console.error(e);
-    setStatus("");         // non disturbare: resta la cache
+  if (btnReload) {
+    btnReload.addEventListener("click", async () => {
+      try{
+        setStatus("Aggiorno…");
+        await reloadKeepingGW();
+        saveCacheFromDom();
+        setStatus("Aggiornato ✅");
+        setTimeout(() => setStatus(""), 1200);
+      }catch(e){
+        console.error(e);
+        setStatus(`Errore: ${e.message}`, true);
+        if (output) output.innerHTML = `<p class="error">${e.message}</p>`;
+      }
+    });
   }
-}
 
-// BOOT: mostra cache subito, poi aggiorna se serve
-(async () => {
-  try{
-    const hadCache = showCachedIfAny();
-
-    if (!hadCache) {
-      // prima visita / cache vuota
-      setStatus("Caricamento…");
+  // refresh silenzioso (background)
+  async function silentRefresh(){
+    try{
+      setStatus("");
       await loadAll();
       renderCurrent();
       saveCacheFromDom();
       setStatus("");
-    } else {
-      // pagina pronta per l'utente
+    }catch(e){
+      console.error(e);
       setStatus("");
-
-      // aggiorna solo se la cache è “vecchia”
-      if (shouldAutoRefresh()) {
-        silentRefresh(); // non await: parte in background
-      }
     }
-  }catch(e){
-    console.error(e);
-    setStatus(`Errore: ${e.message}`, true);
-    $("output").innerHTML = `<p class="error">${e.message}</p>`;
   }
-})();
+
+  // BOOT: mostra cache subito, poi aggiorna se serve
+  (async () => {
+    try{
+      const hadCache = showCachedIfAny();
+
+      if (!hadCache) {
+        setStatus("Caricamento…");
+        await loadAll();
+        renderCurrent();
+        saveCacheFromDom();
+        setStatus("");
+      } else {
+        setStatus("");
+        if (shouldAutoRefresh()) silentRefresh(); // background
+      }
+    }catch(e){
+      console.error(e);
+      setStatus(`Errore: ${e.message}`, true);
+      if (output) output.innerHTML = `<p class="error">${e.message}</p>`;
+    }
+  })();
+});
+
