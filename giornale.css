@@ -398,4 +398,26 @@ button:hover{
     word-break: break-word;
     hyphens: auto;
   }
+
+   /* ===== FIX ANDROID/MOBILE: lettere tagliate a fine riga ===== */
+@media (max-width: 720px){
+
+  html, body{
+    overflow-x: hidden;     /* niente micro-scroll laterale */
+  }
+
+  .masthead{
+    overflow: visible;      /* evita clipping del testo */
+  }
+
+  /* un pelo di respiro a destra (spesso risolve il “taglio” delle ultime lettere) */
+  .paper{
+    padding-right: calc(var(--pad) + 2px);
+  }
+
+  /* sicurezza extra: niente elementi che sforano */
+  .wrap, .paper, .columns, .block{
+    max-width: 100%;
+    min-width: 0;
+  }
 }
