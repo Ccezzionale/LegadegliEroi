@@ -104,14 +104,15 @@
       padding: 0 16px 30px;
     }
 
-    .gazzetta-frame{
-      width: 100%;
-      height: 85vh;            /* regola a gusto */
-      border: 0;
-      border-radius: 14px;
-      background: #fff;
-      box-shadow: 0 10px 30px rgba(0,0,0,.08);
-    }
+.gazzetta-frame{
+  width: 100%;
+  height: 1200px;          /* fallback iniziale */
+  border: 0;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  overflow: hidden;        /* niente scroll interno */
+}
 
     @media (max-width: 768px) {
       .hamburger {
@@ -207,24 +208,55 @@
 
   </main>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const hamburger = document.getElementById("hamburger");
-      const mainMenu = document.getElementById("mainMenu");
-      const submenuToggles = document.querySelectorAll(".toggle-submenu");
+<script>
+  function resizeGazzetta(){
+    const iframe = document.getElementById("gazzettaFrame");
+    if (!iframe) return;
 
-      hamburger?.addEventListener("click", () => {
-        mainMenu.classList.toggle("show");
-      });
+    try{
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      const h = Math.max(
+        doc.body.scrollHeight,
+        doc.documentElement.scrollHeight
+      );
+      iframe.style.height = (h + 20) + "px";
+    }catch(e){
+      console.warn("Impossibile auto-resize iframe:", e);
+    }
+  }
 
-      submenuToggles.forEach(toggle => {
-        toggle.addEventListener("click", function (e) {
-          e.preventDefault();
-          const parent = this.closest(".dropdown");
-          parent.classList.toggle("show");
-        });
+  document.addEventListener("DOMContentLoaded", () => {
+    // MENU
+    const hamburger = document.getElementById("hamburger");
+    const mainMenu = document.getElementById("mainMenu");
+    const submenuToggles = document.querySelectorAll(".toggle-submenu");
+
+    hamburger?.addEventListener("click", () => {
+      mainMenu.classList.toggle("show");
+    });
+
+    submenuToggles.forEach(toggle => {
+      toggle.addEventListener("click", function (e) {
+        e.preventDefault();
+        const parent = this.closest(".dropdown");
+        parent.classList.toggle("show");
       });
     });
-  </script>
+
+    // IFRAME RESIZE
+    const iframe = document.getElementById("gazzettaFrame");
+    if (iframe) {
+      iframe.addEventListener("load", () => {
+        resizeGazzetta();
+        setTimeout(resizeGazzetta, 400);
+        setTimeout(resizeGazzetta, 1200);
+        setTimeout(resizeGazzetta, 2500);
+      });
+    }
+
+    window.addEventListener("resize", resizeGazzetta);
+  });
+</script>
+
 </body>
 </html>
