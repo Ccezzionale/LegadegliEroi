@@ -395,4 +395,26 @@ button:hover{
     word-break: break-word;
     hyphens: auto;
   }
+/* ===== FIX: il riquadro non “chiude” su mobile ===== */
+@media (max-width: 900px){
+
+  /* i figli della grid devono poter restringersi */
+  .columns{ min-width: 0; }
+  .columns > *{ min-width: 0; }
+
+  /* qualsiasi cosa dentro una card non deve sfondare */
+  .block{ overflow: clip; }   /* più “pulito”, se supportato */
+  .block *{ min-width: 0; max-width: 100%; }
+
+  /* testo: spezza anche robe “impossibili” */
+  .block p,
+  .editorial,
+  .editorial p,
+  #manualText,
+  #testoManual{
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
+  }
 }
+
