@@ -367,32 +367,35 @@ button:hover{
   font-size: 12px;
 }
 /* ====== FIX MOBILE: testo tagliato a fine riga ====== */
+/* ===== FIX: parole tagliate su mobile ===== */
 @media (max-width: 720px){
 
-  /* evita che il contenitore “clip” il testo quando qualcosa sfora */
-  .masthead{
-    overflow: visible;
-  }
+  /* la ghigliottina: spesso taglia l’ultima lettera */
+  .masthead{ overflow: visible; }
 
-  /* se ti serve comunque arrotondamento + clip, applicalo al contenuto interno */
+  /* se serve clip per gli angoli arrotondati, clippa solo le “sezioni” */
   .mast-top,
   .toolbar,
   .paper{
-    overflow: hidden; /* clip solo delle sezioni, non dell’intero foglio */
+    overflow: hidden;
   }
 
-  /* fai spezzare correttamente parole lunghe/quote/nomi */
+  /* wrap aggressivo sul testo dell’editoriale (e su tutto il contenuto card) */
   .block,
-  .block p,
+  .block *{
+    min-width: 0;
+    max-width: 100%;
+  }
+
   .editorial,
   .editorial p,
   .editorial .content,
   .editorial .text,
   #manualText,
   #testoManual{
-    overflow-wrap: anywhere;
+    white-space: pre-line;       /* mantiene i ritorni a capo */
+    overflow-wrap: anywhere;     /* spezza anche parole lunghe */
     word-break: break-word;
     hyphens: auto;
   }
 }
-
