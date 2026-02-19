@@ -679,7 +679,26 @@ async function loadAll(){
     throw new Error("Devi impostare STATS_CSV_URL con il tuo link CSV delle statistiche.");
   }
 
-  STATS_DATA = await fetchCSV(STATS_CSV_URL);
+console.log("STATS_CSV_URL:", STATS_CSV_URL);
+
+let rawText = "";
+try{
+  const res = await fetch(STATS_CSV_URL, { cache: "no-store" });
+  console.log("Fetch status:", res.status, res.ok);
+  rawText = await res.text();
+  console.log("CSV first 300 chars:", rawText.slice(0, 300));
+}catch(err){
+  console.error("Fetch error:", err);
+  throw err;
+}
+
+// prova parse
+const rows = parseCSV(rawText);
+console.log("Parsed rows:", rows.length, "Header:", rows[0]);
+
+STATS_DATA = rowsToObjects(rows);
+console.log("Objects:", STATS_DATA.length, "First obj:", STATS_DATA[0]);
+
 
   try {
     MANUAL_MAP = await loadManualMap();
