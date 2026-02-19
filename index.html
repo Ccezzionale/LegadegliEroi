@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lega degli Eroi</title>
+
   <style>
     body {
       margin: 0;
@@ -96,8 +97,23 @@
       text-align: center;
     }
 
-     @media (max-width: 768px) { 
-       
+    /* === HOME WRAP + IFRAME GAZZETTA === */
+    .home-wrap{
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px 30px;
+    }
+
+    .gazzetta-frame{
+      width: 100%;
+      height: 85vh;            /* regola a gusto */
+      border: 0;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    }
+
+    @media (max-width: 768px) {
       .hamburger {
         display: block;
       }
@@ -123,74 +139,90 @@
       .dropdown .submenu a {
         padding-left: 20px;
       }
+
+      .gazzetta-frame{
+        height: 88vh;
+        border-radius: 12px;
+      }
     }
   </style>
 </head>
-<body>
 
-<nav>
-  <span id="hamburger" class="hamburger">☰</span>
-  <a href="index.html" class="home-icon">🏠</a>
-  <ul class="navbar" id="mainMenu">
-    <li><a href="rose.html">Rose</a></li>
-    <li class="dropdown">
-      <a href="#" class="toggle-submenu">Draft ▾</a>
-      <ul class="submenu">
-        <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
-        <li><a href="draft_conference.html">🟨 Conf.League</a></li>
-        <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
-      </ul>
-    </li>
-    <li class="dropdown">
-      <a href="#" class="toggle-submenu">Competizioni ▾</a>
-      <ul class="submenu">
-        <li><a href="classifica.html">📊 Classifiche</a></li>
-        <li><a href="playoff.html">🏆 Playoff</a></li>
-        <li><a href="arena.html">🏟️ Higlander</a></li>
-        <li><a href="crashoutcup.html">💥 Crash out Cup</a></li>
-        <li><a href="crashoutplayoff.html">💥 Crash out Cup - Playoff</a></li>
-        <li><a href="supercoppa.html">⭐ Supercoppa</a></li>
-        <li><a href="statistiche.html">🔎 Statistiche</a></li>
-      </ul>
-    </li>
-    <li><a href="svincolati.html">Svincolati</a></li>
-    <li><a href="chiamate.html">Waiver Wire</a></li>
-    <li class="dropdown">
-      <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
-      <ul class="submenu">
-   <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
-      <li><a href="albo.html">🏅  Medagliere</a></li>
-          </ul>
-    <li><a href="regolamento.html">Regolamento</a></li>
-        </li>
-      </ul>
-    </div>
+<body>
+  <nav>
+    <span id="hamburger" class="hamburger">☰</span>
+    <a href="index.html" class="home-icon">🏠</a>
+
+    <ul class="navbar" id="mainMenu">
+      <li><a href="rose.html">Rose</a></li>
+
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Draft ▾</a>
+        <ul class="submenu">
+          <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
+          <li><a href="draft_conference.html">🟨 Conf.League</a></li>
+          <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+        </ul>
+      </li>
+
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Competizioni ▾</a>
+        <ul class="submenu">
+          <li><a href="classifica.html">📊 Classifiche</a></li>
+          <li><a href="playoff.html">🏆 Playoff</a></li>
+          <li><a href="arena.html">🏟️ Higlander</a></li>
+          <li><a href="crashoutcup.html">💥 Crash out Cup</a></li>
+          <li><a href="crashoutplayoff.html">💥 Crash out Cup - Playoff</a></li>
+          <li><a href="supercoppa.html">⭐ Supercoppa</a></li>
+          <li><a href="statistiche.html">🔎 Statistiche</a></li>
+        </ul>
+      </li>
+
+      <li><a href="svincolati.html">Svincolati</a></li>
+      <li><a href="chiamate.html">Waiver Wire</a></li>
+
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
+        <ul class="submenu">
+          <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
+          <li><a href="albo.html">🏅 Medagliere</a></li>
+        </ul>
+      </li>
+
+      <li><a href="regolamento.html">Regolamento</a></li>
+    </ul>
   </nav>
 
-<main>
-  <div class="hero"></div>
-  <h1>Benvenuto nella Lega degli Eroi</h1>
-  <p>Seleziona una sezione dal menu.</p>
-</main>
+  <main class="home-wrap">
+    <h1>Benvenuto nella Lega degli Eroi</h1>
+    <p>Seleziona una sezione dal menu.</p>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const hamburger = document.getElementById("hamburger");
-    const mainMenu = document.getElementById("mainMenu");
-    const submenuToggles = document.querySelectorAll(".toggle-submenu");
+    <iframe
+      class="gazzetta-frame"
+      src="giornale.html"
+      title="La Gazzetta degli Eroi"
+      loading="lazy">
+    </iframe>
+  </main>
 
-    hamburger?.addEventListener("click", () => {
-      mainMenu.classList.toggle("show");
-    });
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const hamburger = document.getElementById("hamburger");
+      const mainMenu = document.getElementById("mainMenu");
+      const submenuToggles = document.querySelectorAll(".toggle-submenu");
 
-    submenuToggles.forEach(toggle => {
-      toggle.addEventListener("click", function (e) {
-        e.preventDefault();
-        const parent = this.closest(".dropdown");
-        parent.classList.toggle("show");
+      hamburger?.addEventListener("click", () => {
+        mainMenu.classList.toggle("show");
+      });
+
+      submenuToggles.forEach(toggle => {
+        toggle.addEventListener("click", function (e) {
+          e.preventDefault();
+          const parent = this.closest(".dropdown");
+          parent.classList.toggle("show");
+        });
       });
     });
-  });
-</script>
+  </script>
 </body>
 </html>
