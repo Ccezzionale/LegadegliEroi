@@ -6,12 +6,23 @@
   <title>Lega degli Eroi</title>
 
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f4f4;
-      color: #222;
-    }
+
+    :root{
+  --navy:#001f3f;     /* navbar */
+  --navy-2:#003366;   /* accento */
+  --paper:#fbfcff;
+}
+
+body{
+  margin:0;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color:#222;
+  background:
+    radial-gradient(900px 500px at 15% 0%, rgba(0,116,217,.25), transparent 60%),
+    radial-gradient(900px 500px at 85% 15%, rgba(255,204,0,.10), transparent 55%),
+    var(--navy);
+}
+
 
     nav {
       background-color: #001f3f;
@@ -98,21 +109,32 @@
     }
 
     /* === HOME WRAP + IFRAME GAZZETTA === */
-    .home-wrap{
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 16px 30px;
-    }
+.home-wrap{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px 30px;
+  background: transparent; /* fuori è blu */
+}
+
+.home-wrap h1,
+.home-wrap p{
+  color: #fff;              /* testo bianco sul blu */
+}
+
+.home-wrap h1{
+  text-shadow: none;        /* opzionale: su blu rende meglio senza glow giallo */
+}
+
 
 .gazzetta-frame{
-  width: 100%;
-  height: 1200px;          /* fallback iniziale */
-  border: 0;
+  width:100%;
+  border: 2px solid rgba(255,255,255,.12);
   border-radius: 14px;
-  background: #fff;
-  box-shadow: 0 10px 30px rgba(0,0,0,.08);
-  overflow: hidden;        /* niente scroll interno */
+  background: var(--paper);
+  box-shadow: 0 14px 40px rgba(0,0,0,.25);
+  overflow:hidden;
 }
+
 
     @media (max-width: 768px) {
       .hamburger {
