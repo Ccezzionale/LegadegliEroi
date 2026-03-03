@@ -10,9 +10,9 @@ const squadre = [
   { nome: "Desperados", logo: "img/Desperados.png", eliminata: true, ultimaEliminata: false },
   { nome: "Wildboys 78", logo: "img/wildboys78.png", eliminata: true, ultimaEliminata: false },
   { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.png", eliminata: false, ultimaEliminata: false },
-  { nome: "Pokermantra", logo: "img/PokerMantra.png", eliminata: true, ultimaEliminata: true },
+  { nome: "Pokermantra", logo: "img/PokerMantra.png", eliminata: true, ultimaEliminata: false },
   { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png", eliminata: true, ultimaEliminata: true },
   { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.png", eliminata: true, ultimaEliminata: false },
   { nome: "FC Disoneste", logo: "img/FC Disoneste.png", eliminata: false, ultimaEliminata: false },
  { nome: "Athletic Pongao", logo: "img/Athletic Pongao.png", eliminata: true, ultimaEliminata: false }
