@@ -6,8 +6,6 @@ body{
   color:#222;
 }
 
-
-
 /* ===== Titoli ===== */
 .titolo-pagina{
   text-align:center;
@@ -17,6 +15,7 @@ body{
   font-weight:700;
   text-shadow:2px 2px 6px #FFD700;
 }
+
 h1{
   color:#001f3f;
   margin:20px 0 10px;
@@ -31,6 +30,7 @@ h1{
   gap:16px;
   padding:0 20px 30px;
 }
+
 .lista-container,
 .table-wrap{
   background:#fff;
@@ -40,20 +40,28 @@ h1{
 }
 
 /* ===== Tabelle + filtri ===== */
-table{ width:100%; border-collapse:collapse; }
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
 th, td{
   padding:8px;
   text-align:left;
   border-bottom:1px solid #ccc;
 }
+
 th{
   background:#001f3f;
   color:#fff;
   cursor:pointer;
 }
-input[type="text"], select{
+
+input[type="text"],
+select{
   width:100%;
-  padding:6px; margin:6px 0;
+  padding:6px;
+  margin:6px 0;
   box-sizing:border-box;
   border-radius:6px;
   border:1px solid #ccc;
@@ -73,6 +81,7 @@ input[type="text"], select{
   font-weight:700;
   margin:10px 0;
 }
+
 .hint{
   text-align:center;
   color:#6b7280;
@@ -82,22 +91,22 @@ input[type="text"], select{
 
 /* Spinner */
 .spinner{
-  width:18px; height:18px;
-  display:inline-block; vertical-align:middle;
+  width:18px;
+  height:18px;
+  display:inline-block;
+  vertical-align:middle;
   border:3px solid rgba(0,0,0,.15);
   border-top-color:#ffcc00;
   border-radius:50%;
   animation:spin .8s linear infinite;
   margin-left:8px;
 }
-@keyframes spin{ to{ transform:rotate(360deg); } }
 
-
-    flex-direction:row; gap:12px;
-  }
-  #lista-giocatori-scroll{ max-height:300px; }
+@keyframes spin{
+  to{ transform:rotate(360deg); }
 }
 
+/* ===== Mobile navbar override ===== */
 @media (max-width: 900px){
   nav.site-nav{
     position: static !important;
@@ -112,30 +121,30 @@ input[type="text"], select{
   }
 
   nav.site-nav #mainMenu.navbar > li > a{
-    width: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 12px !important;
-    padding: 11px 13px !important;
-    overflow: visible !important;
+    width:100% !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:12px !important;
+    padding:11px 13px !important;
+    overflow:visible !important;
   }
 
   nav.site-nav #mainMenu.navbar > li > a .caret{
-    display: none !important;
+    display:none !important;
   }
 
   nav.site-nav #mainMenu.navbar > li > a.toggle-submenu::after{
-    content: "▼";
-    margin-left: auto;
-    flex: 0 0 auto;
-    display: inline-block;
-    color: #fff;
-    font-size: 0.8rem;
-    line-height: 1;
+    content:"▼";
+    margin-left:auto;
+    flex:0 0 auto;
+    display:inline-block;
+    color:#fff;
+    font-size:0.8rem;
+    line-height:1;
   }
 
   #lista-giocatori-scroll{
-    max-height: 300px;
+    max-height:300px;
   }
 }
