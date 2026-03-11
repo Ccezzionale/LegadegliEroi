@@ -228,9 +228,8 @@ nav.site-nav{
     min-height:64px !important;
     padding:10px 14px !important;
     display:flex;
-    align-items:center;
-    justify-content:flex-start;
     flex-wrap:wrap;
+    align-items:center;
     gap:10px;
   }
 
@@ -239,6 +238,7 @@ nav.site-nav{
     align-items:center;
     gap:10px;
     width:100%;
+    flex:0 0 100%;
   }
 
   .site-nav .hamburger{
@@ -253,14 +253,20 @@ nav.site-nav{
     font-size:1.2rem;
   }
 
+  .site-nav .nav-inner > *{
+    max-width:100%;
+  }
+
   .site-nav .navbar{
     display:none;
     width:100%;
+    flex:0 0 100%;
     flex-direction:column;
     align-items:stretch;
     gap:6px;
     padding:12px !important;
-    margin-top:2px !important;
+    margin:0 !important;
+    margin-top:6px !important;
     background:rgba(255,255,255,0.04);
     border:1px solid rgba(255,255,255,0.08);
     border-radius:16px;
@@ -321,3 +327,4 @@ nav.site-nav{
     border-radius:9px;
   }
 }
+
