@@ -209,7 +209,6 @@ nav{
   align-items: start;
 }
 
-/* label round: messe più in alto e fuori dalla traiettoria delle card */
 .round-label{
   position: absolute;
   top: -28px;
@@ -363,11 +362,15 @@ nav{
 /* ========== TEAM ROW ========== */
 .team{
   display: grid;
-  grid-template-columns: 38px 92px auto;
+  grid-template-columns: 38px 92px auto 48px;
   gap: 12px;
   align-items: center;
   position: relative;
   z-index: 1;
+}
+
+.team-name{
+  display: none;
 }
 
 /* ========== SEED ========== */
@@ -424,6 +427,10 @@ nav{
   display: none !important;
 }
 
+.logo.hidden{
+  display: none !important;
+}
+
 /* ========== SCORE ========== */
 .score-box{
   width: 48px;
@@ -471,7 +478,7 @@ nav{
 #right-round-2 .team,
 #right-round-3 .team,
 .finals-split .team{
-  grid-template-columns: 92px auto;
+  grid-template-columns: 92px auto 48px;
   gap: 12px;
 }
 
@@ -487,8 +494,9 @@ nav{
 }
 
 #right-round-1 .score-box{ order: 1; }
-#right-round-1 .logo-wrap{ order: 2; }
-#right-round-1 .seed{ order: 3; }
+#right-round-1 .team-name{ order: 2; }
+#right-round-1 .logo-wrap{ order: 3; }
+#right-round-1 .seed{ order: 4; }
 
 #right-round-2 .team,
 #right-round-3 .team{
@@ -500,7 +508,7 @@ nav{
 
 /* finals one-team */
 .match.one-team .team{
-  grid-template-columns: 92px auto;
+  grid-template-columns: 92px auto 48px;
 }
 
 .match.one-team .team.away,
@@ -570,6 +578,11 @@ nav{
   display: none;
 }
 
+.mobile-trophy-hero,
+.mobile-final-hero{
+  display: none;
+}
+
 @media (max-width: 768px){
   .hamburger{
     display: block;
@@ -600,8 +613,8 @@ nav{
   .page-header{
     width: 100%;
     min-width: 0;
-    margin: 20px 0 12px;
-    padding: 0 14px;
+    margin: 20px 0 14px;
+    padding: 0 16px;
     left: 0 !important;
     transform: none !important;
     text-align: center;
@@ -609,7 +622,7 @@ nav{
 
   .page-header h1{
     font-size: 2rem;
-    line-height: 1.1;
+    line-height: 1.06;
   }
 
   .page-kicker{
@@ -624,8 +637,8 @@ nav{
   }
 
   .cup-container{
-    margin: 8px 0 28px;
-    padding: 0 10px 24px;
+    margin: 8px 0 32px;
+    padding: 0 12px 24px;
     overflow-x: hidden;
   }
 
@@ -636,13 +649,86 @@ nav{
   .bracket-mobile{
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
+  }
+
+  .mobile-trophy-hero{
+    display: block;
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.82));
+    border: 1px solid rgba(190,22,31,0.14);
+    box-shadow:
+      0 10px 28px rgba(125,16,24,0.10),
+      0 1px 0 rgba(255,255,255,0.95) inset;
+    padding: 18px 14px 16px;
+    text-align: center;
+  }
+
+  .mobile-trophy-hero::before{
+    content: "";
+    position: absolute;
+    inset: -40px auto auto 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(217,31,38,0.20) 0%, rgba(255,204,0,0.12) 38%, rgba(255,255,255,0) 72%);
+    filter: blur(10px);
+    pointer-events: none;
+  }
+
+  .mobile-trophy-kicker{
+    position: relative;
+    z-index: 1;
+    font-size: .7rem;
+    font-weight: 900;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: #7a8190;
+    margin-bottom: 8px;
+  }
+
+  .mobile-trophy-image{
+    position: relative;
+    z-index: 1;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 10px;
+    background: url("img/Crashoutcup.png") center/contain no-repeat;
+    filter:
+      drop-shadow(0 10px 18px rgba(0,0,0,0.16))
+      drop-shadow(0 0 20px rgba(121,43,255,0.18));
+  }
+
+  .mobile-trophy-title{
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #0d2d58;
+  }
+
+  .mobile-trophy-subtitle{
+    position: relative;
+    z-index: 1;
+    margin-top: 4px;
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: .10em;
+    text-transform: uppercase;
+    color: #9d1e3b;
   }
 
   .round-mobile{
-    background: rgba(255,255,255,0.78);
+    background: linear-gradient(180deg, rgba(255,255,255,0.90), rgba(255,255,255,0.80));
     border: 1px solid rgba(190,22,31,0.10);
-    border-radius: 18px;
+    border-radius: 20px;
     padding: 14px 12px 12px;
     box-shadow:
       0 8px 20px rgba(125,16,24,0.08),
@@ -652,9 +738,9 @@ nav{
 
   .round-mobile h3{
     margin: 0 0 12px;
-    font-size: .82rem;
+    font-size: .78rem;
     font-weight: 900;
-    letter-spacing: .12em;
+    letter-spacing: .14em;
     text-transform: uppercase;
     color: #5f6672;
   }
@@ -663,9 +749,10 @@ nav{
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    padding: 10px 10px;
-    gap: 12px;
+    padding: 10px;
+    gap: 10px;
     margin-bottom: 10px;
+    border-radius: 18px;
   }
 
   .round-mobile .match:last-child{
@@ -673,34 +760,100 @@ nav{
   }
 
   .round-mobile .team{
-    display: grid;
-    grid-template-columns: 24px 64px 1fr 36px;
+    display: grid !important;
+    grid-template-columns: 26px 54px minmax(0, 1fr) 38px !important;
     gap: 8px;
     align-items: center;
-    min-height: 64px;
+    min-height: 54px;
   }
 
   .round-mobile .seed{
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     font-size: .72rem;
-    border-radius: 7px;
+    border-radius: 8px;
   }
 
   .round-mobile .logo-wrap{
-    width: 64px;
-    height: 64px;
+    width: 54px;
+    height: 54px;
+  }
+
+  .round-mobile .team-name{
+    display: block;
+    min-width: 0;
+    font-size: .84rem;
+    font-weight: 800;
+    line-height: 1.05;
+    color: #153764;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    overflow-wrap: anywhere;
   }
 
   .round-mobile .score-box{
-    width: 36px;
-    min-width: 36px;
-    min-height: 34px;
-    font-size: .95rem;
+    width: 38px;
+    min-width: 38px;
+    min-height: 36px;
+    font-size: 1rem;
     justify-self: end;
+    border-radius: 11px;
+    box-shadow:
+      0 6px 14px rgba(197,22,31,.22),
+      0 1px 0 rgba(255,255,255,.16) inset;
   }
 
   .round-mobile .match.one-team .team{
-    grid-template-columns: 64px 1fr 36px;
+    grid-template-columns: 54px minmax(0, 1fr) 38px !important;
+  }
+
+  .round-mobile .match.one-team .seed{
+    display: none;
+  }
+
+  .round-mobile .match.one-team .team-name{
+    display: block;
+  }
+
+  .round-mobile .team.is-winner{
+    border-radius: 14px;
+  }
+
+  .round-mobile .team.is-winner::after{
+    inset: -5px;
+    border-radius: 14px;
+  }
+
+  .round-mobile.round-mobile-finale{
+    border: 1px solid rgba(157,30,59,0.18);
+    box-shadow:
+      0 10px 26px rgba(125,16,24,0.10),
+      0 0 0 1px rgba(255,204,0,0.18),
+      0 1px 0 rgba(255,255,255,0.95) inset;
+  }
+
+  .mobile-final-hero{
+    display: grid;
+    place-items: center;
+    margin: 2px 0 12px;
+    text-align: center;
+  }
+
+  .mobile-final-hero .mini-trophy{
+    width: 82px;
+    height: 82px;
+    background: url("img/Crashoutcup.png") center/contain no-repeat;
+    filter:
+      drop-shadow(0 8px 14px rgba(0,0,0,0.16))
+      drop-shadow(0 0 16px rgba(255,204,0,0.18));
+    margin-bottom: 8px;
+  }
+
+  .mobile-final-hero .mini-caption{
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: #9d1e3b;
   }
 }
