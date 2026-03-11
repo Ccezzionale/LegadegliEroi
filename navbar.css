@@ -327,6 +327,17 @@ nav.site-nav{
     border-radius:9px;
   }
 
+  .site-nav .caret{
+  display:inline-block;
+  font-size:0.72rem;
+  line-height:1;
+  opacity:0.95;
+  margin-left:6px;
+  color:inherit;
+  flex-shrink:0;
+}
+
+
   @media (max-width: 900px){
   nav.site-nav .nav-inner{
     display:block !important;
