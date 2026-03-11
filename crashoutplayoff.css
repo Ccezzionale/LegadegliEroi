@@ -16,15 +16,15 @@
   --score-red: #c5161f;
   --score-red-dark: #8f0f16;
 
-  --wire-color: #d91f26;
-  --wire-glow: rgba(217, 31, 38, 0.18);
+  --wire-color: #df1d25;
+  --wire-glow: rgba(223, 29, 37, 0.24);
 
-  --winner-ring: rgba(255, 204, 0, 0.9);
-  --winner-shadow: rgba(197, 22, 31, 0.18);
+  --winner-ring: rgba(255, 120, 70, 0.65);
+  --winner-shadow: rgba(197, 22, 31, 0.24);
 
-  --slot: 154px;
-  --finals-col: 470px;
-  --grid-gap: 18px;
+  --slot: 148px;
+  --finals-col: 360px;
+  --grid-gap: 8px;
 
   --radius-card: 18px;
   --radius-score: 12px;
@@ -166,18 +166,19 @@ nav{
 .bracket{
   display: grid;
   grid-template-columns:
-    minmax(360px, max-content)
+    minmax(330px, max-content)
     var(--finals-col)
-    minmax(360px, max-content);
+    minmax(330px, max-content);
   gap: var(--grid-gap);
   position: relative;
-  padding: 18px 8px 20px;
+  padding: 12px 4px 20px;
+  align-items: start;
 }
 
 /* ========== CONFERENCE LAYOUT ========== */
 .conference{
   display: flex;
-  gap: 24px;
+  gap: 14px;
   align-items: flex-start;
   position: relative;
 }
@@ -197,13 +198,13 @@ nav{
 
 .round-label{
   position: absolute;
-  top: -10px;
-  font-size: .78rem;
-  font-weight: 800;
-  letter-spacing: .16em;
+  top: -4px;
+  font-size: .86rem;
+  font-weight: 900;
+  letter-spacing: .14em;
   text-transform: uppercase;
-  color: #7d8793;
-  padding: 0 10px;
+  color: #6b7280;
+  padding: 0 6px;
   white-space: nowrap;
 }
 
@@ -243,12 +244,12 @@ nav{
 
 .finals-title{
   text-align: center;
-  font-size: .9rem;
+  font-size: .95rem;
   font-weight: 900;
   letter-spacing: .18em;
   text-transform: uppercase;
-  color: #7d8793;
-  margin-bottom: 14px;
+  color: #6b7280;
+  margin-bottom: 6px;
 }
 
 .finals-split{
@@ -276,39 +277,39 @@ nav{
 
 .trophy-glow{
   position: absolute;
-  width: 300px;
-  height: 300px;
+  width: 360px;
+  height: 360px;
   border-radius: 50%;
   background:
-    radial-gradient(circle, rgba(134, 56, 255, 0.22) 0%, rgba(217,31,38,0.10) 45%, rgba(255,255,255,0) 72%);
-  filter: blur(6px);
+    radial-gradient(circle, rgba(134, 56, 255, 0.30) 0%, rgba(217,31,38,0.14) 42%, rgba(255,255,255,0) 74%);
+  filter: blur(10px);
   z-index: 0;
 }
 
 .trophy{
   position: relative;
   z-index: 1;
-  width: clamp(240px, calc(var(--finals-col) - 150px), 330px);
-  height: clamp(240px, calc(var(--finals-col) - 150px), 330px);
+  width: 320px;
+  height: 320px;
   background: url("img/Crashoutcup.png") center/contain no-repeat;
   filter:
-    drop-shadow(0 10px 18px rgba(0,0,0,0.16))
-    drop-shadow(0 0 20px rgba(121, 43, 255, 0.22));
+    drop-shadow(0 12px 24px rgba(0,0,0,0.18))
+    drop-shadow(0 0 28px rgba(121, 43, 255, 0.24));
   pointer-events: none;
 }
 
 .trophy-caption{
   position: relative;
   z-index: 1;
-  padding: 8px 16px;
+  padding: 9px 18px;
   border-radius: 999px;
-  background: rgba(13, 17, 28, 0.82);
+  background: rgba(13, 17, 28, 0.88);
   color: #f5f1ff;
-  font-size: .84rem;
-  font-weight: 800;
+  font-size: .88rem;
+  font-weight: 900;
   letter-spacing: .14em;
   text-transform: uppercase;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18);
 }
 
 /* ========== MATCH CARD ========== */
@@ -318,12 +319,12 @@ nav{
   display: flex;
   flex-direction: column;
   gap: 18px;
-  background: linear-gradient(180deg, var(--card-strong), var(--card));
-  border: 1px solid rgba(8, 25, 48, 0.08);
-  border-radius: var(--radius-card);
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.95));
+  border: 1px solid rgba(190, 22, 31, 0.10);
+  border-radius: 18px;
   box-shadow:
-    0 6px 16px rgba(0,0,0,0.08),
-    0 1px 0 rgba(255,255,255,0.95) inset;
+    0 8px 18px rgba(125, 16, 24, 0.10),
+    0 1px 0 rgba(255,255,255,0.98) inset;
   backdrop-filter: blur(2px);
   position: relative;
   z-index: 2;
@@ -343,9 +344,29 @@ nav{
 .match.winner-away,
 .match.winner-both{
   box-shadow:
-    0 8px 22px var(--winner-shadow),
-    0 0 0 1px rgba(197,22,31,0.14),
+    0 10px 24px rgba(197,22,31,0.16),
+    0 0 0 1px rgba(197,22,31,0.18),
     0 1px 0 rgba(255,255,255,0.95) inset;
+}
+
+.team.is-winner .logo-wrap{
+  filter: drop-shadow(0 0 8px rgba(220, 40, 40, 0.22));
+}
+
+.team.is-winner .score-box{
+  box-shadow:
+    0 0 0 2px rgba(255,110,70,0.16),
+    0 8px 18px rgba(197,22,31,.30),
+    0 1px 0 rgba(255,255,255,.16) inset;
+}
+
+.team.is-winner::after{
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,120,70,0.38);
+  pointer-events: none;
 }
 
 .match.one-team{
@@ -417,23 +438,22 @@ nav{
 
 /* ========== SCORE ========== */
 .score-box{
-  width: 46px;
-  min-width: 46px;
-  min-height: 42px;
+  width: 48px;
+  min-width: 48px;
+  min-height: 44px;
   padding: 0;
   justify-self: start;
-  background: linear-gradient(180deg, var(--score-red), #ad121a);
+  background: linear-gradient(180deg, #d61d27, #af1219);
   color: #fff;
-  border: 1px solid var(--score-red-dark);
-  border-radius: var(--radius-score);
+  border: 1px solid #8f0f16;
+  border-radius: 12px;
   font-weight: 900;
-  font-size: 1.18rem;
-  letter-spacing: 0;
+  font-size: 1.22rem;
   display: grid;
   place-items: center;
   text-align: center;
   box-shadow:
-    0 6px 14px rgba(197,22,31,.24),
+    0 8px 16px rgba(197,22,31,.26),
     0 1px 0 rgba(255,255,255,.16) inset;
   outline: none;
   user-select: none;
@@ -532,7 +552,7 @@ nav{
 .wire-layer .wire{
   background: var(--wire-color) !important;
   border-radius: 6px;
-  box-shadow: 0 0 10px var(--wire-glow);
+  box-shadow: 0 0 12px var(--wire-glow);
 }
 
 .conference .match,
