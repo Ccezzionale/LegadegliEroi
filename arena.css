@@ -33,88 +33,6 @@ body {
   min-height: 100vh;
 }
 
-/* NAVBAR */
-nav {
-  background-color: var(--navy);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 20px;
-  flex-wrap: wrap;
-  box-shadow: 0 6px 18px rgba(0,0,0,.22);
-}
-
-.nav-left {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.home-icon {
-  font-size: 1.4rem;
-  text-decoration: none;
-  color: white;
-}
-
-.hamburger {
-  font-size: 1.5rem;
-  cursor: pointer;
-  display: none;
-  color: white;
-}
-
-.navbar {
-  list-style-type: none;
-  display: flex;
-  gap: 15px;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  flex-wrap: wrap;
-}
-
-.navbar li {
-  position: relative;
-}
-
-.navbar a {
-  text-decoration: none;
-  color: white;
-  padding: 8px 12px;
-  display: block;
-  border-radius: 6px;
-  transition: background .15s ease, transform .15s ease;
-}
-
-.navbar a:hover {
-  background-color: var(--blue);
-  transform: translateY(-1px);
-}
-
-.submenu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  background-color: var(--navy);
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  border-radius: 6px;
-  box-shadow: 0 10px 22px rgba(0,0,0,.24);
-  z-index: 15;
-}
-
-.dropdown.show .submenu {
-  display: block;
-}
-
-.submenu li a {
-  padding: 8px 16px;
-  white-space: nowrap;
-}
-
 /* HERO */
 .hero-arena{
   padding: 24px 16px 8px;
@@ -380,28 +298,6 @@ h1 {
 
 /* MOBILE */
 @media (max-width: 768px) {
-  .hamburger {
-    display: block;
-  }
-
-  .navbar {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .navbar.show {
-    display: flex;
-  }
-
-  .navbar li {
-    width: 100%;
-  }
-
-  .submenu {
-    position: static;
-  }
 
   .arena-shell{
     overflow-x: auto;
