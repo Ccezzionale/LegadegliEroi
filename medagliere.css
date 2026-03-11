@@ -381,18 +381,18 @@ nav {
   }
 
   .coppa-box {
-    min-height: 140px;
+    min-height: 220px;
   }
 
   .coppa-img {
-    max-height: 120px;
+    max-height: 250px;
   }
 
   .coppa-box-highlander {
-    min-height: 210px;
+    min-height: 220px;
   }
 
   .coppa-highlander {
-    max-height: 200px;
+    max-height: 250px;
   }
 }
