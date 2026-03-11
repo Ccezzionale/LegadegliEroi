@@ -1,31 +1,29 @@
 // =====================================
-// GIORNALE TRASH - Manuale + Bozza
+// LA GAZZETTA DEGLI EROI
+// Manuale + Stats editoriali
 // =====================================
 
-// 1) INCOLLA QUI il CSV delle statistiche (risultati / calendario)
-// (quello che avevi: .../pub?...&output=csv)
+// ===== CSV URLs =====
 const STATS_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRhEJKfZhVb7V08KI29T_aPTR0hfx7ayIOlFjQn_v-fqgktImjXFg-QAEA6z7w5eyEh2B3w5KLpaRYz/pub?gid=1118969717&single=true&output=csv";
 
-// 2) CSV del tab Giornale (manuale) - già ok
 const MANUAL_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vTIIcMsU01jJD0WJ8bz_V3rhlYXQOTpU0q8rnFaGzeG1edoqIVk9U3WaIb1WvCBKkrm8ciWYRgdY1ae/pub?output=csv";
 
 const CLASSIFICA_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vTduESMbJiPuCDLaAFdOHjep9GW-notjraILSyyjo6SA0xKSR0H0fgMLPNNYSwXgnGGJUyv14kjFRqv/pub?gid=691152130&single=true&output=csv";
 
-// Mapping colonne (stats)
+// ===== Column mapping =====
 const COL = {
   gw: "GW_Stagionale",
   team: "Team",
   opp: "Opponent",
   pf: "PointsFor",
   pa: "PointsAgainst",
-  gf: "GoalsFor",        // <-- cambia con il nome reale colonna
-  ga: "GoalsAgainst"     // <-- cambia con il nome reale colonna
+  gf: "GoalsFor",
+  ga: "GoalsAgainst"
 };
 
-// Mapping colonne (manuale)
 const MAN = {
   gw: "GW",
   title: "Titolo_manual",
@@ -33,90 +31,157 @@ const MAN = {
   updated: "UpdatedAt"
 };
 
-// =====================
-// CACHE + AUTO REFRESH (istantaneo per gli utenti)
-// =====================
-const CACHE_KEY_HTML = "giornale_cache_html_v1";
-const CACHE_KEY_TS   = "giornale_cache_ts_v1";
-
-// ogni quanto provare a rinfrescare in automatico (12 ore)
+// ===== Cache =====
+const CACHE_KEY_HTML = "giornale_cache_html_v2";
+const CACHE_KEY_TS   = "giornale_cache_ts_v2";
 const AUTO_REFRESH_MS = 12 * 60 * 60 * 1000;
 
-function showCachedIfAny() {
+// ===== State =====
+let STATS_DATA = [];
+let MANUAL_MAP = new Map();
+let CLASSIFICA_DATA = [];
+let CURRENT_GW = null;
+
+// ===== DOM helper =====
+const $ = (id) => document.getElementById(id);
+
+// ===== Generic helpers =====
+function norm(v){
+  return String(v ?? "").trim();
+}
+
+function escapeHtml(value){
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function textToParagraphs(text){
+  const safe = escapeHtml(text);
+  const parts = safe.split(/\n\s*\n/g).map(s => s.trim()).filter(Boolean);
+
+  if (!parts.length) {
+    return `<p>Nessun testo disponibile per questa giornata.</p>`;
+  }
+
+  return parts.map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
+}
+
+function toNum(x){
+  const v = String(x ?? "").trim().replace(",", ".");
+  const n = Number(v);
+  return Number.isFinite(n) ? n : NaN;
+}
+
+function gwNum(v){
+  const m = String(v ?? "").match(/\d+/);
+  return m ? Number(m[0]) : NaN;
+}
+
+function normKey(s){
+  return String(s ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "")
+    .replace(/[._-]/g, "");
+}
+
+function findColByCandidates(obj, candidates){
+  const keys = Object.keys(obj || {});
+  const normalized = keys.map(k => ({ raw: k, norm: normKey(k) }));
+
+  for (const candidate of candidates){
+    const c = normKey(candidate);
+    const hit = normalized.find(x => x.norm === c || x.norm.includes(c));
+    if (hit) return hit.raw;
+  }
+  return null;
+}
+
+// ===== Cache helpers =====
+function showCachedIfAny(){
   const cached = localStorage.getItem(CACHE_KEY_HTML);
   if (!cached) return false;
 
-  const output = document.getElementById("output");
+  const output = $("output");
   if (output) output.innerHTML = cached;
 
-  // se c’è HTML ma manca TS, mettiamo un TS “ora”
   if (!localStorage.getItem(CACHE_KEY_TS)) {
     localStorage.setItem(CACHE_KEY_TS, Date.now().toString());
   }
   return true;
 }
 
-
-function saveCacheFromDom() {
-  const output = document.getElementById("output");
+function saveCacheFromDom(){
+  const output = $("output");
   if (!output) return;
   localStorage.setItem(CACHE_KEY_HTML, output.innerHTML);
   localStorage.setItem(CACHE_KEY_TS, Date.now().toString());
 }
 
-function shouldAutoRefresh() {
+function shouldAutoRefresh(){
   const ts = Number(localStorage.getItem(CACHE_KEY_TS) || "0");
   return !ts || (Date.now() - ts) > AUTO_REFRESH_MS;
 }
 
-
-// -------------------------------------
-// Helpers
-// -------------------------------------
-const $ = (id) => document.getElementById(id);
-
-function norm(v){ return String(v ?? "").trim(); }
-function toNum(x){
-  const v = String(x ?? "").trim().replace(",", ".");
-  const n = Number(v);
-  return Number.isFinite(n) ? n : NaN;
-}
-function gwNum(v){
-  const m = String(v ?? "").match(/\d+/);
-  return m ? Number(m[0]) : NaN;
-}
-function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
-
-// CSV parser robusto (quote + virgole)
+// ===== CSV parsing =====
 function parseCSV(text){
   const rows = [];
-  let row = [], cur = "", inQ = false;
-  for (let i=0; i<text.length; i++){
-    const ch = text[i], nxt = text[i+1];
-    if (ch === '"' && inQ && nxt === '"'){ cur += '"'; i++; continue; }
-    if (ch === '"'){ inQ = !inQ; continue; }
-    if (!inQ && ch === ","){ row.push(cur); cur=""; continue; }
+  let row = [];
+  let cur = "";
+  let inQ = false;
+
+  for (let i = 0; i < text.length; i++){
+    const ch = text[i];
+    const nxt = text[i + 1];
+
+    if (ch === '"' && inQ && nxt === '"'){
+      cur += '"';
+      i++;
+      continue;
+    }
+
+    if (ch === '"'){
+      inQ = !inQ;
+      continue;
+    }
+
+    if (!inQ && ch === ","){
+      row.push(cur);
+      cur = "";
+      continue;
+    }
+
     if (!inQ && (ch === "\n" || ch === "\r")){
       if (ch === "\r" && nxt === "\n") i++;
-      row.push(cur); cur="";
-      if (row.some(c => c !== "")) rows.push(row);
+      row.push(cur);
+      cur = "";
+
+      if (row.some(cell => cell !== "")) rows.push(row);
       row = [];
       continue;
     }
+
     cur += ch;
   }
+
   row.push(cur);
-  if (row.some(c => c !== "")) rows.push(row);
+  if (row.some(cell => cell !== "")) rows.push(row);
+
   return rows;
 }
 
 function rowsToObjects(rows){
   if (!rows.length) return [];
   const header = rows[0].map(h => norm(h));
+
   return rows.slice(1).map(r => {
-    const o = {};
-    header.forEach((h, idx) => o[h] = r[idx] ?? "");
-    return o;
+    const obj = {};
+    header.forEach((h, idx) => {
+      obj[h] = r[idx] ?? "";
+    });
+    return obj;
   });
 }
 
@@ -124,59 +189,58 @@ async function fetchCSV(url){
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`Fetch fallita (${res.status})`);
   const text = await res.text();
-  const rows = parseCSV(text);
-  return rowsToObjects(rows);
+  return rowsToObjects(parseCSV(text));
 }
 
-function normKey(s){
-  return String(s ?? "")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "");
-}
-
-function findColByCandidates(obj, candidates){
-  const keys = Object.keys(obj || {});
-  const normKeys = keys.map(k => ({ raw: k, norm: normKey(k) }));
-
-  for (const cand of candidates){
-    const c = normKey(cand);
-    const hit = normKeys.find(x => x.norm === c || x.norm.includes(c));
-    if (hit) return hit.raw;
-  }
-  return null;
-}
-
-
-// -------------------------------------
-// Manual overrides
-// -------------------------------------
+// ===== Data load =====
 async function loadManualMap(){
   const data = await fetchCSV(MANUAL_CSV_URL);
-  const map = new Map(); // gw -> {title,text,updatedAt}
+  const map = new Map();
+
   for (const r of data){
     const g = gwNum(r[MAN.gw]);
     if (!Number.isFinite(g)) continue;
 
     const title = norm(r[MAN.title]);
-    const text  = norm(r[MAN.text]);
-    const upd   = norm(r[MAN.updated]);
+    const text = norm(r[MAN.text]);
+    const upd = norm(r[MAN.updated]);
 
     if (title || text){
       map.set(g, { title, text, updatedAt: upd });
     }
   }
+
   return map;
 }
 
-// -------------------------------------
-// Stats -> match list (dedup)
-// -------------------------------------
-function buildMatchesForGW(data, gw){
-  // filtro giornata
-  const rows = data.filter(r => gwNum(r[COL.gw]) === Number(gw));
+function getAllGWs(data){
+  const set = new Set();
 
-  // dedup: ogni match è doppio (Team/Opponent)
+  for (const r of data){
+    const n = gwNum(r[COL.gw]);
+    if (Number.isFinite(n)) set.add(n);
+  }
+
+  return Array.from(set).sort((a, b) => a - b);
+}
+
+function fillGWSelect(gws, selected){
+  const sel = $("gwSelect");
+  if (!sel) return;
+
+  sel.innerHTML = "";
+  for (const g of gws){
+    const opt = document.createElement("option");
+    opt.value = String(g);
+    opt.textContent = `GW ${g}`;
+    if (Number(g) === Number(selected)) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+// ===== Stats building =====
+function buildMatchesForGW(data, gw){
+  const rows = data.filter(r => gwNum(r[COL.gw]) === Number(gw));
   const seen = new Set();
   const matches = [];
 
@@ -185,201 +249,55 @@ function buildMatchesForGW(data, gw){
     const B = norm(r[COL.opp]);
     const pf = toNum(r[COL.pf]);
     const pa = toNum(r[COL.pa]);
+
     if (!A || !B || !Number.isFinite(pf) || !Number.isFinite(pa)) continue;
 
     const key = [A, B].sort().join("||");
     if (seen.has(key)) continue;
-
-    // prendiamo una riga "stabile": A alfabeticamente <= B
-    if (A > B) continue;
-
     seen.add(key);
 
     const winner = pf > pa ? A : (pa > pf ? B : null);
-    const loser  = pf > pa ? B : (pa > pf ? A : null);
+    const loser = pf > pa ? B : (pa > pf ? A : null);
     const margin = Math.abs(pf - pa);
-    const gf = toNum(r[COL.gf]);
-    const ga = toNum(r[COL.ga]);
 
     matches.push({
       gw,
-      home: A, away: B,
-      aPoints: pf, bPoints: pa,
-      winner, loser, margin
+      home: A,
+      away: B,
+      aPoints: pf,
+      bPoints: pa,
+      winner,
+      loser,
+      margin
     });
   }
 
-  return matches;
+  return matches.sort((a, b) => b.margin - a.margin);
 }
 
-
 function buildTeamStats(matches){
-  const m = new Map();
-  const add = (name, pf, pa) => {
-    if (!m.has(name)) m.set(name, { name, pf: 0, pa: 0, w:0, l:0, t:0 });
-    const t = m.get(name);
-    t.pf += pf; t.pa += pa;
+  const map = new Map();
+
+  function add(name, pf, pa){
+    if (!map.has(name)) {
+      map.set(name, { name, pf: 0, pa: 0, w: 0, l: 0, t: 0 });
+    }
+
+    const t = map.get(name);
+    t.pf += pf;
+    t.pa += pa;
+
     if (pf > pa) t.w++;
     else if (pf < pa) t.l++;
     else t.t++;
-  };
-
-  for (const game of matches){
-    add(game.home, game.aPoints, game.bPoints);
-    add(game.away, game.bPoints, game.aPoints);
   }
 
-  return Array.from(m.values());
-}
-
-// -------------------------------------
-// Trash generators (bozza)
-// -------------------------------------
-function headline(ctx){
-  const { upset, bigMargin, topTeam, flopTeam, gw } = ctx;
-  if (upset) return `SCANDALO SPORTIVO (GW ${gw}): ${upset.winner} FA IL COLPO GROSSO`;
-  if (bigMargin) return `GW ${gw}: MASSACRO A PORTE APERTE, ${bigMargin.winner} SMONTA ${bigMargin.loser}`;
-  if (topTeam) return `GW ${gw}: ${topTeam} FA PAURA (E GLI ALTRI FANNO SCUSE)`;
-  if (flopTeam) return `GW ${gw}: ${flopTeam} DISPERSA, AVVISTATA SOLO IN BASSA CLASSIFICA`;
-  return `GW ${gw}: CAOS, DRAMMI E PUNTI LANCIATI DALLA FINESTRA`;
-}
-
-function editorial(ctx){
-  const openers = [
-    "Settimana intensa: anche i numeri hanno chiesto ferie.",
-    "Giornata con la delicatezza di una chat di condominio.",
-    "Qui non si gioca: si sopravvive."
-  ];
-  const mids = [
-    `Il re è ${ctx.topTeam} con ${ctx.topPF.toFixed(1)}: prestazione da far firmare ai notai.`,
-    `Il fondo del barile lo firma ${ctx.flopTeam} con ${ctx.flopPF.toFixed(1)}: presente solo col badge.`,
-    ctx.bigMargin
-      ? `${ctx.bigMargin.winner} ha steso ${ctx.bigMargin.loser} di ${ctx.bigMargin.margin.toFixed(1)}: intervento necessario (psicologico).`
-      : "Scarti stretti? Sì, come la pazienza a fine mese."
-  ];
-  const closers = [
-    "Ora tutti a promettere la rimonta. Va bene, ci crediamo.",
-    "Ci vediamo alla prossima, con nuove illusioni e vecchi traumi.",
-    "Idratatevi: qui si suda anche da seduti."
-  ];
-  return `${pick(openers)} ${pick(mids)} ${pick(closers)}`;
-}
-
-function voteFromPoints(p){
-  if (p >= 85) return 10;
-  if (p >= 80) return 9;
-  if (p >= 75) return 8;
-  if (p >= 70) return 7;
-  if (p >= 65) return 6;
-  if (p >= 60) return 5;
-  return 4;
-}
-function commentForVote(v){
-  const map = {
-    10: ["Giornata illegale, ma splendida.", "Ha giocato con l’algoritmo in tasca."],
-    9:  ["Quasi perfetto: ha lasciato briciole.", "Prestazione da denuncia (degli altri)."],
-    8:  ["Solido e cattivo.", "Ha fatto il suo e anche quello altrui."],
-    7:  ["Buono, senza poesia ma con punti.", "Ha vinto pure senza charme."],
-    6:  ["Sufficienza con faccia tosta.", "Ha portato a casa la pagnotta."],
-    5:  ["Caffè annacquato, ma bevibile.", "Ha camminato. Ogni tanto ha corso."],
-    4:  ["Presente solo col badge.", "Ha perso pure contro l’entusiasmo."]
-  };
-  return pick(map[v] || ["Indescrivibile."]);
-}
-
-// costruisce la bozza automatica
-function buildAutoArticle(data, gw){
-  const matches = buildMatchesForGW(data, gw);
-  const teamStats = buildTeamStats(matches);
-
-  let topTeam=null, topPF=-Infinity;
-  let flopTeam=null, flopPF=Infinity;
-  for (const t of teamStats){
-    if (t.pf > topPF){ topPF = t.pf; topTeam = t.name; }
-    if (t.pf < flopPF){ flopPF = t.pf; flopTeam = t.name; }
+  for (const m of matches){
+    add(m.home, m.aPoints, m.bPoints);
+    add(m.away, m.bPoints, m.aPoints);
   }
 
-  const matchClose = matches.slice().sort((a,b) => a.margin - b.margin)[0] || null;
-  const matchBlow  = matches.slice().sort((a,b) => b.margin - a.margin)[0] || null;
-
-  const upset = matches.find(m => m.winner && Math.min(m.aPoints, m.bPoints) < 68) || null;
-
-  const thief = matches
-    .filter(m => m.winner)
-    .map(m => {
-      const winnerPts = (m.winner === m.home) ? m.aPoints : m.bPoints;
-      return { ...m, winnerPts };
-    })
-    .sort((a,b) => (a.winnerPts - b.winnerPts) || (a.margin - b.margin))[0] || null;
-
-  const ctx = {
-    gw,
-    matches,
-    teamStats,
-    topTeam, topPF: Number.isFinite(topPF) ? topPF : 0,
-    flopTeam, flopPF: Number.isFinite(flopPF) ? flopPF : 0,
-    matchOfWeek: matchClose,
-    bigMargin: matchBlow && matchBlow.winner ? { winner: matchBlow.winner, loser: matchBlow.loser, margin: matchBlow.margin } : null,
-    upset: upset && upset.winner ? { winner: upset.winner } : null,
-    thief: thief ? { winner: thief.winner, winnerPts: thief.winnerPts, margin: thief.margin } : null,
-  };
-
-  return {
-    title: headline(ctx),
-    subtitle: new Date().toLocaleDateString("it-IT", { weekday:"long", year:"numeric", month:"long", day:"numeric" }),
-    editorial: editorial(ctx),
-    matches,
-    teamStats,
-    matchOfWeek: matchClose,
-    top: { team: ctx.topTeam, pf: ctx.topPF },
-    flop: { team: ctx.flopTeam, pf: ctx.flopPF },
-    thief: ctx.thief
-  };
-}
-
-// render bozza (HTML)
-function renderAutoHTML(article){
-  const linesMatch = article.matches
-    .map(m => `<li><b>${m.home}</b> ${m.aPoints.toFixed(1)} - ${m.bPoints.toFixed(1)} <b>${m.away}</b> <span class="muted">(scarto ${m.margin.toFixed(1)})</span></li>`)
-    .join("");
-
-  const mow = article.matchOfWeek
-    ? `<p><b>${article.matchOfWeek.home}</b> ${article.matchOfWeek.aPoints.toFixed(1)} - ${article.matchOfWeek.bPoints.toFixed(1)} <b>${article.matchOfWeek.away}</b>
-       <span class="muted">(scarto ${article.matchOfWeek.margin.toFixed(1)})</span></p>`
-    : `<p class="muted">Nessun match trovato per questa giornata.</p>`;
-
-  return `
-    <div>
-      <div class="pill">Bozza automatica</div>
-      <h1 class="title">${article.title}</h1>
-      <p class="subtitle">${article.subtitle}</p>
-
-      <div class="section">
-        <h3>🧨 Il punto di Costantino</h3>
-        <p>${article.editorial}</p>
-      </div>
-
-      <div class="section grid2">
-        <div>
-          <h3>🔥 Match della Settimana</h3>
-          ${mow}
-        </div>
-        <div>
-          <h3>🏆 Premi discutibili</h3>
-          <ul class="list">
-            <li><b>Re:</b> ${article.top.team} (${article.top.pf.toFixed(1)})</li>
-            <li><b>Pagliaccio d’Oro:</b> ${article.flop.team} (${article.flop.pf.toFixed(1)})</li>
-            ${article.thief ? `<li><b>Ladro:</b> ${article.thief.winner} (vittoria con ${article.thief.winnerPts.toFixed(1)}, scarto ${article.thief.margin.toFixed(1)})</li>` : `<li class="muted">Nessun ladro (evento raro).</li>`}
-          </ul>
-        </div>
-      </div>
-
-      <div class="section">
-        <h3>📌 Risultati</h3>
-        <ul class="list">${linesMatch}</ul>
-      </div>
-    </div>
-  `;
+  return Array.from(map.values());
 }
 
 function magicToGoals(mp){
@@ -388,83 +306,125 @@ function magicToGoals(mp){
   return 1 + Math.floor((mp - 66) / 6);
 }
 
+function buildAutoArticle(data, gw){
+  const matches = buildMatchesForGW(data, gw);
+  const teamStats = buildTeamStats(matches);
 
+  let topTeam = null;
+  let topPF = -Infinity;
+  let flopTeam = null;
+  let flopPF = Infinity;
+
+  for (const t of teamStats){
+    if (t.pf > topPF){
+      topPF = t.pf;
+      topTeam = t.name;
+    }
+    if (t.pf < flopPF){
+      flopPF = t.pf;
+      flopTeam = t.name;
+    }
+  }
+
+  const closestMatch = matches.slice().sort((a, b) => a.margin - b.margin)[0] || null;
+  const blowout = matches.slice().sort((a, b) => b.margin - a.margin)[0] || null;
+
+  const thief = matches
+    .filter(m => m.winner)
+    .map(m => {
+      const winnerPts = m.winner === m.home ? m.aPoints : m.bPoints;
+      return { ...m, winnerPts };
+    })
+    .sort((a, b) => (a.winnerPts - b.winnerPts) || (a.margin - b.margin))[0] || null;
+
+  return {
+    gw,
+    matches,
+    teamStats,
+    matchOfWeek: closestMatch,
+    blowout,
+    top: { team: topTeam, pf: Number.isFinite(topPF) ? topPF : 0 },
+    flop: { team: flopTeam, pf: Number.isFinite(flopPF) ? flopPF : 0 },
+    thief
+  };
+}
+
+// ===== HTML blocks =====
 function buildStatsBlocks(article){
-  // Match of the week
   const matchHTML = article.matchOfWeek
-    ? `<div><b>${article.matchOfWeek.home}</b> <span class="score">${article.matchOfWeek.aPoints.toFixed(1)} - ${article.matchOfWeek.bPoints.toFixed(1)}</span> <b>${article.matchOfWeek.away}</b>
-       <div class="small">Scarto ${article.matchOfWeek.margin.toFixed(1)}</div></div>`
+    ? `
+      <div class="side-block">
+        <div class="label">Partita più tirata</div>
+        <div class="match-line">
+          <b>${escapeHtml(article.matchOfWeek.home)}</b>
+          <span class="score">${article.matchOfWeek.aPoints.toFixed(1)} - ${article.matchOfWeek.bPoints.toFixed(1)}</span>
+          <b>${escapeHtml(article.matchOfWeek.away)}</b>
+        </div>
+        <div class="match-detail">Scarto ${article.matchOfWeek.margin.toFixed(1)}</div>
+      </div>
+    `
     : `<div class="small">Nessun match trovato.</div>`;
 
-  // Premi
   const premiHTML = `
     <ul class="ul">
-      <li><b>Re:</b> ${article.top.team} <span class="badge gold">${article.top.pf.toFixed(1)}</span></li>
-      <li><b>Pagliaccio d’Oro:</b> ${article.flop.team} <span class="badge">${article.flop.pf.toFixed(1)}</span></li>
-      ${article.thief ? `<li><b>Ladro:</b> ${article.thief.winner} <span class="badge blue">${article.thief.winnerPts.toFixed(1)}</span> <span class="small">(scarto ${article.thief.margin.toFixed(1)})</span></li>` : `<li class="small">Nessun ladro (evento raro).</li>`}
+      <li>
+        <b>Re:</b> ${escapeHtml(article.top.team || "-")}
+        <span class="badge gold">${article.top.pf.toFixed(1)}</span>
+      </li>
+      <li>
+        <b>Pagliaccio d’Oro:</b> ${escapeHtml(article.flop.team || "-")}
+        <span class="badge">${article.flop.pf.toFixed(1)}</span>
+      </li>
+      ${
+        article.thief
+          ? `<li>
+              <b>Ladro:</b> ${escapeHtml(article.thief.winner || "-")}
+              <span class="badge blue">${article.thief.winnerPts.toFixed(1)}</span>
+              <span class="small">scarto ${article.thief.margin.toFixed(1)}</span>
+            </li>`
+          : `<li class="small">Nessun ladro di giornata.</li>`
+      }
     </ul>
   `;
 
-  // Results table
-const rows = article.matches.map(m => {
-  const hg = magicToGoals(m.aPoints);
-  const ag = magicToGoals(m.bPoints);
+  const resultRows = article.matches.map(m => {
+    const hg = magicToGoals(m.aPoints);
+    const ag = magicToGoals(m.bPoints);
 
-  return `
-    <tr>
-      <td><b>${m.home}</b> vs <b>${m.away}</b></td>
-      <td class="score">${hg} - ${ag}</td>
-    </tr>
-  `;
-}).join("");
-
-
+    return `
+      <tr>
+        <td><b>${escapeHtml(m.home)}</b> vs <b>${escapeHtml(m.away)}</b></td>
+        <td class="score">${hg} - ${ag}</td>
+        <td class="score small">${m.aPoints.toFixed(1)} - ${m.bPoints.toFixed(1)}</td>
+      </tr>
+    `;
+  }).join("");
 
   const resultsTableHTML = `
-    <table class="table">
-      <thead><tr><th>Partita</th><th>Punti</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Partita</th>
+            <th>Gol</th>
+            <th>Magic Punti</th>
+          </tr>
+        </thead>
+        <tbody>${resultRows}</tbody>
+      </table>
+    </div>
   `;
 
-    // Classifica di giornata: ordina per PF (poi PA)
-  const standingsRows = article.teamStats
-    .slice()
-    .sort((a,b) => (b.pf - a.pf) || (a.pa - b.pa))
-    .map((t, idx) => `
-      <tr>
-        <td class="small">${idx + 1}</td>
-        <td><b>${t.name}</b></td>
-        <td class="score">${t.w}-${t.l}${t.t ? `-${t.t}` : ""}</td>
-        <td class="score">${t.pf.toFixed(1)}</td>
-        <td class="score small">${t.pa.toFixed(1)}</td>
-      </tr>
-    `).join("");
-
-  const standingsHTML = `
-    <table class="table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Squadra</th>
-          <th>W-L(-T)</th>
-          <th>PF</th>
-          <th>PA</th>
-        </tr>
-      </thead>
-      <tbody>${standingsRows}</tbody>
-    </table>
-  `;
-
-
-    return { matchHTML, premiHTML, resultsTableHTML, standingsHTML };
-
+  return {
+    matchHTML,
+    premiHTML,
+    resultsTableHTML
+  };
 }
-
 
 function buildClassificaHTML(rows){
   if (!rows || !rows.length) {
-    return `<div class="small">Classifica non disponibile.</div>`;
+    return `<div class="empty-note">Classifica non disponibile.</div>`;
   }
 
   const sample = rows.find(r => Object.values(r).some(v => String(v).trim() !== "")) || rows[0];
@@ -472,13 +432,13 @@ function buildClassificaHTML(rows){
   const colTeam = findColByCandidates(sample, ["Squadra", "Team", "Club", "Nome"]);
   const teamKey = colTeam || Object.keys(sample)[0];
 
-  const colG  = "G";
-  const colPt = "Pt.";
-  const colMP = "Pt. Totali";
+  const colG  = findColByCandidates(sample, ["G"]);
+  const colPt = findColByCandidates(sample, ["Pt.", "Pt"]);
+  const colMP = findColByCandidates(sample, ["Pt. Totali", "Pt Totali", "Punti Totali"]);
 
   const clean = rows.filter(r => norm(r[teamKey]) !== "");
 
-  const ordered = clean.slice().sort((a,b) => {
+  const ordered = clean.slice().sort((a, b) => {
     const aPt = toNum(a[colPt]);
     const bPt = toNum(b[colPt]);
     if (Number.isFinite(aPt) && Number.isFinite(bPt) && bPt !== aPt) return bPt - aPt;
@@ -492,14 +452,14 @@ function buildClassificaHTML(rows){
 
   const body = ordered.map((r, i) => {
     const team = norm(r[teamKey]);
-    const g  = toNum(r[colG]);
+    const g = toNum(r[colG]);
     const pt = toNum(r[colPt]);
     const mp = toNum(r[colMP]);
 
     return `
       <tr>
         <td class="small">${i + 1}</td>
-        <td><b>${team}</b></td>
+        <td><b>${escapeHtml(team)}</b></td>
         <td class="score">${Number.isFinite(g) ? g.toFixed(0) : "-"}</td>
         <td class="score">${Number.isFinite(pt) ? pt.toFixed(0) : "-"}</td>
         <td class="score small">${Number.isFinite(mp) ? mp.toFixed(1) : "-"}</td>
@@ -508,166 +468,134 @@ function buildClassificaHTML(rows){
   }).join("");
 
   return `
-    <table class="table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Squadra</th>
-          <th>G</th>
-          <th>Pt.</th>
-          <th>Pt. Totali</th>
-        </tr>
-      </thead>
-      <tbody>${body}</tbody>
-    </table>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Squadra</th>
+            <th>G</th>
+            <th>Pt.</th>
+            <th>Pt. Totali</th>
+          </tr>
+        </thead>
+        <tbody>${body}</tbody>
+      </table>
+    </div>
   `;
 }
 
+function renderManualHTML(gw, manual, stats, classificaHTML){
+  const title = manual?.title
+    ? escapeHtml(manual.title)
+    : `GW ${gw} | Edizione della Gazzetta`;
 
-// render manuale (HTML)
-function renderManualHTML(gw, manual, stats){
-  const title = manual.title ? manual.title : `GW ${gw} | Editoriale`;
-  const subtitle = manual.updatedAt ? `Aggiornato: ${manual.updatedAt}` : "Editoriale";
-  const text = manual.text || "<i>(Nessun testo manuale inserito)</i>";
+  const deck = manual?.text
+    ? "La giornata lascia sentenze, rilancia gerarchie e mette qualcuno davanti allo specchio."
+    : "Testo editoriale non ancora inserito. La giornata però ha già lasciato risultati e verdetti.";
+
+  const subtitle = manual?.updatedAt
+    ? `Aggiornato: ${escapeHtml(manual.updatedAt)}`
+    : "Editoriale";
+
+  const editorialContent = manual?.text
+    ? textToParagraphs(manual.text)
+    : `<p>Per questa giornata non è stato ancora inserito un editoriale manuale.</p>
+       <p>Puoi comunque consultare risultati, premi discutibili e classifica totale qui sotto.</p>`;
 
   return `
     <div class="lede">
       <span class="kicker">Lega degli Eroi</span>
       <div class="h1">${title}</div>
+      <div class="deck">${deck}</div>
       <div class="subline">${subtitle}</div>
     </div>
 
     <div class="columns">
-      <!-- COLONNA SINISTRA -->
       <div>
         <div class="block editorial">
-          <h3>Il punto di Costantino</h3>
-          <p>${text}</p>
+          <h3>Il Punto di Costantino</h3>
+          ${editorialContent}
         </div>
 
         <div class="block">
-          <h3>Risultati</h3>
+          <h3>Risultati di Giornata</h3>
           ${stats.resultsTableHTML}
         </div>
 
         <div class="block">
           <h3>Classifica Totale</h3>
-          ${stats.classificaHTML || `<div class="small">Classifica non disponibile.</div>`}
+          ${classificaHTML}
         </div>
       </div>
 
-      <!-- COLONNA DESTRA -->
       <div>
-        <div class="block">
-          <h3>Match della settimana</h3>
+        <div class="block side-block">
+          <div class="label">Rubrica</div>
+          <h3>Match della Settimana</h3>
           ${stats.matchHTML}
         </div>
 
-        <div class="block">
-          <h3>Premi discutibili</h3>
+        <div class="block side-block">
+          <div class="label">Rubrica</div>
+          <h3>Premi Discutibili</h3>
           ${stats.premiHTML}
         </div>
       </div>
     </div>
+
+    <div class="paper-foot">
+      Edizione automatica della Gazzetta • GW ${gw}
+    </div>
   `;
 }
 
-
-// -------------------------------------
-// UI flow
-// -------------------------------------
-let STATS_DATA = [];
-let MANUAL_MAP = new Map();
-let CURRENT_GW = null;
-let VIEW_MODE = "manual"; // "manual" | "auto"
-let CLASSIFICA_DATA = [];
-
-function setStatus(msg, isErr=false){
+// ===== Render flow =====
+function setStatus(msg, isErr = false){
   const el = $("status");
+  if (!el) return;
   el.textContent = msg || "";
   el.className = isErr ? "error" : "muted";
 }
 
-function setViewMode(){
-  VIEW_MODE = "manual";
-  // se i bottoni esistono, li nascondo o li disattivo
-  $("btnViewManual")?.remove();
-  $("btnViewAuto")?.remove();
-  renderCurrent();
-}
-
-
-function getAllGWs(data){
-  const set = new Set();
-  for (const r of data){
-    const n = gwNum(r[COL.gw]);
-    if (Number.isFinite(n)) set.add(n);
-  }
-  return Array.from(set).sort((a,b) => a - b);
-}
-
-function fillGWSelect(gws, selected){
-  const sel = $("gwSelect");
-  sel.innerHTML = "";
-  for (const g of gws){
-    const opt = document.createElement("option");
-    opt.value = String(g);
-    opt.textContent = `GW ${g}`;
-    if (Number(g) === Number(selected)) opt.selected = true;
-    sel.appendChild(opt);
-  }
-}
-
 function renderCurrent(){
   const out = $("output");
+  if (!out) return;
+
   if (!CURRENT_GW){
     out.innerHTML = `<p class="error">Nessuna GW disponibile.</p>`;
     return;
   }
 
   const gw = Number(CURRENT_GW);
-  const manual = MANUAL_MAP.get(gw);
+  const manual = MANUAL_MAP.get(gw) || null;
+  const auto = buildAutoArticle(STATS_DATA, gw);
+  const statsBlocks = buildStatsBlocks(auto);
+  const classificaHTML = buildClassificaHTML(CLASSIFICA_DATA);
 
-  // chips masthead (se esistono)
-  const d = new Date().toLocaleDateString("it-IT", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
-  const chipDate = document.getElementById("chipDate");
-  const chipGW = document.getElementById("chipGW");
+  const d = new Date().toLocaleDateString("it-IT", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  });
+
+  const chipDate = $("chipDate");
+  const chipGW = $("chipGW");
   if (chipDate) chipDate.textContent = d;
   if (chipGW) chipGW.textContent = `GW ${gw}`;
 
-  // Manuale + stats (stile giornale)
-  if (VIEW_MODE === "manual" && manual){
-    const auto = buildAutoArticle(STATS_DATA, gw);
-    const statsBlocks = buildStatsBlocks(auto);
-    statsBlocks.classificaHTML = buildClassificaHTML(CLASSIFICA_DATA);
-    out.innerHTML = renderManualHTML(gw, manual, statsBlocks);
-    setStatus(`GW ${gw} | Manuale ✅ + Stats`);
-    return;
-  }
-
-  // Manuale ma non c’è testo: fallback bozza completa
-// Manuale anche se non c'è testo: mostra placeholder + stats
-if (VIEW_MODE === "manual" && !manual){
-  const auto = buildAutoArticle(STATS_DATA, gw);
-  const statsBlocks = buildStatsBlocks(auto);
-  statsBlocks.classificaHTML = buildClassificaHTML(CLASSIFICA_DATA);
-
-  out.innerHTML = renderManualHTML(gw, { title:"", text:"", updatedAt:"" }, statsBlocks);
-  setStatus(`GW ${gw} | Manuale ✅ + Stats`);
-  return;
+  out.innerHTML = renderManualHTML(gw, manual, statsBlocks, classificaHTML);
+  setStatus(`GW ${gw} aggiornata`);
 }
-
-
-  // View bozza
-  const auto = buildAutoArticle(STATS_DATA, gw);
-  out.innerHTML = renderAutoHTML(auto);
-  setStatus(`GW ${gw} | Bozza ✅`);
-}
-
 
 async function loadAll(){
-
   setStatus("Aggiorno…");
+
+  if (STATS_CSV_URL.includes("INCOLLA_QUI")) {
+    throw new Error("Devi impostare STATS_CSV_URL con il tuo link CSV delle statistiche.");
+  }
+
   try {
     CLASSIFICA_DATA = await fetchCSV(CLASSIFICA_CSV_URL);
   } catch (e) {
@@ -675,34 +603,11 @@ async function loadAll(){
     CLASSIFICA_DATA = [];
   }
 
-  if (STATS_CSV_URL.includes("INCOLLA_QUI")) {
-    throw new Error("Devi impostare STATS_CSV_URL con il tuo link CSV delle statistiche.");
-  }
-
-console.log("STATS_CSV_URL:", STATS_CSV_URL);
-
-let rawText = "";
-try{
-  const res = await fetch(STATS_CSV_URL, { cache: "no-store" });
-  console.log("Fetch status:", res.status, res.ok);
-  rawText = await res.text();
-  console.log("CSV first 300 chars:", rawText.slice(0, 300));
-}catch(err){
-  console.error("Fetch error:", err);
-  throw err;
-}
-
-// prova parse
-const rows = parseCSV(rawText);
-console.log("Parsed rows:", rows.length, "Header:", rows[0]);
-
-STATS_DATA = rowsToObjects(rows);
-console.log("Objects:", STATS_DATA.length, "First obj:", STATS_DATA[0]);
-
+  STATS_DATA = await fetchCSV(STATS_CSV_URL);
 
   try {
     MANUAL_MAP = await loadManualMap();
-  } catch(e){
+  } catch (e) {
     console.warn("Manuale non disponibile:", e.message);
     MANUAL_MAP = new Map();
   }
@@ -710,69 +615,68 @@ console.log("Objects:", STATS_DATA.length, "First obj:", STATS_DATA[0]);
   const gws = getAllGWs(STATS_DATA);
   if (!gws.length) throw new Error("Nessuna GW trovata nel CSV statistiche.");
 
-  CURRENT_GW = gws[gws.length - 1];
-  fillGWSelect(gws, CURRENT_GW);
+  if (!CURRENT_GW || !gws.includes(Number(CURRENT_GW))) {
+    CURRENT_GW = gws[gws.length - 1];
+  }
 
-  setViewMode(); // sempre manuale (senza bottoni)
-} // ✅ QUESTA GRAFFA MANCAVA
+  fillGWSelect(gws, CURRENT_GW);
+}
 
 async function reloadKeepingGW(){
-  const gw = Number($("gwSelect").value || CURRENT_GW);
+  const selected = Number($("gwSelect")?.value || CURRENT_GW);
   await loadAll();
-  CURRENT_GW = gw;
-  $("gwSelect").value = String(gw);
+  CURRENT_GW = selected;
+  const sel = $("gwSelect");
+  if (sel) sel.value = String(CURRENT_GW);
   renderCurrent();
 }
-// -------------------------------------
-// Listeners + Boot (UNICA VERSIONE) - ROBUSTO
-// -------------------------------------
+
+// ===== Boot =====
 document.addEventListener("DOMContentLoaded", () => {
-  const gwSelect  = $("gwSelect");
+  const gwSelect = $("gwSelect");
   const btnReload = $("btnReload");
-  const output    = $("output");
-  const status    = $("status");
+  const output = $("output");
 
-  if (!output)  console.warn("Manca #output in HTML");
-  if (!status)  console.warn("Manca #status in HTML");
-  if (!gwSelect)  console.warn("Manca #gwSelect in HTML");
-  if (!btnReload) console.warn("Manca #btnReload in HTML");
-
-  // listeners (solo se esistono)
   gwSelect?.addEventListener("change", (e) => {
     CURRENT_GW = Number(e.target.value);
     renderCurrent();
+    saveCacheFromDom();
   });
 
   btnReload?.addEventListener("click", async () => {
-    try{
+    try {
       setStatus("Aggiorno…");
       await reloadKeepingGW();
       saveCacheFromDom();
       setStatus("Aggiornato ✅");
       setTimeout(() => setStatus(""), 1200);
-    }catch(e){
+    } catch (e) {
       console.error(e);
       setStatus(`Errore: ${e.message}`, true);
-      output && (output.innerHTML = `<p class="error">${e.message}</p>`);
+      if (output) output.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
     }
   });
 
-  // BOOT: mostra cache subito, poi inizializza SEMPRE stato (GW/select)
   (async () => {
-    try{
-      const hadCache = showCachedIfAny(); // mostra HTML se c'è
-
+    try {
+      const hadCache = showCachedIfAny();
       if (!hadCache) setStatus("Caricamento…");
-      else setStatus("");
 
-      await loadAll();      // popola STATS_DATA, MANUAL_MAP, CLASSIFICA_DATA, CURRENT_GW, select
-      renderCurrent();      // ora CURRENT_GW esiste
-      saveCacheFromDom();
+      const forceRefresh = shouldAutoRefresh() || !hadCache;
+      if (forceRefresh) {
+        await loadAll();
+        renderCurrent();
+        saveCacheFromDom();
+      } else {
+        await loadAll();
+        renderCurrent();
+      }
+
       setStatus("");
-    }catch(e){
+    } catch (e) {
       console.error(e);
       setStatus(`Errore: ${e.message}`, true);
-      output && (output.innerHTML = `<p class="error">${e.message}</p>`);
+      if (output) output.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
     }
   })();
 });
