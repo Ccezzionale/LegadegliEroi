@@ -32,88 +32,6 @@ body {
   padding: 0 0 40px;
 }
 
-/* ===== NAVBAR ===== */
-
-nav {
-  background-color: var(--navy);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 20px;
-  flex-wrap: wrap;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-
-.nav-left {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.home-icon {
-  font-size: 1.4rem;
-  text-decoration: none;
-  color: white;
-}
-
-.hamburger {
-  font-size: 1.5rem;
-  cursor: pointer;
-  display: none;
-  color: white;
-}
-
-.navbar {
-  list-style-type: none;
-  display: flex;
-  gap: 15px;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  flex-wrap: wrap;
-}
-
-.navbar li {
-  position: relative;
-}
-
-.navbar a {
-  text-decoration: none;
-  color: white;
-  padding: 8px 12px;
-  display: block;
-  border-radius: 6px;
-  transition: background 0.15s ease, transform 0.15s ease;
-}
-
-.navbar a:hover {
-  background-color: var(--blue);
-  transform: translateY(-1px);
-}
-
-.submenu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  background-color: var(--navy);
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  border-radius: 6px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
-  z-index: 50;
-}
-
-.dropdown.show .submenu {
-  display: block;
-}
-
-.submenu li a {
-  padding: 8px 16px;
-  white-space: nowrap;
-}
 
 /* ===== HERO ===== */
 
@@ -541,34 +459,6 @@ td:nth-child(6) {
 }
 
 @media (max-width: 768px) {
-  .hamburger {
-    display: block;
-  }
-
-  nav {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .navbar {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .navbar.show {
-    display: flex;
-  }
-
-  .navbar li {
-    width: 100%;
-  }
-
-  .submenu {
-    position: static;
-    box-shadow: none;
-  }
 
   table {
     display: none;
