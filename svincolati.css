@@ -135,7 +135,7 @@ select{
   }
 
 nav.site-nav #mainMenu.navbar > li > a.toggle-submenu::after{
-  content:"▼";
+  content:"▾";
   position:static !important;
   left:auto !important;
   right:auto !important;
