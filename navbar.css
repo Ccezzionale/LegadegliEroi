@@ -214,6 +214,28 @@ nav.site-nav{
   min-width:290px;
 }
 
+.site-nav{
+  padding:0 !important;
+}
+
+.site-nav .nav-inner{
+  min-height:72px !important;
+  height:auto !important;
+  padding:0 18px !important;
+}
+
+.site-nav .nav-left{
+  width:auto !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+.site-nav .navbar{
+  margin:0 !important;
+  padding:0 !important;
+}
+
+
 /* =========================
    MOBILE
    ========================= */
