@@ -6,181 +6,144 @@
   <title>Lega degli Eroi</title>
 
   <style>
-
     :root{
-  --navy:#001f3f;     /* navbar */
-  --navy-2:#003366;   /* accento */
-  --paper:#fbfcff;
-}
-
-body{
-  margin:0;
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color:#222;
-  background:
-    radial-gradient(900px 500px at 15% 0%, rgba(0,116,217,.25), transparent 60%),
-    radial-gradient(900px 500px at 85% 15%, rgba(255,204,0,.10), transparent 55%),
-    var(--navy);
-}
-
-
-    nav {
-      background-color: #001f3f;
-      color: white;
-      display: flex;
-      align-items: center;
-      padding: 10px 20px;
-      flex-wrap: wrap;
+      --navy:#001f3f;
+      --navy-2:#003366;
+      --paper:#fbfcff;
     }
 
-    .home-icon {
-      font-size: 1.4rem;
-      margin-right: 20px;
-      text-decoration: none;
-      color: white;
+    body{
+      margin:0;
+      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color:#222;
+      background:
+        radial-gradient(900px 500px at 15% 0%, rgba(0,116,217,.25), transparent 60%),
+        radial-gradient(900px 500px at 85% 15%, rgba(255,204,0,.10), transparent 55%),
+        var(--navy);
     }
 
-    .hamburger {
-      font-size: 1.5rem;
-      cursor: pointer;
-      margin-right: 20px;
-      display: none;
+    nav{
+      background-color:#001f3f;
+      color:white;
+      display:flex;
+      align-items:center;
+      padding:10px 20px;
+      flex-wrap:wrap;
     }
 
-    .navbar {
-      list-style-type: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: row;
-      gap: 15px;
-      align-items: center;
-      flex-wrap: wrap;
+    .home-icon{
+      font-size:1.4rem;
+      margin-right:20px;
+      text-decoration:none;
+      color:white;
     }
 
-    .navbar li {
-      position: relative;
+    .hamburger{
+      font-size:1.5rem;
+      cursor:pointer;
+      margin-right:20px;
+      display:none;
     }
 
-    .navbar a {
-      text-decoration: none;
-      color: white;
-      padding: 8px 12px;
-      display: block;
+    .navbar{
+      list-style-type:none;
+      padding:0;
+      margin:0;
+      display:flex;
+      flex-direction:row;
+      gap:15px;
+      align-items:center;
+      flex-wrap:wrap;
     }
 
-    .navbar a:hover {
-      background-color: #0074D9;
-      border-radius: 6px;
+    .navbar li{
+      position:relative;
     }
 
-    .submenu {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      background-color: #003366;
-      border-radius: 4px;
-      z-index: 10;
-      min-width: 180px;
-      flex-direction: column;
+    .navbar a{
+      text-decoration:none;
+      color:white;
+      padding:8px 12px;
+      display:block;
     }
 
-    .submenu a {
-      font-size: 0.95rem;
+    .navbar a:hover{
+      background-color:#0074D9;
+      border-radius:6px;
     }
 
-    .dropdown.show .submenu {
-      display: flex;
+    .submenu{
+      display:none;
+      position:absolute;
+      top:100%;
+      left:0;
+      background-color:#003366;
+      border-radius:4px;
+      z-index:10;
+      min-width:180px;
+      flex-direction:column;
     }
 
-    h1 {
-      color: #001f3f;
-      margin: 30px 0 10px;
-      font-size: 2.2rem;
-      text-align: center;
-      text-shadow: 2px 2px 8px #ffcc00;
+    .submenu a{
+      font-size:0.95rem;
     }
 
-    p {
-      font-size: 1.1rem;
-      color: #333;
-      text-align: center;
+    .dropdown.show .submenu{
+      display:flex;
     }
 
     /* === HOME WRAP + IFRAME GAZZETTA === */
-.home-wrap{
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 16px 30px;
-  background: transparent; /* fuori è blu */
-}
+    .home-wrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:20px 16px 30px;
+      background:transparent;
+    }
 
-.home-wrap h1{
-  color: var(--paper); /* oppure #ffffff se lo vuoi più “sparato” */
-  text-shadow:
-    0 2px 0 rgba(0,0,0,.25),
-    0 0 10px rgba(255,204,0,.55),
-    0 0 22px rgba(255,204,0,.35);
-}
+    .gazzetta-frame{
+      width:100%;
+      border:2px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      background:var(--paper);
+      box-shadow:0 14px 40px rgba(0,0,0,.25);
+      overflow:hidden;
+      display:block;
+    }
 
-/* se lo vuoi proprio “come prima” (blu pieno) */
-/* Titolo home: ORO/ARANCIO + glow BLU */
-.home-wrap h1.is-classic{
-  color: #ffcc00; /* oro */
-  text-shadow:
-    0 2px 0 rgba(0,0,0,.35),        /* un filo di profondità */
-    0 0 10px rgba(0,116,217,.55),   /* glow blu */
-    0 0 22px rgba(0,116,217,.35),   /* glow blu largo */
-    0 0 38px rgba(0,31,63,.55);     /* halo navy */
-}
-
-
-.home-wrap p{
-  color: #fff;              /* testo bianco sul blu */
-}
-
-
-.gazzetta-frame{
-  width:100%;
-  border: 2px solid rgba(255,255,255,.12);
-  border-radius: 14px;
-  background: var(--paper);
-  box-shadow: 0 14px 40px rgba(0,0,0,.25);
-  overflow:hidden;
-}
-
-
-    @media (max-width: 768px) {
-      .hamburger {
-        display: block;
+    @media (max-width: 768px){
+      .hamburger{
+        display:block;
       }
 
-      .navbar {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-        background-color: #001f3f;
-        margin-top: 10px;
+      .navbar{
+        display:none;
+        flex-direction:column;
+        width:100%;
+        background-color:#001f3f;
+        margin-top:10px;
       }
 
-      .navbar.show {
-        display: flex;
+      .navbar.show{
+        display:flex;
       }
 
-      .submenu {
-        position: relative;
-        background-color: #003366;
-        margin-left: 10px;
+      .submenu{
+        position:relative;
+        background-color:#003366;
+        margin-left:10px;
       }
 
-      .dropdown .submenu a {
-        padding-left: 20px;
+      .dropdown .submenu a{
+        padding-left:20px;
+      }
+
+      .home-wrap{
+        padding:14px 10px 20px;
       }
 
       .gazzetta-frame{
-        height: 88vh;
-        border-radius: 12px;
+        height:88vh;
+        border-radius:12px;
       }
     }
   </style>
@@ -232,68 +195,61 @@ body{
   </nav>
 
   <main class="home-wrap">
-    <h1 class="is-classic">Benvenuto nella Lega degli Eroi</h1>
-    <p>Seleziona una sezione dal menu.</p>
-
-  <iframe
-  id="gazzettaFrame"
-  class="gazzetta-frame"
-  src="giornale.html"
-  title="La Gazzetta degli Eroi"
-  scrolling="no">
-</iframe>
-
+    <iframe
+      id="gazzettaFrame"
+      class="gazzetta-frame"
+      src="giornale.html"
+      title="La Gazzetta degli Eroi"
+      scrolling="no">
+    </iframe>
   </main>
 
-<script>
-  function resizeGazzetta(){
-    const iframe = document.getElementById("gazzettaFrame");
-    if (!iframe) return;
+  <script>
+    function resizeGazzetta(){
+      const iframe = document.getElementById("gazzettaFrame");
+      if (!iframe) return;
 
-    try{
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      const h = Math.max(
-        doc.body.scrollHeight,
-        doc.documentElement.scrollHeight
-      );
-      iframe.style.height = (h + 20) + "px";
-    }catch(e){
-      console.warn("Impossibile auto-resize iframe:", e);
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    // MENU
-    const hamburger = document.getElementById("hamburger");
-    const mainMenu = document.getElementById("mainMenu");
-    const submenuToggles = document.querySelectorAll(".toggle-submenu");
-
-    hamburger?.addEventListener("click", () => {
-      mainMenu.classList.toggle("show");
-    });
-
-    submenuToggles.forEach(toggle => {
-      toggle.addEventListener("click", function (e) {
-        e.preventDefault();
-        const parent = this.closest(".dropdown");
-        parent.classList.toggle("show");
-      });
-    });
-
-    // IFRAME RESIZE
-    const iframe = document.getElementById("gazzettaFrame");
-    if (iframe) {
-      iframe.addEventListener("load", () => {
-        resizeGazzetta();
-        setTimeout(resizeGazzetta, 400);
-        setTimeout(resizeGazzetta, 1200);
-        setTimeout(resizeGazzetta, 2500);
-      });
+      try{
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        const h = Math.max(
+          doc.body.scrollHeight,
+          doc.documentElement.scrollHeight
+        );
+        iframe.style.height = (h + 20) + "px";
+      }catch(e){
+        console.warn("Impossibile auto-resize iframe:", e);
+      }
     }
 
-    window.addEventListener("resize", resizeGazzetta);
-  });
-</script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const hamburger = document.getElementById("hamburger");
+      const mainMenu = document.getElementById("mainMenu");
+      const submenuToggles = document.querySelectorAll(".toggle-submenu");
 
+      hamburger?.addEventListener("click", () => {
+        mainMenu.classList.toggle("show");
+      });
+
+      submenuToggles.forEach(toggle => {
+        toggle.addEventListener("click", function (e) {
+          e.preventDefault();
+          const parent = this.closest(".dropdown");
+          parent.classList.toggle("show");
+        });
+      });
+
+      const iframe = document.getElementById("gazzettaFrame");
+      if (iframe) {
+        iframe.addEventListener("load", () => {
+          resizeGazzetta();
+          setTimeout(resizeGazzetta, 400);
+          setTimeout(resizeGazzetta, 1200);
+          setTimeout(resizeGazzetta, 2500);
+        });
+      }
+
+      window.addEventListener("resize", resizeGazzetta);
+    });
+  </script>
 </body>
 </html>
