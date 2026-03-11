@@ -210,20 +210,6 @@
   <script src="u21.js?v=1"></script>
 
 
-  <!-- 2) NAV -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const hamburger = document.getElementById("hamburger");
-      const mainMenu = document.getElementById("mainMenu");
-      const submenuToggles = document.querySelectorAll(".toggle-submenu");
-      hamburger?.addEventListener("click", () => { mainMenu.classList.toggle("show"); });
-      submenuToggles.forEach(t => t.addEventListener("click", function(e){
-        e.preventDefault();
-        this.closest(".dropdown").classList.toggle("show");
-      }));
-    });
-  </script>
-
   <!-- 3) LOGICA SVINCOLATI + CHIAMATE -->
   <script>
   // =============================
