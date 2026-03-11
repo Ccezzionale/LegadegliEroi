@@ -103,20 +103,6 @@
   
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="statistiche.js"></script>
-  <script>
-    // Navbar mobile/dropdown
-    document.addEventListener("DOMContentLoaded", function () {
-      const hamburger = document.getElementById("hamburger");
-      const mainMenu = document.getElementById("mainMenu");
-      const submenuToggles = document.querySelectorAll(".toggle-submenu");
-      hamburger?.addEventListener("click", () => mainMenu.classList.toggle("show"));
-      submenuToggles.forEach(toggle => {
-        toggle.addEventListener("click", function (e) {
-          e.preventDefault();
-          this.closest(".dropdown").classList.toggle("show");
-        });
-      });
-    });
-  </script>
+ <script src="navbar.js"></script>
 </body>
 </html>
