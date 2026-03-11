@@ -11,7 +11,7 @@
 }
 
 /* =========================
-   NAVBAR
+   NAVBAR DESKTOP
    ========================= */
 nav.site-nav{
   position:sticky;
@@ -21,13 +21,15 @@ nav.site-nav{
   color:white;
   border-bottom:1px solid rgba(255,255,255,0.08);
   box-shadow:0 8px 24px rgba(0,0,0,0.18);
+  padding:0 !important;
 }
 
 .site-nav .nav-inner{
   max-width:1400px;
   margin:0 auto;
-  min-height:72px;
-  padding:0 18px;
+  min-height:72px !important;
+  height:auto !important;
+  padding:0 18px !important;
   display:flex;
   align-items:center;
   gap:18px;
@@ -38,6 +40,9 @@ nav.site-nav{
   align-items:center;
   gap:14px;
   flex-shrink:0;
+  width:auto !important;
+  margin:0 !important;
+  padding:0 !important;
 }
 
 .site-nav .brand-home{
@@ -88,6 +93,8 @@ nav.site-nav{
   flex:1;
   min-width:0;
   flex-wrap:nowrap;
+  margin:0 !important;
+  padding:0 !important;
 }
 
 .site-nav .navbar > li{
@@ -160,7 +167,6 @@ nav.site-nav{
   display:flex;
   flex-direction:column;
   gap:4px;
-
   opacity:0;
   visibility:hidden;
   transform:translateY(10px);
@@ -214,36 +220,24 @@ nav.site-nav{
   min-width:290px;
 }
 
-.site-nav{
-  padding:0 !important;
-}
-
-.site-nav .nav-inner{
-  min-height:72px !important;
-  height:auto !important;
-  padding:0 18px !important;
-}
-
-.site-nav .nav-left{
-  width:auto !important;
-  margin:0 !important;
-  padding:0 !important;
-}
-
-.site-nav .navbar{
-  margin:0 !important;
-  padding:0 !important;
-}
-
-
 /* =========================
-   MOBILE
+   NAVBAR MOBILE
    ========================= */
 @media (max-width: 900px){
   .site-nav .nav-inner{
-    min-height:64px;
-    padding:0 14px;
+    min-height:64px !important;
+    padding:10px 14px !important;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
     flex-wrap:wrap;
+    gap:10px;
+  }
+
+  .site-nav .nav-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
   }
 
   .site-nav .hamburger{
@@ -252,14 +246,24 @@ nav.site-nav{
     justify-content:center;
   }
 
+  .site-nav .brand-home{
+    width:40px;
+    height:40px;
+    font-size:1.2rem;
+  }
+
   .site-nav .navbar{
     display:none;
     width:100%;
     flex-direction:column;
     align-items:stretch;
-    gap:8px;
-    padding:8px 0 14px;
-    margin-top:2px;
+    gap:6px;
+    padding:12px !important;
+    margin-top:6px !important;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:16px;
+    box-shadow:0 12px 28px rgba(0,0,0,0.20);
   }
 
   .site-nav .navbar.show{
@@ -275,8 +279,9 @@ nav.site-nav{
     justify-content:space-between;
     background:rgba(255,255,255,0.03);
     border:1px solid rgba(255,255,255,0.05);
-    border-radius:12px;
-    padding:13px 14px;
+    border-radius:10px;
+    padding:11px 13px;
+    font-size:0.95rem;
   }
 
   .site-nav .navbar > li > a::after{
@@ -288,11 +293,11 @@ nav.site-nav{
     top:auto;
     left:auto;
     min-width:unset;
-    margin-top:8px;
-    padding:8px;
-    border-radius:14px;
-    background:rgba(255,255,255,0.05);
-    border:1px solid rgba(255,255,255,0.06);
+    margin-top:6px;
+    padding:6px;
+    border-radius:12px;
+    background:rgba(255,255,255,0.035);
+    border:1px solid rgba(255,255,255,0.05);
     box-shadow:none;
     opacity:1;
     visibility:visible;
@@ -310,7 +315,9 @@ nav.site-nav{
   }
 
   .site-nav .submenu a{
-    font-size:0.94rem;
-    padding:10px 12px;
+    font-size:0.9rem;
+    padding:9px 10px;
+    border-radius:9px;
   }
 }
+
