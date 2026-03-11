@@ -72,6 +72,14 @@ body{
   padding: 28px 18px 40px;
 }
 
+@media (min-width: 1200px){
+  .wrap{
+    max-width: none;
+    width: calc(100vw - 40px);
+    padding: 28px 0 40px;
+  }
+}
+
 /* ===== Masthead shell ===== */
 .mast-shell{
   margin-top: 10px;
