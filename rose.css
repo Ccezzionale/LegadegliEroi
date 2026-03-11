@@ -148,5 +148,10 @@ thead {
     position: static;
     top: auto;
   }
+
+ nav.site-nav #mainMenu.navbar > li > a{
+  width:100%;
+  padding:11px 13px;
+}
 }
 
