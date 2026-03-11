@@ -5,19 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lega degli Eroi</title>
 
-  <style>
-    :root{
-      --navy:#001f3f;
-      --navy-2:#003366;
-      --navy-3:#0a4d8f;
-      --gold:#ffcc00;
-      --paper:#fbfcff;
-      --white:#ffffff;
-      --border:rgba(255,255,255,0.10);
-      --shadow:0 14px 34px rgba(0,0,0,0.22);
-      --shadow-soft:0 8px 20px rgba(0,0,0,0.16);
-    }
+  <link rel="stylesheet" href="navbar.css">
 
+  <style>
     *{
       box-sizing:border-box;
     }
@@ -34,17 +24,13 @@
       background:
         radial-gradient(900px 500px at 15% 0%, rgba(0,116,217,.25), transparent 60%),
         radial-gradient(900px 500px at 85% 15%, rgba(255,204,0,.10), transparent 55%),
-        var(--navy);
+        #001f3f;
     }
 
     a{
       text-decoration:none;
     }
 
-
-    /* =========================
-       HOME WRAP + IFRAME
-       ========================= */
     .home-wrap{
       overflow-x:hidden;
       max-width:1200px;
@@ -53,7 +39,7 @@
       background:transparent;
     }
 
-    @media (min-width: 1200px){
+    @media (min-width:1200px){
       .home-wrap{
         max-width:none;
         width:100%;
@@ -73,85 +59,7 @@
       display:block;
     }
 
-    /* =========================
-       MOBILE
-       ========================= */
-    @media (max-width: 900px){
-      .nav-inner{
-        min-height:64px;
-        padding:0 14px;
-        flex-wrap:wrap;
-      }
-
-      .hamburger{
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-      }
-
-      .navbar{
-        display:none;
-        width:100%;
-        flex-direction:column;
-        align-items:stretch;
-        gap:8px;
-        padding:8px 0 14px;
-        margin-top:2px;
-      }
-
-      .navbar.show{
-        display:flex;
-      }
-
-      .navbar > li{
-        width:100%;
-      }
-
-      .navbar > li > a{
-        width:100%;
-        justify-content:space-between;
-        background:rgba(255,255,255,0.03);
-        border:1px solid rgba(255,255,255,0.05);
-        border-radius:12px;
-        padding:13px 14px;
-      }
-
-      .navbar > li > a::after{
-        display:none;
-      }
-
-  .submenu::before{
-    display:none;
-  }
-
-      .submenu{
-        position:relative;
-        top:auto;
-        left:auto;
-        min-width:unset;
-        margin-top:8px;
-        padding:8px;
-        border-radius:14px;
-        background:rgba(255,255,255,0.05);
-        border:1px solid rgba(255,255,255,0.06);
-        box-shadow:none;
-
-        opacity:1;
-        visibility:visible;
-        transform:none;
-        pointer-events:auto;
-        display:none;
-      }
-
-      .dropdown.show .submenu{
-        display:flex;
-      }
-
-      .submenu a{
-        font-size:0.94rem;
-        padding:10px 12px;
-      }
-
+    @media (max-width:900px){
       .home-wrap{
         padding:14px 10px 20px;
       }
@@ -165,7 +73,7 @@
 </head>
 
 <body>
-  <nav>
+  <nav class="site-nav">
     <div class="nav-inner">
       <div class="nav-left">
         <span id="hamburger" class="hamburger">☰</span>
@@ -247,45 +155,8 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      const hamburger = document.getElementById("hamburger");
-      const mainMenu = document.getElementById("mainMenu");
-      const submenuToggles = document.querySelectorAll(".toggle-submenu");
-      const isMobile = () => window.innerWidth <= 900;
-
-      hamburger?.addEventListener("click", () => {
-        mainMenu.classList.toggle("show");
-      });
-
-      submenuToggles.forEach(toggle => {
-        toggle.addEventListener("click", function (e) {
-          if (!isMobile()) return;
-          e.preventDefault();
-
-          const parent = this.closest(".dropdown");
-          const alreadyOpen = parent.classList.contains("show");
-
-          document.querySelectorAll(".dropdown.show").forEach(item => {
-            item.classList.remove("show");
-          });
-
-          if (!alreadyOpen) {
-            parent.classList.add("show");
-          }
-        });
-      });
-
-      document.addEventListener("click", (e) => {
-        if (isMobile()) return;
-
-        const isInsideDropdown = e.target.closest(".dropdown");
-        if (!isInsideDropdown) {
-          document.querySelectorAll(".dropdown.show").forEach(item => {
-            item.classList.remove("show");
-          });
-        }
-      });
-
       const iframe = document.getElementById("gazzettaFrame");
+
       if (iframe) {
         iframe.addEventListener("load", () => {
           resizeGazzetta();
@@ -295,16 +166,10 @@
         });
       }
 
-      window.addEventListener("resize", () => {
-        if (!isMobile()) {
-          mainMenu.classList.remove("show");
-          document.querySelectorAll(".dropdown.show").forEach(item => {
-            item.classList.remove("show");
-          });
-        }
-        resizeGazzetta();
-      });
+      window.addEventListener("resize", resizeGazzetta);
     });
   </script>
+
+  <script src="navbar.js"></script>
 </body>
 </html>
