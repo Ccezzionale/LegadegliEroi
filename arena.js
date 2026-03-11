@@ -1,4 +1,3 @@
-
 const squadre = [
   { nome: "Rubinkebab", logo: "img/Rubinkebab.png", eliminata: true, ultimaEliminata: true },
   { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png", eliminata: true, ultimaEliminata: false },
@@ -15,47 +14,107 @@ const squadre = [
   { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png", eliminata: true, ultimaEliminata: false },
   { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.png", eliminata: true, ultimaEliminata: false },
   { nome: "FC Disoneste", logo: "img/FC Disoneste.png", eliminata: false, ultimaEliminata: false },
- { nome: "Athletic Pongao", logo: "img/Athletic Pongao.png", eliminata: true, ultimaEliminata: false }
+  { nome: "Athletic Pongao", logo: "img/Athletic Pongao.png", eliminata: true, ultimaEliminata: false }
 ];
 
 const center = document.getElementById("arena-center");
+const arena = document.querySelector(".arena");
 
 const ultimaEliminata = squadre.find(s => s.ultimaEliminata);
 const inGioco = squadre.filter(s => !s.eliminata);
+const eliminate = squadre.filter(s => s.eliminata);
 
-if (inGioco.length === 1) {
-  const vincitore = inGioco[0];
+const turnoAttualeEl = document.getElementById("turno-attuale");
+const viveAttualiEl = document.getElementById("vive-attuali");
+const eliminateAttualiEl = document.getElementById("eliminate-attuali");
+
+const totaleSquadre = squadre.length;
+const sopravvissute = inGioco.length;
+const eliminateCount = eliminate.length;
+const turnoAttuale = eliminateCount > 0 ? eliminateCount : 1;
+
+if (turnoAttualeEl) turnoAttualeEl.textContent = turnoAttuale;
+if (viveAttualiEl) viveAttualiEl.textContent = sopravvissute;
+if (eliminateAttualiEl) eliminateAttualiEl.textContent = eliminateCount;
+
+function renderCenter() {
+  if (inGioco.length === 1) {
+    const vincitore = inGioco[0];
+    center.innerHTML = `
+      <div class="eliminata-wrapper">
+        <div class="center-ring"></div>
+        <img src="${vincitore.logo}" class="eliminata-logo" alt="${vincitore.nome}" />
+        <div class="eliminata-testo vincitore-box">
+          <span class="label-top">🏆 Ultimo sopravvissuto</span>
+          <span class="main-name">${vincitore.nome}</span>
+        </div>
+        <div class="centro-caption">L’arena ha emesso il suo verdetto finale</div>
+      </div>
+    `;
+    return;
+  }
+
+  if (ultimaEliminata) {
+    center.innerHTML = `
+      <div class="eliminata-wrapper">
+        <div class="center-ring"></div>
+        <img src="${ultimaEliminata.logo}" class="eliminata-logo" alt="${ultimaEliminata.nome}" />
+        <div class="eliminata-testo">
+          <span class="label-top">❌ Ultima eliminata</span>
+          <span class="main-name">${ultimaEliminata.nome}</span>
+        </div>
+        <div class="centro-caption">Il cerchio si stringe. La sopravvivenza no.</div>
+      </div>
+    `;
+    return;
+  }
+
   center.innerHTML = `
     <div class="eliminata-wrapper">
-      <img src="${vincitore.logo}" class="eliminata-logo" />
-      <div class="eliminata-testo" style="color: gold; text-shadow: 1px 1px 5px #000;">🏆 Vincitore<br>${vincitore.nome}</div>
+      <div class="center-ring"></div>
+      <div class="eliminata-testo">
+        <span class="label-top">⚔️ Sfida in corso</span>
+        <span class="main-name">Nessun verdetto ancora</span>
+      </div>
     </div>
   `;
-} else if (ultimaEliminata) {
-  center.innerHTML = `
-    <div class="eliminata-wrapper">
-      <img src="${ultimaEliminata.logo}" class="eliminata-logo" />
-      <div class="eliminata-testo">❌ Eliminata<br>${ultimaEliminata.nome}</div>
-    </div>
-  `;
-} else {
-  center.innerHTML = "Sfida in corso";
 }
 
-const arena = document.querySelector(".arena");
-const r = 260, cx = 300, cy = 300;
+function renderArenaTeams() {
+  const cx = 350;
+  const cy = 350;
+  const r = 255;
 
-squadre.forEach((s, i) => {
-  const angle = (2 * Math.PI / squadre.length) * i;
-  const x = cx + r * Math.cos(angle);
-  const y = cy + r * Math.sin(angle);
-  const div = document.createElement("div");
-  div.className = "squadra" + (s.eliminata ? " eliminata" : "");
-  div.style.left = `${x}px`;
-  div.style.top = `${y}px`;
-  const img = document.createElement("img");
-  img.src = s.logo;
-  img.alt = s.nome;
-  div.appendChild(img);
-  arena.appendChild(div);
-});
+  squadre.forEach((s, i) => {
+    const angle = (-Math.PI / 2) + (2 * Math.PI / squadre.length) * i;
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
+
+    const div = document.createElement("div");
+    div.className = "squadra";
+
+    if (s.eliminata) {
+      div.classList.add("eliminata");
+    } else {
+      div.classList.add("in-gioco");
+    }
+
+    if (s.ultimaEliminata) {
+      div.classList.add("recente");
+    }
+
+    div.style.left = `${x}px`;
+    div.style.top = `${y}px`;
+    div.title = s.nome;
+
+    const img = document.createElement("img");
+    img.src = s.logo;
+    img.alt = s.nome;
+
+    div.appendChild(img);
+    arena.appendChild(div);
+  });
+}
+
+renderCenter();
+renderArenaTeams();
