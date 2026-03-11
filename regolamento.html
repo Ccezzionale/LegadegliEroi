@@ -834,25 +834,7 @@ siamo lieti di presentarvi una nuova e coinvolgente modalità di gioco per il fa
   </details>
 </section>
     
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const hamburger = document.getElementById("hamburger");
-      const mainMenu = document.getElementById("mainMenu");
-      const submenuToggles = document.querySelectorAll(".toggle-submenu");
-
-      hamburger?.addEventListener("click", () => {
-        mainMenu.classList.toggle("show");
-      });
-
-      submenuToggles.forEach(toggle => {
-        toggle.addEventListener("click", function (e) {
-          e.preventDefault();
-          const parent = this.closest(".dropdown");
-          parent.classList.toggle("show");
-        });
-      });
-    });
-  </script>
+ <script src="navbar.js"></script>
 
 <script>
 function cercaNelRegolamento() {
