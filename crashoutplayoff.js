@@ -6,37 +6,57 @@ const LOGO_EXT = ".png";
 // PUNTEGGI (best-of-5: 0..3)
 const SCORES = {
   // Round 1 — Left
-  L1:  { home: 3, away: 2 },
-  L2:  { home: 3, away: 2 },
-  L3:  { home: 3, away: 1 },
-  L4:  { home: 3, away: 1 },
+  L1:   { home: 3, away: 2 },
+  L2:   { home: 3, away: 2 },
+  L3:   { home: 3, away: 1 },
+  L4:   { home: 3, away: 1 },
+
   // Round 1 — Right
-  R1:  { home: 3, away: 1 },
-  R2:  { home: 3, away: 2 },
-  R3:  { home: 3, away: 1 },
-  R4:  { home: 3, away: 2 },
+  R1:   { home: 3, away: 1 },
+  R2:   { home: 3, away: 2 },
+  R3:   { home: 3, away: 1 },
+  R4:   { home: 3, away: 2 },
+
   // Semifinali
-  LSF1:{ home: 3, away: 2 },
-  LSF2:{ home: 3, away: 0 },
-  RSF1:{ home: 0, away: 3 },
-  RSF2:{ home: 2, away: 3 },
-  // Finali di Conference
-  LCF: { home: 1, away: 3 },
-  RCF: { home: 3, away: 1 },
+  LSF1: { home: 3, away: 2 },
+  LSF2: { home: 3, away: 0 },
+  RSF1: { home: 0, away: 3 },
+  RSF2: { home: 2, away: 3 },
+
+  // Finali di conference
+  LCF:  { home: 1, away: 3 },
+  RCF:  { home: 3, away: 1 },
+
   // Finals
-  F:   { home: 1, away: 3 },
+  F:    { home: 1, away: 3 },
 };
 
 // ======== UTILS ========
-const $  = (sel, root = document) => root.querySelector(sel);
+const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
 function urlNoCache(url) {
   const sep = url.includes("?") ? "&" : "?";
   return `${url}${sep}_cb=${Date.now()}`;
 }
-function isNumeric(v){ return /^\d+$/.test((v ?? "").toString().trim()); }
-function logoSrc(team){ return encodeURI(`${LOGO_BASE_PATH}${team}${LOGO_EXT}`); }
+
+function isNumeric(v) {
+  return /^\d+$/.test((v ?? "").toString().trim());
+}
+
+function logoSrc(team) {
+  return encodeURI(`${LOGO_BASE_PATH}${team}${LOGO_EXT}`);
+}
+
+function clamp03(n) {
+  n = Number(n || 0);
+  return Math.max(0, Math.min(3, n));
+}
+
+function getScoreFor(seriesId) {
+  const s = SCORES?.[seriesId] || {};
+  return { home: clamp03(s.home), away: clamp03(s.away) };
+}
 
 // ======== NAVBAR ========
 document.addEventListener("DOMContentLoaded", () => {
@@ -45,12 +65,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const submenuToggles = $$(".toggle-submenu");
 
   hamburger?.addEventListener("click", () => {
-    mainMenu.classList.toggle("show");
+    mainMenu?.classList.toggle("show");
   });
-  submenuToggles.forEach(t => {
-    t.addEventListener("click", e => {
+
+  submenuToggles.forEach(toggle => {
+    toggle.addEventListener("click", e => {
       e.preventDefault();
-      t.closest(".dropdown")?.classList.toggle("show");
+      toggle.closest(".dropdown")?.classList.toggle("show");
     });
   });
 });
@@ -59,170 +80,285 @@ document.addEventListener("DOMContentLoaded", () => {
 async function loadStandings() {
   const res = await fetch(urlNoCache(URL_STANDINGS));
   const text = await res.text();
-  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+
+  const lines = text
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(Boolean);
 
   const entries = [];
+
   for (const line of lines) {
     const cells = line.split(",");
     const pos = cells[0]?.trim();
     const name = cells[1]?.trim();
+
     if (!isNumeric(pos) || !name) continue;
-    entries.push({ seed: Number(pos), team: name });
+
+    entries.push({
+      seed: Number(pos),
+      team: name
+    });
   }
-  entries.sort((a,b) => a.seed - b.seed);
-  return entries.slice(0,16);
+
+  entries.sort((a, b) => a.seed - b.seed);
+  return entries.slice(0, 16);
 }
 
 // ======== BRACKET MODEL ========
 function makeRound1Pairs(seeds) {
   const bySeed = Object.fromEntries(seeds.map(x => [x.seed, x]));
+
   return {
     left: [
-      { id: "L1", home: bySeed[1],  away: bySeed[16] },
-      { id: "L2", home: bySeed[8],  away: bySeed[9]  },
-      { id: "L3", home: bySeed[5],  away: bySeed[12] },
-      { id: "L4", home: bySeed[4],  away: bySeed[13] },
+      { id: "L1", home: bySeed[1], away: bySeed[16] },
+      { id: "L2", home: bySeed[8], away: bySeed[9] },
+      { id: "L3", home: bySeed[5], away: bySeed[12] },
+      { id: "L4", home: bySeed[4], away: bySeed[13] },
     ],
     right: [
-      { id: "R1", home: bySeed[3],  away: bySeed[14] },
-      { id: "R2", home: bySeed[6],  away: bySeed[11] },
-      { id: "R3", home: bySeed[7],  away: bySeed[10] },
-      { id: "R4", home: bySeed[2],  away: bySeed[15] },
+      { id: "R1", home: bySeed[3], away: bySeed[14] },
+      { id: "R2", home: bySeed[6], away: bySeed[11] },
+      { id: "R3", home: bySeed[7], away: bySeed[10] },
+      { id: "R4", home: bySeed[2], away: bySeed[15] },
     ]
   };
 }
-function makeEmptyMatch(id){
-  return { id, home: { seed: "", team: "TBD" }, away: { seed: "", team: "TBD" } };
-}
-function makeBracketStructure(seeds){
-  const r1 = makeRound1Pairs(seeds);
-  const leftSF  = [ makeEmptyMatch("LSF1"), makeEmptyMatch("LSF2") ];
-  const rightSF = [ makeEmptyMatch("RSF1"), makeEmptyMatch("RSF2") ];
-  const leftCF  = [ makeEmptyMatch("LCF") ];
-  const rightCF = [ makeEmptyMatch("RCF") ];
-  const finals  = [ makeEmptyMatch("F") ];
-  return { r1, leftSF, rightSF, leftCF, rightCF, finals };
+
+function makeEmptyMatch(id) {
+  return {
+    id,
+    home: { seed: "", team: "TBD" },
+    away: { seed: "", team: "TBD" }
+  };
 }
 
-// ======== RENDER ========
+function makeBracketStructure(seeds) {
+  const r1 = makeRound1Pairs(seeds);
+
+  return {
+    r1,
+    leftSF:  [makeEmptyMatch("LSF1"), makeEmptyMatch("LSF2")],
+    rightSF: [makeEmptyMatch("RSF1"), makeEmptyMatch("RSF2")],
+    leftCF:  [makeEmptyMatch("LCF")],
+    rightCF: [makeEmptyMatch("RCF")],
+    finals:  [makeEmptyMatch("F")]
+  };
+}
+
+// ======== WINNERS ========
+const TBD = { seed: "", team: "TBD" };
+
+function winnerOf(match, seriesId) {
+  const s = getScoreFor(seriesId);
+
+  if (s.home >= 3 && s.home > s.away) return match.home;
+  if (s.away >= 3 && s.away > s.home) return match.away;
+
+  return null;
+}
+
+function propagateWinners(bracket) {
+  const [L1m, L2m, L3m, L4m] = bracket.r1.left;
+  const [R1m, R2m, R3m, R4m] = bracket.r1.right;
+
+  const wL1 = winnerOf(L1m, "L1");
+  const wL2 = winnerOf(L2m, "L2");
+  const wL3 = winnerOf(L3m, "L3");
+  const wL4 = winnerOf(L4m, "L4");
+
+  bracket.leftSF[0].home = wL1 || TBD;
+  bracket.leftSF[0].away = wL2 || TBD;
+  bracket.leftSF[1].home = wL3 || TBD;
+  bracket.leftSF[1].away = wL4 || TBD;
+
+  const wR1 = winnerOf(R1m, "R1");
+  const wR2 = winnerOf(R2m, "R2");
+  const wR3 = winnerOf(R3m, "R3");
+  const wR4 = winnerOf(R4m, "R4");
+
+  bracket.rightSF[0].home = wR1 || TBD;
+  bracket.rightSF[0].away = wR2 || TBD;
+  bracket.rightSF[1].home = wR3 || TBD;
+  bracket.rightSF[1].away = wR4 || TBD;
+
+  const wLSF1 = winnerOf(bracket.leftSF[0], "LSF1");
+  const wLSF2 = winnerOf(bracket.leftSF[1], "LSF2");
+  bracket.leftCF[0].home = wLSF1 || TBD;
+  bracket.leftCF[0].away = wLSF2 || TBD;
+
+  const wRSF1 = winnerOf(bracket.rightSF[0], "RSF1");
+  const wRSF2 = winnerOf(bracket.rightSF[1], "RSF2");
+  bracket.rightCF[0].home = wRSF1 || TBD;
+  bracket.rightCF[0].away = wRSF2 || TBD;
+
+  const wLCF = winnerOf(bracket.leftCF[0], "LCF");
+  const wRCF = winnerOf(bracket.rightCF[0], "RCF");
+  bracket.finals[0].home = wLCF || TBD;
+  bracket.finals[0].away = wRCF || TBD;
+}
+
+// ======== CLEAR ========
 function clearBracket() {
   [
-    "left-round-1","left-round-2","left-round-3",
-    "right-round-1","right-round-2","right-round-3",
-    "finals-top","finals-bottom",      // <— aggiunti
-    "bracket-mobile"
-  ].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ""; });
+    "left-round-1",
+    "left-round-2",
+    "left-round-3",
+    "right-round-1",
+    "right-round-2",
+    "right-round-3",
+    "finals-top",
+    "finals-bottom"
+  ].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = "";
+  });
 }
 
+// ======== MATCH UI ========
+function applyScoresToNode(node, seriesId) {
+  const scoreBoxes = node.querySelectorAll(".score-box");
+  const s = getScoreFor(seriesId);
 
-function applyScoresToNode(node, seriesId){
-  const [homeBox, awayBox] = node.querySelectorAll(".score-box");
-  const s = SCORES?.[seriesId] || { home:0, away:0 };
-  homeBox.textContent = String(s.home ?? 0);
-  awayBox.textContent = String(s.away ?? 0);
-  homeBox.setAttribute("contenteditable","false");
-  awayBox.setAttribute("contenteditable","false");
+  if (scoreBoxes[0]) scoreBoxes[0].textContent = String(s.home);
+  if (scoreBoxes[1]) scoreBoxes[1].textContent = String(s.away);
+
+  scoreBoxes.forEach(box => {
+    box.setAttribute("contenteditable", "false");
+  });
+}
+
+function applyWinnerStyles(node, seriesId) {
+  const s = getScoreFor(seriesId);
+  const teams = node.querySelectorAll(".team");
+  const homeEl = teams[0];
+  const awayEl = teams[1];
+
+  if (homeEl && s.home >= 3 && s.home > s.away) {
+    homeEl.classList.add("is-winner");
+    node.classList.add("winner-home");
+  }
+
+  if (awayEl && s.away >= 3 && s.away > s.home) {
+    awayEl.classList.add("is-winner");
+    node.classList.add("winner-away");
+  }
 }
 
 function createMatchElement(match) {
-  const tpl  = document.getElementById("match-template");
+  const tpl = document.getElementById("match-template");
   const node = tpl.content.firstElementChild.cloneNode(true);
   node.dataset.series = match.id;
 
-  const [homeEl, awayEl]     = node.querySelectorAll(".team");
+  const [homeEl, awayEl] = node.querySelectorAll(".team");
   const [homeSeed, awaySeed] = node.querySelectorAll(".seed");
   const [homeLogo, awayLogo] = node.querySelectorAll(".logo");
 
   homeSeed.textContent = match.home.seed || "";
   awaySeed.textContent = match.away.seed || "";
 
-  homeLogo.alt = match.home.team;  awayLogo.alt = match.away.team;
-  if (match.home.team && match.home.team !== "TBD") homeLogo.src = logoSrc(match.home.team);
-  if (match.away.team && match.away.team !== "TBD") awayLogo.src = logoSrc(match.away.team);
-  homeLogo.onerror = () => { homeLogo.classList.add("hidden"); homeLogo.parentElement.classList.add("no-logo"); };
-  awayLogo.onerror = () => { awayLogo.classList.add("hidden"); awayLogo.parentElement.classList.add("no-logo"); };
-  homeEl.title = match.home.team;  awayEl.title = match.away.team;
+  homeLogo.alt = match.home.team;
+  awayLogo.alt = match.away.team;
 
-  applyScoresToNode(node, match.id);
-  return node;
-}
-
-function createFinalSide(teamObj, side /* 'home' | 'away' */, seriesId){
-  // Parto dalla card standard così ho gli stessi stili
-  const node = createMatchElement({
-    id: seriesId,
-    home: side === 'home' ? teamObj : { seed:"", team:"TBD" },
-    away: side === 'away' ? teamObj : { seed:"", team:"TBD" },
-  });
-
-  // tengo solo la riga della squadra giusta
-  const rows = node.querySelectorAll('.team');
-  if (side === 'home') rows[1]?.remove();
-  else rows[0]?.remove();
-
-  node.classList.add('one-team');
-
-  // sistema il punteggio: prendi solo quello del lato giusto
-  const s = getScoreFor(seriesId);
-  const scoreBox = node.querySelector('.score-box');
-  scoreBox.textContent = String(side === 'home' ? s.home : s.away);
-
-  return node;
-}
-
-// --- RENDER HELPERS (aggiungi dopo createMatchElement) ----
-function renderRound(containerId, matches){
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  matches.forEach(m => container.appendChild(createMatchElement(m)));
-}
-
-function renderMobileList(bracket){
-  const mob = document.getElementById("bracket-mobile");
-  if (!mob) return;
-
-  const makeGroup = (title, matches) => {
-    const wrp = document.createElement("section");
-    wrp.className = "round-mobile";
-    wrp.innerHTML = `<h3>${title}</h3>`;
-    matches.forEach(m => wrp.appendChild(createMatchElement(m)));
-    mob.appendChild(wrp);
-  };
-
-  mob.innerHTML = "";
-  makeGroup("Round 1 — Left",  bracket.r1.left);
-  makeGroup("Round 1 — Right", bracket.r1.right);
-  makeGroup("Semifinali — Left",  bracket.leftSF);
-  makeGroup("Semifinali — Right", bracket.rightSF);
-  makeGroup("Finale Conference — Left", bracket.leftCF);
-  makeGroup("Finale Conference — Right", bracket.rightCF);
-  makeGroup("Finals", bracket.finals);
-}
-
-
-// ======== WIRES (connettori) ========
-
-// Crea (una volta sola) il layer dove disegnare i fili e lo ripulisce
-function ensureWireLayer(clear = false) {
-  const bracket = document.querySelector('.bracket');
-  if (!bracket) return null;
-
-  if (getComputedStyle(bracket).position === 'static') {
-    bracket.style.position = 'relative';
+  if (match.home.team && match.home.team !== "TBD") {
+    homeLogo.src = logoSrc(match.home.team);
   }
 
-  const layers = bracket.querySelectorAll('.wire-layer');
-  layers.forEach((n, i) => { if (i > 0) n.remove(); });
+  if (match.away.team && match.away.team !== "TBD") {
+    awayLogo.src = logoSrc(match.away.team);
+  }
+
+  homeLogo.onerror = () => {
+    homeLogo.classList.add("hidden");
+    homeLogo.parentElement.classList.add("no-logo");
+  };
+
+  awayLogo.onerror = () => {
+    awayLogo.classList.add("hidden");
+    awayLogo.parentElement.classList.add("no-logo");
+  };
+
+  homeEl.title = match.home.team;
+  awayEl.title = match.away.team;
+
+  applyScoresToNode(node, match.id);
+  applyWinnerStyles(node, match.id);
+
+  return node;
+}
+
+function createFinalSide(teamObj, side, seriesId) {
+  const node = createMatchElement({
+    id: seriesId,
+    home: side === "home" ? teamObj : { seed: "", team: "TBD" },
+    away: side === "away" ? teamObj : { seed: "", team: "TBD" }
+  });
+
+  const rows = node.querySelectorAll(".team");
+
+  if (side === "home") {
+    rows[1]?.remove();
+  } else {
+    rows[0]?.remove();
+  }
+
+  node.classList.add("one-team");
+
+  const scoreBox = node.querySelector(".score-box");
+  const s = getScoreFor(seriesId);
+
+  if (scoreBox) {
+    scoreBox.textContent = String(side === "home" ? s.home : s.away);
+  }
+
+  const remainingTeam = node.querySelector(".team");
+  if (remainingTeam) {
+    const homeWon = s.home >= 3 && s.home > s.away;
+    const awayWon = s.away >= 3 && s.away > s.home;
+
+    if ((side === "home" && homeWon) || (side === "away" && awayWon)) {
+      remainingTeam.classList.add("is-winner");
+      node.classList.add("winner-both");
+    }
+  }
+
+  return node;
+}
+
+// ======== RENDER ========
+function renderRound(containerId, matches) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  matches.forEach(match => {
+    container.appendChild(createMatchElement(match));
+  });
+}
+
+// ======== WIRES ========
+function ensureWireLayer(clear = false) {
+  const bracket = document.querySelector(".bracket");
+  if (!bracket) return null;
+
+  if (getComputedStyle(bracket).position === "static") {
+    bracket.style.position = "relative";
+  }
+
+  const layers = bracket.querySelectorAll(".wire-layer");
+  layers.forEach((layer, index) => {
+    if (index > 0) layer.remove();
+  });
 
   let layer = layers[0];
+
   if (!layer) {
-    layer = document.createElement('div');
-    layer.className = 'wire-layer';
+    layer = document.createElement("div");
+    layer.className = "wire-layer";
     Object.assign(layer.style, {
-      position: 'absolute',
-      inset: '0',
-      pointerEvents: 'none',
-      zIndex: '0' // dietro alle card
+      position: "absolute",
+      inset: "0",
+      pointerEvents: "none",
+      zIndex: "0"
     });
     bracket.appendChild(layer);
   }
@@ -231,202 +367,127 @@ function ensureWireLayer(clear = false) {
   return layer;
 }
 
-// Aggiunge un segmento (div) al layer
 function addSeg(layer, x, y, w, h) {
-  const d = document.createElement('div');
-  d.className = 'wire';
-  Object.assign(d.style, {
-    position: 'absolute',
-    left: x + 'px',
-    top: y + 'px',
-    width: w + 'px',
-    height: h + 'px',
-    background: 'var(--wire-color)',   // usa la CSS var (emerald)
-    borderRadius: (h <= 2 || w <= 2) ? '1px' : '3px'
+  const seg = document.createElement("div");
+  seg.className = "wire";
+
+  Object.assign(seg.style, {
+    position: "absolute",
+    left: `${x}px`,
+    top: `${y}px`,
+    width: `${w}px`,
+    height: `${h}px`,
+    background: "var(--wire-color)",
+    borderRadius: (h <= 3 || w <= 3) ? "2px" : "6px"
   });
-  layer.appendChild(d);
+
+  layer.appendChild(seg);
 }
 
-// helper posizioni
-const rectOf = el => el.getBoundingClientRect();
-const relToBracket = pt => {
-  const p = document.querySelector('.bracket').getBoundingClientRect();
-  return { x: pt.x - p.left, y: pt.y - p.top };
-};
-
-// --- punti medi relativi al contenitore .bracket (serve a drawWires)
-const midRight = (el) => {
-  const r = el.getBoundingClientRect();
-  const p = document.querySelector('.bracket').getBoundingClientRect();
-  return { x: r.right - p.left, y: r.top - p.top + r.height / 2 };
-};
-const midLeft = (el) => {
-  const r = el.getBoundingClientRect();
-  const p = document.querySelector('.bracket').getBoundingClientRect();
-  return { x: r.left - p.left, y: r.top - p.top + r.height / 2 };
-};
-
-
-// ridisegna tutti i connettori con ancore stabili
 function drawWires() {
   const layer = ensureWireLayer(true);
   if (!layer) return;
 
-  const H_PAD  = 14; // quanto vicino al target mettiamo la verticale
-  const STROKE = 3;  // spessore linea
+  const bracketRect = document.querySelector(".bracket").getBoundingClientRect();
+  const H_PAD = 16;
+  const STROKE = 4;
 
   function elbow(fromEl, toEl, nearTo = false) {
-    const p  = document.querySelector('.bracket').getBoundingClientRect();
     const fr = fromEl.getBoundingClientRect();
     const tr = toEl.getBoundingClientRect();
 
-    // punti medi dei bordi
-    let ax = fr.right - p.left;                 // default: bordo destro del FROM
-    let ay = fr.top - p.top + fr.height / 2;
-    let bx = tr.left  - p.left;                 // default: bordo sinistro del TO
-    let by = tr.top - p.top + tr.height / 2;
+    let ax = fr.right - bracketRect.left;
+    let ay = fr.top - bracketRect.top + fr.height / 2;
 
-    // se il FROM è a destra del TO, invertiamo i bordi (si va verso sinistra)
+    let bx = tr.left - bracketRect.left;
+    let by = tr.top - bracketRect.top + tr.height / 2;
+
     if (ax > bx) {
-      ax = fr.left  - p.left;                   // esci dal bordo sinistro del FROM
-      bx = tr.right - p.left;                   // entra dal bordo destro del TO
+      ax = fr.left - bracketRect.left;
+      bx = tr.right - bracketRect.left;
     }
 
-    // direzione orizzontale: +1 -> verso destra, -1 -> verso sinistra
     const dir = (bx > ax) ? 1 : -1;
-
-    // x del “gomito” (verticale): vicino al target se richiesto
     const xk = nearTo ? (bx - dir * H_PAD) : (ax + (bx - ax) / 2);
 
-    // orizzontale FROM -> xk
     addSeg(layer, Math.min(ax, xk), ay - STROKE / 2, Math.abs(xk - ax), STROKE);
-    // verticale xk
     addSeg(layer, xk - STROKE / 2, Math.min(ay, by), STROKE, Math.abs(by - ay));
-    // orizzontale xk -> TO
     addSeg(layer, Math.min(xk, bx), by - STROKE / 2, Math.abs(bx - xk), STROKE);
   }
 
   const MAP = [
-    // LEFT: R1 → R2
-    {from:'#left-round-1 .match:nth-of-type(1)', to:'#left-round-2 .match:nth-of-type(1)'},
-    {from:'#left-round-1 .match:nth-of-type(2)', to:'#left-round-2 .match:nth-of-type(1)'},
-    {from:'#left-round-1 .match:nth-of-type(3)', to:'#left-round-2 .match:nth-of-type(2)'},
-    {from:'#left-round-1 .match:nth-of-type(4)', to:'#left-round-2 .match:nth-of-type(2)'},
-    // LEFT: R2 → R3 (verticale vicino al target)
-    {from:'#left-round-2 .match:nth-of-type(1)', to:'#left-round-3 .match:nth-of-type(1)', nearTo:true},
-    {from:'#left-round-2 .match:nth-of-type(2)', to:'#left-round-3 .match:nth-of-type(1)', nearTo:true},
+    { from: "#left-round-1 .match:nth-of-type(1)", to: "#left-round-2 .match:nth-of-type(1)" },
+    { from: "#left-round-1 .match:nth-of-type(2)", to: "#left-round-2 .match:nth-of-type(1)" },
+    { from: "#left-round-1 .match:nth-of-type(3)", to: "#left-round-2 .match:nth-of-type(2)" },
+    { from: "#left-round-1 .match:nth-of-type(4)", to: "#left-round-2 .match:nth-of-type(2)" },
 
-    // RIGHT: R1 → R2
-    {from:'#right-round-1 .match:nth-of-type(1)', to:'#right-round-2 .match:nth-of-type(1)'},
-    {from:'#right-round-1 .match:nth-of-type(2)', to:'#right-round-2 .match:nth-of-type(1)'},
-    {from:'#right-round-1 .match:nth-of-type(3)', to:'#right-round-2 .match:nth-of-type(2)'},
-    {from:'#right-round-1 .match:nth-of-type(4)', to:'#right-round-2 .match:nth-of-type(2)'},
-    // RIGHT: R2 → R3 (verticale vicino al target)
-    {from:'#right-round-2 .match:nth-of-type(1)', to:'#right-round-3 .match:nth-of-type(1)', nearTo:true},
-    {from:'#right-round-2 .match:nth-of-type(2)', to:'#right-round-3 .match:nth-of-type(1)', nearTo:true},
+    { from: "#left-round-2 .match:nth-of-type(1)", to: "#left-round-3 .match:nth-of-type(1)", nearTo: true },
+    { from: "#left-round-2 .match:nth-of-type(2)", to: "#left-round-3 .match:nth-of-type(1)", nearTo: true },
 
-   // FINALS
-{from:'#left-round-3  .match:nth-of-type(1)', to:'#finals-top .match:nth-of-type(1)'},    // Ovest -> top
-{from:'#right-round-3 .match:nth-of-type(1)', to:'#finals-bottom .match:nth-of-type(1)'}  // Est -> bottom
+    { from: "#right-round-1 .match:nth-of-type(1)", to: "#right-round-2 .match:nth-of-type(1)" },
+    { from: "#right-round-1 .match:nth-of-type(2)", to: "#right-round-2 .match:nth-of-type(1)" },
+    { from: "#right-round-1 .match:nth-of-type(3)", to: "#right-round-2 .match:nth-of-type(2)" },
+    { from: "#right-round-1 .match:nth-of-type(4)", to: "#right-round-2 .match:nth-of-type(2)" },
 
+    { from: "#right-round-2 .match:nth-of-type(1)", to: "#right-round-3 .match:nth-of-type(1)", nearTo: true },
+    { from: "#right-round-2 .match:nth-of-type(2)", to: "#right-round-3 .match:nth-of-type(1)", nearTo: true },
+
+    { from: "#left-round-3 .match:nth-of-type(1)", to: "#finals-top .match:nth-of-type(1)" },
+    { from: "#right-round-3 .match:nth-of-type(1)", to: "#finals-bottom .match:nth-of-type(1)" }
   ];
 
-  MAP.forEach(({from, to, nearTo}) => {
-    const f = document.querySelector(from);
-    const t = document.querySelector(to);
-    if (f && t) elbow(f, t, !!nearTo);
+  MAP.forEach(({ from, to, nearTo }) => {
+    const fromEl = document.querySelector(from);
+    const toEl = document.querySelector(to);
+    if (fromEl && toEl) elbow(fromEl, toEl, !!nearTo);
   });
 }
 
-
-
-// ======== BUILD & ACTIONS ========
-function clamp03(n){ n = Number(n||0); return Math.max(0, Math.min(3, n)); }
-function getScoreFor(seriesId){
-  const s = SCORES?.[seriesId] || {};
-  return { home: clamp03(s.home), away: clamp03(s.away) };
-}
-function winnerOf(match, seriesId){
-  const s = getScoreFor(seriesId);
-  if (s.home >= 3 && s.home > s.away) return match.home;
-  if (s.away >= 3 && s.away > s.home) return match.away;
-  return null;
-}
-const TBD = { seed: "", team: "TBD" };
-
-function propagateWinners(bracket){
-  // round 1
-  const [L1m,L2m,L3m,L4m] = bracket.r1.left;
-  const [R1m,R2m,R3m,R4m] = bracket.r1.right;
-
-  // semifinali (left)
-  const wL1 = winnerOf(L1m, 'L1'); const wL2 = winnerOf(L2m, 'L2');
-  const wL3 = winnerOf(L3m, 'L3'); const wL4 = winnerOf(L4m, 'L4');
-  bracket.leftSF[0].home = wL1 || TBD;  bracket.leftSF[0].away = wL2 || TBD; // LSF1
-  bracket.leftSF[1].home = wL3 || TBD;  bracket.leftSF[1].away = wL4 || TBD; // LSF2
-
-  // semifinali (right)
-  const wR1 = winnerOf(R1m, 'R1'); const wR2 = winnerOf(R2m, 'R2');
-  const wR3 = winnerOf(R3m, 'R3'); const wR4 = winnerOf(R4m, 'R4');
-  bracket.rightSF[0].home = wR1 || TBD; bracket.rightSF[0].away = wR2 || TBD; // RSF1
-  bracket.rightSF[1].home = wR3 || TBD; bracket.rightSF[1].away = wR4 || TBD; // RSF2
-
-  // finali di conference
-  const wLSF1 = winnerOf(bracket.leftSF[0],  'LSF1');
-  const wLSF2 = winnerOf(bracket.leftSF[1],  'LSF2');
-  bracket.leftCF[0].home = wLSF1 || TBD;  bracket.leftCF[0].away = wLSF2 || TBD;
-
-  const wRSF1 = winnerOf(bracket.rightSF[0], 'RSF1');
-  const wRSF2 = winnerOf(bracket.rightSF[1], 'RSF2');
-  bracket.rightCF[0].home = wRSF1 || TBD; bracket.rightCF[0].away = wRSF2 || TBD;
-
-  // finals
-  const wLCF = winnerOf(bracket.leftCF[0],  'LCF');
-  const wRCF = winnerOf(bracket.rightCF[0], 'RCF');
-  bracket.finals[0].home = wLCF || TBD;
-  bracket.finals[0].away = wRCF || TBD;
-}
-
+// ======== BUILD ========
 async function buildBracket() {
   try {
     clearBracket();
+
     const seeds = await loadStandings();
-    if (seeds.length < 16) console.warn("Trovate meno di 16 squadre. Ne servono 16.");
+    if (seeds.length < 16) {
+      console.warn("Trovate meno di 16 squadre. Ne servono 16.");
+    }
 
     const bracket = makeBracketStructure(seeds);
     propagateWinners(bracket);
 
-    // --- Round 1 / 2 / 3 ---
-    renderRound("left-round-1",  bracket.r1.left);
+    renderRound("left-round-1", bracket.r1.left);
     renderRound("right-round-1", bracket.r1.right);
-    renderRound("left-round-2",  bracket.leftSF);
+    renderRound("left-round-2", bracket.leftSF);
     renderRound("right-round-2", bracket.rightSF);
-    renderRound("left-round-3",  bracket.leftCF);
+    renderRound("left-round-3", bracket.leftCF);
     renderRound("right-round-3", bracket.rightCF);
 
-    // --- Finals "split" (STEP 3.c) ---
-    const f = bracket.finals[0];           // { id:'F', home:…, away:… }
-    document.getElementById("finals-top")
-      .appendChild(createFinalSide(f.home, "home", "F"));
-    document.getElementById("finals-bottom")
-      .appendChild(createFinalSide(f.away, "away", "F"));
+    const finalMatch = bracket.finals[0];
 
-    // Connettori
+    document
+      .getElementById("finals-top")
+      ?.appendChild(createFinalSide(finalMatch.home, "home", "F"));
+
+    document
+      .getElementById("finals-bottom")
+      ?.appendChild(createFinalSide(finalMatch.away, "away", "F"));
+
     requestAnimationFrame(() => {
       drawWires();
       setTimeout(drawWires, 0);
     });
-  } catch (err) {
-    console.error("Errore costruzione bracket:", err);
+
+  } catch (error) {
+    console.error("Errore costruzione bracket:", error);
   }
-} // <-- chiude buildBracket
+}
 
-// ridisegna i fili al resize (una volta sola)
-window.addEventListener('resize', () => requestAnimationFrame(drawWires));
-
-// avvio pagina
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('refreshBracket')?.addEventListener('click', buildBracket);
-  buildBracket();
+// ======== EVENTS ========
+window.addEventListener("resize", () => {
+  requestAnimationFrame(drawWires);
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+  buildBracket();
+});
