@@ -29,6 +29,15 @@
   --radius-score: 12px;
 }
 
+.round-label,
+.finals-title{
+  display: none !important;
+}
+
+.trophy-caption{
+  display: none !important;
+}
+
 *{
   box-sizing: border-box;
 }
