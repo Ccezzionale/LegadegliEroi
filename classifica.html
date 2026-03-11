@@ -12,66 +12,67 @@
     <a href="index.html" class="home-icon">🏠</a>
     <ul class="navbar" id="mainMenu">
       <li><a href="rose.html">Rose</a></li>
-    <li class="dropdown">
-      <a href="#" class="toggle-submenu">Draft ▾</a>
-      <ul class="submenu">
-        <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
-        <li><a href="draft_conference.html">🟨 Conf.League</a></li>
-        <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
-      </ul>
-    </li>
-    <li class="dropdown">
-      <a href="#" class="toggle-submenu">Competizioni ▾</a>
-      <ul class="submenu">
-        <li><a href="classifica.html">📊 Classifiche</a></li>
-        <li><a href="playoff.html">🏆 Playoff</a></li>
-        <li><a href="arena.html">🏟️ Higlander</a></li>
-         <li><a href="crashoutcup.html">💥 Crash out Cup</a></li>
-        <li><a href="crashoutplayoff.html">💥 Crash out Cup - Playoff</a></li>
-        <li><a href="supercoppa.html">⭐ Supercoppa</a></li>
-         <li><a href="statistiche.html">🔎 Statistiche</a></li>
-      </ul>
-    </li>
-    <li><a href="svincolati.html">Svincolati</a></li>
-    <li><a href="chiamate.html">Waiver Wire</a></li>
-    <li class="dropdown">
-      <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
-      <ul class="submenu">
-   <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
-      <li><a href="albo.html">🏅  Medagliere</a></li>
-    </ul>
+
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Draft ▾</a>
+        <ul class="submenu">
+          <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
+          <li><a href="draft_conference.html">🟨 Conf.League</a></li>
+          <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+        </ul>
+      </li>
+
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Competizioni ▾</a>
+        <ul class="submenu">
+          <li><a href="classifica.html">📊 Classifiche</a></li>
+          <li><a href="playoff.html">🏆 Playoff</a></li>
+          <li><a href="arena.html">🏟️ Higlander</a></li>
+          <li><a href="crashoutcup.html">💥 Crash out Cup</a></li>
+          <li><a href="crashoutplayoff.html">💥 Crash out Cup - Playoff</a></li>
+          <li><a href="supercoppa.html">⭐ Supercoppa</a></li>
+          <li><a href="statistiche.html">🔎 Statistiche</a></li>
+        </ul>
+      </li>
+
+      <li><a href="svincolati.html">Svincolati</a></li>
+      <li><a href="chiamate.html">Waiver Wire</a></li>
+
+      <li class="dropdown">
+        <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
+        <ul class="submenu">
+          <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
+          <li><a href="albo.html">🏅 Medagliere</a></li>
+        </ul>
+      </li>
+
       <li><a href="regolamento.html">Regolamento</a></li>
+    </ul>
   </nav>
-  <main>
-    <h1>Classifica</h1>
-    <div class="switcher">
-      <button>Conference</button>
-      <button>Championship</button>
-      <button>Round Robin</button>
-      <button>Totale</button>
-    </div>
-  
-    <div id="classifica-container">
-      <table id="tabella-classifica">
-        <thead></thead>
-        <tbody></tbody>
-      </table>
-      <div id="classifica-mobile"></div>
-    </div>
 
-    <section id="raceSection" class="race-section">
-  <h2 class="race-title">Evoluzione classifica (Totale)</h2>
+  <main class="classifica-page">
+    <section class="classifica-hero">
+      <h1>Classifica Conference League</h1>
+      <p class="classifica-subtitle">Panoramica completa della stagione regolare</p>
+    </section>
 
-  <div class="race-controls">
-    <button id="racePrev" type="button">◀</button>
-    <input id="raceDay" type="range" min="1" max="38" value="1">
-    <button id="raceNext" type="button">▶</button>
-    <span id="raceLabel">Giornata 1</span>
-  </div>
+    <section class="classifica-card">
+      <div class="switcher">
+        <button class="active">Conference</button>
+        <button>Championship</button>
+        <button>Round Robin</button>
+        <button>Totale</button>
+      </div>
 
-  <div id="raceTrack" class="race-track"></div>
-</section>
+      <div id="classifica-container">
+        <table id="tabella-classifica">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
 
+        <div id="classifica-mobile"></div>
+      </div>
+    </section>
   </main>
 
   <script src="classifica.js"></script>
