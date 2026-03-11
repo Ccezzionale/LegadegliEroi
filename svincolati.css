@@ -112,26 +112,6 @@ input[type="text"], select{
   }
 
   nav.site-nav #mainMenu.navbar > li > a{
-    width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    padding:11px 13px;
-  }
-
-  nav.site-nav #mainMenu.navbar > li > a .caret{
-    margin-left:auto;
-    flex:0 0 auto;
-    display:inline-block;
-  }
-
-  #lista-giocatori-scroll{
-    max-height:300px;
-  }
-
-  @media (max-width: 900px){
-  nav.site-nav #mainMenu.navbar > li > a{
     width:100% !important;
     display:flex !important;
     align-items:center !important;
@@ -142,12 +122,20 @@ input[type="text"], select{
   }
 
   nav.site-nav #mainMenu.navbar > li > a .caret{
-    margin-left:auto !important;
-    flex:0 0 auto !important;
-    display:inline-block !important;
-    visibility:visible !important;
-    opacity:1 !important;
-    overflow:visible !important;
+    display:none !important;
+  }
+
+  nav.site-nav #mainMenu.navbar > li > a.toggle-submenu::after{
+    content:"▼";
+    margin-left:auto;
+    flex:0 0 auto;
+    display:inline-block;
+    color:#fff;
+    font-size:0.8rem;
+    line-height:1;
+  }
+
+  #lista-giocatori-scroll{
+    max-height:300px;
   }
 }
-
