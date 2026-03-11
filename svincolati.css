@@ -100,8 +100,8 @@ input[type="text"], select{
 
 @media (max-width: 900px){
   nav.site-nav{
-    position: static;
-    top: auto;
+    position: static !important;
+    top: auto !important;
   }
 
   nav.site-nav,
@@ -112,30 +112,30 @@ input[type="text"], select{
   }
 
   nav.site-nav #mainMenu.navbar > li > a{
-    width:100% !important;
-    display:flex !important;
-    align-items:center !important;
-    justify-content:space-between !important;
-    gap:12px !important;
-    padding:11px 13px !important;
-    overflow:visible !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    padding: 11px 13px !important;
+    overflow: visible !important;
   }
 
   nav.site-nav #mainMenu.navbar > li > a .caret{
-    display:none !important;
+    display: none !important;
   }
 
   nav.site-nav #mainMenu.navbar > li > a.toggle-submenu::after{
-    content:"▼";
-    margin-left:auto;
-    flex:0 0 auto;
-    display:inline-block;
-    color:#fff;
-    font-size:0.8rem;
-    line-height:1;
+    content: "▼";
+    margin-left: auto;
+    flex: 0 0 auto;
+    display: inline-block;
+    color: #fff;
+    font-size: 0.8rem;
+    line-height: 1;
   }
 
   #lista-giocatori-scroll{
-    max-height:300px;
+    max-height: 300px;
   }
 }
