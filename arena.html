@@ -1,57 +1,82 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Highlander Cup - Arena</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="arena.css" />
 </head>
 <body>
-<nav>
-  <div class="nav-left">
-    <span id="hamburger" class="hamburger">☰</span>
-    <a href="index.html" class="home-icon">🏠</a>
-    <ul class="navbar" id="mainMenu">
-      <li><a href="rose.html">Rose</a></li>
-    <li class="dropdown">
-      <a href="#" class="toggle-submenu">Draft ▾</a>
-      <ul class="submenu">
-        <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
-        <li><a href="draft_conference.html">🟨 Conf.League</a></li>
-        <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+
+  <nav>
+    <div class="nav-left">
+      <span id="hamburger" class="hamburger">☰</span>
+      <a href="index.html" class="home-icon">🏠</a>
+
+      <ul class="navbar" id="mainMenu">
+        <li><a href="rose.html">Rose</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">Draft ▾</a>
+          <ul class="submenu">
+            <li><a href="draft_championship.html">🟦 Conf.Championship</a></li>
+            <li><a href="draft_conference.html">🟨 Conf.League</a></li>
+            <li><a href="dinamico-draft.html">🧑‍💼 Draft 2026</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">Competizioni ▾</a>
+          <ul class="submenu">
+            <li><a href="classifica.html">📊 Classifiche</a></li>
+            <li><a href="playoff.html">🏆 Playoff</a></li>
+            <li><a href="arena.html">🏟️ Higlander</a></li>
+            <li><a href="crashoutcup.html">💥 Crash out Cup</a></li>
+            <li><a href="crashoutplayoff.html">💥 Crash out Cup - Playoff</a></li>
+            <li><a href="supercoppa.html">⭐ Supercoppa</a></li>
+            <li><a href="statistiche.html">🔎 Statistiche</a></li>
+          </ul>
+        </li>
+
+        <li><a href="svincolati.html">Svincolati</a></li>
+        <li><a href="chiamate.html">Waiver Wire</a></li>
+
+        <li class="dropdown">
+          <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
+          <ul class="submenu">
+            <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
+            <li><a href="albo.html">🏅 Medagliere</a></li>
+          </ul>
+        </li>
+
+        <li><a href="regolamento.html">Regolamento</a></li>
       </ul>
-    </li>
-    <li class="dropdown">
-      <a href="#" class="toggle-submenu">Competizioni ▾</a>
-      <ul class="submenu">
-        <li><a href="classifica.html">📊 Classifiche</a></li>
-        <li><a href="playoff.html">🏆 Playoff</a></li>
-        <li><a href="arena.html">🏟️ Higlander</a></li>
-         <li><a href="crashoutcup.html">💥 Crash out Cup</a></li>
-       <li><a href="crashoutplayoff.html">💥 Crash out Cup - Playoff</a></li>
-        <li><a href="supercoppa.html">⭐ Supercoppa</a></li>
-         <li><a href="statistiche.html">🔎 Statistiche</a></li>
-      </ul>
-    </li>
-    <li><a href="svincolati.html">Svincolati</a></li>
-    <li><a href="chiamate.html">Waiver Wire</a></li>
-    <li class="dropdown">
-      <a href="#" class="toggle-submenu">Hall of Fame ▾</a>
-      <ul class="submenu">
-   <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
-      <li><a href="albo.html">🏅  Medagliere</a></li>
-    </ul>
-      <li><a href="regolamento.html">Regolamento</a></li>
-  </div>
-</nav>
-  
-  <h1>🏟️ Highlander Arena</h1>
-  <div class="arena">
-    <div id="arena-center"></div>
-  </div>
+    </div>
+  </nav>
+
+  <header class="hero-arena">
+    <h1>🏟️ Highlander Arena</h1>
+    <p class="sottotitolo">Ogni settimana cade una squadra. Nell’arena ne resterà soltanto una.</p>
+
+    <div class="arena-stats" id="arena-stats">
+      <div class="stat-chip">Turno attuale: <strong id="turno-attuale">--</strong></div>
+      <div class="stat-chip">Sopravvissute: <strong id="vive-attuali">--</strong></div>
+      <div class="stat-chip">Eliminate: <strong id="eliminate-attuali">--</strong></div>
+    </div>
+  </header>
+
+  <main class="arena-page">
+    <section class="arena-shell">
+      <div class="arena-glow"></div>
+      <div class="arena">
+        <div id="arena-center"></div>
+      </div>
+    </section>
+  </main>
+
   <script src="arena.js"></script>
-   <script>
+  <script>
     document.addEventListener("DOMContentLoaded", function () {
       const hamburger = document.getElementById("hamburger");
       const mainMenu = document.getElementById("mainMenu");
@@ -70,7 +95,5 @@
       });
     });
   </script>
-</body>
-</html>
 </body>
 </html>
