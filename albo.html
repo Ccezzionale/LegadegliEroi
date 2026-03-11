@@ -103,129 +103,129 @@
 
   </main>
 
-  <script>
-    const medagliere = [
-      { squadra: "Rubinkebab", oro: 4, argento: 1, bronzo: 0 },
-      { squadra: "Costantinobull", oro: 3, argento: 0, bronzo: 0 },
-      { squadra: "Team Bartowski", oro: 2, argento: 1, bronzo: 1 },
-      { squadra: "Pollisti", oro: 2, argento: 2, bronzo: 1 },
-      { squadra: "Bayern Christiansen", oro: 2, argento: 2, bronzo: 3 },
-      { squadra: "Real Mimmo", oro: 1, argento: 2, bronzo: 2 },
-      { squadra: "MinneSota Snakes", oro: 1, argento: 0, bronzo: 0 },
-      { squadra: "Desperados", oro: 0, argento: 2, bronzo: 2 },
-      { squadra: "I Cugini di Zampagna", oro: 0, argento: 1, bronzo: 1 },
-      { squadra: "Ibla", oro: 0, argento: 2, bronzo: 1 },
-      { squadra: "PokerMantra", oro: 0, argento: 1, bronzo: 1 },
-      { squadra: "3 Amici al Var", oro: 0, argento: 1, bronzo: 0 },
-      { squadra: "Giody", oro: 0, argento: 0, bronzo: 1 },
-      { squadra: "Union Librino", oro: 0, argento: 0, bronzo: 1 },
-      { squadra: "Minnesode Timberland", oro: 0, argento: 2, bronzo: 1 },
-      { squadra: "Golden Knights", oro: 2, argento: 0, bronzo: 0 },
-      { squadra: "riverfilo", oro: 0, argento: 1, bronzo: 0 },
-      { squadra: "Fc Disoneste", oro: 0, argento: 0, bronzo: 1 },
-    ];
+<script>
+  const medagliere = [
+    { squadra: "Rubinkebab", oro: 4, argento: 1, bronzo: 0 },
+    { squadra: "Costantinobull", oro: 3, argento: 0, bronzo: 0 },
+    { squadra: "Team Bartowski", oro: 2, argento: 1, bronzo: 1 },
+    { squadra: "Pollisti", oro: 2, argento: 2, bronzo: 1 },
+    { squadra: "Bayern Christiansen", oro: 2, argento: 2, bronzo: 3 },
+    { squadra: "Real Mimmo", oro: 1, argento: 2, bronzo: 2 },
+    { squadra: "MinneSota Snakes", oro: 1, argento: 0, bronzo: 0 },
+    { squadra: "Desperados", oro: 0, argento: 2, bronzo: 2 },
+    { squadra: "I Cugini di Zampagna", oro: 0, argento: 1, bronzo: 1 },
+    { squadra: "Ibla", oro: 0, argento: 2, bronzo: 1 },
+    { squadra: "PokerMantra", oro: 0, argento: 1, bronzo: 1 },
+    { squadra: "3 Amici al Var", oro: 0, argento: 1, bronzo: 0 },
+    { squadra: "Giody", oro: 0, argento: 0, bronzo: 1 },
+    { squadra: "Union Librino", oro: 0, argento: 0, bronzo: 1 },
+    { squadra: "Minnesode Timberland", oro: 0, argento: 2, bronzo: 1 },
+    { squadra: "Golden Knights", oro: 2, argento: 0, bronzo: 0 },
+    { squadra: "riverfilo", oro: 0, argento: 1, bronzo: 0 },
+    { squadra: "Fc Disoneste", oro: 0, argento: 0, bronzo: 1 },
+  ];
 
-    medagliere.forEach(s => {
-      s.totale = s.oro + s.argento + s.bronzo;
-    });
+  medagliere.forEach(s => {
+    s.totale = s.oro + s.argento + s.bronzo;
+  });
 
-    medagliere.sort((a, b) => {
-      if (b.oro !== a.oro) return b.oro - a.oro;
-      if (b.argento !== a.argento) return b.argento - a.argento;
-      if (b.bronzo !== a.bronzo) return b.bronzo - a.bronzo;
-      return b.totale - a.totale;
-    });
+  medagliere.sort((a, b) => {
+    if (b.oro !== a.oro) return b.oro - a.oro;
+    if (b.argento !== a.argento) return b.argento - a.argento;
+    if (b.bronzo !== a.bronzo) return b.bronzo - a.bronzo;
+    return b.totale - a.totale;
+  });
 
-    const tbody = document.querySelector("#medagliere tbody");
-    const accordion = document.getElementById("accordion");
-    const podio = document.getElementById("podio");
+  const tbody = document.querySelector("#medagliere tbody");
+  const accordion = document.getElementById("accordion");
+  const podio = document.getElementById("podio");
 
-    const podioOrder = [1, 0, 2]; // 2° - 1° - 3° visivamente
+  const podioOrder = [1, 0, 2];
 
-    podioOrder.forEach(index => {
-      const s = medagliere[index];
-      if (!s) return;
+  podioOrder.forEach(index => {
+    const s = medagliere[index];
+    if (!s) return;
 
-      const card = document.createElement("div");
-      card.className = "podio-card " + (index === 0 ? "first" : index === 1 ? "second" : "third");
+    const card = document.createElement("div");
+    card.className = "podio-card " + (index === 0 ? "first" : index === 1 ? "second" : "third");
 
-      card.innerHTML = `
-        <div class="podio-rank">${index + 1}°</div>
-        <img src="img/${s.squadra}.png" alt="${s.squadra}" class="podio-logo">
-        <div class="podio-team">${s.squadra}</div>
-        <div class="podio-stats">
-          <span>🥇 ${s.oro}</span>
-          <span>🥈 ${s.argento}</span>
-          <span>🥉 ${s.bronzo}</span>
+    card.innerHTML = `
+      <div class="podio-rank">${index + 1}°</div>
+      <img src="img/${s.squadra}.png" alt="${s.squadra}" class="podio-logo">
+      <div class="podio-team">${s.squadra}</div>
+      <div class="podio-stats">
+        <span>🥇 ${s.oro}</span>
+        <span>🥈 ${s.argento}</span>
+        <span>🥉 ${s.bronzo}</span>
+      </div>
+      <div class="podio-total">Totale trofei: <strong>${s.totale}</strong></div>
+    `;
+    podio.appendChild(card);
+  });
+
+  medagliere.forEach((s, i) => {
+    const tr = document.createElement("tr");
+
+    if (i === 0) tr.classList.add("top1");
+    else if (i === 1) tr.classList.add("top2");
+    else if (i === 2) tr.classList.add("top3");
+
+    const logoPath = `img/${s.squadra}.png`;
+
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>
+        <div class="squadra-wrapper">
+          <img src="${logoPath}" alt="${s.squadra}" class="logo-squadra">
+          <span class="nome-squadra">${s.squadra}</span>
         </div>
-        <div class="podio-total">Totale trofei: <strong>${s.totale}</strong></div>
-      `;
-      podio.appendChild(card);
-    });
+      </td>
+      <td>${s.oro}</td>
+      <td>${s.argento}</td>
+      <td>${s.bronzo}</td>
+      <td class="totale-cell">${s.totale}</td>
+    `;
 
-    medagliere.forEach((s, i) => {
-      const tr = document.createElement("tr");
+    tbody.appendChild(tr);
 
-      if (i === 0) tr.classList.add("top1");
-      else if (i === 1) tr.classList.add("top2");
-      else if (i === 2) tr.classList.add("top3");
+    const acc = document.createElement("div");
+    acc.className = "accordion-item";
 
-      const logoPath = `img/${s.squadra}.png`;
+    if (i === 0) acc.classList.add("top1");
+    else if (i === 1) acc.classList.add("top2");
+    else if (i === 2) acc.classList.add("top3");
 
-      tr.innerHTML = `
-        <td>${i + 1}</td>
-        <td>
-          <div class="squadra-wrapper">
-            <img src="${logoPath}" alt="${s.squadra}" class="logo-squadra">
-            <span class="nome-squadra">${s.squadra}</span>
+    acc.innerHTML = `
+      <div class="accordion-header">
+        <div class="accordion-left">
+          <img src="${logoPath}" alt="${s.squadra}">
+          <div>
+            <div class="accordion-rank">#${i + 1}</div>
+            <div class="accordion-team">${s.squadra}</div>
           </div>
-        </td>
-        <td>${s.oro}</td>
-        <td>${s.argento}</td>
-        <td>${s.bronzo}</td>
-        <td class="totale-cell">${s.totale}</td>
-      `;
-
-      tbody.appendChild(tr);
-
-      const acc = document.createElement("div");
-      acc.className = "accordion-item";
-
-      if (i === 0) acc.classList.add("top1");
-      else if (i === 1) acc.classList.add("top2");
-      else if (i === 2) acc.classList.add("top3");
-
-      acc.innerHTML = `
-        <div class="accordion-header">
-          <div class="accordion-left">
-            <img src="${logoPath}" alt="${s.squadra}">
-            <div>
-              <div class="accordion-rank">#${i + 1}</div>
-              <div class="accordion-team">${s.squadra}</div>
-            </div>
-          </div>
-          <div class="accordion-total">🏆 ${s.totale}</div>
         </div>
-        <div class="accordion-content">
-          <div class="mobile-stat-row"><span>🥇 Oro</span><strong>${s.oro}</strong></div>
-          <div class="mobile-stat-row"><span>🥈 Argento</span><strong>${s.argento}</strong></div>
-          <div class="mobile-stat-row"><span>🥉 Bronzo</span><strong>${s.bronzo}</strong></div>
-          <div class="mobile-stat-row total-row"><span>🏆 Totale</span><strong>${s.totale}</strong></div>
-        </div>
-      `;
+        <div class="accordion-total">🏆 ${s.totale}</div>
+      </div>
+      <div class="accordion-content">
+        <div class="mobile-stat-row"><span>🥇 Oro</span><strong>${s.oro}</strong></div>
+        <div class="mobile-stat-row"><span>🥈 Argento</span><strong>${s.argento}</strong></div>
+        <div class="mobile-stat-row"><span>🥉 Bronzo</span><strong>${s.bronzo}</strong></div>
+        <div class="mobile-stat-row total-row"><span>🏆 Totale</span><strong>${s.totale}</strong></div>
+      </div>
+    `;
 
-      accordion.appendChild(acc);
+    accordion.appendChild(acc);
+  });
+
+  document.querySelectorAll(".accordion-header").forEach(header => {
+    header.addEventListener("click", () => {
+      const item = header.parentElement;
+      item.classList.toggle("open");
     });
+  });
+</script>
 
-    document.querySelectorAll(".accordion-header").forEach(header => {
-      header.addEventListener("click", () => {
-        const item = header.parentElement;
-        item.classList.toggle("open");
-      });
-    });
-
- <script src="navbar.js"></script>
-
-
+<script src="navbar.js"></script>
 </body>
 </html>
+
