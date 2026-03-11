@@ -512,29 +512,36 @@ nav{
 .match.winner-home,
 .match.winner-away,
 .match.winner-both{
+  border: 1px solid rgba(217,31,38,0.28);
   box-shadow:
-    0 10px 26px rgba(197,22,31,0.18),
-    0 0 0 1px rgba(197,22,31,0.20),
-    0 1px 0 rgba(255,255,255,0.95) inset;
+    0 12px 28px rgba(197,22,31,0.22),
+    0 0 0 2px rgba(217,31,38,0.10),
+    0 1px 0 rgba(255,255,255,0.96) inset;
 }
 
 .team.is-winner .logo-wrap{
-  filter: drop-shadow(0 0 8px rgba(217, 31, 38, 0.24));
+  filter:
+    drop-shadow(0 0 10px rgba(217,31,38,0.28))
+    drop-shadow(0 3px 6px rgba(0,0,0,0.10));
 }
 
 .team.is-winner .score-box{
+  background: linear-gradient(180deg, #e11f2b, #b3121b);
+  border: 1px solid #8c0d14;
   box-shadow:
-    0 0 0 2px rgba(217,31,38,0.14),
-    0 8px 18px rgba(197,22,31,.34),
-    0 1px 0 rgba(255,255,255,.16) inset;
+    0 0 0 3px rgba(217,31,38,0.14),
+    0 10px 20px rgba(197,22,31,.36),
+    0 1px 0 rgba(255,255,255,.18) inset;
+  transform: scale(1.04);
 }
 
 .team.is-winner::after{
   content: "";
   position: absolute;
-  inset: -6px;
-  border-radius: 14px;
-  border: 1px solid rgba(217,31,38,0.24);
+  inset: -8px;
+  border-radius: 16px;
+  border: 1px solid rgba(217,31,38,0.30);
+  background: linear-gradient(135deg, rgba(217,31,38,0.04), rgba(217,31,38,0));
   pointer-events: none;
 }
 
