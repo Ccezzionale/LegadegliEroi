@@ -67,17 +67,10 @@ body{
 }
 
 .wrap{
-  max-width: var(--wrap);
+  width: min(100%, 1600px);
+  max-width: none;
   margin: 0 auto;
-  padding: 28px 18px 40px;
-}
-
-@media (min-width: 1200px){
-  .wrap{
-    max-width: none;
-    width: calc(100vw - 40px);
-    padding: 28px 0 40px;
-  }
+  padding: 28px 20px 40px;
 }
 
 /* ===== Masthead shell ===== */
