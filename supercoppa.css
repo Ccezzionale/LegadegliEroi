@@ -27,61 +27,6 @@ body {
   color: var(--text);
 }
 
-/* ========== NAVBAR / HEADER (come le altre pagine) ========== */
-nav{
-  background:var(--nav);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  padding:10px 20px;
-  flex-wrap:wrap;
-}
-.home-icon{
-  font-size:1.4rem;
-  margin-right:20px;
-  text-decoration:none;
-  color:#fff;
-}
-.hamburger{
-  font-size:1.5rem;
-  cursor:pointer;
-  margin-right:20px;
-  display:none;
-}
-.navbar{
-  list-style:none;
-  padding:0;
-  margin:0;
-  display:flex;
-  gap:15px;
-  align-items:center;
-  flex-wrap:wrap;
-}
-.navbar li{ position:relative; }
-.navbar a{
-  color:#fff;
-  text-decoration:none;
-  padding:8px 12px;
-  display:block;
-}
-.navbar a:hover{
-  background:var(--nav-hover);
-  border-radius:6px;
-}
-.submenu{
-  display:none;
-  position:absolute;
-  top:100%;
-  left:0;
-  background:var(--subnav);
-  border-radius:4px;
-  z-index:10;
-  min-width:180px;
-  flex-direction:column;
-}
-.submenu a{ font-size:.95rem; }
-.dropdown.show .submenu{ display:flex; }
-
 /* ========== HEADER PAGINA ========== */
 .page-header{
   max-width:100%;
@@ -383,21 +328,6 @@ text-shadow:
 /* ========== MOBILE ========== */
 @media (max-width: 768px){
 
-  .hamburger{ display:block; }
-  .navbar{
-    display:none;
-    flex-direction:column;
-    width:100%;
-    background:var(--nav);
-    margin-top:10px;
-  }
-  .navbar.show{ display:flex; }
-  .submenu{
-    position:relative;
-    background:var(--subnav);
-    margin-left:10px;
-  }
-  .dropdown .submenu a{ padding-left:20px; }
 
   .supercup-main{
     padding:0 10px 32px;
