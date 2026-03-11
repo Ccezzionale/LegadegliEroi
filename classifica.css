@@ -1,10 +1,11 @@
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f4f4f4;
-  color: #222;
+  background: linear-gradient(to bottom, #eef3f9 0%, #f7f9fc 100%);
+  color: #1a1a1a;
 }
 
+/* NAV */
 nav {
   background-color: #001f3f;
   color: white;
@@ -12,6 +13,7 @@ nav {
   align-items: center;
   padding: 10px 20px;
   flex-wrap: wrap;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
 }
 
 .home-icon {
@@ -48,11 +50,12 @@ nav {
   color: white;
   padding: 8px 12px;
   display: block;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
 }
 
 .navbar a:hover {
   background-color: #0074D9;
-  border-radius: 6px;
 }
 
 .submenu {
@@ -61,10 +64,11 @@ nav {
   top: 100%;
   left: 0;
   background-color: #003366;
-  border-radius: 4px;
+  border-radius: 8px;
   z-index: 10;
-  min-width: 180px;
+  min-width: 190px;
   flex-direction: column;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 }
 
 .submenu a {
@@ -75,247 +79,246 @@ nav {
   display: flex;
 }
 
-h1 {
-  color: #001f3f;
-  margin: 20px 0 10px;
-  text-align: center;
-  font-size: 2rem;
+/* PAGE */
+.classifica-page {
+  padding: 30px 20px 50px;
 }
 
-.switcher {
+.classifica-hero {
   text-align: center;
-  margin: 20px;
+  margin-bottom: 22px;
+}
+
+h1 {
+  color: #001f3f;
+  margin: 0 0 8px;
+  font-size: 2.3rem;
+  font-weight: 800;
+}
+
+.classifica-subtitle {
+  margin: 0;
+  color: #5a6b7d;
+  font-size: 1rem;
+}
+
+/* CARD */
+.classifica-card {
+  max-width: 1280px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 10px 30px rgba(0, 31, 63, 0.08);
+  border: 1px solid #dce6f2;
+  padding: 26px 24px 28px;
+}
+
+/* SWITCHER */
+.switcher {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 26px;
 }
 
 .switcher button {
-  padding: 10px 20px;
-  margin: 0 5px;
-  background-color: #001f3f;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  padding: 11px 18px;
+  background-color: #ffffff;
+  color: #001f3f;
+  border: 1px solid #c8d7ea;
+  border-radius: 999px;
   cursor: pointer;
+  font-weight: 700;
+  min-width: 140px;
+  transition: all 0.22s ease;
 }
 
 .switcher button:hover {
-  background-color: #0074D9;
+  background-color: #eaf3ff;
+  border-color: #0074D9;
 }
 
+.switcher button.active {
+  background-color: #001f3f;
+  color: white;
+  border-color: #001f3f;
+  box-shadow: 0 6px 16px rgba(0, 31, 63, 0.16);
+}
+
+/* TABLE */
 #classifica-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
 }
 
 #tabella-classifica {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   width: 100%;
   max-width: 1200px;
-  margin-bottom: 40px;
-  table-layout: auto; /* ✅ Adatta la larghezza in base al contenuto */
+  table-layout: auto;
+  overflow: hidden;
+  border-radius: 18px;
+  background: white;
 }
 
 thead {
   background-color: #001f3f;
   color: white;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
-th, td {
-  padding: 10px;
+th,
+td {
+  padding: 14px 10px;
   text-align: center;
+  border-bottom: 1px solid #e7edf5;
+  font-size: 0.95rem;
+}
+
+th {
+  font-weight: 800;
+  letter-spacing: 0.2px;
 }
 
 #tabella-classifica th:nth-child(2),
 #tabella-classifica td:nth-child(2) {
   text-align: left;
-  white-space: normal;     /* ✅ consente l'andata a capo */
-  word-break: break-word;  /* ✅ forza il testo a capo se troppo lungo */
+  white-space: normal;
+  word-break: break-word;
+}
+
+#tabella-classifica tbody tr:nth-child(even):not(.top4):not(.ultime4):not(.top1) {
+  background-color: #f8fbff;
 }
 
 #tabella-classifica td .logo-nome {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   overflow: hidden;
 }
 
 #tabella-classifica td .logo-nome img {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
   border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
 .riga-classifica {
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-  margin-bottom: 8px;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.riga-classifica:hover {
+  background-color: #eef6ff !important;
 }
 
 .top4 {
-  background-color: #ffcc00 !important;
-  color: black;
-  font-weight: bold;
+  background: linear-gradient(90deg, #ffd54a 0%, #ffcc00 100%) !important;
+  color: #111;
+  font-weight: 700;
 }
 
 .ultime4 {
-  background-color: #8B0000 !important;
+  background: linear-gradient(90deg, #9f0000 0%, #b30000 100%) !important;
   color: white;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .top1 {
-  background-color: #ffcc00 !important;
-  color: black;
-  font-weight: bold;
+  background: linear-gradient(90deg, #ffe27a 0%, #ffcc00 100%) !important;
+  color: #111;
+  font-weight: 800;
 }
 
+/* MOBILE ACCORDION */
 #classifica-mobile {
   display: none;
 }
 
-/* ===== RACE stile "video": colonne che salgono + badge posizione ===== */
-
-.race-section{
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto 40px;
-  padding: 0 20px;
-}
-
-.race-title{
-  text-align: center;
-  color: #001f3f;
-  margin: 10px 0 12px;
-}
-
-.race-controls{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin: 12px 0 14px;
-  flex-wrap: wrap;
-}
-
-.race-controls button{
-  padding: 8px 12px;
-  background: #001f3f;
-  color: #fff;
-  border: 0;
-  border-radius: 8px;
-  cursor: pointer;
-}
-.race-controls button:hover{ background:#0074D9; }
-
-#raceDay{ width: min(520px, 90vw); }
-
-#raceLabel{
-  font-weight: 700;
-  color: #001f3f;
-  min-width: 110px;
-  text-align: left;
-}
-
-/* area grafico */
-.race-track{
-  position: relative;
-  width: 100%;
-  max-width: 1200px;
-  height: 420px;                 /* 👈 altezza colonne */
-  margin: 0 auto;
-  background: #fff;
-  border: 1px solid #d8d8d8;
+.accordion-item {
   border-radius: 14px;
   overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 31, 63, 0.08);
+  border: 1px solid #dbe6f2;
+  background: white;
 }
 
-/* baseline */
-.race-track::after{
-  content:"";
-  position:absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 14px;
-  height: 2px;
-  background: #001f3f;
-  opacity: .12;
-}
-
-/* wrapper di ogni colonna */
-.race-bar{
-  position: absolute;
-  bottom: 14px;                 /* appoggiata alla baseline */
-  left: 0;
-  width: 64px;                  /* JS la adatta automaticamente */
-  height: 10px;                 /* JS la aggiorna */
-  transform: translateX(0);
-  transition: transform 450ms ease, height 450ms ease;
-}
-
-/* colonna */
-.race-bar .bar-fill{
-  position: absolute;
-  inset: 0;
-  border-radius: 18px;
-  background: #0074D9;
-  opacity: .85;
-}
-
-/* logo sopra la colonna */
-.race-bar img{
-  position: absolute;
-  left: 50%;
-  top: -46px;
-  transform: translateX(-50%);
-  width: 46px;
-  height: 46px;
-  object-fit: contain;
-  border-radius: 50%;
-  background: #fff;
-  border: 2px solid #fff;
-  box-shadow: 0 3px 10px rgba(0,0,0,.15);
-}
-
-/* badge posizione */
-.race-bar .pos-badge{
-  position: absolute;
-  left: 50%;
-  top: -70px;
-  transform: translateX(-50%);
-  min-width: 26px;
-  height: 24px;
-  padding: 0 8px;
-  border-radius: 999px;
-  background: #001f3f;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 900;
+.accordion-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,.18);
+  gap: 12px;
+  padding: 14px 16px;
+  font-weight: bold;
+  font-size: 0.95rem;
+  background-color: #003b66;
+  color: white;
 }
 
-/* (optional) numerino punti sopra, se un giorno lo vuoi */
-.race-bar .pt-label{
-  display: none; /* metti block se vuoi anche i punti stampati */
+.accordion-header img {
+  height: 46px;
+  width: 46px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: white;
 }
 
-.pos-badge{
+.accordion-body {
+  display: none;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 16px;
+  background-color: #f4f8fd;
+  font-size: 0.88rem;
+}
+
+.accordion-item.active .accordion-body {
+  display: flex;
+}
+
+.accordion-body span {
+  flex: 1 1 45%;
   white-space: nowrap;
-  font-size: 12px;
-  padding: 4px 6px;
-}
-.pos-badge small{
-  font-size: 10px;
+  color: #10253f;
 }
 
+.accordion-item.top4 .accordion-header {
+  background: linear-gradient(90deg, #ffd54a 0%, #ffcc00 100%) !important;
+  color: black;
+}
 
+.accordion-item.ultime4 .accordion-header {
+  background: linear-gradient(90deg, #9f0000 0%, #b30000 100%) !important;
+  color: white;
+}
+
+.accordion-item.top1 .accordion-header {
+  background: linear-gradient(90deg, #ffe27a 0%, #ffcc00 100%) !important;
+  color: black;
+}
+
+/* MOBILE */
 @media (max-width: 768px) {
+  .classifica-page {
+    padding: 18px 12px 30px;
+  }
+
+  .classifica-card {
+    padding: 18px 14px 20px;
+    border-radius: 18px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
   #tabella-classifica {
     display: none;
   }
@@ -323,67 +326,11 @@ th, td {
   #classifica-mobile {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-  }
-
-  .accordion-item {
-    border-radius: 10px;
-    overflow: hidden;
-  }
-
-  .accordion-header {
-    display: flex;
-    align-items: center;
     gap: 12px;
-    padding: 12px 16px;
-    font-weight: bold;
-    font-size: 0.95rem;
-    background-color: #003b66;
-    color: white;
+    padding: 0;
+    width: 100%;
   }
 
-  .accordion-header img {
-    height: 48px;
-    width: 48px;
-    object-fit: contain;
-  }
-
-  .accordion-body {
-    display: none;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 12px 16px;
-    background-color: #004080;
-    font-size: 0.85rem;
-  }
-
-  .accordion-item.active .accordion-body {
-    display: flex;
-  }
-
-  .accordion-body span {
-    flex: 1 1 45%;
-    white-space: nowrap;
-    color: white;
-  }
-
-  .accordion-item.top4 .accordion-header {
-    background-color: #ffcc00 !important;
-    color: black;
-  }
-
-  .accordion-item.ultime4 .accordion-header {
-    background-color: #8B0000 !important;
-    color: white;
-  }
-
-  .accordion-item.top1 .accordion-header {
-    background-color: #ffcc00 !important;
-    color: black;
-  }
-}
-@media (max-width: 768px) {
   .navbar {
     display: none;
     flex-direction: column;
@@ -403,59 +350,20 @@ th, td {
     position: static;
     width: 100%;
   }
+
   .hamburger {
     display: block;
   }
-  .nav-left {
-  display: flex;
-  align-items: center;
-  flex-direction: row; /* 👈 FORZA l’allineamento orizzontale */
-  gap: 12px;
-}
+
   .switcher {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     gap: 10px;
-    margin: 16px;
   }
 
   .switcher button {
-    margin: 0;                 /* toglie i margini inline */
-    flex: 1 1 calc(50% - 10px);/* 2 per riga */
-    max-width: 200px;
-    padding: 12px 14px;
-  }
-
-  /* ===== RACE: mobile fix ===== */
-@media (max-width: 520px){
-  .race-track{
-    height: 520px;               /* più compatto ma leggibile */
-    overflow-x: auto;            /* permette scroll se serve */
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* opzionale: un po' di padding interno */
-  .race-track{
-    padding-bottom: 8px;
-  }
-
-.race-bar{
-  position: absolute;
-}
-
-.race-bar img{
-  position: absolute;
-  left: 50%;
-  top: -34px;              /* regola fine: alza/abbassa logo */
-  transform: translateX(-50%);
-}
-
-  .pos-badge{
-    font-size: 12px;             /* badge più piccolo */
-    padding: 4px 8px;
-    border-radius: 12px;
+    flex: 1 1 calc(50% - 10px);
+    max-width: 220px;
+    min-width: 140px;
+    padding: 12px 10px;
+    margin: 0;
   }
 }
-
