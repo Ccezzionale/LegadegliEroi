@@ -87,27 +87,8 @@
     <li>Bayern - Desperados : Round 3 2026 e round 2 2027 a Desperados, Round 5 2026 e Round 4 2027 e Yildiz al Bayern </li>
   </ul>
 </div>
-
-  <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const hamburger = document.getElementById("hamburger");
-    const mainMenu = document.getElementById("mainMenu");
-    const submenuToggles = document.querySelectorAll(".toggle-submenu");
-
-    hamburger?.addEventListener("click", () => {
-      mainMenu.classList.toggle("show");
-    });
-
-    submenuToggles.forEach(toggle => {
-      toggle.addEventListener("click", function (e) {
-        e.preventDefault();
-        const parent = this.closest(".dropdown");
-        parent.classList.toggle("show");
-      });
-    });
-  });
-</script>
   
   <script src="dinamico-draft.js"></script>
+   <script src="navbar.js"></script>
 </body>
 </html>
