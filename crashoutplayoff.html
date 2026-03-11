@@ -57,64 +57,65 @@
     <div class="page-subtitle">Knockout Stage</div>
   </header>
 
-<main class="cup-container">
-  <div id="bracket" class="bracket">
-    <section class="conference left">
-      <div class="round-label round-label-r1">Round 1</div>
-      <div class="round-label round-label-r2">Semifinali</div>
-      <div class="round-label round-label-r3">Finale</div>
+  <main class="cup-container">
+    <div id="bracket" class="bracket">
+      <section class="conference left">
+        <div class="round-label round-label-r1">Round 1</div>
+        <div class="round-label round-label-r2">Semifinali</div>
+        <div class="round-label round-label-r3">Finale</div>
 
-      <div class="round round-1" id="left-round-1" aria-label="Left Round 1"></div>
-      <div class="round round-2" id="left-round-2" aria-label="Left Semifinals"></div>
-      <div class="round round-3" id="left-round-3" aria-label="Left Conference Finals"></div>
-    </section>
+        <div class="round round-1" id="left-round-1" aria-label="Left Round 1"></div>
+        <div class="round round-2" id="left-round-2" aria-label="Left Semifinals"></div>
+        <div class="round round-3" id="left-round-3" aria-label="Left Conference Finals"></div>
+      </section>
 
-    <section class="finals" aria-label="Finals">
-      <div class="finals-title">Finals</div>
+      <section class="finals" aria-label="Finals">
+        <div class="finals-title">Finals</div>
 
-      <div id="finals-split" class="finals-split">
-        <div id="finals-top" class="round round-final" aria-label="Finals Top"></div>
+        <div id="finals-split" class="finals-split">
+          <div id="finals-top" class="round round-final" aria-label="Finals Top"></div>
 
-        <div id="finals-centerpiece" class="finals-centerpiece" aria-hidden="true">
-          <div class="trophy-glow"></div>
-          <div id="finals-trophy" class="trophy"></div>
-          <div class="trophy-caption">Crash Out Cup</div>
+          <div id="finals-centerpiece" class="finals-centerpiece" aria-hidden="true">
+            <div class="trophy-glow"></div>
+            <div id="finals-trophy" class="trophy"></div>
+            <div class="trophy-caption">Crash Out Cup</div>
+          </div>
+
+          <div id="finals-bottom" class="round round-final" aria-label="Finals Bottom"></div>
         </div>
+      </section>
 
-        <div id="finals-bottom" class="round round-final" aria-label="Finals Bottom"></div>
-      </div>
-    </section>
+      <section class="conference right">
+        <div class="round-label round-label-r1">Round 1</div>
+        <div class="round-label round-label-r2">Semifinali</div>
+        <div class="round-label round-label-r3">Finale</div>
 
-    <section class="conference right">
-      <div class="round-label round-label-r1">Round 1</div>
-      <div class="round-label round-label-r2">Semifinali</div>
-      <div class="round-label round-label-r3">Finale</div>
+        <div class="round round-1" id="right-round-1" aria-label="Right Round 1"></div>
+        <div class="round round-2" id="right-round-2" aria-label="Right Semifinals"></div>
+        <div class="round round-3" id="right-round-3" aria-label="Right Conference Finals"></div>
+      </section>
+    </div>
 
-      <div class="round round-1" id="right-round-1" aria-label="Right Round 1"></div>
-      <div class="round round-2" id="right-round-2" aria-label="Right Semifinals"></div>
-      <div class="round round-3" id="right-round-3" aria-label="Right Conference Finals"></div>
-    </section>
-  </div>
-
-  <div id="bracket-mobile" class="bracket-mobile"></div>
-</main>
+    <div id="bracket-mobile" class="bracket-mobile"></div>
+  </main>
 
   <template id="match-template">
     <article class="match">
       <div class="team home">
         <div class="seed"></div>
         <div class="logo-wrap"><img class="logo" alt=""></div>
+        <div class="team-name"></div>
         <div class="score-box" data-placeholder="0"></div>
       </div>
 
       <div class="team away">
         <div class="seed"></div>
         <div class="logo-wrap"><img class="logo" alt=""></div>
+        <div class="team-name"></div>
         <div class="score-box" data-placeholder="0"></div>
       </div>
     </article>
   </template>
-  
 
   <script src="crashoutplayoff.js" defer></script>
 </body>
