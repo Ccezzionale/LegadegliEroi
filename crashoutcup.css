@@ -12,70 +12,6 @@ body {
   color: #222;
 }
 
-nav {
-  background-color: #001f3f;
-  color: white;
-  display: flex;
-  align-items: center;
-  padding: 10px 20px;
-  flex-wrap: wrap;
-}
-
-.home-icon {
-  font-size: 1.4rem;
-  margin-right: 20px;
-  text-decoration: none;
-  color: white;
-}
-
-.hamburger {
-  font-size: 1.5rem;
-  cursor: pointer;
-  margin-right: 20px;
-  display: none;    /* si mostra solo in mobile */
-  color:#fff;
-}
-
-.navbar {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: row;
-  gap: 15px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.navbar li { position: relative; }
-
-.navbar a {
-  text-decoration: none;
-  color: white;
-  padding: 8px 12px;
-  display: block;
-}
-
-.navbar a:hover {
-  background-color: #0074D9;
-  border-radius: 6px;
-}
-
-/* Submenu: NIENTE colore globale qui, lo differenziamo per desktop/mobile */
-.submenu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  border-radius: 4px;
-  z-index: 10;
-  min-width: 180px;
-  flex-direction: column;
-}
-
-.submenu a { font-size: 0.95rem; }
-.dropdown.show .submenu { display: flex; }
-
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -239,5 +175,3 @@ details[open] .accordion-body { display: flex; }
   color: #000;
   font-weight: bold;
 }
-
-@media (max-width: 768px) { .hamburger { display: block; } /* mostra l’icona */ .navbar { display: none; /* nascondi il menu */ flex-direction: column; width: 100%; background-color: #001f3f; margin-top: 10px; } .navbar.show { display: flex; } /* visibile quando clicchi hamburger */ .navbar li { width: 100%; } .submenu { position: static; width: 100%; background-color: #003366; } .dropdown .submenu a { padding-left: 20px; } }
