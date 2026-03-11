@@ -320,7 +320,7 @@ button:active{
   color: var(--blue);
   letter-spacing: .2px;
   text-transform: uppercase;
-  max-width: 14ch;
+  max-width: 20ch;
 }
 
 .deck{
