@@ -4,63 +4,53 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>La Gazzetta degli Eroi</title>
-
-  <!-- Se hai già main.css comune, tienilo -->
- <link rel="stylesheet" href="giornale.css" />
-
-  <style>
-    .wrap { max-width: 980px; margin: 0 auto; padding: 18px; }
-    .toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom: 14px; }
-    .pill { padding:6px 10px; border-radius: 999px; font-size: 13px; border:1px solid rgba(0,0,0,.15); background:#fff; }
-    .card { background:#fff; border:1px solid rgba(0,0,0,.12); border-radius: 14px; padding: 16px; }
-    .title { font-size: 26px; margin: 8px 0 4px; }
-    .subtitle { opacity:.8; margin:0 0 12px; }
-    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    select, button { padding: 8px 12px; border-radius: 10px; border:1px solid rgba(0,0,0,.18); background:#fff; }
-    button { cursor:pointer; }
-    button.active { border-color: rgba(0,0,0,.35); font-weight: 700; }
-    .muted { opacity:.8; }
-    .error { color:#b00020; }
-    .section { margin-top: 14px; }
-    .section h3 { margin: 0 0 8px; }
-    .list { margin: 0; padding-left: 18px; }
-    .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-    @media (max-width: 760px){ .grid2 { grid-template-columns: 1fr; } }
-    .note { font-size: 13px; opacity:.75; margin-top: 6px; }
-    .manualBox { padding: 12px; border-radius: 12px; border: 1px dashed rgba(0,0,0,.25); background: rgba(0,0,0,.02); }
-  </style>
+  <link rel="stylesheet" href="giornale.css" />
 </head>
 
 <body>
   <div class="wrap">
-  <div class="masthead">
-    <div class="mast-top">
-      <div class="brand">
-        <div class="name">La Gazzetta degli Eroi</div>
+    <div class="mast-shell">
+      <div class="page-title">
+        <h1>Benvenuto nella Gazzetta degli Eroi</h1>
+        <p>La prima pagina della tua lega, tra verdetti, crolli e colpi di scena.</p>
       </div>
-      <div class="meta">
-        <div class="chip" id="chipDate">Data</div>
-        <div class="chip" id="chipGW">GW</div>
+
+      <div class="masthead">
+        <div class="mast-top">
+          <div class="brand">
+            <div class="eyebrow">Edizione Ufficiale</div>
+            <div class="name">La Gazzetta degli Eroi</div>
+            <div class="tagline">Cronache, sentenze e caos organizzato della Lega</div>
+          </div>
+
+          <div class="meta">
+            <div class="chip" id="chipDate">Data</div>
+            <div class="chip" id="chipGW">GW</div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <span class="badge blue">Edizione</span>
+
+            <label for="gwSelect">Giornata</label>
+            <select id="gwSelect"></select>
+
+            <button id="btnReload">Aggiorna</button>
+          </div>
+
+          <div class="toolbar-right">
+            <span id="status"></span>
+          </div>
+        </div>
+
+        <div id="output" class="paper">
+          Caricamento…
+        </div>
       </div>
-    </div>
-
-    <div class="toolbar">
-      <span class="badge blue">Edizione</span>
-
-      <label for="gwSelect">Giornata</label>
-      <select id="gwSelect"></select>
-      <button id="btnReload">Aggiorna</button>
-
-
-      <span id="status"></span>
-    </div>
-
-    <div id="output" class="paper">
-      Caricamento…
     </div>
   </div>
-</div>
-<script src="giornale.js"></script>
 
+  <script src="giornale.js"></script>
 </body>
 </html>
