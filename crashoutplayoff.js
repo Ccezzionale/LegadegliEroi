@@ -208,7 +208,8 @@ function clearBracket() {
     "right-round-2",
     "right-round-3",
     "finals-top",
-    "finals-bottom"
+    "finals-bottom",
+    "bracket-mobile"
   ].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = "";
@@ -333,6 +334,32 @@ function renderRound(containerId, matches) {
   matches.forEach(match => {
     container.appendChild(createMatchElement(match));
   });
+
+  function renderMobileList(bracket){
+  const mob = document.getElementById("bracket-mobile");
+  if (!mob) return;
+
+  const makeGroup = (title, matches) => {
+    const wrp = document.createElement("section");
+    wrp.className = "round-mobile";
+    wrp.innerHTML = `<h3>${title}</h3>`;
+
+    matches.forEach(match => {
+      wrp.appendChild(createMatchElement(match));
+    });
+
+    mob.appendChild(wrp);
+  };
+
+  mob.innerHTML = "";
+
+  makeGroup("Round 1 - Sinistra", bracket.r1.left);
+  makeGroup("Round 1 - Destra", bracket.r1.right);
+  makeGroup("Semifinali - Sinistra", bracket.leftSF);
+  makeGroup("Semifinali - Destra", bracket.rightSF);
+  makeGroup("Finali di Conference", [...bracket.leftCF, ...bracket.rightCF]);
+  makeGroup("Finale", bracket.finals);
+}
 }
 
 // ======== WIRES ========
@@ -472,6 +499,9 @@ async function buildBracket() {
     document
       .getElementById("finals-bottom")
       ?.appendChild(createFinalSide(finalMatch.away, "away", "F"));
+
+    
+renderMobileList(bracket);
 
     requestAnimationFrame(() => {
       drawWires();
