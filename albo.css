@@ -481,14 +481,62 @@ td:nth-child(6) {
 
 @media (max-width: 900px){
   .podio{
-    grid-template-columns: 1fr;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "first first"
+      "second third";
+    gap: 14px;
     align-items: stretch;
   }
 
-  .podio-card.first,
-  .podio-card.second,
-  .podio-card.third{
+  .podio-card.first{
+    grid-area: first;
     min-height: auto;
+    padding: 20px 16px 18px;
+  }
+
+  .podio-card.second{
+    grid-area: second;
+    min-height: auto;
+    padding: 16px 12px 14px;
+  }
+
+  .podio-card.third{
+    grid-area: third;
+    min-height: auto;
+    padding: 16px 12px 14px;
+  }
+
+  .podio-card.first .podio-logo{
+    width: 92px;
+    height: 92px;
+  }
+
+  .podio-card.second .podio-logo,
+  .podio-card.third .podio-logo{
+    width: 72px;
+    height: 72px;
+  }
+
+  .podio-card.first .podio-team{
+    font-size: 1.25rem;
+  }
+
+  .podio-card.second .podio-team,
+  .podio-card.third .podio-team{
+    font-size: 1rem;
+  }
+
+  .podio-card.second .podio-stats,
+  .podio-card.third .podio-stats{
+    gap: 8px;
+    font-size: 0.95rem;
+  }
+
+  .podio-card.second .podio-total,
+  .podio-card.third .podio-total{
+    font-size: 0.88rem;
   }
 }
 
