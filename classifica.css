@@ -269,5 +269,33 @@ th {
     min-width: 140px;
     padding: 12px 10px;
     margin: 0;
+  
+@media (max-width: 900px){
+  nav.site-nav{
+    position: static;
+    top: auto;
   }
+
+  nav.site-nav,
+  nav.site-nav *,
+  nav.site-nav *::before,
+  nav.site-nav *::after{
+    box-sizing: border-box;
+  }
+
+  nav.site-nav #mainMenu.navbar > li > a{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:11px 13px;
+  }
+
+  nav.site-nav #mainMenu.navbar > li > a .caret{
+    margin-left:auto;
+    flex:0 0 auto;
+    display:inline-block;
+  }
+}  
 }
