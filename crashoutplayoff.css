@@ -567,7 +567,7 @@ nav{
 
 /* ========== MOBILE ========== */
 .bracket-mobile{
-  display: none !important;
+  display: none;
 }
 
 @media (max-width: 768px){
@@ -604,6 +604,7 @@ nav{
     padding: 0 14px;
     left: 0 !important;
     transform: none !important;
+    text-align: center;
   }
 
   .page-header h1{
@@ -628,12 +629,10 @@ nav{
     overflow-x: hidden;
   }
 
-  /* NASCONDI DESKTOP */
   .bracket{
     display: none !important;
   }
 
-  /* MOSTRA MOBILE */
   .bracket-mobile{
     display: flex;
     flex-direction: column;
@@ -663,6 +662,7 @@ nav{
   .round-mobile .match{
     width: 100%;
     max-width: 100%;
+    min-width: 0;
     padding: 10px 10px;
     gap: 12px;
     margin-bottom: 10px;
@@ -677,6 +677,7 @@ nav{
     grid-template-columns: 24px 64px 1fr 36px;
     gap: 8px;
     align-items: center;
+    min-height: 64px;
   }
 
   .round-mobile .seed{
@@ -697,14 +698,6 @@ nav{
     min-height: 34px;
     font-size: .95rem;
     justify-self: end;
-  }
-
-  /* Round successivi: niente seed */
-  .round-mobile #left-round-2 .seed,
-  .round-mobile #left-round-3 .seed,
-  .round-mobile #right-round-2 .seed,
-  .round-mobile #right-round-3 .seed{
-    display: none;
   }
 
   .round-mobile .match.one-team .team{
