@@ -69,7 +69,7 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
   /* se vuoi fisso: width: 280px; height: 280px; */
   width: clamp(220px, calc(var(--finals-col) - 160px), 360px);
   height: clamp(220px, calc(var(--finals-col) - 160px), 360px);
-  background: url("img/cup.png") center/contain no-repeat;
+  background: url("img/Crashoutcup.png") center/contain no-repeat;
   filter: drop-shadow(0 4px 10px rgba(0,0,0,.25));
 }
 
