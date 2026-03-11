@@ -67,8 +67,8 @@ nav{ background:var(--nav); color:#fff; display:flex; align-items:center; paddin
 /* la coppa al centro */
 .trophy{
   /* se vuoi fisso: width: 280px; height: 280px; */
-  width: clamp(220px, calc(var(--finals-col) - 160px), 360px);
-  height: clamp(220px, calc(var(--finals-col) - 160px), 360px);
+  width: clamp(500px, calc(var(--finals-col) - 160px), 360px);
+  height: clamp(500px, calc(var(--finals-col) - 160px), 360px);
   background: url("img/Crashoutcup.png") center/contain no-repeat;
   filter: drop-shadow(0 4px 10px rgba(0,0,0,.25));
 }
