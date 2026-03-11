@@ -193,7 +193,6 @@ thead {
   width: 90%;
   text-align: center;
   
-@media (max-width: 900px){
   nav.site-nav{
     position: static;
     top: auto;
@@ -221,5 +220,4 @@ thead {
     display:inline-block;
   }
 }
-    }
 
