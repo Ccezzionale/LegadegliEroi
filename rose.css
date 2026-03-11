@@ -142,3 +142,11 @@ thead {
   border-radius: 6px;
   font-size: 0.9em;
 }
+
+@media (max-width: 900px){
+  nav.site-nav{
+    position: static;
+    top: auto;
+  }
+}
+
