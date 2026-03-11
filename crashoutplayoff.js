@@ -375,11 +375,11 @@ function renderMobileList(bracket) {
   mob.innerHTML = "";
   mob.appendChild(createMobileTrophyHero());
 
-  makeGroup("Round 1 · Sinistra", bracket.r1.left);
-  makeGroup("Round 1 · Destra", bracket.r1.right);
-  makeGroup("Semifinali · Sinistra", bracket.leftSF);
-  makeGroup("Semifinali · Destra", bracket.rightSF);
-  makeGroup("Finali di Conference", [...bracket.leftCF, ...bracket.rightCF]);
+  makeGroup("Ottavi di Finale", bracket.r1.left);
+  makeGroup("Ottavi di Finale", bracket.r1.right);
+  makeGroup("Quarti di Finale", bracket.leftSF);
+  makeGroup("Quarti di Finale", bracket.rightSF);
+  makeGroup("Semifinali", [...bracket.leftCF, ...bracket.rightCF]);
 
   const finalSection = document.createElement("section");
   finalSection.className = "round-mobile round-mobile-finale";
