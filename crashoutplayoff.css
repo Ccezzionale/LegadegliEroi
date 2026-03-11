@@ -118,13 +118,13 @@ nav{
 
 /* ========== HEADER ========== */
 .page-header{
-  width: 100%;
-  margin: 26px 0 10px;
-  padding: 0 16px;
-  display: grid;
-  place-items: center;
+  width: max-content;
+  min-width: 1000px;
+  margin: 26px 0 10px 0;
+  padding: 0;
   text-align: center;
-  transform: translateX(-130px);
+  position: relative;
+  left: 180px;
 }
 
 .page-subtitle{
