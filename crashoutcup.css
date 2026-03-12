@@ -175,3 +175,31 @@ details[open] .accordion-body { display: flex; }
   color: #000;
   font-weight: bold;
 }
+
+  nav.site-nav{
+    position: static;
+    top: auto;
+  }
+
+  nav.site-nav,
+  nav.site-nav *,
+  nav.site-nav *::before,
+  nav.site-nav *::after{
+    box-sizing: border-box;
+  }
+
+  nav.site-nav #mainMenu.navbar > li > a{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:11px 13px;
+  }
+
+  nav.site-nav #mainMenu.navbar > li > a .caret{
+    margin-left:auto;
+    flex:0 0 auto;
+    display:inline-block;
+  }
+}
