@@ -689,3 +689,87 @@ body{
     height:290px !important;
   }
 }
+
+/* ===== TABELLE PIÙ COMPATTE ===== */
+.subtable thead th,
+.subtable th,
+.subtable td{
+  font-size: 0.92rem;
+}
+
+.subtable td{
+  padding: 8px 8px;
+}
+
+.inline-name{
+  gap: 6px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.mini-logo{
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 900px){
+  .subpanel{
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px;
+  }
+
+  .subtable{
+    min-width: 540px;
+  }
+
+  .subtable thead th,
+  .subtable th,
+  .subtable td{
+    font-size: 0.86rem;
+  }
+
+  .subtable td{
+    padding: 7px 7px;
+  }
+
+  .inline-name{
+    gap: 6px;
+    font-size: 0.88rem;
+  }
+
+  .mini-logo{
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 560px){
+  .subpanel{
+    padding: 6px;
+  }
+
+  .subtable{
+    min-width: 500px;
+  }
+
+  .subtable thead th,
+  .subtable th,
+  .subtable td{
+    font-size: 0.8rem;
+  }
+
+  .subtable td{
+    padding: 6px 6px;
+  }
+
+  .inline-name{
+    gap: 5px;
+    font-size: 0.82rem;
+  }
+
+  .mini-logo{
+    width: 16px;
+    height: 16px;
+  }
+}
