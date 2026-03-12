@@ -3,120 +3,259 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chiamate Settimanali</title>
-  <link rel="stylesheet" href="navbar.css">
+  <title>Waiver Wire</title>
+  <link rel="stylesheet" href="navbar.css?v=2">
 
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f8f9fa;
-      color: #212529;
-      margin: 0;
-      padding: 20px;
+    body{
+      margin:0;
+      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background:#f4f6f9;
+      color:#1f2937;
     }
 
-    .titolo-pagina {
-      text-align: center;
-      color: #001f3f;
-      font-size: 2.2rem;
-      margin: 30px 0 20px;
-      font-weight: 700;
-      text-shadow: 2px 2px 6px #FFD700;
+    .titolo-pagina{
+      text-align:center;
+      color:#001f3f;
+      font-size:2.3rem;
+      margin:34px 0 10px;
+      font-weight:800;
+      text-shadow:1px 1px 4px rgba(255, 204, 0, 0.55);
+      letter-spacing:.2px;
     }
 
-    /* SWITCHER */
-    .switcher {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      margin: 20px 0;
+    .sottotitolo-pagina{
+      text-align:center;
+      color:#5b6472;
+      font-size:1rem;
+      margin:0 0 28px;
     }
 
-    .switcher button {
-      background-color: #0074D9;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 90%;
-      max-width: 500px;
-      text-align: center;
+    .page-shell{
+      max-width:1100px;
+      margin:0 auto;
+      padding:0 18px 40px;
     }
 
-    .switcher button:hover { background-color: #005fa3; }
-
-    .btn-roundrobin {
-      background-color: #FF851B !important;
-      font-weight: 800;
-      text-transform: uppercase;
-      border-radius: 8px;
-    }
-    .btn-roundrobin:hover { background-color: #e07010 !important; }
-
-    /* CONTAINER TABELLA */
-    #chiamate-container {
-      width: 100%;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 10px;
-      font-size: 0.95rem;
+    .waiver-hero{
+      max-width:760px;
+      margin:0 auto 24px;
+      background:#fff;
+      border:1px solid rgba(0, 31, 63, 0.08);
+      border-radius:18px;
+      box-shadow:0 14px 34px rgba(0, 31, 63, 0.08);
+      padding:24px 22px 22px;
     }
 
-    #chiamate-container table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
+    .waiver-hero__title{
+      text-align:center;
+      color:#001f3f;
+      font-size:1.2rem;
+      font-weight:800;
+      margin:0 0 8px;
+    }
+
+    .waiver-hero__desc{
+      text-align:center;
+      color:#6b7280;
+      font-size:.96rem;
+      margin:0 0 22px;
+      line-height:1.45;
+    }
+
+    .switcher{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:14px;
+    }
+
+    .switcher button{
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      padding:15px 18px;
+      font-weight:800;
+      font-size:1rem;
+      text-align:center;
+      color:#fff;
+      transition:transform .12s ease, box-shadow .18s ease, background .18s ease;
+      box-shadow:0 8px 18px rgba(0,0,0,.10);
+    }
+
+    .switcher button:hover{
+      transform:translateY(-1px);
+    }
+
+    .switcher button:active{
+      transform:translateY(0);
+    }
+
+    .btn-roundrobin{
+      background:linear-gradient(135deg, #ff8f1f 0%, #ff7a00 100%);
+    }
+
+    .btn-roundrobin:hover{
+      background:linear-gradient(135deg, #f38212 0%, #ea6d00 100%);
+    }
+
+    .btn-league{
+      background:linear-gradient(135deg, #1b7ddd 0%, #0f67bf 100%);
+    }
+
+    .btn-league:hover{
+      background:linear-gradient(135deg, #1873cc 0%, #0d5cad 100%);
+    }
+
+    .btn-champ{
+      background:linear-gradient(135deg, #0b5fc2 0%, #084b99 100%);
+    }
+
+    .btn-champ:hover{
+      background:linear-gradient(135deg, #0a56af 0%, #073f81 100%);
+    }
+
+    .btn-playoff{
+      background:linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+    }
+
+    .btn-playoff:hover{
+      background:linear-gradient(135deg, #5f22c0 0%, #421982 100%);
+    }
+
+    .coming-soon{
+      text-align:center;
+      color:#8b95a7;
+      font-size:.92rem;
+      margin-top:14px;
+      font-style:italic;
+    }
+
+    #chiamate-container{
+      max-width:1100px;
+      margin:0 auto;
+      background:#fff;
+      border:1px solid rgba(0, 31, 63, 0.08);
+      border-radius:18px;
+      box-shadow:0 14px 34px rgba(0, 31, 63, 0.08);
+      padding:22px 18px;
+      min-height:120px;
+      font-size:.96rem;
+    }
+
+    #chiamate-container p{
+      margin:0;
+      text-align:center;
+      color:#4b5563;
+      font-size:1rem;
+    }
+
+    #chiamate-container table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      margin-top:10px;
+      overflow:hidden;
+    }
+
+    #chiamate-container thead{
+      background:#001f3f;
+      color:#fff;
     }
 
     #chiamate-container th,
-    #chiamate-container td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: center;
+    #chiamate-container td{
+      padding:11px 10px;
+      text-align:center;
+      border-bottom:1px solid #e5e7eb;
     }
 
-    #chiamate-container thead {
-      background-color: #001f3f;
-      color: white;
+    #chiamate-container th:first-child{
+      border-top-left-radius:10px;
     }
 
-   @media (max-width: 900px){
-  nav.site-nav{
-    position: static;
-    top: auto;
-  }
+    #chiamate-container th:last-child{
+      border-top-right-radius:10px;
+    }
 
-  nav.site-nav,
-  nav.site-nav *,
-  nav.site-nav *::before,
-  nav.site-nav *::after{
-    box-sizing: border-box;
-  }
+    #chiamate-container tbody tr:nth-child(even){
+      background:#f9fbfd;
+    }
 
-  nav.site-nav #mainMenu.navbar > li > a{
-    width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    padding:11px 13px;
-  }
+    #chiamate-container tbody tr:hover{
+      background:#eef4ff;
+    }
 
-  nav.site-nav #mainMenu.navbar > li > a .caret{
-    margin-left:auto;
-    flex:0 0 auto;
-    display:inline-block;
-  }
-}
+    @media (max-width: 900px){
+      nav.site-nav{
+        position:static;
+        top:auto;
+      }
+
+      nav.site-nav,
+      nav.site-nav *,
+      nav.site-nav *::before,
+      nav.site-nav *::after{
+        box-sizing:border-box;
+      }
+
+      nav.site-nav #mainMenu.navbar > li > a{
+        width:100%;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:12px;
+        padding:11px 13px;
+      }
+
+      nav.site-nav #mainMenu.navbar > li > a .caret{
+        margin-left:auto;
+        flex:0 0 auto;
+        display:inline-block;
+      }
+
+      .titolo-pagina{
+        font-size:2rem;
+        margin:28px 0 8px;
+      }
+
+      .sottotitolo-pagina{
+        font-size:.95rem;
+        margin-bottom:22px;
+        padding:0 10px;
+      }
+
+      .page-shell{
+        padding:0 12px 26px;
+      }
+
+      .waiver-hero{
+        padding:18px 14px 16px;
+        border-radius:16px;
+      }
+
+      .switcher button{
+        padding:14px 14px;
+        font-size:.96rem;
+      }
+
+      #chiamate-container{
+        padding:14px 10px;
+        border-radius:16px;
+        overflow-x:auto;
+      }
+
+      #chiamate-container th,
+      #chiamate-container td{
+        padding:9px 8px;
+        font-size:.92rem;
+        white-space:nowrap;
+      }
+    }
   </style>
 </head>
 
 <body class="pagina-chiamate">
 
-  <!-- NAVBAR -->
   <nav class="site-nav">
     <div class="nav-inner">
       <div class="nav-left">
@@ -171,29 +310,46 @@
     </div>
   </nav>
 
-  <h1 class="titolo-pagina">Waiver Wire</h1>
+  <div class="page-shell">
+    <h1 class="titolo-pagina">Waiver Wire</h1>
+    <p class="sottotitolo-pagina">Seleziona la sezione da visualizzare per consultare le chiamate della settimana.</p>
 
-  <!-- ✅ SOLO VISUALIZZA -->
-  <div class="switcher">
-    <button class="btn-roundrobin" onclick="caricaChiamate('round')">
-      🔥 Visualizza Chiamate Round Robin
-    </button>
+    <section class="waiver-hero">
+      <h2 class="waiver-hero__title">Centro consultazione chiamate</h2>
+      <p class="waiver-hero__desc">
+        Scegli la competizione che vuoi controllare. La sezione Playoff potrà essere aggiunta qui senza cambiare il layout.
+      </p>
 
-    <button onclick="caricaChiamate('league')">
-      📋 Visualizza Conference League
-    </button>
+      <div class="switcher">
+        <button class="btn-roundrobin" onclick="caricaChiamate('round')">
+          🔥 Visualizza Chiamate Round Robin
+        </button>
 
-    <button onclick="caricaChiamate('champ')">
-      📋 Visualizza Conference Championship
-    </button>
-  </div>
+        <button class="btn-league" onclick="caricaChiamate('league')">
+          📘 Visualizza Conference League
+        </button>
 
-  <div id="chiamate-container">
-    <p>⏳ Seleziona una modalità per visualizzare le chiamate.</p>
+        <button class="btn-champ" onclick="caricaChiamate('champ')">
+          🏆 Visualizza Conference Championship
+        </button>
+
+        <!-- Da sbloccare la prossima settimana
+        <button class="btn-playoff" onclick="caricaChiamate('playoff')">
+          ⭐ Visualizza Chiamate Playoff
+        </button>
+        -->
+
+      </div>
+
+      <div class="coming-soon">Spazio già pronto per le Chiamate Playoff.</div>
+    </section>
+
+    <div id="chiamate-container">
+      <p>⏳ Seleziona una modalità per visualizzare le chiamate.</p>
+    </div>
   </div>
 
   <script src="chiamate.js"></script>
-   <script src="navbar.js"></script>
-
+  <script src="navbar.js"></script>
 </body>
 </html>
