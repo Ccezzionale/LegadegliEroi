@@ -762,8 +762,8 @@ body{
     color: #9d1e3b;
   }
 
-  @media (max-width: 900px){
-nav.site-nav{
+@media (max-width: 900px){
+  nav.site-nav{
     position: static !important;
     top: auto !important;
   }
@@ -789,13 +789,21 @@ nav.site-nav{
     display:none !important;
   }
 
-  nav.site-nav #mainMenu.navbar > li > a.toggle-submenu::after{
-    content:"▼";
-    margin-left:auto;
-    flex:0 0 auto;
-    display:inline-block;
-    color:#fff;
-    font-size:0.8rem;
-    line-height:1;
-  }
-     }
+nav.site-nav #mainMenu.navbar > li > a.toggle-submenu::after{
+  content:"▾";
+  position:static !important;
+  left:auto !important;
+  right:auto !important;
+  bottom:auto !important;
+  height:auto !important;
+  background:none !important;
+  transform:none !important;
+  opacity:1 !important;
+
+  margin-left:auto;
+  flex:0 0 auto;
+  display:inline-block;
+  color:#fff;
+  font-size:0.8rem;
+  line-height:1;
+}
