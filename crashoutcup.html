@@ -19,9 +19,9 @@
         <li><a href="rose.html">Rose</a></li>
 
         <li class="dropdown">
-          <a href="#" class="toggle-submenu">
-            Draft <span class="caret">▾</span>
-          </a>
+        <a href="#" class="toggle-submenu" onclick="if(window.innerWidth<=900){event.preventDefault(); this.parentElement.classList.toggle('show');}">
+  Draft <span class="caret">▾</span>
+</a>
           <ul class="submenu">
             <li><a href="draft_championship.html">🟦 Conf. Championship</a></li>
             <li><a href="draft_conference.html">🟨 Conf. League</a></li>
