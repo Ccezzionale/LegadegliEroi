@@ -11,7 +11,7 @@
   <nav class="site-nav">
     <div class="nav-inner">
       <div class="nav-left">
-        <span id="hamburger" class="hamburger">☰</span>
+        <span id="hamburger" class="hamburger" onclick="document.getElementById('mainMenu').classList.toggle('show')">☰</span>
         <a href="index.html" class="brand-home" aria-label="Home">🏠</a>
       </div>
 
@@ -19,9 +19,9 @@
         <li><a href="rose.html">Rose</a></li>
 
         <li class="dropdown">
-          <a href="#" class="toggle-submenu">
-            Draft <span class="caret">▾</span>
-          </a>
+        <a href="#" class="toggle-submenu" onclick="if(window.innerWidth<=900){event.preventDefault(); this.parentElement.classList.toggle('show');}">
+  Draft <span class="caret">▾</span>
+</a>
           <ul class="submenu">
             <li><a href="draft_championship.html">🟦 Conf. Championship</a></li>
             <li><a href="draft_conference.html">🟨 Conf. League</a></li>
@@ -30,9 +30,9 @@
         </li>
 
         <li class="dropdown competizioni">
-          <a href="#" class="toggle-submenu">
-            Competizioni <span class="caret">▾</span>
-          </a>
+      <a href="#" class="toggle-submenu" onclick="if(window.innerWidth<=900){event.preventDefault(); this.parentElement.classList.toggle('show');}">
+  Competizioni <span class="caret">▾</span>
+</a>
           <ul class="submenu">
             <li><a href="classifica.html">📊 Classifiche</a></li>
             <li><a href="playoff.html">🏆 Playoff</a></li>
@@ -47,10 +47,10 @@
         <li><a href="svincolati.html">Svincolati</a></li>
         <li><a href="chiamate.html">Waiver Wire</a></li>
 
-        <li class="dropdown">
-          <a href="#" class="toggle-submenu">
-            Hall of Fame <span class="caret">▾</span>
-          </a>
+<li class="dropdown">
+   <a href="#" class="toggle-submenu" onclick="if(window.innerWidth<=900){event.preventDefault(); this.parentElement.classList.toggle('show');}">
+  Hall of Fame <span class="caret">▾</span>
+</a>
           <ul class="submenu">
             <li><a href="medagliere.html">👑 Albo d'Oro</a></li>
             <li><a href="albo.html">🏅 Medagliere</a></li>
