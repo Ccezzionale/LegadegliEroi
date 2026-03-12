@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rose - Lega degli Eroi</title>
-<link rel="stylesheet" href="navbar.css?v=99">
-  <link rel="stylesheet" href="rose.css">
+  <link rel="stylesheet" href="navbar.css?v=99">
+  <link rel="stylesheet" href="rose.css?v=100">
 </head>
 <body>
   <nav class="site-nav">
@@ -44,9 +44,6 @@
           </ul>
         </li>
 
-        <li><a href="svincolati.html">Svincolati</a></li>
-        <li><a href="chiamate.html">Waiver Wire</a></li>
-
         <li class="dropdown">
           <a href="#" class="toggle-submenu">
             Hall of Fame <span class="caret">▾</span>
@@ -62,35 +59,47 @@
     </div>
   </nav>
 
-<h1 class="titolo-pagina">Rose delle Squadre</h1>
+  <main class="rose-page">
+    <section class="rose-hero">
+      <h1 class="titolo-pagina">Rose delle Squadre</h1>
+      <p class="rose-subtitle">Consulta le rose, i Franchise Player e gli Under 21 confermati</p>
+    </section>
 
-<div id="legenda">
-  <span><strong>In grassetto</strong> : FP eleggibili</span>
-  <span><span class="badge-u21">U21</span> : Under 21</span>
-  <span><span class="badge-fp">⭐</span> : FP confermato</span>
-  <span><span class="badge-u21-scelto">🐣</span> : U21 confermato</span>
-</div>
-  
-<div id="filtri-rose">
-  <input id="filtro-nome" type="text" placeholder="Cerca giocatore..." />
-  <select id="filtro-conference">
-    <option value="Tutte">Tutte le Conference</option>
-    <option value="Conference League">Conference League</option>
-    <option value="Conference Championship">Conference Championship</option>
-  </select>
-  <select id="filtro-squadra">
-    <option value="Tutte">Tutte le squadre</option>
-    <option value="Real Mimmo">Real Mimmo</option>
-    <option value="Giody">Giody</option>
-    <option value="Desperados">Desperados</option>
-    <!-- aggiungi tutte le squadre -->
-  </select>
-</div>
+    <section class="rose-legend-card">
+      <div id="legenda">
+        <span class="legend-item"><strong>In grassetto</strong> = FP eleggibili</span>
+        <span class="legend-item"><span class="badge-u21">U21</span> Under 21</span>
+        <span class="legend-item"><span class="badge-fp">⭐</span> FP confermato</span>
+        <span class="legend-item"><span class="badge-u21-scelto">🐣</span> U21 confermato</span>
+      </div>
+    </section>
 
-<div id="contenitore-rose">Caricamento rose...</div>
+    <section class="rose-filter-card">
+      <div id="filtri-rose">
+        <input id="filtro-nome" type="text" placeholder="Cerca giocatore..." />
 
-<script src="rose.js?v=63"></script>
-<script src="navbar.js?v=99"></script>
+        <select id="filtro-conference">
+          <option value="Tutte">Tutte le Conference</option>
+          <option value="Conference League">Conference League</option>
+          <option value="Conference Championship">Conference Championship</option>
+        </select>
 
+        <select id="filtro-squadra">
+          <option value="Tutte">Tutte le squadre</option>
+          <option value="Real Mimmo">Real Mimmo</option>
+          <option value="Giody">Giody</option>
+          <option value="Desperados">Desperados</option>
+          <!-- aggiungi tutte le squadre -->
+        </select>
+      </div>
+    </section>
+
+    <section class="rose-content-card">
+      <div id="contenitore-rose">Caricamento rose...</div>
+    </section>
+  </main>
+
+  <script src="rose.js?v=63"></script>
+  <script src="navbar.js?v=99"></script>
 </body>
 </html>
