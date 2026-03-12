@@ -61,121 +61,62 @@
       </ul>
     </div>
   </nav>
+  <main>
+    <h1>Power Ranking</h1>
 
-  <header class="stats-hero">
-    <div class="stats-hero-inner">
-      <p class="hero-eyebrow">Lega degli Eroi</p>
-      <h1>Power Ranking & Statistiche</h1>
-      <p class="hero-subtitle">
-        La sala controllo della stagione: forma, trend, numeri pesanti e piccoli delitti statistici.
+    <!-- POWER RANKING -->
+    <section id="classifica-container">
+      <table id="tabella-classifica">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Squadra</th>
+            <th>Score</th>
+            <th>Trend</th>
+            <th>Media (stag.)</th>
+            <th>Forma (ult.5)</th>
+            <th>Consistenza</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-pr"></tbody>
+      </table>
+      <div id="pr-mobile"></div>
+      <p class="small-note">
+        Score (0–100) = 50% <u>Forma</u> (media ultime 5), 30% <u>Media stagionale</u> (tutte le giornate),
+        20% <u>Consistenza</u> (regolarità: meno oscillazioni nelle ultime 5 ⇒ valore più alto). All’inizio la Media pesa di più.
       </p>
-    </div>
-  </header>
-
-  <main class="stats-main">
-    <section class="panel panel-ranking">
-      <div class="section-head">
-        <div>
-          <p class="section-kicker">Analisi generale</p>
-          <h2>Power Ranking</h2>
-        </div>
-      </div>
-
-      <section id="classifica-container">
-        <div class="table-shell">
-          <table id="tabella-classifica">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Squadra</th>
-                <th>Score</th>
-                <th>Trend</th>
-                <th>Media (stag.)</th>
-                <th>Forma (ult.5)</th>
-                <th>Consistenza</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-pr"></tbody>
-          </table>
-        </div>
-
-        <div id="pr-mobile"></div>
-
-        <p class="small-note">
-          Score (0–100) = 50% <u>Forma</u> (media ultime 5), 30% <u>Media stagionale</u> (tutte le giornate),
-          20% <u>Consistenza</u> (regolarità: meno oscillazioni nelle ultime 5 ⇒ valore più alto). All’inizio la Media pesa di più.
-        </p>
-      </section>
     </section>
 
-    <section class="panel">
-      <div class="section-head">
-        <div>
-          <p class="section-kicker">Lato oscuro</p>
-          <h2>Hall of Shame</h2>
-        </div>
-      </div>
+    <!-- HALL OF SHAME -->
+    <h2>Hall of Shame</h2>
+    <div id="shame-worst"></div>
+    <div id="shame-lowwins"></div>
+    <div id="shame-highloss"></div>
 
-      <div class="stats-grid stats-grid-3">
-        <div class="subpanel" id="shame-worst"></div>
-        <div class="subpanel" id="shame-lowwins"></div>
-        <div class="subpanel" id="shame-highloss"></div>
-      </div>
-    </section>
+    <!-- SCULATI / SFIGATI -->
+    <h2>Sculati / Sfigati</h2>
+    <div id="luck-most"></div>
 
-    <section class="panel">
-      <div class="section-head">
-        <div>
-          <p class="section-kicker">Sorte, caos, destino</p>
-          <h2>Sculati / Sfigati</h2>
-        </div>
-      </div>
+    <!-- CURIOSITÀ -->
+  <h2>Statistiche curiose</h2>
+<div id="fun-top"></div>    <!-- NEW: top 5 punteggi -->
+<div id="fun-facts"></div>  <!-- già esistente, blowout & partita tirata -->
 
-      <div class="stats-grid stats-grid-1">
-        <div class="subpanel" id="luck-most"></div>
-      </div>
-    </section>
+<h2>Andamento squadre</h2>
+<div class="trend-toolbar">
+  <select id="trendTeam1"></select>
+  <select id="trendTeam2"></select>
+  <label><input type="checkbox" id="trendMedian"> Mostra mediana</label>
+  <button id="trendBtn">Aggiorna</button>
+</div>
+<div class="trend-wrap">
+  <canvas id="trendChart"></canvas>
+</div>
 
-    <section class="panel">
-      <div class="section-head">
-        <div>
-          <p class="section-kicker">Dettagli che fanno rumore</p>
-          <h2>Statistiche curiose</h2>
-        </div>
-      </div>
-
-      <div class="stats-grid stats-grid-2">
-        <div class="subpanel" id="fun-top"></div>
-        <div class="subpanel" id="fun-facts"></div>
-      </div>
-    </section>
-
-    <section class="panel panel-trend">
-      <div class="section-head">
-        <div>
-          <p class="section-kicker">Forma nel tempo</p>
-          <h2>Andamento squadre</h2>
-        </div>
-      </div>
-
-      <div class="trend-toolbar">
-        <select id="trendTeam1"></select>
-        <select id="trendTeam2"></select>
-        <label class="trend-check">
-          <input type="checkbox" id="trendMedian">
-          <span>Mostra mediana</span>
-        </label>
-        <button id="trendBtn">Aggiorna</button>
-      </div>
-
-      <div class="trend-wrap">
-        <canvas id="trendChart"></canvas>
-      </div>
-    </section>
   </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="statistiche.js"></script>
-  <script src="navbar.js"></script>
+ <script src="navbar.js"></script>
 </body>
 </html>
