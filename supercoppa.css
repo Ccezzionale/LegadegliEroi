@@ -452,11 +452,12 @@ body{
 }
 
 .winner-cup{
-  width:92%;
-  height:92%;
-  object-fit:contain;
-  display:block;
-  margin:0 auto;
+  width: 108%;
+  height: 108%;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  transform: translateX(-8px) translateY(2px);
 }
 
 .winner-name{
