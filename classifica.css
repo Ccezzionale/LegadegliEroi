@@ -258,7 +258,6 @@ th {
     width: 100%;
   }
 
-
   .switcher {
     gap: 10px;
   }
@@ -269,8 +268,9 @@ th {
     min-width: 140px;
     padding: 12px 10px;
     margin: 0;
-  
-nav.site-nav{
+  }
+
+  nav.site-nav {
     position: static !important;
     top: auto !important;
   }
@@ -278,31 +278,25 @@ nav.site-nav{
   nav.site-nav,
   nav.site-nav *,
   nav.site-nav *::before,
-  nav.site-nav *::after{
+  nav.site-nav *::after {
     box-sizing: border-box;
   }
 
-  nav.site-nav #mainMenu.navbar > li > a{
-    width:100% !important;
-    display:flex !important;
-    align-items:center !important;
-    justify-content:space-between !important;
-    gap:12px !important;
-    padding:11px 13px !important;
-    overflow:visible !important;
+  nav.site-nav #mainMenu.navbar > li > a {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    padding: 11px 13px !important;
+    overflow: visible !important;
   }
 
-  nav.site-nav #mainMenu.navbar > li > a .caret{
-    display:none !important;
+  nav.site-nav #mainMenu.navbar > li > a .caret {
+    display: inline-block !important;
   }
 
-  nav.site-nav #mainMenu.navbar > li > a.toggle-submenu::after{
-    content:"▼";
-    margin-left:auto;
-    flex:0 0 auto;
-    display:inline-block;
-    color:#fff;
-    font-size:0.8rem;
-    line-height:1;
+  nav.site-nav #mainMenu.navbar > li > a.toggle-submenu::after {
+    content: none !important;
   }
-     }
+}
