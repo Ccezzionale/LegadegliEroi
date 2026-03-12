@@ -198,3 +198,19 @@ details[open] .accordion-body {
   color: #000;
   font-weight: bold;
 }
+
+@media (max-width: 900px){
+  nav.site-nav #mainMenu.navbar > li > a .caret{
+    display:inline-block !important;
+    margin-left:auto;
+    flex:0 0 auto;
+    font-size:0.8rem;
+    line-height:1;
+    opacity:1;
+  }
+
+  @media (max-width: 900px){
+  nav.site-nav #mainMenu.navbar > li > a.toggle-submenu::after{
+    content:none !important;
+  }
+}
