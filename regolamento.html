@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Regolamento 2025/26 - Lega degli Eroi</title>
-  <link rel="stylesheet" href="navbar.css">
-<link rel="stylesheet" href="regolamento.css">
+<link rel="stylesheet" href="navbar.css?v=2">
+<link rel="stylesheet" href="regolamento.css?v=2">
     
 </head>
 <body>
@@ -83,7 +83,7 @@
   
 <div class="search-container">
   <input type="text" id="searchInput" placeholder="Cerca nel regolamento..." />
-  <button onclick="cercaNelRegolamento()">🔍 Cerca</button>
+  <button type="button" onclick="cercaNelRegolamento()">🔍 Cerca</button>
 </div>
 
 <section id="lega">
@@ -897,6 +897,14 @@ function evidenziaInSezione(section, parola) {
     }
   });
 }
+</script>
+
+    <script>
+  document.getElementById("searchInput").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      cercaNelRegolamento();
+    }
+  });
 </script>
     
 <script>
