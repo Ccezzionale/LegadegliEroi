@@ -202,7 +202,7 @@ function renderRounds(draftContainerId, roundsColId) {
   for (let r = 1; r <= maxRounds; r++) {
     const row = document.createElement("div");
     row.className = "round";
-    row.textContent = `Round ${r}`;
+    row.textContent = `R${r}`;
     roundsCol.appendChild(row);
   }
 }
