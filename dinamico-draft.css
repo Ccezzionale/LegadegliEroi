@@ -15,6 +15,8 @@
   --draft-header-h: 120px;
   --draft-picks-top: 12px;
   --round-col-w: 58px;
+  --pick-row-h: 34px;
+  --pick-row-h-mobile: 30px;
 }
 
 /* Base */
@@ -124,11 +126,17 @@ body{
 
 .rounds-col .rounds-spacer{
   height: calc(var(--draft-header-h) + var(--draft-picks-top));
+  flex: 0 0 auto;
 }
 
 .rounds-col .round{
   margin: 0;
-  padding: 6px 4px;
+  height: var(--pick-row-h);
+  min-height: var(--pick-row-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
   border-radius: 8px;
   text-align: center;
   font-weight: 800;
@@ -137,6 +145,8 @@ body{
   background: linear-gradient(90deg, rgba(255, 204, 0, 0.95) 0 4px, #f7f9fc 4px 100%);
   border: 1px solid #edf1f7;
   white-space: nowrap;
+  box-sizing: border-box;
+  line-height: 1;
 }
 
 /* Layout dinamico card */
@@ -234,7 +244,12 @@ body{
 .pick{
   width: 100%;
   max-width: 104px;
-  padding: 5px 6px;
+  height: var(--pick-row-h);
+  min-height: var(--pick-row-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
   margin: 0;
   border-radius: 8px;
   text-align: center;
@@ -245,6 +260,7 @@ body{
   border: 1px solid transparent;
   box-sizing: border-box;
   transition: background 0.15s ease, transform 0.15s ease;
+  line-height: 1;
 }
 
 .pick:hover{
@@ -407,6 +423,13 @@ body{
 
 /* Tablet e mobile */
 @media (max-width: 900px){
+  :root{
+    --draft-header-h: 96px;
+    --draft-picks-top: 12px;
+    --round-col-w: 82px;
+    --pick-row-h: var(--pick-row-h-mobile);
+  }
+
   .page-wrap{
     width: min(100%, calc(100% - 20px));
     margin: 22px auto 40px;
@@ -429,12 +452,6 @@ body{
     overflow-x: auto;
   }
 
-  :root{
-    --draft-header-h: 96px;
-    --draft-picks-top: 12px;
-    --round-col-w: 82px;
-  }
-
   .rounds-col{
     padding: 10px 6px;
     border-radius: 16px;
@@ -442,7 +459,7 @@ body{
 
   .rounds-col .round{
     font-size: 0.8rem;
-    padding: 5px 6px;
+    padding: 0 6px;
   }
 
   .draft-columns{
@@ -474,7 +491,7 @@ body{
   .pick{
     max-width: 104px;
     font-size: 0.76rem;
-    padding: 5px 6px;
+    padding: 0 6px;
     border-radius: 7px;
   }
 
@@ -490,6 +507,13 @@ body{
 }
 
 @media (max-width: 640px){
+  :root{
+    --draft-header-h: 88px;
+    --draft-picks-top: 10px;
+    --round-col-w: 74px;
+    --pick-row-h: 28px;
+  }
+
   .page-wrap{
     width: min(100%, calc(100% - 14px));
   }
@@ -503,12 +527,6 @@ body{
     font-size: 0.82rem;
   }
 
-  :root{
-    --draft-header-h: 88px;
-    --draft-picks-top: 10px;
-    --round-col-w: 74px;
-  }
-
   .draft-block{
     gap: 8px;
   }
@@ -519,7 +537,7 @@ body{
 
   .rounds-col .round{
     font-size: 0.72rem;
-    padding: 5px 5px;
+    padding: 0 5px;
     border-radius: 7px;
   }
 
@@ -542,7 +560,7 @@ body{
   .pick{
     max-width: 94px;
     font-size: 0.69rem;
-    padding: 4px 5px;
+    padding: 0 5px;
   }
 
   .divider{
