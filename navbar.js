@@ -1,26 +1,30 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const nav = document.querySelector(".site-nav");
-  if (!nav) return;
-
-  const hamburger = nav.querySelector("#hamburger");
-  const mainMenu = nav.querySelector("#mainMenu");
-  const submenuToggles = nav.querySelectorAll(".toggle-submenu");
+document.addEventListener("DOMContentLoaded", function () {
+  const hamburger = document.getElementById("hamburger");
+  const mainMenu = document.getElementById("mainMenu");
+  const submenuToggles = document.querySelectorAll(".toggle-submenu");
   const isMobile = () => window.innerWidth <= 900;
 
-  hamburger?.addEventListener("click", () => {
-    mainMenu.classList.toggle("show");
-  });
+  if (hamburger && mainMenu) {
+    hamburger.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      mainMenu.classList.toggle("show");
+    });
+  }
 
-  submenuToggles.forEach(toggle => {
+  submenuToggles.forEach(function (toggle) {
     toggle.addEventListener("click", function (e) {
       if (!isMobile()) return;
 
       e.preventDefault();
+      e.stopPropagation();
 
       const parent = this.closest(".dropdown");
+      if (!parent) return;
+
       const alreadyOpen = parent.classList.contains("show");
 
-      nav.querySelectorAll(".dropdown.show").forEach(item => {
+      document.querySelectorAll(".dropdown.show").forEach(function (item) {
         item.classList.remove("show");
       });
 
@@ -30,10 +34,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  window.addEventListener("resize", () => {
+  document.addEventListener("click", function (e) {
+    if (!isMobile()) return;
+
+    const nav = document.querySelector(".site-nav");
+    if (nav && !nav.contains(e.target)) {
+      mainMenu && mainMenu.classList.remove("show");
+      document.querySelectorAll(".dropdown.show").forEach(function (item) {
+        item.classList.remove("show");
+      });
+    }
+  });
+
+  window.addEventListener("resize", function () {
     if (!isMobile()) {
-      mainMenu?.classList.remove("show");
-      nav.querySelectorAll(".dropdown.show").forEach(item => {
+      mainMenu && mainMenu.classList.remove("show");
+      document.querySelectorAll(".dropdown.show").forEach(function (item) {
         item.classList.remove("show");
       });
     }
