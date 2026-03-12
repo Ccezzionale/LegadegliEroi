@@ -107,27 +107,6 @@
 <h2 style="text-align:center; color:#001f3f;">📋 Riepilogo Pick per Squadra</h2>
 <button class="btn-riepilogo" onclick="aggiornaChiamatePerSquadra()">🔄 Ricarica Riepilogo</button>
 <div id="riepilogo-squadre" style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px;"></div>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const hamburger = document.getElementById("hamburger");
-    const mainMenu = document.getElementById("mainMenu");
-    const submenuToggles = document.querySelectorAll(".toggle-submenu");
-
-    hamburger?.addEventListener("click", () => {
-      mainMenu.classList.toggle("show");
-    });
-
-    submenuToggles.forEach(toggle => {
-      toggle.addEventListener("click", function (e) {
-        e.preventDefault();
-        const parent = this.closest(".dropdown");
-        parent.classList.toggle("show");
-      });
-    });
-  });
-
-  </script>
   
 <script src="draft_script_unificato.js"></script>
    <script src="navbar.js"></script>
