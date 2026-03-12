@@ -1,10 +1,8 @@
-/* ===== VARIABILI ===== */
 :root{
-  --bulls-red:#c5161f;   /* rosso Chicago Bulls */
-  --accent:#ffcc00;      /* giallo/arancio */
+  --bulls-red:#c5161f;
+  --accent:#ffcc00;
 }
 
-/* ===== BASE ===== */
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -18,7 +16,6 @@ body {
   padding: 16px 20px;
 }
 
-/* Header */
 .header {
   background: #fff;
   border-bottom: 1px solid #e0e6ef;
@@ -32,9 +29,10 @@ body {
   font-weight: 800;
 }
 
-.container { margin-top: 0; }
+.container { 
+  margin-top: 0; 
+}
 
-/* Card */
 .card {
   background: #ffffff;
   border: 1px solid #e0e6ef;
@@ -43,8 +41,9 @@ body {
   box-shadow: 0 4px 8px rgba(0,0,0,0.06);
 }
 
-/* Desktop table */
-.table-wrap { overflow: auto; }
+.table-wrap { 
+  overflow: auto; 
+}
 
 #tabCoppa {
   border-collapse: collapse;
@@ -57,12 +56,12 @@ body {
   color: white;
 }
 
-#tabCoppa th, #tabCoppa td {
+#tabCoppa th, 
+#tabCoppa td {
   padding: 10px;
   text-align: center;
 }
 
-/* Colonna Squadra allineata a sinistra e con wrapping */
 #tabCoppa th:nth-child(2),
 #tabCoppa td:nth-child(2) {
   text-align: left;
@@ -70,7 +69,6 @@ body {
   word-break: break-word;
 }
 
-/* Righe */
 #tabCoppa tbody tr {
   background-color: white;
   border-bottom: 1px solid #e0e6ef;
@@ -80,7 +78,6 @@ body {
   background-color: #eef6ff;
 }
 
-/* Logo + Nome */
 .team {
   display: flex;
   align-items: center;
@@ -96,15 +93,15 @@ body {
   border-radius: 50%;
 }
 
-/* ===== MOBILE vs DESKTOP SWITCH ===== */
-.mobile { display: none; }
+.mobile { 
+  display: none; 
+}
 
 @media (max-width: 768px) {
   .desktop { display: none; }
   .mobile { display: block; }
 }
 
-/* ===== LISTA MOBILE (fisarmonica) ===== */
 .mobile details {
   border-radius: 10px;
   overflow: hidden;
@@ -112,9 +109,10 @@ body {
   background: #fff;
 }
 
-.mobile details + details { margin-top: 10px; }
+.mobile details + details { 
+  margin-top: 10px; 
+}
 
-/* Testata riquadro mobile */
 .mobile details > summary {
   display: flex;
   align-items: center;
@@ -129,7 +127,9 @@ body {
   list-style: none;
 }
 
-.mobile summary::-webkit-details-marker { display: none; }
+.mobile summary::-webkit-details-marker { 
+  display: none; 
+}
 
 .summary-left {
   display: flex;
@@ -143,28 +143,51 @@ body {
   height: 48px;
 }
 
-.summary-title { display: flex; flex-direction: column; }
-.team-name { font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sub { font-size: 12px; opacity: 0.9; }
+.summary-title { 
+  display: flex; 
+  flex-direction: column; 
+}
 
-/* Corpo dell'accordion */
+.team-name { 
+  font-weight: 800; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+}
+
+.sub { 
+  font-size: 12px; 
+  opacity: 0.9; 
+}
+
 .accordion-body {
   flex-wrap: wrap;
   gap: 10px;
   padding: 12px 16px;
-  background-color: #a50d2b; /* lasciato blu come richiesto */
+  background-color: #a50d2b;
   color: var(--accent);
   font-size: 0.9rem;
 }
 
-details:not([open]) .accordion-body { display: none; }
-details[open] .accordion-body { display: flex; }
+details:not([open]) .accordion-body { 
+  display: none; 
+}
 
-/* Griglia chiave:valore */
-.kv { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; width: 100%; }
-.kv div:nth-child(odd) { opacity: 0.9; }
+details[open] .accordion-body { 
+  display: flex; 
+}
 
-/* Badge posizione */
+.kv { 
+  display: grid; 
+  grid-template-columns: 1fr auto; 
+  gap: 6px 12px; 
+  width: 100%; 
+}
+
+.kv div:nth-child(odd) { 
+  opacity: 0.9; 
+}
+
 .badge {
   display: inline-block;
   font-size: 12px;
@@ -175,40 +198,3 @@ details[open] .accordion-body { display: flex; }
   color: #000;
   font-weight: bold;
 }
-
-@media (max-width: 768px) {
-  nav.site-nav{
-    position: static !important;
-    top: auto !important;
-  }
-
-  nav.site-nav,
-  nav.site-nav *,
-  nav.site-nav *::before,
-  nav.site-nav *::after{
-    box-sizing: border-box;
-  }
-
-  nav.site-nav #mainMenu.navbar > li > a{
-    width:100% !important;
-    display:flex !important;
-    align-items:center !important;
-    justify-content:space-between !important;
-    gap:12px !important;
-    padding:11px 13px !important;
-    overflow:visible !important;
-  }
-
-  nav.site-nav #mainMenu.navbar > li > a .caret{
-    display:none !important;
-  }
-
-  nav.site-nav #mainMenu.navbar > li > a.toggle-submenu::after{
-    content:"▼";
-    margin-left:auto;
-    flex:0 0 auto;
-    display:inline-block;
-    color:#fff;
-    font-size:0.8rem;
-    line-height:1;
-  }
