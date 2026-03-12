@@ -180,32 +180,6 @@ thead {
   summary {
     font-size: 1rem;
   }
-  
-.link-sezione {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  justify-items: center;
-}
-
-.link-sezione a {
-  font-size: 0.95rem;
-  width: 90%;
-  text-align: center;
-  
-/* Mobile adjustments */
-@media (max-width: 768px) {
-  body {
-    padding: 10px;
-  }
-
-  h1 {
-    font-size: 1.8rem;
-  }
-
-  summary {
-    font-size: 1rem;
-  }
 
   .link-sezione {
     display: grid;
