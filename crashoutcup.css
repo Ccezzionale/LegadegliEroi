@@ -460,6 +460,8 @@ details[open] .chevron{
 
   .hero{
     padding: 18px 14px 8px;
+    position: relative;
+    z-index: 1;
   }
 
   .page-title{
@@ -471,8 +473,29 @@ details[open] .chevron{
   }
 
   nav.site-nav{
-    position: static !important;
+    position: relative !important;
     top: auto !important;
+    z-index: 9999 !important;
+    overflow: visible !important;
+  }
+
+  nav.site-nav .nav-inner{
+    position: relative;
+    overflow: visible !important;
+  }
+
+  nav.site-nav #mainMenu{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10000 !important;
+    display: none;
+  }
+
+  nav.site-nav #mainMenu.show{
+    display: flex !important;
+    flex-direction: column;
   }
 
   nav.site-nav,
@@ -512,6 +535,12 @@ details[open] .chevron{
     color: #fff;
     font-size: 0.8rem;
     line-height: 1;
+  }
+
+  .container,
+  .main{
+    position: relative;
+    z-index: 1;
   }
 }
 
