@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=0.5, maximum-scale=3.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=0.5, maximum-scale=3.0">
   <link rel="stylesheet" href="navbar.css">
   <link rel="stylesheet" href="dinamico-draft.css" />
   <title>Draft Dinamico</title>
@@ -62,45 +62,64 @@
     </div>
   </nav>
 
-<h1 class="titolo">Draft Conference League</h1>
-<div class="draft-block">
-  <div class="rounds-col" id="rounds-league"></div>
+  <main class="page-wrap">
+    <section class="draft-section">
+      <div class="section-heading">
+        <h1 class="titolo">Draft Conference League</h1>
+        <p class="sottotitolo">Ordine dinamico completo delle chiamate 2026</p>
+      </div>
 
-  <div class="draft-scroll-x">
-    <div id="draft-league" class="draft-container"></div>
-  </div>
-</div>
+      <div class="draft-block">
+        <div class="rounds-col" id="rounds-league"></div>
 
-<h1 class="titolo">Draft Conference Championship</h1>
-<div class="draft-block">
-  <div class="rounds-col" id="rounds-championship"></div>
+        <div class="draft-scroll-x">
+          <div id="draft-league" class="draft-container"></div>
+        </div>
+      </div>
+    </section>
 
-  <div class="draft-scroll-x">
-    <div id="draft-championship" class="draft-container"></div>
-  </div>
-</div>
+    <section class="draft-section">
+      <div class="section-heading">
+        <h1 class="titolo">Draft Conference Championship</h1>
+        <p class="sottotitolo">Ordine dinamico completo delle chiamate 2026</p>
+      </div>
 
-  <hr style="margin:40px 0; border:0; border-top:2px solid #001f3f;">
+      <div class="draft-block">
+        <div class="rounds-col" id="rounds-championship"></div>
 
-<h2 class="titolo">📑 Elenco Scambi Draft 2026</h2>
+        <div class="draft-scroll-x">
+          <div id="draft-championship" class="draft-container"></div>
+        </div>
+      </div>
+    </section>
 
-<div id="scambi-manuali" class="scambi-box">
-  <ul>
-    <li>Team Bartowski - Bayern : Leao per De Katelaere. Al Team Bartowski va il round 2, al Bayern, se Bartowski nelle ultime 4 va il round 5, nelle prime 4 il round 4 </li>
-    <li>Golden Knights - Riverfilo: Portieri Milan per Portieri Atalanta. Round 12 a riverfilo, 20 a Golden Knights</li>
-    <li>Golden Knights - wildboys78 : Gudmdusson per Hojlund. Round 6 a wildboys</li>
-    <li>Golden Knights - Riverfilo : Barella e Castro per McTominay e Pio Esposito. Round 20 a Golden Knights, round 5 a Riverfilo</li>
-    <li>Golden Knights - Fantaugusta : Immobile per Lookman. Round 23 a Golden Knights, round 4 a Fantaugusta</li>
-    <li>Rubinkebab: vincitore Supercoppa guadagna la prima scelta del round 10, chiamata 73</li>
-    <li>Golden Knights - Eintracht : Zaccagni, Berardi e Buongiorno per Orsolini, Malinovski e Tomori.Round 23 a Golden Knights, round 15 a Eintracht</li>
-    <li>Team Bartowski - Minnesode Timberland : Portieri Lazio, David, Baturina, Ostigard e 10 round per Portieri Lazio, Zanoli, Miretti, Diego Carlos e 5 round </li>
-    <li>Team Bartowski - Pandinicoccolosini : De Kateleare e 12 round per Ratkov e 6 round </li>
-    <li>Team Bartowski - Bayern : Nkunku e 11 round per Simeone e 8 round </li>
-    <li>Bayern - Desperados : Round 3 2026 e round 2 2027 a Desperados, Round 5 2026 e Round 4 2027 e Yildiz al Bayern </li>
-  </ul>
-</div>
-  
+    <section class="scambi-section">
+      <div class="divider"></div>
+
+      <div class="section-heading">
+        <h2 class="titolo titolo-scambi">📑 Elenco Scambi Draft 2026</h2>
+        <p class="sottotitolo">Movimenti, pick cedute e chiamate speciali</p>
+      </div>
+
+      <div id="scambi-manuali" class="scambi-box">
+        <ul>
+          <li><strong>Team Bartowski - Bayern</strong>: Leao per De Katelaere. Al Team Bartowski va il round 2, al Bayern, se Bartowski finisce nelle ultime 4 va il round 5, nelle prime 4 il round 4.</li>
+          <li><strong>Golden Knights - Riverfilo</strong>: Portieri Milan per Portieri Atalanta. Round 12 a Riverfilo, round 20 a Golden Knights.</li>
+          <li><strong>Golden Knights - Wildboys78</strong>: Gudmundsson per Hojlund. Round 6 a Wildboys.</li>
+          <li><strong>Golden Knights - Riverfilo</strong>: Barella e Castro per McTominay e Pio Esposito. Round 20 a Golden Knights, round 5 a Riverfilo.</li>
+          <li><strong>Golden Knights - Fantaugusta</strong>: Immobile per Lookman. Round 23 a Golden Knights, round 4 a Fantaugusta.</li>
+          <li><strong>Rubinkebab</strong>: il vincitore della Supercoppa guadagna la prima scelta del round 10, chiamata 73.</li>
+          <li><strong>Golden Knights - Eintracht</strong>: Zaccagni, Berardi e Buongiorno per Orsolini, Malinovski e Tomori. Round 23 a Golden Knights, round 15 a Eintracht.</li>
+          <li><strong>Team Bartowski - Minnesode Timberland</strong>: Portieri Lazio, David, Baturina, Ostigard e round 10 per Portieri Lazio, Zanoli, Miretti, Diego Carlos e round 5.</li>
+          <li><strong>Team Bartowski - Pandinicoccolosini</strong>: De Katelaere e round 12 per Ratkov e round 6.</li>
+          <li><strong>Team Bartowski - Bayern</strong>: Nkunku e round 11 per Simeone e round 8.</li>
+          <li><strong>Bayern - Desperados</strong>: Round 3 2026 e round 2 2027 a Desperados. Round 5 2026, round 4 2027 e Yildiz al Bayern.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
   <script src="dinamico-draft.js"></script>
-   <script src="navbar.js"></script>
+  <script src="navbar.js"></script>
 </body>
 </html>
