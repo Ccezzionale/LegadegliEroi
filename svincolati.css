@@ -2,8 +2,8 @@
 body{
   margin:0;
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background:#f4f4f4;
-  color:#222;
+  background:#f4f6f9;
+  color:#1f2937;
 }
 
 /* ===== Titoli ===== */
@@ -11,9 +11,10 @@ body{
   text-align:center;
   color:#001f3f;
   font-size:2.2rem;
-  margin:30px 0 20px;
-  font-weight:700;
-  text-shadow:2px 2px 6px #FFD700;
+  margin:34px 0 22px;
+  font-weight:800;
+  text-shadow:1px 1px 4px rgba(255, 204, 0, 0.55);
+  letter-spacing:.2px;
 }
 
 h1{
@@ -27,59 +28,143 @@ h1{
 .container{
   display:flex;
   flex-direction:column;
-  gap:16px;
-  padding:0 20px 30px;
+  gap:18px;
+  padding:0 20px 34px;
+  max-width:1280px;
+  margin:0 auto;
 }
 
 .lista-container,
 .table-wrap{
   background:#fff;
-  border-radius:12px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
-  padding:10px;
+  border-radius:16px;
+  box-shadow:0 10px 24px rgba(0, 31, 63, 0.08);
+  padding:14px;
+  border:1px solid rgba(0, 31, 63, 0.06);
 }
 
-/* ===== Tabelle + filtri ===== */
+/* ===== Griglia filtri ===== */
+.filters-grid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(420px,1fr));
+  gap:18px;
+  margin-bottom:14px;
+  width:100%;
+}
+
+.filters-col{
+  display:grid;
+  grid-template-rows:auto auto;
+  gap:14px;
+}
+
+.form-field label{
+  display:block;
+  font-weight:700;
+  color:#001f3f;
+  margin-bottom:6px;
+  font-size:.98rem;
+  letter-spacing:.1px;
+}
+
+/* ===== Input e select ===== */
+input[type="text"],
+select{
+  width:100%;
+  padding:11px 13px;
+  margin:0;
+  box-sizing:border-box;
+  border-radius:10px;
+  border:1px solid #d5dbe3;
+  background:#fff;
+  color:#1f2937;
+  font-size:.96rem;
+  transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
+  appearance:none;
+}
+
+input[type="text"]:focus,
+select:focus{
+  outline:none;
+  border-color:#0b5fc2;
+  box-shadow:0 0 0 4px rgba(11, 95, 194, 0.10);
+  background:#fcfdff;
+}
+
+/* ===== Tabella ===== */
 table{
   width:100%;
-  border-collapse:collapse;
+  border-collapse:separate;
+  border-spacing:0;
 }
 
 th, td{
-  padding:8px;
+  padding:9px 10px;
   text-align:left;
-  border-bottom:1px solid #ccc;
+  border-bottom:1px solid #e5e7eb;
+  vertical-align:middle;
 }
 
 th{
   background:#001f3f;
   color:#fff;
   cursor:pointer;
+  font-weight:700;
+  position:sticky;
+  top:0;
+  z-index:2;
 }
 
-input[type="text"],
-select{
-  width:100%;
-  padding:6px;
-  margin:6px 0;
-  box-sizing:border-box;
-  border-radius:6px;
-  border:1px solid #ccc;
-  font-size:.95em;
+th:first-child{
+  border-top-left-radius:10px;
 }
 
-/* Scroller lista */
+th:last-child{
+  border-top-right-radius:10px;
+}
+
+tbody tr{
+  transition:background-color .15s ease;
+}
+
+tbody tr:nth-child(even){
+  background:#fafbfd;
+}
+
+tbody tr:hover{
+  background:#eef4ff;
+}
+
+/* ===== Celle cliccabili ===== */
+#lista-giocatori td.player-cell{
+  cursor:pointer;
+  font-weight:800;
+  color:#001f3f;
+  transition:color .15s ease;
+}
+
+#lista-giocatori td.player-cell:hover{
+  color:#0b5fc2;
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+
+/* ===== Scroller lista ===== */
 #lista-giocatori-scroll{
   max-height:550px;
   overflow-y:auto;
+  border-radius:10px;
+  border:1px solid #e5e7eb;
+  scrollbar-width:thin;
+  scrollbar-color:#9ca3af #f3f4f6;
 }
 
-/* Contatori & hint */
+/* ===== Contatori & hint ===== */
 .count{
   text-align:center;
   color:#001f3f;
-  font-weight:700;
-  margin:10px 0;
+  font-weight:800;
+  margin:14px 0 6px;
 }
 
 .hint{
@@ -89,7 +174,7 @@ select{
   margin-top:4px;
 }
 
-/* Spinner */
+/* ===== Spinner ===== */
 .spinner{
   width:18px;
   height:18px;
@@ -106,18 +191,185 @@ select{
   to{ transform:rotate(360deg); }
 }
 
+/* ===== Call panel ===== */
+.callPanel{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  width:min(400px, calc(100vw - 28px));
+  background:#fff;
+  border:1px solid rgba(0, 31, 63, 0.10);
+  border-radius:16px;
+  box-shadow:0 20px 40px rgba(0,0,0,.16);
+  transform:translateY(140%);
+  transition:transform .22s ease;
+  z-index:9999;
+  overflow:hidden;
+}
+
+.callPanel.isOpen{
+  transform:translateY(0);
+}
+
+.callPanel__header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  padding:14px 14px 12px;
+  background:linear-gradient(180deg, #f5f8ff 0%, #eef4ff 100%);
+  border-bottom:1px solid #e5e7eb;
+}
+
+.callPanel__title{
+  font-weight:800;
+  color:#001f3f;
+  font-size:.95rem;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+
+.callPanel__player{
+  font-weight:800;
+  margin-top:4px;
+  font-size:1.45rem;
+  color:#111827;
+  line-height:1.1;
+}
+
+.callPanel__meta{
+  font-size:12px;
+  color:#6b7280;
+  margin-top:4px;
+}
+
+.callPanel__close{
+  border:0;
+  background:transparent;
+  font-size:22px;
+  line-height:1;
+  cursor:pointer;
+  color:#111827;
+  padding:2px 4px;
+}
+
+.callPanel__body{
+  padding:14px;
+  display:grid;
+  gap:12px;
+}
+
+.callPanel__label{
+  font-size:12px;
+  font-weight:700;
+  color:#6b7280;
+  margin-bottom:-4px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+}
+
+.callPanel__select{
+  width:100%;
+  padding:11px 12px;
+  border-radius:10px;
+  border:1px solid #d9d9d9;
+  background:#fff;
+}
+
+.callPanel__select:focus{
+  outline:none;
+  border-color:#0b5fc2;
+  box-shadow:0 0 0 4px rgba(11, 95, 194, 0.10);
+}
+
+.callPanel__btn{
+  padding:12px 14px;
+  border-radius:10px;
+  border:0;
+  background:#001f3f;
+  color:#fff;
+  font-weight:800;
+  font-size:.98rem;
+  cursor:pointer;
+  transition:background .18s ease, transform .12s ease;
+}
+
+.callPanel__btn:hover{
+  background:#0b2e57;
+}
+
+.callPanel__btn:active{
+  transform:translateY(1px);
+}
+
+.callPanel__btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+.callPanel__msg{
+  font-size:13px;
+  min-height:18px;
+  font-weight:600;
+}
+
+/* U21 option */
+#cpDrop option[data-u21="1"]{
+  font-weight:800;
+  color:#0a7a2f;
+}
+
+/* ===== Responsive ===== */
+@media (max-width:1024px){
+  .filters-grid{
+    grid-template-columns:repeat(2, minmax(300px,1fr));
+  }
+}
+
+@media (max-width:768px){
+  .filters-grid{
+    grid-template-columns:1fr;
+    gap:14px;
+  }
+
+  .container{
+    padding:0 12px 24px;
+  }
+
+  .lista-container,
+  .table-wrap{
+    padding:10px;
+    border-radius:14px;
+  }
+
+  th, td{
+    padding:8px 8px;
+    font-size:.92rem;
+  }
+
+  #lista-giocatori-scroll{
+    max-height:300px;
+  }
+
+  .callPanel{
+    right:10px;
+    bottom:10px;
+    width:calc(100vw - 20px);
+  }
+}
+
 /* ===== Mobile navbar override ===== */
 @media (max-width: 900px){
   nav.site-nav{
-    position: static !important;
-    top: auto !important;
+    position:static !important;
+    top:auto !important;
   }
 
   nav.site-nav,
   nav.site-nav *,
   nav.site-nav *::before,
   nav.site-nav *::after{
-    box-sizing: border-box;
+    box-sizing:border-box;
   }
 
   nav.site-nav #mainMenu.navbar > li > a{
@@ -134,27 +386,21 @@ select{
     display:none !important;
   }
 
-nav.site-nav #mainMenu.navbar > li > a.toggle-submenu::after{
-  content:"▾";
-  position:static !important;
-  left:auto !important;
-  right:auto !important;
-  bottom:auto !important;
-  height:auto !important;
-  background:none !important;
-  transform:none !important;
-  opacity:1 !important;
-
-  margin-left:auto;
-  flex:0 0 auto;
-  display:inline-block;
-  color:#fff;
-  font-size:0.8rem;
-  line-height:1;
-}
-
-
-  #lista-giocatori-scroll{
-    max-height:300px;
+  nav.site-nav #mainMenu.navbar > li > a.toggle-submenu::after{
+    content:"▾";
+    position:static !important;
+    left:auto !important;
+    right:auto !important;
+    bottom:auto !important;
+    height:auto !important;
+    background:none !important;
+    transform:none !important;
+    opacity:1 !important;
+    margin-left:auto;
+    flex:0 0 auto;
+    display:inline-block;
+    color:#fff;
+    font-size:0.8rem;
+    line-height:1;
   }
 }
