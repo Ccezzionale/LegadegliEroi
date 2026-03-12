@@ -1,207 +1,126 @@
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f9fa;
-  color: #222;
-  margin: 0;
-  padding: 20px;
+:root{
+  --blue: #001f3f;
+  --blue-2: #0b4d8a;
+  --gold: #ffd54a;
+  --gold-strong: #ffcc00;
+  --bg: #eef2f7;
+  --card: #ffffff;
+  --card-soft: #f8fafc;
+  --line: #d7dde8;
+  --text: #1f2937;
+  --muted: #5b677a;
+  --shadow: 0 8px 24px rgba(0, 31, 63, 0.08);
+  --shadow-soft: 0 4px 12px rgba(0, 31, 63, 0.08);
+
+  --draft-header-h: 132px;
+  --draft-picks-top: 14px;
+  --round-col-w: 96px;
 }
 
-/* Titolo */
-.titolo {
-  text-align: center;
-  color: #001f3f;
-  font-size: 2.2rem;
-  margin: 30px 0 20px;
-  font-weight: 700;
-  text-shadow: 2px 2px 6px #FFD700; /* giallo oro tenue */
-}
-
-/* Container delle tabelle */
-.draft-container {
-  width: 100%;
-  margin: 0 auto 40px auto;
-  overflow-x: auto;
-}
-
-/* Tabella */
-.draft-container table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  font-size: 0.95rem;
-  background-color: white;
-}
-
-.draft-container th,
-.draft-container td {
-  border: 1px solid #ccc;
-  padding: 10px;
-  text-align: center;
-}
-
-/* Intestazioni */
-.draft-container thead {
-  background-color: #001f3f;
-  color: white;
-}
-
-/* Alternanza righe */
-.draft-container tbody tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-
-
-/* Colonna singola */
-.draft-columns {
-  display: flex;
-  flex-wrap: nowrap;     /* ⬅️ questo impedisce il ritorno a capo */
-  overflow-x: auto;      /* ⬅️ questo abilita lo scroll orizzontale */
-  justify-content: flex-start;
-  gap: 30px;
-  margin-bottom: 40px;
-  width: 100%;
-}
-
-.draft-card {
-  background-color: #f9f9f9;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  padding: 12px;
-  width: 220px;
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-}
-
-.draft-header {
-  min-height: 130px; /* aumenta per allineare TUTTO */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 0;
+/* Base */
+*,
+*::before,
+*::after{
   box-sizing: border-box;
 }
 
+html,
+body{
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
 
-.draft-header h3 {
+body{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background:
+    linear-gradient(to bottom, #f3f6fb 0%, #eef2f7 220px, #eef2f7 100%);
+  color: var(--text);
+}
+
+.page-wrap{
+  width: min(1600px, calc(100% - 40px));
+  margin: 34px auto 60px;
+}
+
+/* Titoli */
+.section-heading{
   text-align: center;
-  min-height: 40px;  /* forza stessa altezza per tutti i nomi squadra */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 4px;
-  margin: 0; /* elimina margine extra */
+  margin-bottom: 18px;
 }
 
-
-.draft-picks {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  flex-grow: 1;
-  margin-top: 16px;  /* ✅ sposta più in basso le pick */
+.titolo{
+  margin: 0;
+  color: var(--blue);
+  font-size: clamp(2rem, 2.7vw, 3rem);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-shadow: 2px 2px 0 rgba(255, 204, 0, 0.55);
 }
 
-.draft-logo-wrapper {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.sottotitolo{
+  margin: 10px 0 0;
+  font-size: 0.98rem;
+  color: var(--muted);
+  font-weight: 500;
 }
 
-.draft-logo {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  display: block;
+.draft-section{
+  margin-bottom: 48px;
 }
 
-.draft-scroll {
-  overflow-x: auto;
-  width: 100%;
-}
-
-.draft-picks .pick {
-  padding: 4px 8px;
-  margin: 2px 0;
-  border-radius: 4px;
-  text-align: center;
-}
-
-/* Lista delle pick */
-.draft-column div {
-  margin: 4px 0;
-}
-
-.pick {
-  padding: 4px 8px;
-  margin: 2px 0;
-  border-radius: 4px;
-}
-
-.pick.bonus-coppa {
-  border: 2px solid gold;
-  font-weight: 700;
-  background: rgba(255, 215, 0, 0.15);
-  border-radius: 6px;
-}
-
-.scambio-1 {
-  background-color: #ff9999; /* rosso chiaro */
-}
-
-.scambio-2 {
-  background-color: #99ccff; /* azzurro chiaro */
-}
-
-.scambio-3 {
-  background-color: #99ff99; /* verde chiaro */
-}
-
-.scambio-4 {
-  background-color: #ffff99; /* giallo chiaro */
-}
-
-.scambio-5 {
-  background-color: #ffcc99; /* arancio chiaro */
-}
-.scambio-6 {
-  background-color: #ffcc00; /* arancio chiaro */
-}
-
-.scambio-7 {
-  background-color: #00ccff; /* arancio chiaro */
-}
-
-/* =========================
-   ROUND COLUMN (DESKTOP BASE)
-   ========================= */
-:root{
-  --draft-header-h: 130px;
-  --draft-picks-top: 16px;
-  --round-col-w: 92px;
-}
-
+/* Draft layout */
 .draft-block{
   display: flex;
   align-items: flex-start;
+  gap: 14px;
   width: 100%;
-  gap: 10px;
-  margin-bottom: 40px;
 }
 
+.draft-scroll-x{
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: #bcc7d8 transparent;
+}
+
+.draft-scroll-x::-webkit-scrollbar{
+  height: 10px;
+}
+
+.draft-scroll-x::-webkit-scrollbar-track{
+  background: transparent;
+}
+
+.draft-scroll-x::-webkit-scrollbar-thumb{
+  background: #bcc7d8;
+  border-radius: 999px;
+}
+
+.draft-container{
+  width: max-content;
+  min-width: 100%;
+}
+
+/* Colonna rounds */
 .rounds-col{
   width: var(--round-col-w);
+  min-width: var(--round-col-w);
   flex: 0 0 var(--round-col-w);
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: linear-gradient(180deg, #ffffff 0%, #f6f9fd 100%);
+  border: 1px solid var(--line);
+  border-radius: 18px;
   padding: 12px 8px;
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-soft);
+  position: sticky;
+  left: 0;
+  z-index: 3;
 }
 
 .rounds-col .rounds-spacer{
@@ -209,142 +128,407 @@ body {
 }
 
 .rounds-col .round{
-  padding: 4px 8px;
-  margin: 2px 0;
-  border-radius: 4px;
+  margin: 0;
+  padding: 6px 8px;
+  border-radius: 8px;
   text-align: left;
-  font-weight: 700;
-  color: #001f3f;
-  background: #f8f9fa;
-  border-left: 4px solid #FFD700;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--blue);
+  background: linear-gradient(90deg, rgba(255, 204, 0, 0.95) 0 5px, #f7f9fc 5px 100%);
+  border: 1px solid #edf1f7;
+  white-space: nowrap;
 }
 
-/* scroll orizzontale SOLO sulle card */
-.draft-scroll-x{
-  overflow-x: auto;
-  width: 100%;
+/* Layout dinamico card */
+.draft-columns{
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 18px;
+  width: max-content;
 }
 
- /* ✅ allinea esattamente Round e Pick: stessa spaziatura */
-.draft-picks{
-  gap: 4px;              /* tieni il gap */
+.draft-card{
+  width: 195px;
+  min-width: 195px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px 12px 12px;
+  box-shadow: var(--shadow);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.draft-picks .pick{
-  margin: 0;             /* 🔥 togli il margin che sommava spazio */
+.draft-card::before{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--blue), var(--gold-strong));
 }
 
-/* ✅ anche la colonna Round usa lo stesso gap */
-.rounds-col{
+.draft-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 31, 63, 0.12);
+}
+
+.draft-header{
+  min-height: var(--draft-header-h);
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4px 0 8px;
+  text-align: center;
+}
+
+.draft-logo-wrapper{
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  padding: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #ffffff 40%, #f0f4fa 100%);
+}
+
+.draft-logo{
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.draft-header h3{
+  margin: 0;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  color: #0f172a;
+  font-size: 0.98rem;
+  line-height: 1.25;
+  font-weight: 800;
+}
+
+.draft-picks{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 4px;
+  flex-grow: 1;
+  margin-top: var(--draft-picks-top);
 }
 
-.rounds-col .round{
-  margin: 0;             /* 🔥 idem: niente margin, gap gestisce tutto */
+.draft-column div{
+  margin: 4px 0;
 }
 
-/* (opzionale ma consigliato) evita che la pick “bonus” cambi altezza */
+/* Pick */
 .pick{
+  width: 100%;
+  max-width: 120px;
+  padding: 6px 8px;
+  margin: 0;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+  color: #223045;
+  background: #f6f8fb;
+  border: 1px solid transparent;
   box-sizing: border-box;
-  border: 0; /* ✅ niente bordo: non cambia altezza */
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.pick:hover{
+  background: #eef3fa;
 }
 
 .pick.bonus-coppa{
-  outline: 2px solid gold;          /* ✅ evidenzia senza cambiare layout */
-  outline-offset: 0;
-  background: rgba(255, 215, 0, 0.15);
+  background: rgba(255, 215, 0, 0.16);
+  outline: 3px solid var(--gold-strong);
+  outline-offset: -1px;
+  font-weight: 800;
+  color: #4b3a00;
+}
+
+.scambio-1{
+  background-color: #f8b4b4;
+  color: #5f1111;
   font-weight: 700;
 }
 
+.scambio-2{
+  background-color: #b9d8ff;
+  color: #123b67;
+  font-weight: 700;
+}
 
-/* =========================
-   MOBILE (solo 1 media)
-   ========================= */
-@media (max-width: 768px) {
+.scambio-3{
+  background-color: #b9f5b9;
+  color: #185218;
+  font-weight: 700;
+}
 
- 
-  table{ display: none; }
-  .accordion{ display: block; }
+.scambio-4{
+  background-color: #f6f39a;
+  color: #5d5600;
+  font-weight: 700;
+}
 
-  .titolo{ font-size: 1.2rem; }
+.scambio-5{
+  background-color: #ffd6b0;
+  color: #6a3b09;
+  font-weight: 700;
+}
+
+.scambio-6{
+  background-color: #ffcc00;
+  color: #5b4200;
+  font-weight: 800;
+}
+
+.scambio-7{
+  background-color: #99ebff;
+  color: #00485f;
+  font-weight: 800;
+}
+
+/* Tabella fallback se usata dal JS */
+.draft-container table{
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.95rem;
+  background-color: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+}
+
+.draft-container th,
+.draft-container td{
+  border: 1px solid #dfe5ee;
+  padding: 10px;
+  text-align: center;
+}
+
+.draft-container thead{
+  background-color: var(--blue);
+  color: white;
+}
+
+.draft-container tbody tr:nth-child(even){
+  background-color: #f5f7fb;
+}
+
+/* Divider */
+.divider{
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent 0%, var(--blue) 18%, var(--blue) 82%, transparent 100%);
+  margin: 28px 0 38px;
+  opacity: 0.9;
+}
+
+/* Scambi */
+.scambi-section{
+  margin-top: 8px;
+}
+
+.titolo-scambi{
+  font-size: clamp(1.8rem, 2.3vw, 2.6rem);
+}
+
+.scambi-box{
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 26px 26px 22px;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-shadow: var(--shadow);
+}
+
+.scambi-box ul{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.scambi-box li{
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(255, 204, 0, 0.12) 0, rgba(255, 204, 0, 0.12) 6px, #f8fafc 6px, #f8fafc 100%);
+  border: 1px solid #e8edf5;
+  color: #223045;
+  line-height: 1.5;
+  box-shadow: 0 2px 6px rgba(0, 31, 63, 0.04);
+}
+
+.scambi-box li strong{
+  color: var(--blue);
+}
+
+/* Mobile */
+@media (max-width: 900px){
+  .page-wrap{
+    width: min(100%, calc(100% - 20px));
+    margin: 22px auto 40px;
+  }
+
+  .titolo{
+    font-size: 1.9rem;
+  }
+
+  .sottotitolo{
+    font-size: 0.9rem;
+    padding: 0 10px;
+  }
+
+  .draft-block{
+    gap: 10px;
+  }
+
+  :root{
+    --draft-header-h: 96px;
+    --draft-picks-top: 12px;
+    --round-col-w: 82px;
+  }
+
+  .rounds-col{
+    padding: 10px 6px;
+    border-radius: 16px;
+  }
+
+  .rounds-col .round{
+    font-size: 0.8rem;
+    padding: 5px 6px;
+  }
 
   .draft-columns{
-    display: flex;
-    flex-wrap: nowrap;
-    width: max-content;
+    gap: 12px;
   }
 
   .draft-card{
-    width: 130px;
-    min-width: 130px;
-    max-width: 130px;
-    flex-shrink: 0;
-  }
-
-  .draft-header{
-    min-height: 80px;
-    padding: 2px 0;
+    width: 150px;
+    min-width: 150px;
+    border-radius: 16px;
+    padding: 12px 10px 10px;
   }
 
   .draft-logo-wrapper{
-    width: 28px;
-    height: 28px;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 8px;
   }
 
   .draft-header h3{
-    font-size: 0.7rem;
-    min-height: 26px;
-    text-align: center;
+    font-size: 0.82rem;
+    min-height: 38px;
+    padding: 0 4px;
   }
 
-.draft-picks .pick{
-  font-size: 0.7rem;
-  padding: 2px 4px;
-  margin: 0;
-}
-
-  /* rounds più compatti */
-:root{
-  --draft-header-h: 80px;
-  --draft-picks-top: 16px; /* prima 8 -> scende i Round */
-  --round-col-w: 72px;
-}
-
-  .rounds-col{ padding: 8px 6px; }
-
-  .rounds-col .round{
-    font-size: 0.7rem;
-    padding: 2px 6px;
+  .pick{
+    max-width: 104px;
+    font-size: 0.76rem;
+    padding: 5px 6px;
+    border-radius: 7px;
   }
 
   .scambi-box{
-    background: white;
-    border: 2px solid #001f3f;
-    border-radius: 10px;
-    padding: 20px;
-    max-width: 900px;
-    margin: 0 auto 50px auto;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.15);
-  }
-
-  .scambi-box ul{
-    margin: 0;
-    padding-left: 20px;
-    font-size: 1rem;
-    line-height: 1.6;
+    padding: 18px 14px 14px;
+    border-radius: 16px;
   }
 
   .scambi-box li{
-    margin-bottom: 8px;
-    padding: 6px 10px;
-    border-left: 4px solid #FFD700;
-    background: #f8f9fa;
-    border-radius: 4px;
+    padding: 12px 12px;
+    font-size: 0.92rem;
+  }
+}
+
+@media (max-width: 640px){
+  .page-wrap{
+    width: min(100%, calc(100% - 14px));
   }
 
-  @media (max-width: 900px){
+  .titolo{
+    font-size: 1.45rem;
+    text-shadow: 1px 1px 0 rgba(255, 204, 0, 0.6);
+  }
+
+  .sottotitolo{
+    font-size: 0.82rem;
+  }
+
+  :root{
+    --draft-header-h: 88px;
+    --draft-picks-top: 10px;
+    --round-col-w: 74px;
+  }
+
+  .draft-block{
+    gap: 8px;
+  }
+
+  .rounds-col{
+    padding: 8px 5px;
+  }
+
+  .rounds-col .round{
+    font-size: 0.72rem;
+    padding: 5px 5px;
+    border-radius: 7px;
+  }
+
+  .draft-card{
+    width: 132px;
+    min-width: 132px;
+    padding: 10px 8px 8px;
+  }
+
+  .draft-logo-wrapper{
+    width: 34px;
+    height: 34px;
+  }
+
+  .draft-header h3{
+    font-size: 0.72rem;
+    min-height: 34px;
+  }
+
+  .pick{
+    max-width: 94px;
+    font-size: 0.69rem;
+    padding: 4px 5px;
+  }
+
+  .divider{
+    margin: 20px 0 28px;
+  }
+
+  .scambi-box{
+    padding: 14px 10px 10px;
+  }
+
+  .scambi-box li{
+    font-size: 0.86rem;
+    line-height: 1.45;
+  }
+}
+
+/* Navbar mobile fix */
+@media (max-width: 900px){
   nav.site-nav{
     position: static;
     top: auto;
@@ -358,17 +542,17 @@ body {
   }
 
   nav.site-nav #mainMenu.navbar > li > a{
-    width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    padding:11px 13px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 11px 13px;
   }
 
   nav.site-nav #mainMenu.navbar > li > a .caret{
-    margin-left:auto;
-    flex:0 0 auto;
-    display:inline-block;
+    margin-left: auto;
+    flex: 0 0 auto;
+    display: inline-block;
   }
-  }
+}
