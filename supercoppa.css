@@ -457,7 +457,7 @@ body{
   object-fit: contain;
   display: block;
   margin: 0 auto;
-  transform: translateX(-8px) translateY(2px);
+   transform: translateX(-8px) translateY(-40px);
 }
 
 .winner-name{
