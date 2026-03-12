@@ -597,4 +597,42 @@ details[open] .chevron{
     padding: 11px 12px;
     border-radius: 12px;
   }
+
+  @media (max-width: 900px){
+  nav.site-nav #mainMenu{
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: #001f3f !important;
+    z-index: 10000 !important;
+    padding: 8px 0;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+  }
+
+  nav.site-nav #mainMenu.show{
+    display: flex !important;
+  }
+
+  nav.site-nav #mainMenu > li{
+    width: 100%;
+    list-style: none;
+  }
+
+  nav.site-nav #mainMenu > li > a{
+    display: flex !important;
+    width: 100%;
+    color: #fff !important;
+    background: transparent !important;
+  }
+
+  nav.site-nav #mainMenu .submenu{
+    background: #0b2f57 !important;
+  }
+
+  nav.site-nav #mainMenu .submenu a{
+    color: #fff !important;
+  }
 }
