@@ -85,6 +85,7 @@ body{
   box-shadow:var(--shadow);
   padding:18px;
   margin-bottom:22px;
+  min-width:0;
 }
 
 .panel-ranking{
@@ -232,7 +233,7 @@ body{
   font-weight:800;
 }
 
-/* prime 3 righe */
+/* Top 3 */
 #tabella-classifica tbody tr:nth-child(1){
   background:linear-gradient(90deg, rgba(255,204,0,0.12), rgba(255,255,255,1));
 }
@@ -279,6 +280,8 @@ body{
   box-shadow:var(--shadow-soft);
   padding:10px;
   min-height:120px;
+  min-width:0;
+  overflow:hidden;
 }
 
 /* ===== existing generated tables ===== */
@@ -287,6 +290,7 @@ body{
   margin:0;
   border-collapse:separate;
   border-spacing:0 8px;
+  table-layout:auto;
 }
 
 .subtable thead th{
@@ -295,6 +299,7 @@ body{
   padding:11px 10px;
   border-radius:8px 8px 0 0;
   font-size:.9rem;
+  white-space:nowrap;
 }
 
 .subtable tbody tr{
@@ -311,11 +316,18 @@ body{
 
 .subtable td{
   background:#fff;
+  white-space:nowrap;
+}
+
+.subtable th:nth-child(2),
+.subtable td:nth-child(2){
+  white-space:normal;
 }
 
 .badge{
   display:block;
   width:100%;
+  max-width:100%;
   margin:0 0 8px;
   color:var(--navy);
   font-weight:700;
@@ -326,6 +338,7 @@ body{
   display:inline-flex;
   align-items:center;
   gap:8px;
+  min-width:0;
 }
 
 .mini-logo{
@@ -336,6 +349,7 @@ body{
   background:#fff;
   border:1px solid #eee;
   vertical-align:middle;
+  flex:0 0 auto;
 }
 
 /* ===== TREND ===== */
@@ -420,6 +434,11 @@ body{
   display:none;
 }
 
+#pr-mobile .badge{
+  width:auto;
+  max-width:none;
+}
+
 @media (max-width: 900px){
   .stats-main{
     padding:0 14px 24px;
@@ -443,6 +462,15 @@ body{
   .stats-grid-2{
     grid-template-columns:1fr;
   }
+
+  .subpanel{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .subtable{
+    min-width:620px;
+  }
 }
 
 @media (max-width: 768px){
@@ -459,7 +487,7 @@ body{
   }
 
   .acc-item{
-    border-radius:16px;
+    border-radius:18px;
     overflow:hidden;
     background:linear-gradient(180deg, var(--navy-2) 0%, var(--navy) 100%);
     color:#fff;
@@ -468,16 +496,33 @@ body{
   }
 
   .acc-head{
-    display:flex;
+    display:grid;
+    grid-template-columns:auto 48px 1fr;
     align-items:center;
     gap:12px;
-    padding:13px 14px;
+    padding:14px;
     cursor:pointer;
   }
 
+  .acc-head .badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:64px;
+    min-width:64px;
+    height:40px;
+    margin:0;
+    padding:0 10px;
+    border-radius:10px;
+    background:rgba(0,0,0,0.22);
+    color:#fff;
+    font-weight:900;
+    font-size:1.1rem;
+  }
+
   .acc-head img{
-    width:42px;
-    height:42px;
+    width:48px;
+    height:48px;
     object-fit:contain;
     border-radius:50%;
     background:#fff;
@@ -488,13 +533,13 @@ body{
   .acc-title{
     display:flex;
     flex-direction:column;
-    gap:2px;
+    gap:4px;
     min-width:0;
-    flex:1;
   }
 
   .acc-title .team-name{
     font-weight:800;
+    font-size:1rem;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
@@ -503,22 +548,13 @@ body{
   .acc-title .sub{
     font-size:.88rem;
     opacity:.9;
-  }
-
-  .badge{
-    background:#001f3f;
-    color:#fff;
-    padding:5px 9px;
-    border-radius:8px;
-    font-weight:800;
-    font-variant-numeric:tabular-nums;
+    white-space:normal;
   }
 
   .acc-body{
     display:none;
     padding:12px 14px 14px;
     background:#0a3c69;
-    font-size:.92rem;
     border-top:1px solid rgba(255,255,255,0.10);
     grid-template-columns:repeat(2, minmax(0,1fr));
     gap:10px;
@@ -526,6 +562,28 @@ body{
 
   .acc-item.open .acc-body{
     display:grid;
+  }
+
+  .acc-body > div{
+    min-width:0;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:12px;
+    padding:10px;
+  }
+
+  .acc-body strong{
+    display:block;
+    margin-bottom:4px;
+    font-size:.76rem;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    opacity:.8;
+  }
+
+  .acc-body span,
+  .acc-body div{
+    word-break:break-word;
   }
 
   .small-note{
@@ -551,16 +609,31 @@ body{
 }
 
 @media (max-width: 560px){
-  .stats-hero h1{
-    font-size:2rem;
-  }
-
-  .hero-subtitle{
-    font-size:.93rem;
+  .stats-main{
+    padding:0 10px 20px;
   }
 
   .panel{
     padding:12px;
+    border-radius:18px;
+  }
+
+  .stats-hero{
+    padding:18px 12px 10px;
+  }
+
+  .stats-hero h1{
+    font-size:2rem;
+    line-height:1.05;
+  }
+
+  .hero-subtitle{
+    font-size:.92rem;
+    line-height:1.45;
+  }
+
+  .section-head{
+    margin-bottom:10px;
   }
 
   .section-kicker{
@@ -571,10 +644,40 @@ body{
     font-size:1.2rem;
   }
 
-  .subtable thead th,
-  .subtable th,
-  .subtable td{
-    font-size:.88rem;
+  .acc-head{
+    grid-template-columns:56px 44px 1fr;
+    gap:10px;
+    padding:12px;
+  }
+
+  .acc-head .badge{
+    width:56px;
+    min-width:56px;
+    height:36px;
+    font-size:1rem;
+  }
+
+  .acc-head img{
+    width:44px;
+    height:44px;
+  }
+
+  .acc-title .team-name{
+    font-size:.95rem;
+  }
+
+  .acc-title .sub{
+    font-size:.82rem;
+  }
+
+  .acc-body{
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    padding:10px 12px 12px;
+  }
+
+  .subtable{
+    min-width:560px;
   }
 
   .trend-wrap{
