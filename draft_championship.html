@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Draft Championship</title>
-  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="navbar.css" />
   <link rel="stylesheet" href="draft.css" />
 </head>
 <body>
@@ -62,66 +62,143 @@
     </div>
   </nav>
 
-<h1 class="titolo-pagina">🟦 Draft Room - Conference Championship</h1>
-</div>
-<div id="turno-attuale">⏳ Caricamento turno in corso...</div>
-  <div id="spinner" class="spinner" style="display:none"></div>
+  <main class="page-shell">
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <div class="kicker">🟦 Draft Board ufficiale</div>
+          <h1 class="titolo-pagina">Draft Room · Championship League</h1>
+          <p class="hero-subtitle">
+            Board completo delle pick, player pool filtrabile e riepilogo finale per squadra.
+            Una war room un po’ più elegante, un po’ meno foglio Excel in smoking.
+          </p>
+        </div>
 
-<div class="container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; padding: 20px;">
-  <div class="colonna-pick">
-  <table id="tabella-pick">
-      <thead>
-        <tr>
-          <th onclick="ordinaPick(0)">Pick</th>
-          <th onclick="ordinaPick(1)">Squadra</th>
-          <th onclick="ordinaPick(2)">Giocatore</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+        <div class="hero-status">
+          <div class="status-card">
+            <div class="status-label">Stato draft</div>
+            <div id="turno-attuale">⏳ Caricamento turno in corso...</div>
+            <div id="spinner" class="spinner" style="display:none"></div>
+          </div>
 
-  <div class="lista-container" style="flex: 1 1 35%;">
-    <label for="filtroSerieA">Filtra per Squadra Serie A:</label>
-    <select id="filtroSerieA"><option value="">-- Tutte --</option></select>
-    <label for="filtroRuolo">Filtra per Ruolo:</label>
-    <input type="text" id="cercaRuolo" placeholder="Cerca ruolo..." />
-    <select id="filtroRuolo"><option value="">-- Tutti i Ruoli --</option></select>
-    <label for="searchGiocatore">Cerca Giocatore:</label>
-    <input id="searchGiocatore" placeholder="Digita un nome..." type="text"/>
-  <div id="lista-giocatori-scroll">
-  <table id="lista-giocatori-table">
-        <thead>
-          <tr>
-            <th onclick="ordinaLista(0)">Giocatore</th>
-            <th onclick="ordinaLista(1)">Ruolo</th>
-            <th onclick="ordinaLista(2)">Squadra</th>
-            <th onclick="ordinaLista(3, true)">Quotazione</th>
-            <th onclick="ordinaLista(4)">U21</th>
-          </tr>
-        </thead>
-        <tbody id="lista-giocatori"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
+          <div class="hero-badges">
+            <div class="hero-badge">🏟️ Conference Championship</div>
+            <div class="hero-badge">📋 Board + Pool + Team Recap</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<h2 style="text-align:center; color:#001f3f;">📋 Riepilogo Pick per Squadra</h2>
-<button class="btn-riepilogo" onclick="aggiornaChiamatePerSquadra()">🔄 Ricarica Riepilogo</button>
-<div id="riepilogo-squadre" style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px;"></div>
+    <section class="container">
+      <section class="panel colonna-pick">
+        <div class="panel-header">
+          <div class="panel-title-wrap">
+            <h2 class="panel-title">📌 Draft Board</h2>
+            <p class="panel-subtitle">Ordine completo delle pick effettuate</p>
+          </div>
+          <div class="panel-count">Picks</div>
+        </div>
 
-  
-<script src="draft_script_unificato.js"></script>
-   <script src="navbar.js"></script>
+        <div class="table-shell">
+          <div class="table-scroll">
+            <table id="tabella-pick">
+              <thead>
+                <tr>
+                  <th onclick="ordinaPick(0)">Pick</th>
+                  <th onclick="ordinaPick(1)">Squadra</th>
+                  <th onclick="ordinaPick(2)">Giocatore</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-<!-- Override per la CHAMPIONSHIP -->
-<script>
-  function caricaGiocatori() {
-    const KEY = "giocatori_championship_cache";
-    const now = Date.now();
-    return fetchAndParseGiocatoriGeneric(KEY, now, "giocatori_completo_finale.csv");
-  }
-</script>
+      <aside class="panel lista-container">
+        <div class="panel-header">
+          <div class="panel-title-wrap">
+            <h2 class="panel-title">🎯 Player Pool</h2>
+            <p class="panel-subtitle">Filtra il listone per squadra, ruolo e nome</p>
+          </div>
+          <div class="panel-count">Pool</div>
+        </div>
 
+        <div class="filters-wrap">
+          <div class="filters-grid">
+            <div class="filter-field">
+              <label class="filter-label" for="filtroSerieA">Filtra per Squadra Serie A</label>
+              <select id="filtroSerieA">
+                <option value="">-- Tutte --</option>
+              </select>
+            </div>
+
+            <div class="filter-field">
+              <label class="filter-label" for="cercaRuolo">Cerca ruolo</label>
+              <input type="text" id="cercaRuolo" placeholder="Cerca ruolo..." />
+            </div>
+
+            <div class="filter-field">
+              <label class="filter-label" for="filtroRuolo">Filtra per Ruolo</label>
+              <select id="filtroRuolo">
+                <option value="">-- Tutti i Ruoli --</option>
+              </select>
+            </div>
+
+            <div class="filter-field">
+              <label class="filter-label" for="searchGiocatore">Cerca Giocatore</label>
+              <input id="searchGiocatore" placeholder="Digita un nome..." type="text" />
+            </div>
+          </div>
+
+          <div class="filters-toolbar">
+            <div class="results-pill">🔎 Listone disponibile</div>
+          </div>
+        </div>
+
+        <div id="lista-giocatori-scroll">
+          <table id="lista-giocatori-table">
+            <thead>
+              <tr>
+                <th onclick="ordinaLista(0)">Giocatore</th>
+                <th onclick="ordinaLista(1)">Ruolo</th>
+                <th onclick="ordinaLista(2)">Squadra</th>
+                <th onclick="ordinaLista(3, true)">Quotazione</th>
+                <th onclick="ordinaLista(4)">U21</th>
+              </tr>
+            </thead>
+            <tbody id="lista-giocatori"></tbody>
+          </table>
+        </div>
+      </aside>
+    </section>
+
+    <section class="summary-section">
+      <div class="summary-topbar">
+        <div class="summary-title-wrap">
+          <h2 class="summary-title">📋 Riepilogo Pick per Squadra</h2>
+          <p class="summary-subtitle">Tutte le rose draftate, squadra per squadra</p>
+        </div>
+
+        <button class="btn-riepilogo" onclick="aggiornaChiamatePerSquadra()">
+          🔄 Ricarica Riepilogo
+        </button>
+      </div>
+
+      <div id="riepilogo-squadre"></div>
+    </section>
+  </main>
+
+  <script src="draft_script_unificato.js"></script>
+  <script src="navbar.js"></script>
+
+  <!-- Override per la CHAMPIONSHIP -->
+  <script>
+    function caricaGiocatori() {
+      const KEY = "giocatori_championship_cache";
+      const now = Date.now();
+      return fetchAndParseGiocatoriGeneric(KEY, now, "giocatori_completo_finale.csv");
+    }
+  </script>
 </body>
 </html>
