@@ -206,7 +206,7 @@ body{
    ========================= */
 .container{
   display: grid;
-  grid-template-columns: minmax(0, 1.65fr) minmax(340px, 0.95fr);
+  grid-template-columns: minmax(0, 1.65fr) minmax(380px, 0.95fr);
   gap: 22px;
   align-items: start;
   padding: 0;
@@ -362,6 +362,13 @@ tbody tr:hover{
    ========================= */
 .lista-container{
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 760px;
+}
+
+.lista-container .panel-header{
+  flex: 0 0 auto;
 }
 
 .filters-wrap{
@@ -418,6 +425,7 @@ select:focus{
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
+  margin-top: 2px;
 }
 
 .results-pill{
@@ -434,15 +442,44 @@ select:focus{
   font-weight: 700;
 }
 
-#lista-giocatori-scroll{
+.lista-container #lista-giocatori-scroll{
   padding: 0 16px 16px;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-#lista-giocatori-table{
+.lista-container #lista-giocatori-table{
+  width: 100%;
   border: 1px solid var(--line-soft);
   border-radius: 16px;
-  overflow: hidden;
   background: #fff;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  overflow: hidden;
+}
+
+.lista-container #lista-giocatori-table thead{
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.lista-container #lista-giocatori-table tbody{
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.lista-container #lista-giocatori-table tbody tr{
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  cursor: pointer;
 }
 
 #lista-giocatori-table td:nth-child(1){
@@ -452,46 +489,6 @@ select:focus{
 #lista-giocatori-table td:nth-child(4),
 #lista-giocatori-table td:nth-child(5){
   white-space: nowrap;
-}
-
-/* clickable rows */
-#lista-giocatori-table tbody tr{
-  cursor: pointer;
-}
-
-.lista-container{
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  height: 760px;
-}
-
-.lista-container .filters-wrap{
-  flex: 0 0 auto;
-}
-
-.lista-container .panel-header{
-  flex: 0 0 auto;
-}
-
-.lista-container .filters-toolbar{
-  margin-top: 2px;
-}
-
-.lista-container .filters-wrap + #lista-giocatori-scroll{
-  margin-top: 2px;
-}
-
-.lista-container .panel-header{
-  flex: 0 0 auto;
-}
-
-.lista-container .filters-toolbar{
-  margin-top: 2px;
-}
-
-.lista-container .filters-wrap + #lista-giocatori-scroll{
-  margin-top: 2px;
 }
 
 #lista-giocatori-table th:nth-child(1),
@@ -713,6 +710,10 @@ h1, h2, h3, h4, p{
   .status-card{
     width: 100%;
   }
+
+  .lista-container{
+    height: auto;
+  }
 }
 
 @media (max-width: 768px){
@@ -793,19 +794,56 @@ h1, h2, h3, h4, p{
     width: auto;
   }
 
-  #lista-giocatori-scroll{
-    padding: 0 8px 10px;
+  .lista-container{
+    height: auto;
+    max-height: none;
   }
 
-  #lista-giocatori-table{
+  .filters-wrap{
+    padding: 12px 8px 6px;
+  }
+
+  .filter-label{
+    font-size: 0.82rem;
+  }
+
+  input[type="text"],
+  select{
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 0.88rem;
+  }
+
+  .lista-container #lista-giocatori-scroll{
+    padding: 0 8px 10px;
+    display: block;
+  }
+
+  .lista-container #lista-giocatori-table{
     table-layout: fixed;
   }
 
-  #lista-giocatori-table th,
-  #lista-giocatori-table td{
+  .lista-container #lista-giocatori-table th,
+  .lista-container #lista-giocatori-table td{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .lista-container #lista-giocatori-table thead{
+    display: table-header-group;
+    width: auto;
+  }
+
+  .lista-container #lista-giocatori-table tbody{
+    display: table-row-group;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .lista-container #lista-giocatori-table tbody tr{
+    display: table-row;
+    width: auto;
   }
 
   .summary-topbar{
