@@ -446,8 +446,8 @@ select:focus{
   padding: 0 16px 16px;
   flex: 1 1 auto;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .lista-container #lista-giocatori-table{
@@ -461,24 +461,13 @@ select:focus{
   overflow: hidden;
 }
 
-.lista-container #lista-giocatori-table thead{
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
-
-.lista-container #lista-giocatori-table tbody{
-  display: block;
-  flex: 1 1 auto;
-  min-height: 0;
-  max-height: 100%;
-  overflow-y: auto;
+.lista-container #lista-giocatori-table thead th{
+  position: sticky;
+  top: 0;
+  z-index: 3;
 }
 
 .lista-container #lista-giocatori-table tbody tr{
-  display: table;
-  width: 100%;
-  table-layout: fixed;
   cursor: pointer;
 }
 
