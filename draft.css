@@ -495,6 +495,33 @@ select:focus{
   table-layout: fixed;
 }
 
+#lista-giocatori-table th:nth-child(1),
+#lista-giocatori-table td:nth-child(1){
+  width: 34%;
+}
+
+#lista-giocatori-table th:nth-child(2),
+#lista-giocatori-table td:nth-child(2){
+  width: 18%;
+}
+
+#lista-giocatori-table th:nth-child(3),
+#lista-giocatori-table td:nth-child(3){
+  width: 24%;
+}
+
+#lista-giocatori-table th:nth-child(4),
+#lista-giocatori-table td:nth-child(4){
+  width: 14%;
+  text-align: center;
+}
+
+#lista-giocatori-table th:nth-child(5),
+#lista-giocatori-table td:nth-child(5){
+  width: 10%;
+  text-align: center;
+}
+
 /* =========================
    SUMMARY SECTION
    ========================= */
