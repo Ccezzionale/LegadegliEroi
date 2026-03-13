@@ -456,6 +456,45 @@ select:focus{
   cursor: pointer;
 }
 
+.lista-container{
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 700px;
+}
+
+.lista-container .filters-wrap{
+  flex: 0 0 auto;
+}
+
+.lista-container #lista-giocatori-scroll{
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.lista-container #lista-giocatori-table{
+  height: 100%;
+}
+
+.lista-container #lista-giocatori-table thead,
+.lista-container #lista-giocatori-table tbody tr{
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.lista-container #lista-giocatori-table tbody{
+  display: block;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.lista-container #lista-giocatori-table thead{
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
 /* =========================
    SUMMARY SECTION
    ========================= */
