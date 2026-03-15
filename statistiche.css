@@ -44,6 +44,195 @@ h2 { color:var(--nav); margin:28px auto 10px; text-align:center }
 .trend-wrap{ width:min(1200px,95%); margin:0 auto 24px; }
 #trendChart{ width:100% !important; height:340px !important; display:block; }
 
+/* ========== CLASSIFICA EVOLUTIVA / RACE ========== */
+#raceSection{
+  width: 100%;
+  max-width: 1200px;
+  margin: 28px auto 30px;
+}
+
+#raceSection .section-head{
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+#raceSection .section-head h2{
+  color: var(--nav);
+  margin: 0 0 6px;
+}
+
+#raceSection .section-head p{
+  margin: 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.race-controls{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 12px 0 10px;
+  flex-wrap: wrap;
+}
+
+.race-controls button{
+  padding: 8px 12px;
+  background: var(--nav);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.race-controls button:hover{
+  background: var(--navHover);
+}
+
+#raceLabel{
+  font-weight: 700;
+  color: var(--nav);
+  min-width: 110px;
+  text-align: center;
+}
+
+.race-slider-wrap{
+  width: min(1200px, 95%);
+  margin: 0 auto 14px;
+  display: flex;
+  justify-content: center;
+}
+
+#raceDay{
+  width: min(520px, 90vw);
+}
+
+.race-track-wrap{
+  width: min(1200px, 95%);
+  margin: 0 auto 28px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* area grafico */
+.race-track{
+  position: relative;
+  width: 100%;
+  min-width: 100%;
+  height: 420px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #d8d8d8;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* baseline */
+.race-track::after{
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  height: 2px;
+  background: var(--nav);
+  opacity: 0.12;
+}
+
+/* wrapper singola colonna */
+.race-bar{
+  position: absolute;
+  bottom: 14px;
+  left: 0;
+  width: 64px;
+  height: 10px;
+  transform: translateX(0);
+  transition: transform 450ms ease, height 450ms ease, width 450ms ease;
+}
+
+/* barra colorata */
+.race-bar .bar-fill{
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  opacity: 0.88;
+}
+
+/* logo sopra la colonna */
+.race-bar img{
+  position: absolute;
+  left: 50%;
+  top: -46px;
+  transform: translateX(-50%);
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0 3px 10px rgba(0,0,0,.15);
+}
+
+/* badge posizione */
+.race-bar .pos-badge{
+  position: absolute;
+  left: 50%;
+  top: -74px;
+  transform: translateX(-50%);
+  min-width: 26px;
+  max-width: 90px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--nav);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.18);
+}
+
+/* ========== MOBILE ========== */
+@media (max-width: 768px){
+  #raceSection{
+    margin-top: 24px;
+  }
+
+  #raceSection .section-head p{
+    padding: 0 8px;
+  }
+}
+
+@media (max-width: 520px){
+  .race-track{
+    height: 520px;
+  }
+
+  .race-bar img{
+    top: -34px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .race-bar .pos-badge{
+    top: -62px;
+    font-size: 11px;
+    padding: 4px 8px;
+    max-width: 82px;
+  }
+
+  #raceLabel{
+    min-width: auto;
+    width: 100%;
+    order: -1;
+  }
+}
+
 /* ========== POWER RANKING – MOBILE (solo qui si nasconde la tabella) ========== */
 #pr-mobile { display:none; } /* nascosto su desktop */
 
