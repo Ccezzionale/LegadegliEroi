@@ -5,6 +5,7 @@ const DEFAULT_CSV_URL =
 // "" = tutte le fasi, altrimenti "Regular" o "Playoff"
 const PHASE_FILTER = "";
 const LOGO_DIR = "img/";
+const RACE_IMG_DIR = "img/maglie/";
 
 /********** UTILS **********/
 function slug(s){
@@ -687,12 +688,17 @@ function initRaceDOM(teamNames){
     bar.style.background = getRaceTeamColor(teamName);
 
     const img = document.createElement("img");
-    img.src = `${LOGO_DIR}${teamName}.png`;
-    img.alt = teamName;
-    img.loading = "lazy";
-    img.onerror = function(){
-      this.style.display = "none";
-    };
+img.src = `${RACE_IMG_DIR}${teamName}.png`;
+img.alt = teamName;
+img.loading = "lazy";
+img.onerror = function(){
+  if (!this.dataset.jpg) {
+    this.dataset.jpg = "1";
+    this.src = `${RACE_IMG_DIR}${teamName}.jpg`;
+  } else {
+    this.style.display = "none";
+  }
+};
 
     wrap.appendChild(bar);
     wrap.appendChild(img);
