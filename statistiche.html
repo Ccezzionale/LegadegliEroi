@@ -113,6 +113,27 @@
   <canvas id="trendChart"></canvas>
 </div>
 
+    <section id="raceSection" class="stats-section">
+  <div class="section-head">
+    <h2>Classifica Evolutiva</h2>
+    <p>Andamento cumulato della classifica giornata dopo giornata</p>
+  </div>
+
+  <div class="race-controls">
+    <button id="racePrev" type="button">◀</button>
+    <div id="raceLabel">Giornata 1</div>
+    <button id="raceNext" type="button">▶</button>
+  </div>
+
+  <div class="race-slider-wrap">
+    <input type="range" id="raceDay" min="1" max="1" value="1">
+  </div>
+
+  <div class="race-track-wrap">
+    <div id="raceTrack" class="race-track"></div>
+  </div>
+</section>
+
   </main>
   
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
