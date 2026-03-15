@@ -170,12 +170,12 @@ h2 { color:var(--nav); margin:28px auto 10px; text-align:center }
   left: 50%;
   top: -46px;
   transform: translateX(-50%);
-  width: 46px;
-  height: 46px;
+  width: 52px;
+  height: 52px;
   object-fit: contain;
-  border-radius: 50%;
-  background: #fff;
-  border: 2px solid #fff;
+  border-radius: 0;
+  background: transparent;
+  border: 0;
   box-shadow: 0 3px 10px rgba(0,0,0,.15);
 }
 
@@ -217,11 +217,12 @@ h2 { color:var(--nav); margin:28px auto 10px; text-align:center }
     height: 520px;
   }
 
-  .race-bar img{
-    top: -34px;
-    width: 38px;
-    height: 38px;
-  }
+.race-bar img{
+  top: -34px;
+  width: 42px;
+  height: 42px;
+}
+  
 
   .race-bar .pos-badge{
     top: -62px;
