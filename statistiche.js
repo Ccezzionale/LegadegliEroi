@@ -908,4 +908,6 @@ function buildRaceFromClean(clean){
 
   const luck = computeLuck(clean);
   renderLuckBox(luck);
+
+  buildRaceFromClean(clean);
 })();
