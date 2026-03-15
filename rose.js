@@ -104,23 +104,64 @@ function slug(s){
     .replace(/(^-|-$)/g, "");
 }
 
-function trovaLogo(nomeSquadra) {
-  const estensioni = [".png", ".jpg"];
-  const varianti = [
-    nomeSquadra,
-    nomeSquadra.toLowerCase(),
-    nomeSquadra.replaceAll(" ", "_").toLowerCase()
+function variantiNomeSquadra(nomeSquadra) {
+  const nome = String(nomeSquadra || "").trim();
+
+  return [
+    nome,
+    nome.toLowerCase(),
+    nome.replaceAll(" ", "_"),
+    nome.replaceAll(" ", "_").toLowerCase(),
+    nome.replaceAll(" ", "-"),
+    nome.replaceAll(" ", "-").toLowerCase(),
+    slug(nome)
   ];
+}
+
+function buildImageCandidates(dir, nomeSquadra) {
+  const estensioni = [".png", ".jpg", ".jpeg", ".webp"];
+  const varianti = variantiNomeSquadra(nomeSquadra);
+  const paths = [];
+
   for (const base of varianti) {
     for (const ext of estensioni) {
-      return `img/${base}${ext}`;
+      paths.push(`${dir}${base}${ext}`);
     }
   }
-  return "img/default.png";
+
+  return [...new Set(paths)];
+}
+
+function applyImageFallback(imgEl, candidates, fallback = "") {
+  if (!imgEl || !candidates.length) {
+    if (fallback) imgEl.src = fallback;
+    return;
+  }
+
+  let idx = 0;
+  imgEl.src = candidates[idx];
+
+  imgEl.onerror = function () {
+    idx++;
+    if (idx < candidates.length) {
+      this.src = candidates[idx];
+    } else {
+      if (fallback) {
+        this.onerror = null;
+        this.src = fallback;
+      } else {
+        this.style.display = "none";
+      }
+    }
+  };
+}
+
+function trovaLogo(nomeSquadra) {
+  return buildImageCandidates("img/", nomeSquadra);
 }
 
 function trovaMaglia(nomeSquadra) {
-  return `img/maglie/${slug(nomeSquadra)}.png`;
+  return buildImageCandidates("img/maglie/", nomeSquadra);
 }
 
 async function caricaGiocatoriFP() {
@@ -251,23 +292,14 @@ const iconsWrap = document.createElement("div");
 iconsWrap.className = "team-icons";
 
 const imgLogo = document.createElement("img");
-imgLogo.src = data.logo;
 imgLogo.alt = nome;
 imgLogo.className = "team-logo";
-imgLogo.onerror = () => { imgLogo.style.display = "none"; };
+applyImageFallback(imgLogo, data.logo, "img/default.png");
 
 const imgMaglia = document.createElement("img");
-imgMaglia.src = data.maglia;
 imgMaglia.alt = `Maglia ${nome}`;
 imgMaglia.className = "team-shirt";
-imgMaglia.onerror = function () {
-  if (!this.dataset.jpg) {
-    this.dataset.jpg = "1";
-    this.src = `img/maglie/${slug(nome)}.jpg`;
-  } else {
-    this.style.display = "none";
-  }
-};
+applyImageFallback(imgMaglia, data.maglia);
 
 const name = document.createElement("span");
 name.textContent = nome;
