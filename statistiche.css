@@ -116,6 +116,10 @@ h2 { color:var(--nav); margin:28px auto 10px; text-align:center }
   -webkit-overflow-scrolling: touch;
 }
 
+.race-track-wrap::-webkit-scrollbar{
+  height: 8px;
+}
+
 /* area grafico */
 .race-track{
   position: relative;
@@ -271,15 +275,16 @@ h2 { color:var(--nav); margin:28px auto 10px; text-align:center }
   .acc-title { display:flex; flex-direction:column; gap:2px; }
   .acc-title .team-name { font-weight:700; }
   .acc-title .sub { font-size:.9rem; opacity:.9; }
-  .acc-body {
-    display:none;
-    padding:10px 14px 12px;
-    background:#004080;
-    font-size:.92rem;
-    border-top:1px solid #003061;
-    display:grid;
-    grid-template-columns:repeat(3, minmax(0,1fr));
-    gap:8px 12px;
-  }
-  .acc-item.open .acc-body { display:grid; }
+.acc-body {
+  display:none;
+  padding:10px 14px 12px;
+  background:#004080;
+  font-size:.92rem;
+  border-top:1px solid #003061;
+  grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:8px 12px;
+}
+
+.acc-item.open .acc-body { 
+  display:grid; 
 }
