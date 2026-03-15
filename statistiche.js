@@ -612,6 +612,278 @@ function initTrend(clean, defaultTeam){
   draw();
 }
 
+/********** CLASSIFICA EVOLUTIVA / RACE **********/
+const TEAM_OFFICIAL_RACE = {
+  "riverfilo": "Riverfilo",
+  "pokermantra": "PokerMantra"
+};
+
+const TEAM_COLORS_RACE = {
+  "team bartowski":       "#C1121F",
+  "bayern christiansen":  "#8B0A1A",
+  "wildboys78":           "#A07900",
+  "desperados":           "#2E4A7F",
+  "minnesode timberland": "#00A651",
+  "golden knights":       "#B4975A",
+  "pokermantra":          "#5B2A86",
+  "rubinkebab":           "#C27A33",
+  "pandinicoccolosini":   "#228B22",
+  "ibla":                 "#F97316",
+  "fc disoneste":         "#A78BFA",
+  "athletic pongao":      "#C1121F",
+  "riverfilo":            "#D5011D",
+  "eintracht franco 126": "#E1000F",
+  "fantaugusta":          "#164E3B"
+};
+
+function canonRaceTeamName(raw){
+  const k = teamKey(raw);
+  return TEAM_OFFICIAL_RACE[k] || normTeamName(raw);
+}
+
+function getRaceTeamColor(teamName){
+  const k = teamKey(teamName);
+  return TEAM_COLORS_RACE[k] || "#0074D9";
+}
+
+// regola gol classica fantacalcio
+const RACE_GOAL_BASE = 66;
+const RACE_GOAL_STEP = 6;
+
+function raceMpToGoals(mp){
+  let g = 0;
+  let thr = RACE_GOAL_BASE;
+  while (mp >= thr){
+    g += 1;
+    thr += RACE_GOAL_STEP;
+  }
+  return g;
+}
+
+let raceNodes = new Map();
+let raceDataByDay = {};
+let raceMaxDay = 1;
+let raceOrder = [];
+
+function initRaceDOM(teamNames){
+  const track = document.getElementById("raceTrack");
+  if (!track) return;
+
+  track.innerHTML = "";
+  raceNodes = new Map();
+
+  raceOrder = teamNames.slice().sort((a,b)=>a.localeCompare(b));
+
+  raceOrder.forEach(teamName => {
+    const wrap = document.createElement("div");
+    wrap.className = "race-bar";
+
+    const badge = document.createElement("div");
+    badge.className = "pos-badge";
+    badge.textContent = "";
+
+    const bar = document.createElement("div");
+    bar.className = "bar-fill";
+    bar.style.background = getRaceTeamColor(teamName);
+
+    const img = document.createElement("img");
+    img.src = `${LOGO_DIR}${teamName}.png`;
+    img.alt = teamName;
+    img.loading = "lazy";
+    img.onerror = function(){
+      this.style.display = "none";
+    };
+
+    wrap.appendChild(bar);
+    wrap.appendChild(img);
+    wrap.appendChild(badge);
+
+    track.appendChild(wrap);
+    raceNodes.set(teamKey(teamName), { el: wrap, teamName, badge });
+  });
+}
+
+function renderRaceDay(day){
+  const track = document.getElementById("raceTrack");
+  const slider = document.getElementById("raceDay");
+  const label = document.getElementById("raceLabel");
+  if (!track || !slider || !label) return;
+
+  const rows = raceDataByDay[day] || [];
+
+  const ptMap = new Map();
+  const mpMap = new Map();
+  rows.forEach(r => {
+    ptMap.set(r.teamKey, Number(r.pt) || 0);
+    mpMap.set(r.teamKey, Number(r.mp) || 0);
+  });
+
+  const ranking = Array.from(raceNodes.entries()).map(([k,node]) => ({
+    k,
+    name: node.teamName,
+    pt: ptMap.get(k) || 0,
+    mp: mpMap.get(k) || 0
+  }));
+
+  ranking.sort((a,b) =>
+    (b.pt - a.pt) ||
+    (b.mp - a.mp) ||
+    a.name.localeCompare(b.name)
+  );
+
+  const maxPt = Math.max(1, ...ranking.map(r => r.pt));
+
+  const PAD = 12;
+  const BASELINE = 12;
+  const isMobile = window.matchMedia("(max-width: 520px)").matches;
+
+  let W = track.clientWidth;
+  const H = track.clientHeight;
+
+  const ICON_AREA = isMobile ? 120 : 90;
+  const climbH = Math.max(40, H - BASELINE - ICON_AREA);
+
+  const n = Math.max(1, ranking.length);
+  const maxBarW = isMobile ? 30 : 68;
+  const minBarW = isMobile ? 20 : 38;
+
+  const minSlot = isMobile ? 74 : 0;
+  const neededW = PAD*2 + n * minSlot;
+
+  if (isMobile && neededW > W){
+    track.style.width = neededW + "px";
+    W = neededW;
+  } else {
+    track.style.width = "100%";
+  }
+
+  const slot = (W - PAD*2) / n;
+  const barW = Math.max(minBarW, Math.min(maxBarW, slot * 0.78));
+
+  ranking.forEach((r, idx) => {
+    const node = raceNodes.get(r.k);
+    if (!node) return;
+
+    const x = PAD + idx * slot + (slot - barW) / 2;
+
+    let h = Math.max(10, (r.pt / maxPt) * climbH);
+    const MAX_H = climbH * (isMobile ? 0.92 : 0.96);
+    h = Math.min(h, MAX_H);
+
+    node.el.style.width = `${barW}px`;
+    node.el.style.height = `${h}px`;
+    node.el.style.transform = `translateX(${x}px)`;
+
+    if (node.badge) {
+      node.badge.textContent = `${idx + 1}° · ${r.pt} pt`;
+      node.badge.title = `MP: ${Math.round(r.mp)}`;
+    }
+  });
+
+  slider.value = day;
+  label.textContent = `Giornata ${day}`;
+}
+
+function wireRaceControls(){
+  const prev = document.getElementById("racePrev");
+  const next = document.getElementById("raceNext");
+  const slider = document.getElementById("raceDay");
+  if (!prev || !next || !slider) return;
+
+  slider.oninput = e => renderRaceDay(Number(e.target.value));
+  prev.onclick = () => renderRaceDay(Math.max(1, Number(slider.value) - 1));
+  next.onclick = () => renderRaceDay(Math.min(raceMaxDay, Number(slider.value) + 1));
+}
+
+function buildRaceFromClean(clean){
+  const section = document.getElementById("raceSection");
+  if (!section) return;
+
+  const byDay = new Map();
+  const teamsSet = new Set();
+  const seen = new Set();
+
+  for (const raw of clean){
+    const day = parseInt(raw.GW, 10);
+    if (!Number.isFinite(day) || day <= 0) continue;
+
+    const teamName = canonRaceTeamName(raw.Team);
+    if (!teamName) continue;
+
+    const tKey = teamKey(teamName);
+    const key = `${day}|${tKey}`;
+
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    teamsSet.add(teamName);
+
+    const mpFor = Number(raw.PointsFor) || 0;
+    const mpAg  = Number(raw.PointsAgainst) || 0;
+
+    const gf = raceMpToGoals(mpFor);
+    const ga = raceMpToGoals(mpAg);
+
+    const pts = gf > ga ? 3 : (gf < ga ? 0 : 1);
+
+    if (!byDay.has(day)) byDay.set(day, []);
+    byDay.get(day).push({
+      teamKey: tKey,
+      teamName,
+      pts,
+      mp: mpFor
+    });
+  }
+
+  const days = Array.from(byDay.keys()).sort((a,b)=>a-b);
+  raceMaxDay = days.length ? days[days.length - 1] : 1;
+
+  const teamNames = Array.from(teamsSet).sort((a,b)=>a.localeCompare(b));
+  initRaceDOM(teamNames);
+
+  const totals = new Map();
+  teamNames.forEach(n => totals.set(teamKey(n), {
+    pt: 0,
+    mp: 0,
+    teamName: n
+  }));
+
+  raceDataByDay = {};
+
+  for (let d = 1; d <= raceMaxDay; d++){
+    const games = byDay.get(d) || [];
+
+    games.forEach(g => {
+      const cur = totals.get(g.teamKey) || {
+        pt: 0,
+        mp: 0,
+        teamName: g.teamName
+      };
+      cur.pt += g.pts;
+      cur.mp += g.mp;
+      cur.teamName = g.teamName;
+      totals.set(g.teamKey, cur);
+    });
+
+    raceDataByDay[d] = Array.from(totals.entries()).map(([k,v]) => ({
+      teamKey: k,
+      teamName: v.teamName,
+      pt: v.pt,
+      mp: v.mp
+    }));
+  }
+
+  const slider = document.getElementById("raceDay");
+  if (slider){
+    slider.min = "1";
+    slider.max = String(raceMaxDay);
+    slider.value = "1";
+  }
+
+  wireRaceControls();
+  renderRaceDay(1);
+}
+
 
 
 /********** BOOT (auto-load) **********/
