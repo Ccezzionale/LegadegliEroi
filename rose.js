@@ -95,6 +95,15 @@ const squadre = [
   { col: 5, start: 219, end: 246, headerRow: 217 },
 ];
 
+function slug(s){
+  return String(s || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 function trovaLogo(nomeSquadra) {
   const estensioni = [".png", ".jpg"];
   const varianti = [
@@ -108,6 +117,10 @@ function trovaLogo(nomeSquadra) {
     }
   }
   return "img/default.png";
+}
+
+function trovaMaglia(nomeSquadra) {
+  return `img/maglie/${slug(nomeSquadra)}.png`;
 }
 
 async function caricaGiocatoriFP() {
@@ -206,10 +219,11 @@ async function caricaRose() {
     }
 
     if (giocatori.length > 0) {
-      rose[nomeSquadra] = {
-        logo: trovaLogo(nomeSquadra),
-        giocatori
-      };
+rose[nomeSquadra] = {
+  logo: trovaLogo(nomeSquadra),
+  maglia: trovaMaglia(nomeSquadra),
+  giocatori
+};
     }
   }
 
@@ -230,20 +244,40 @@ function mostraRose() {
     div.setAttribute("data-squadra", nome);
     div.setAttribute("data-conference", conferencePerSquadra[nome] || "N/A");
 
-    const header = document.createElement("div");
-    header.className = "logo-nome";
+const header = document.createElement("div");
+header.className = "logo-nome";
 
-    const img = document.createElement("img");
-    img.src = data.logo;
-    img.alt = nome;
-    img.onerror = () => { img.style.display = "none"; };
+const iconsWrap = document.createElement("div");
+iconsWrap.className = "team-icons";
 
-    const name = document.createElement("span");
-    name.textContent = nome;
+const imgLogo = document.createElement("img");
+imgLogo.src = data.logo;
+imgLogo.alt = nome;
+imgLogo.className = "team-logo";
+imgLogo.onerror = () => { imgLogo.style.display = "none"; };
 
-    header.appendChild(img);
-    header.appendChild(name);
-    div.appendChild(header);
+const imgMaglia = document.createElement("img");
+imgMaglia.src = data.maglia;
+imgMaglia.alt = `Maglia ${nome}`;
+imgMaglia.className = "team-shirt";
+imgMaglia.onerror = function () {
+  if (!this.dataset.jpg) {
+    this.dataset.jpg = "1";
+    this.src = `img/maglie/${slug(nome)}.jpg`;
+  } else {
+    this.style.display = "none";
+  }
+};
+
+const name = document.createElement("span");
+name.textContent = nome;
+
+iconsWrap.appendChild(imgLogo);
+iconsWrap.appendChild(imgMaglia);
+
+header.appendChild(iconsWrap);
+header.appendChild(name);
+div.appendChild(header);
 
     const table = document.createElement("table");
     table.innerHTML = `
