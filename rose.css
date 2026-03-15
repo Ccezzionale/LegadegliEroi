@@ -374,22 +374,6 @@ tbody tr:last-child {
     border-radius: 16px;
   }
 
-  .logo-nome img {
-    width: 96px;
-    height: 96px;
-  }
-
-  .logo-nome span {
-    font-size: 1.2rem;
-  }
-
-  th,
-  td {
-    padding: 8px 8px;
-    font-size: 0.88rem;
-  }
-
-  @media (max-width: 600px) {
   .team-icons {
     gap: 10px;
     margin-bottom: 10px;
@@ -401,7 +385,17 @@ tbody tr:last-child {
   }
 
   .team-shirt {
-    width: 62px;
-    height: 62px;
+    width: 82px;
+    height: 82px;
+  }
+
+  .logo-nome span {
+    font-size: 1.2rem;
+  }
+
+  th,
+  td {
+    padding: 8px 8px;
+    font-size: 0.88rem;
   }
 }
