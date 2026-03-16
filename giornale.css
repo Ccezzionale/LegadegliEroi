@@ -362,7 +362,7 @@ button:active{
   max-height: 420px;
   display: block;
   border-radius: 12px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* ===== Layout columns ===== */
