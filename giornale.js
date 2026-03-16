@@ -539,13 +539,15 @@ function renderManualHTML(gw, manual, stats, classificaHTML){
     : `<p>Per questa giornata non è stato ancora inserito un editoriale manuale.</p>
        <p>Puoi comunque consultare risultati, premi discutibili e classifica totale qui sotto.</p>`;
 
-  const heroImage = manual?.imageUrl
-    ? `
-      <div class="hero-media">
-        <img src="${manual.imageUrl}" alt="${title}" loading="lazy" referrerpolicy="no-referrer">
-      </div>
-    `
-    : "";
+const heroImage = manual?.imageUrl
+  ? `
+    <div class="hero-media">
+      <img src="${manual.imageUrl}" alt="${title}" loading="lazy">
+    </div>
+  `
+  : "";
+
+  
 
   return `
     <div class="lede-wrap">
