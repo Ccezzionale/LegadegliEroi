@@ -125,7 +125,7 @@ function extractDriveFileId(value){
 
 function buildDriveImageUrl(value){
   const id = extractDriveFileId(value);
-  return id ? `https://drive.google.com/uc?export=view&id=${id}` : "";
+  return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w1600` : "";
 }
 
 // ===== Cache helpers =====
@@ -542,7 +542,7 @@ function renderManualHTML(gw, manual, stats, classificaHTML){
 const heroImage = manual?.imageUrl
   ? `
     <div class="hero-media">
-      <img src="${manual.imageUrl}" alt="${title}" loading="lazy">
+      <img src="${manual.imageUrl}" alt="${title}">
     </div>
   `
   : "";
