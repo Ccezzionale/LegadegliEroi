@@ -28,7 +28,8 @@ const MAN = {
   gw: "GW",
   title: "Titolo_manual",
   text: "Testo_manual",
-  updated: "UpdatedAt"
+  updated: "UpdatedAt",
+  image: "Immagine"
 };
 
 // ===== Cache =====
@@ -97,6 +98,34 @@ function findColByCandidates(obj, candidates){
     if (hit) return hit.raw;
   }
   return null;
+}
+
+function extractDriveFileId(value){
+  const v = String(value ?? "").trim();
+  if (!v) return "";
+
+  if (/^[a-zA-Z0-9_-]{20,}$/.test(v) && !v.includes("http")) {
+    return v;
+  }
+
+  const patterns = [
+    /\/file\/d\/([a-zA-Z0-9_-]+)/,
+    /[?&]id=([a-zA-Z0-9_-]+)/,
+    /\/d\/([a-zA-Z0-9_-]+)/,
+    /\/open\?id=([a-zA-Z0-9_-]+)/
+  ];
+
+  for (const p of patterns){
+    const m = v.match(p);
+    if (m && m[1]) return m[1];
+  }
+
+  return "";
+}
+
+function buildDriveImageUrl(value){
+  const id = extractDriveFileId(value);
+  return id ? `https://drive.google.com/uc?export=view&id=${id}` : "";
 }
 
 // ===== Cache helpers =====
@@ -204,9 +233,16 @@ async function loadManualMap(){
     const title = norm(r[MAN.title]);
     const text = norm(r[MAN.text]);
     const upd = norm(r[MAN.updated]);
+    const imageRaw = norm(r[MAN.image]);
+    const imageUrl = buildDriveImageUrl(imageRaw);
 
-    if (title || text){
-      map.set(g, { title, text, updatedAt: upd });
+    if (title || text || imageUrl){
+      map.set(g, {
+        title,
+        text,
+        updatedAt: upd,
+        imageUrl
+      });
     }
   }
 
@@ -503,12 +539,24 @@ function renderManualHTML(gw, manual, stats, classificaHTML){
     : `<p>Per questa giornata non è stato ancora inserito un editoriale manuale.</p>
        <p>Puoi comunque consultare risultati, premi discutibili e classifica totale qui sotto.</p>`;
 
+  const heroImage = manual?.imageUrl
+    ? `
+      <div class="hero-media">
+        <img src="${manual.imageUrl}" alt="${title}" loading="lazy" referrerpolicy="no-referrer">
+      </div>
+    `
+    : "";
+
   return `
-    <div class="lede">
-      <span class="kicker">Lega degli Eroi</span>
-      <div class="h1">${title}</div>
-      <div class="deck">${deck}</div>
-      <div class="subline">${subtitle}</div>
+    <div class="lede-wrap">
+      <div class="lede">
+        <span class="kicker">Lega degli Eroi</span>
+        <div class="h1">${title}</div>
+        <div class="deck">${deck}</div>
+        <div class="subline">${subtitle}</div>
+      </div>
+
+      ${heroImage}
     </div>
 
     <div class="columns">
@@ -549,7 +597,6 @@ function renderManualHTML(gw, manual, stats, classificaHTML){
     </div>
   `;
 }
-
 // ===== Render flow =====
 function setStatus(msg, isErr = false){
   const el = $("status");
