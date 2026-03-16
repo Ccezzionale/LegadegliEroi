@@ -534,6 +534,37 @@ button:active{
   text-align: center;
 }
 
+.lede-wrap{
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 420px);
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 24px;
+}
+
+.hero-media{
+  width: 100%;
+}
+
+.hero-media img{
+  width: 100%;
+  display: block;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.14);
+}
+
+@media (max-width: 900px){
+  .lede-wrap{
+    grid-template-columns: 1fr;
+  }
+
+  .hero-media{
+    order: 2;
+    margin-top: 6px;
+  }
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 980px){
   .h1{
