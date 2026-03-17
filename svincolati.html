@@ -180,6 +180,11 @@
   "Playoff": "https://script.google.com/macros/s/AKfycbzPFDh7EFY90ce-xrXwfHP9lbMouPQ5vV3SAk0PlGwYr5bayPEZtJKyRKpCKcFmk9cf/exec"
 };
 
+    function getCallEndpoint() {
+  const competition = cpCompetition?.value || "Round Robin";
+  return CALL_ENDPOINTS[competition] || "";
+}
+
     // =============================
     // UI refs
     // =============================
@@ -601,58 +606,62 @@
     }
 
     async function submitCall(){
-      const team = cpTeam.value;
-      const competition = cpCompetition.value;
-      const callType = cpType.value;
-      const drop = document.getElementById("cpDrop")?.value || "";
+  const team = cpTeam.value;
+  const competition = cpCompetition.value;
+  const callType = cpType.value;
+  const drop = document.getElementById("cpDrop")?.value || "";
+  const endpoint = getCallEndpoint();
 
-      if (!selectedRowData?.nome) return setCallMsg("Seleziona un giocatore.");
-      if (!team) return setCallMsg("Seleziona una squadra.");
-      if (!competition) return setCallMsg("Seleziona una competizione.");
-      if (!drop) return setCallMsg("Seleziona il giocatore da svincolare.");
-      if (!CALL_ENDPOINT || CALL_ENDPOINT.includes("INCOLLA_QUI")) {
-        return setCallMsg("CALL_ENDPOINT non configurato.");
-      }
+  if (!selectedRowData?.nome) return setCallMsg("Seleziona un giocatore.");
+  if (!team) return setCallMsg("Seleziona una squadra.");
+  if (!competition) return setCallMsg("Seleziona una competizione.");
+  if (!drop) return setCallMsg("Seleziona il giocatore da svincolare.");
+  if (!endpoint || endpoint.includes("URL_DEPLOY") || endpoint.includes("INCOLLA_QUI")) {
+    return setCallMsg("Endpoint non configurato per questa competizione.");
+  }
 
-      cpSubmit.disabled = true;
-      setCallMsg("Invio in corso…", true);
+  cpSubmit.disabled = true;
+  setCallMsg("Invio in corso…", true);
 
-      const payload = {
-        ts: new Date().toISOString(),
-        competition,
-        team,
-        callType,
-        player: selectedRowData.nome,
-        dropped: drop,
-        ruolo: selectedRowData.ruolo,
-        squadraSerieA: selectedRowData.squadra,
-        quotazione: selectedRowData.quotazione,
-        u21: selectedRowData.u21
-      };
+  const payload = {
+    ts: new Date().toISOString(),
+    competition,
+    team,
+    callType,
+    player: selectedRowData.nome,
+    dropped: drop,
+    ruolo: selectedRowData.ruolo,
+    squadraSerieA: selectedRowData.squadra,
+    quotazione: selectedRowData.quotazione,
+    u21: selectedRowData.u21
+  };
 
-      try{
-        await fetch(CALL_ENDPOINT, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
+  try{
+    await fetch(endpoint, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
 
-        setCallMsg("Chiamata registrata ✅", true);
-        setTimeout(closeCallPanel, 700);
-      }catch(e){
-        console.error(e);
-        setCallMsg("Errore invio chiamata. Riprova.");
-      }finally{
-        cpSubmit.disabled = false;
-      }
-    }
+    setCallMsg("Chiamata registrata ✅", true);
+    setTimeout(closeCallPanel, 700);
+  }catch(e){
+    console.error(e);
+    setCallMsg("Errore invio chiamata. Riprova.");
+  }finally{
+    cpSubmit.disabled = false;
+  }
+}
 
     // =============================
     // DOM READY
     // =============================
     document.addEventListener('DOMContentLoaded', async () => {
-      fetch(CALL_ENDPOINT + "?ping=1", { method:"GET", mode:"no-cors" }).catch(() => {});
+   const initialEndpoint = getCallEndpoint();
+if (initialEndpoint) {
+  fetch(initialEndpoint + "?ping=1", { method:"GET", mode:"no-cors" }).catch(() => {});
+}
 
       await ensureRostersLoaded();
       U21_MAP = buildU21Map();
