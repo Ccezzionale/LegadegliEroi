@@ -156,544 +156,547 @@
   <script src="u21.js?v=1"></script>
 
   <script>
-    // =============================
-    // CONFIG
-    // =============================
-    const DATASET = (function () {
-      const DEFAULT_ID  = '17km50RcQysN4HKJJ8J4yTY1NDytSlW73KMTz0VvxDDw';
-      const DEFAULT_GID = '0';
-      const p = new URLSearchParams(window.location.search);
-      const id  = p.get('id')  || DEFAULT_ID;
-      const gid = p.get('gid') || DEFAULT_GID;
-      return 'https://docs.google.com/spreadsheets/d/' + id + '/export?format=csv&gid=' + gid;
-    })();
+  // =============================
+  // CONFIG
+  // =============================
+  const DATASET = (function () {
+    const DEFAULT_ID  = '17km50RcQysN4HKJJ8J4yTY1NDytSlW73KMTz0VvxDDw';
+    const DEFAULT_GID = '0';
+    const p = new URLSearchParams(window.location.search);
+    const id  = p.get('id')  || DEFAULT_ID;
+    const gid = p.get('gid') || DEFAULT_GID;
+    return 'https://docs.google.com/spreadsheets/d/' + id + '/export?format=csv&gid=' + gid;
+  })();
 
-    const CALL_ENDPOINTS = {
-      "Round Robin": "https://script.google.com/macros/s/AKfycbwN9hH0UAQkPhacB4qCENgPY9cr4gXftBageqOIC0Ov8IfG3FNZX7Rfrjfrgz3vQ8DCkw/exec",
-      "Conference League": "URL_DEPLOY_CONF_LEAGUE",
-      "Conf. Championship": "URL_DEPLOY_CONF_CHAMP",
-      "Playoff": "https://script.google.com/macros/s/AKfycbzPFDh7EFY90ce-xrXwfHP9lbMouPQ5vV3SAk0PlGwYr5bayPEZtJKyRKpCKcFmk9cf/exec"
+  const CALL_ENDPOINTS = {
+    "Round Robin": "https://script.google.com/macros/s/AKfycbwN9hH0UAQkPhacB4qCENgPY9cr4gXftBageqOIC0Ov8IfG3FNZX7Rfrjfrgz3vQ8DCkw/exec",
+    "Conference League": "URL_DEPLOY_CONF_LEAGUE",
+    "Conf. Championship": "URL_DEPLOY_CONF_CHAMP",
+    "Playoff": "https://script.google.com/macros/s/AKfycbzPFDh7EFY90ce-xrXwfHP9lbMouPQ5vV3SAk0PlGwYr5bayPEZtJKyRKpCKcFmk9cf/exec"
+  };
+
+  function getCallEndpoint() {
+    const competition = cpCompetition.value || "Round Robin";
+    return CALL_ENDPOINTS[competition] || "";
+  }
+
+  // =============================
+  // UI refs
+  // =============================
+  const countEl        = document.getElementById('count');
+  const listaGiocatori = document.getElementById('lista-giocatori');
+  const filtroRuolo    = document.getElementById('filtroRuolo');
+  const filtroSerieA   = document.getElementById('filtroSerieA');
+  const searchInput    = document.getElementById('searchGiocatore');
+  const cercaRuolo     = document.getElementById('cercaRuolo');
+
+  const callPanel      = document.getElementById("callPanel");
+  const cpPlayer       = document.getElementById("cpPlayer");
+  const cpMeta         = document.getElementById("cpMeta");
+  const cpTeam         = document.getElementById("cpTeam");
+  const cpCompetition  = document.getElementById("cpCompetition");
+  const cpType         = document.getElementById("cpType");
+  const cpDrop         = document.getElementById("cpDrop");
+  const cpSubmit       = document.getElementById("cpSubmit");
+  const cpMsg          = document.getElementById("cpMsg");
+  const cpClose        = document.getElementById("cpClose");
+
+  // =============================
+  // Stato
+  // =============================
+  let righeSvincolati = [];
+  let ruoli = new Set();
+  let squadre = new Set();
+  let ordineListaAscendente = {};
+  let eventsBound = false;
+  let selectedRowData = null;
+
+  const CACHE_KEY = 'svincolati_cache_unico';
+  const TTL = 0;
+  const AUTO_REFRESH_MS = 60 * 1000;
+
+  // =============================
+  // Utils
+  // =============================
+  function showSpinner(show = true){
+    const s = document.getElementById('spinner');
+    if (s) s.style.display = show ? 'inline-block' : 'none';
+  }
+
+  function urlNoCache(url){
+    const sep = url.includes('?') ? '&' : '?';
+    return url + sep + '_cb=' + Date.now();
+  }
+
+  function withTimeout(promise, ms = 12000){
+    return Promise.race([
+      promise,
+      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))
+    ]);
+  }
+
+  function debounce(fn, delay = 150){
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...args), delay);
+    };
+  }
+
+  function escHtml(s){
+    return String(s ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  function normKey(s){
+    return String(s ?? "")
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim()
+      .replace(/\s+/g, " ");
+  }
+
+  function buildU21Map(){
+    const src = (typeof giocatoriU21PerSquadra !== "undefined") ? giocatoriU21PerSquadra : {};
+    const out = {};
+    Object.entries(src).forEach(([team, arr]) => {
+      out[normKey(team)] = (arr || []).map(normKey);
+    });
+    return out;
+  }
+
+  let U21_MAP = {};
+
+  // =============================
+  // Tipi chiamata dinamici
+  // =============================
+  function updateCallTypeOptions() {
+    const competition = cpCompetition.value;
+    let options = [];
+
+    if (competition === "Playoff") {
+      options = [
+        { value: "1",  label: "Prima chiamata" },
+        { value: "1s", label: "Prima supplementare" },
+        { value: "2",  label: "Seconda chiamata" },
+        { value: "2s", label: "Seconda supplementare" }
+      ];
+    } else {
+      options = [
+        { value: "1", label: "Prima chiamata" },
+        { value: "2", label: "Seconda chiamata" },
+        { value: "3", label: "Compensativa" }
+      ];
+    }
+
+    cpType.innerHTML = options
+      .map(opt => `<option value="${opt.value}">${opt.label}</option>`)
+      .join("");
+  }
+
+  // =============================
+  // Fetch retry
+  // =============================
+  const _controllers = { csv: null };
+
+  function fetchRetry(url, opt = {}, tries = 3, baseDelay = 800, timeoutMs = 12000){
+    let lastErr;
+    return new Promise(async (resolve, reject) => {
+      for (let i = 0; i < tries; i++){
+        try{
+          const res = await withTimeout(fetch(urlNoCache(url), { cache:'no-store', method:'GET', ...opt }), timeoutMs);
+          if (res.ok) return resolve(res);
+          if (![429,500,502,503,504].includes(res.status)) throw new Error('HTTP ' + res.status);
+          lastErr = new Error('HTTP ' + res.status);
+        }catch(e){
+          lastErr = e;
+        }
+        const delay = baseDelay * Math.pow(2, i) + Math.random() * 250;
+        await new Promise(r => setTimeout(r, delay));
+      }
+      reject(lastErr);
+    });
+  }
+
+  function abortAndFetch(key, url, tries = 3, baseDelay = 800, timeoutMs = 12000){
+    if (_controllers[key]) _controllers[key].abort();
+    const controller = new AbortController();
+    _controllers[key] = controller;
+    return fetchRetry(url, { signal: controller.signal }, tries, baseDelay, timeoutMs)
+      .finally(() => {
+        if (_controllers[key] === controller) _controllers[key] = null;
+      });
+  }
+
+  // =============================
+  // Svincolati: load + parse + render
+  // =============================
+  async function caricaSvincolati(){
+    const now = Date.now();
+
+    try{
+      const cache = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      if (TTL > 0 && cache && (now - cache.time) < TTL && cache.csv){
+        parseGiocatoriCSV(cache.csv);
+        renderLista();
+        return;
+      }
+    }catch{}
+
+    showSpinner(true);
+
+    try{
+      const res = await abortAndFetch('csv', DATASET, 3, 800, 12000);
+      const csv = await res.text();
+      if (TTL > 0) {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ time: now, csv }));
+      }
+      parseGiocatoriCSV(csv);
+      renderLista();
+    }catch(err){
+      console.error('Errore caricamento CSV svincolati:', err);
+      const cache = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      if (cache?.csv){
+        parseGiocatoriCSV(cache.csv);
+        renderLista();
+      }
+    }finally{
+      showSpinner(false);
+    }
+  }
+
+  function parseGiocatoriCSV(csv){
+    ruoli = new Set();
+    squadre = new Set();
+    righeSvincolati = [];
+
+    const lines = csv.trim().split(/\r?\n/);
+    if (lines.length <= 1) return;
+
+    for (let i = 1; i < lines.length; i++){
+      const r = lines[i];
+      if (!r) continue;
+
+      const [nome, ruolo, squadra, quotazione, u21] = r.split(',');
+      if (!nome) continue;
+
+      righeSvincolati.push({ nome, ruolo, squadra, quotazione, u21 });
+
+      if (ruolo) ruoli.add(ruolo);
+      if (squadra) squadre.add(squadra);
+    }
+  }
+
+  function renderLista(){
+    const frag = document.createDocumentFragment();
+
+    righeSvincolati.forEach(({ nome, ruolo, squadra, quotazione, u21 }) => {
+      const tr = document.createElement('tr');
+      const isU21 = (u21 || '').toLowerCase() === 'u21' ? 'U21' : '';
+      const q = parseInt(quotazione) || 0;
+
+      tr.innerHTML =
+        '<td class="player-cell" ' +
+          'data-nome="' + escHtml(nome) + '" ' +
+          'data-ruolo="' + escHtml(ruolo) + '" ' +
+          'data-squadra="' + escHtml(squadra) + '" ' +
+          'data-quotazione="' + escHtml(q) + '" ' +
+          'data-u21="' + escHtml(isU21) + '">' +
+          escHtml(nome) +
+        '</td>' +
+        '<td>' + escHtml(ruolo) + '</td>' +
+        '<td>' + escHtml(squadra) + '</td>' +
+        '<td>' + escHtml(q) + '</td>' +
+        '<td>' + escHtml(isU21) + '</td>';
+
+      frag.appendChild(tr);
+    });
+
+    listaGiocatori.innerHTML = '';
+    listaGiocatori.appendChild(frag);
+
+    filtroRuolo.innerHTML =
+      '<option value="">-- Tutti i Ruoli --</option>' +
+      Array.from(ruoli).map(r => '<option value="' + escHtml(r) + '">' + escHtml(r) + '</option>').join('');
+
+    filtroSerieA.innerHTML =
+      '<option value="">-- Tutte --</option>' +
+      Array.from(squadre)
+        .sort((a,b)=>String(a).localeCompare(String(b)))
+        .map(s => '<option value="' + escHtml(s) + '">' + escHtml(s) + '</option>')
+        .join('');
+
+    if (!eventsBound){
+      [filtroRuolo, filtroSerieA, searchInput, cercaRuolo].forEach(el => {
+        el && el.addEventListener('input', debounce(filtraLista, 150));
+      });
+      eventsBound = true;
+    }
+
+    filtraLista();
+    aggiornaCount();
+  }
+
+  function filtraLista(){
+    const ruoloTesto  = (cercaRuolo.value || '').toLowerCase();
+    const ruoloSelect = (filtroRuolo.value || '').toLowerCase().split(/[,;\s]+/).filter(Boolean);
+    const squadra     = (filtroSerieA.value || '').toLowerCase();
+    const cerca       = (searchInput.value || '').toLowerCase();
+
+    Array.from(listaGiocatori.children).forEach(row => {
+      const nome = row.children[0].textContent.toLowerCase();
+      const r    = row.children[1].textContent.toLowerCase();
+      const s    = row.children[2].textContent.toLowerCase();
+      const ruoliGioc = r.split(/[,;\s]+/).map(p => p.trim()).filter(Boolean);
+
+      const matchInput   = !ruoloTesto || ruoliGioc.some(part => part.includes(ruoloTesto));
+      const matchSelect  = !ruoloSelect.length || ruoloSelect.some(rs => ruoliGioc.includes(rs));
+      const matchSquadra = !squadra || s === squadra;
+      const matchNome    = !cerca || nome.includes(cerca);
+
+      row.style.display = (matchInput && matchSelect && matchSquadra && matchNome) ? '' : 'none';
+    });
+
+    aggiornaCount();
+  }
+
+  function aggiornaCount(){
+    const tot = listaGiocatori.children.length;
+    let vis = 0;
+    Array.from(listaGiocatori.children).forEach(r => {
+      if (r.style.display !== 'none') vis++;
+    });
+    countEl.textContent = 'Svincolati mostrati: ' + vis + ' / ' + tot;
+  }
+
+  function ordinaLista(colonnaIndex, numerico = false) {
+    const tbody = document.getElementById('lista-giocatori');
+    const righe = Array.from(tbody.querySelectorAll('tr'));
+
+    const asc = !ordineListaAscendente[colonnaIndex];
+    ordineListaAscendente[colonnaIndex] = asc;
+
+    document.querySelectorAll('#lista-giocatori-table thead th').forEach((th, idx) => {
+      th.textContent = th.textContent.replace(/[\u2191\u2193]/g, '');
+      if (idx === colonnaIndex) th.textContent += asc ? ' ↑' : ' ↓';
+    });
+
+    righe.sort((a, b) => {
+      const aText = a.children[colonnaIndex]?.textContent.trim();
+      const bText = b.children[colonnaIndex]?.textContent.trim();
+
+      if (numerico) {
+        const aNum = parseFloat(aText) || 0;
+        const bNum = parseFloat(bText) || 0;
+        return asc ? aNum - bNum : bNum - aNum;
+      } else {
+        return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+      }
+    });
+
+    tbody.innerHTML = '';
+    righe.forEach(r => tbody.appendChild(r));
+    filtraLista();
+  }
+
+  window.ordinaLista = ordinaLista;
+
+  // =============================
+  // ROSE: dropdown svincolato
+  // =============================
+  let ROSE_CACHE = null;
+
+  function ensureRostersLoaded(){
+    if (ROSE_CACHE) return Promise.resolve(ROSE_CACHE);
+    if (typeof loadRoseCalls !== "function") return Promise.resolve({});
+    return loadRoseCalls().then(data => (ROSE_CACHE = data)).catch(() => (ROSE_CACHE = {}));
+  }
+
+  function fillTeamSelectFromRosters(){
+    if (!ROSE_CACHE) return;
+
+    const teams = Object.keys(ROSE_CACHE).sort((a,b)=>a.localeCompare(b));
+    if (!teams.length) return;
+
+    cpTeam.innerHTML =
+      `<option value="" selected disabled>Seleziona squadra…</option>` +
+      teams.map(t => `<option value="${t.replace(/"/g,'&quot;')}">${t}</option>`).join("");
+  }
+
+  function populateDropSelect(teamName){
+    if (!teamName) {
+      cpDrop.disabled = true;
+      cpDrop.innerHTML = `<option value="">Seleziona prima una squadra…</option>`;
+      return;
+    }
+
+    const roster = (ROSE_CACHE && ROSE_CACHE[teamName] && ROSE_CACHE[teamName].giocatori)
+      ? ROSE_CACHE[teamName].giocatori
+      : [];
+
+    if (!roster.length) {
+      cpDrop.disabled = true;
+      cpDrop.innerHTML = `<option value="">Nessun giocatore trovato per ${teamName}</option>`;
+      return;
+    }
+
+    const teamKey = normKey(teamName);
+    const u21Set = new Set(U21_MAP[teamKey] || []);
+
+    cpDrop.disabled = false;
+    cpDrop.innerHTML =
+      `<option value="" selected>Scegli chi svincoli…</option>` +
+      roster.map(g => {
+        const nome = (g.nome || "").trim();
+        const isU21 = u21Set.has(normKey(nome));
+        const badge = isU21 ? " 🟢U21" : "";
+
+        const label = [
+          g.nome,
+          g.ruolo ? `(${g.ruolo})` : "",
+          g.squadra ? `- ${g.squadra}` : ""
+        ].filter(Boolean).join(" ") + badge;
+
+        return `<option data-u21="${isU21 ? "1" : "0"}" value="${nome.replace(/"/g,'&quot;')}">${label}</option>`;
+      }).join("");
+  }
+
+  // =============================
+  // Chiamate panel
+  // =============================
+  function openCallPanel(data){
+    selectedRowData = data;
+
+    cpPlayer.textContent = data.nome || "-";
+    cpMeta.textContent = [
+      data.ruolo,
+      data.squadra,
+      (data.quotazione ? ("€" + data.quotazione) : ""),
+      (data.u21 || "")
+    ].filter(Boolean).join(" • ");
+
+    cpTeam.value = "";
+    updateCallTypeOptions();
+    populateDropSelect("");
+    setCallMsg("");
+
+    callPanel.classList.add("isOpen");
+    callPanel.setAttribute("aria-hidden", "false");
+  }
+
+  function closeCallPanel(){
+    callPanel.classList.remove("isOpen");
+    callPanel.setAttribute("aria-hidden", "true");
+  }
+
+  function setCallMsg(text, ok = false){
+    cpMsg.textContent = text || "";
+    cpMsg.style.color = ok ? "#0a7a2f" : "#b00020";
+  }
+
+  async function submitCall(){
+    const team = cpTeam.value;
+    const competition = cpCompetition.value;
+    const callType = cpType.value;
+    const drop = document.getElementById("cpDrop")?.value || "";
+    const endpoint = getCallEndpoint();
+
+    if (!selectedRowData?.nome) return setCallMsg("Seleziona un giocatore.");
+    if (!team) return setCallMsg("Seleziona una squadra.");
+    if (!competition) return setCallMsg("Seleziona una competizione.");
+    if (!drop) return setCallMsg("Seleziona il giocatore da svincolare.");
+    if (!endpoint || endpoint.includes("URL_DEPLOY") || endpoint.includes("INCOLLA_QUI")) {
+      return setCallMsg("Endpoint non configurato per questa competizione.");
+    }
+
+    cpSubmit.disabled = true;
+    setCallMsg("Invio in corso…", true);
+
+    const payload = {
+      ts: new Date().toISOString(),
+      competition,
+      team,
+      callType,
+      player: selectedRowData.nome,
+      dropped: drop,
+      ruolo: selectedRowData.ruolo,
+      squadraSerieA: selectedRowData.squadra,
+      quotazione: selectedRowData.quotazione,
+      u21: selectedRowData.u21
     };
 
-    // =============================
-    // UI refs
-    // =============================
-    const countEl        = document.getElementById('count');
-    const listaGiocatori = document.getElementById('lista-giocatori');
-    const filtroRuolo    = document.getElementById('filtroRuolo');
-    const filtroSerieA   = document.getElementById('filtroSerieA');
-    const searchInput    = document.getElementById('searchGiocatore');
-    const cercaRuolo     = document.getElementById('cercaRuolo');
+    console.log("COMPETITION:", competition);
+    console.log("ENDPOINT USATO:", endpoint);
+    console.log("PAYLOAD:", payload);
 
-    const callPanel      = document.getElementById("callPanel");
-    const cpPlayer       = document.getElementById("cpPlayer");
-    const cpMeta         = document.getElementById("cpMeta");
-    const cpTeam         = document.getElementById("cpTeam");
-    const cpCompetition  = document.getElementById("cpCompetition");
-    const cpType         = document.getElementById("cpType");
-    const cpDrop         = document.getElementById("cpDrop");
-    const cpSubmit       = document.getElementById("cpSubmit");
-    const cpMsg          = document.getElementById("cpMsg");
-    const cpClose        = document.getElementById("cpClose");
-
-    // =============================
-    // Stato
-    // =============================
-    let righeSvincolati = [];
-    let ruoli = new Set();
-    let squadre = new Set();
-    let ordineListaAscendente = {};
-    let eventsBound = false;
-    let selectedRowData = null;
-    let ROSE_CACHE = null;
-    let U21_MAP = {};
-
-    const CACHE_KEY = 'svincolati_cache_unico';
-    const TTL = 0;
-    const AUTO_REFRESH_MS = 60 * 1000;
-
-    // =============================
-    // Utils
-    // =============================
-    function showSpinner(show = true){
-      const s = document.getElementById('spinner');
-      if (s) s.style.display = show ? 'inline-block' : 'none';
-    }
-
-    function urlNoCache(url){
-      const sep = url.includes('?') ? '&' : '?';
-      return url + sep + '_cb=' + Date.now();
-    }
-
-    function withTimeout(promise, ms = 12000){
-      return Promise.race([
-        promise,
-        new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))
-      ]);
-    }
-
-    function debounce(fn, delay = 150){
-      let t;
-      return (...args) => {
-        clearTimeout(t);
-        t = setTimeout(() => fn(...args), delay);
-      };
-    }
-
-    function escHtml(s){
-      return String(s ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
-    }
-
-    function normKey(s){
-      return String(s ?? "")
-        .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, " ")
-        .trim()
-        .replace(/\s+/g, " ");
-    }
-
-    function buildU21Map(){
-      const src = (typeof giocatoriU21PerSquadra !== "undefined") ? giocatoriU21PerSquadra : {};
-      const out = {};
-      Object.entries(src).forEach(([team, arr]) => {
-        out[normKey(team)] = (arr || []).map(normKey);
-      });
-      return out;
-    }
-
-    function getCallEndpoint() {
-      const competition = cpCompetition.value || "Round Robin";
-      return CALL_ENDPOINTS[competition] || "";
-    }
-
-    function getInitialCompetition() {
-      const p = new URLSearchParams(window.location.search);
-      const c = p.get("competition");
-      if (c && CALL_ENDPOINTS[c]) return c;
-      return "Round Robin";
-    }
-
-    // =============================
-    // Tipi chiamata dinamici
-    // =============================
-    function updateCallTypeOptions() {
-      const competition = cpCompetition.value;
-      let options = [];
-
-      if (competition === "Playoff") {
-        options = [
-          { value: "1",  label: "Prima chiamata" },
-          { value: "1s", label: "Prima supplementare" },
-          { value: "2",  label: "Seconda chiamata" },
-          { value: "2s", label: "Seconda supplementare" }
-        ];
-      } else {
-        options = [
-          { value: "1", label: "Prima chiamata" },
-          { value: "2", label: "Seconda chiamata" },
-          { value: "3", label: "Compensativa" }
-        ];
-      }
-
-      cpType.innerHTML = options
-        .map(opt => `<option value="${opt.value}">${opt.label}</option>`)
-        .join("");
-    }
-
-    // =============================
-    // Fetch retry
-    // =============================
-    const _controllers = { csv: null };
-
-    function fetchRetry(url, opt = {}, tries = 3, baseDelay = 800, timeoutMs = 12000){
-      let lastErr;
-      return new Promise(async (resolve, reject) => {
-        for (let i = 0; i < tries; i++){
-          try{
-            const res = await withTimeout(fetch(urlNoCache(url), { cache:'no-store', method:'GET', ...opt }), timeoutMs);
-            if (res.ok) return resolve(res);
-            if (![429,500,502,503,504].includes(res.status)) throw new Error('HTTP ' + res.status);
-            lastErr = new Error('HTTP ' + res.status);
-          }catch(e){
-            lastErr = e;
-          }
-          const delay = baseDelay * Math.pow(2, i) + Math.random() * 250;
-          await new Promise(r => setTimeout(r, delay));
-        }
-        reject(lastErr);
-      });
-    }
-
-    function abortAndFetch(key, url, tries = 3, baseDelay = 800, timeoutMs = 12000){
-      if (_controllers[key]) _controllers[key].abort();
-      const controller = new AbortController();
-      _controllers[key] = controller;
-      return fetchRetry(url, { signal: controller.signal }, tries, baseDelay, timeoutMs)
-        .finally(() => {
-          if (_controllers[key] === controller) _controllers[key] = null;
-        });
-    }
-
-    // =============================
-    // Svincolati
-    // =============================
-    async function caricaSvincolati(){
-      const now = Date.now();
-
-      try{
-        const cache = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-        if (TTL > 0 && cache && (now - cache.time) < TTL && cache.csv){
-          parseGiocatoriCSV(cache.csv);
-          renderLista();
-          return;
-        }
-      }catch{}
-
-      showSpinner(true);
-
-      try{
-        const res = await abortAndFetch('csv', DATASET, 3, 800, 12000);
-        const csv = await res.text();
-        if (TTL > 0) {
-          localStorage.setItem(CACHE_KEY, JSON.stringify({ time: now, csv }));
-        }
-        parseGiocatoriCSV(csv);
-        renderLista();
-      }catch(err){
-        console.error('Errore caricamento CSV svincolati:', err);
-        const cache = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-        if (cache?.csv){
-          parseGiocatoriCSV(cache.csv);
-          renderLista();
-        }
-      }finally{
-        showSpinner(false);
-      }
-    }
-
-    function parseGiocatoriCSV(csv){
-      ruoli = new Set();
-      squadre = new Set();
-      righeSvincolati = [];
-
-      const lines = csv.trim().split(/\r?\n/);
-      if (lines.length <= 1) return;
-
-      for (let i = 1; i < lines.length; i++){
-        const r = lines[i];
-        if (!r) continue;
-
-        const [nome, ruolo, squadra, quotazione, u21] = r.split(',');
-        if (!nome) continue;
-
-        righeSvincolati.push({ nome, ruolo, squadra, quotazione, u21 });
-
-        if (ruolo) ruoli.add(ruolo);
-        if (squadra) squadre.add(squadra);
-      }
-    }
-
-    function renderLista(){
-      const frag = document.createDocumentFragment();
-
-      righeSvincolati.forEach(({ nome, ruolo, squadra, quotazione, u21 }) => {
-        const tr = document.createElement('tr');
-        const isU21 = (u21 || '').toLowerCase() === 'u21' ? 'U21' : '';
-        const q = parseInt(quotazione) || 0;
-
-        tr.innerHTML =
-          '<td class="player-cell" ' +
-            'data-nome="' + escHtml(nome) + '" ' +
-            'data-ruolo="' + escHtml(ruolo) + '" ' +
-            'data-squadra="' + escHtml(squadra) + '" ' +
-            'data-quotazione="' + escHtml(q) + '" ' +
-            'data-u21="' + escHtml(isU21) + '">' +
-            escHtml(nome) +
-          '</td>' +
-          '<td>' + escHtml(ruolo) + '</td>' +
-          '<td>' + escHtml(squadra) + '</td>' +
-          '<td>' + escHtml(q) + '</td>' +
-          '<td>' + escHtml(isU21) + '</td>';
-
-        frag.appendChild(tr);
+    try{
+      await fetch(endpoint, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
       });
 
-      listaGiocatori.innerHTML = '';
-      listaGiocatori.appendChild(frag);
+      setCallMsg("Chiamata registrata ✅", true);
+      setTimeout(closeCallPanel, 700);
+    }catch(e){
+      console.error(e);
+      setCallMsg("Errore invio chiamata. Riprova.");
+    }finally{
+      cpSubmit.disabled = false;
+    }
+  }
 
-      filtroRuolo.innerHTML =
-        '<option value="">-- Tutti i Ruoli --</option>' +
-        Array.from(ruoli).map(r => '<option value="' + escHtml(r) + '">' + escHtml(r) + '</option>').join('');
+  // =============================
+  // DOM READY
+  // =============================
+  document.addEventListener('DOMContentLoaded', async () => {
+    updateCallTypeOptions();
 
-      filtroSerieA.innerHTML =
-        '<option value="">-- Tutte --</option>' +
-        Array.from(squadre)
-          .sort((a,b)=>String(a).localeCompare(String(b)))
-          .map(s => '<option value="' + escHtml(s) + '">' + escHtml(s) + '</option>')
-          .join('');
-
-      if (!eventsBound){
-        [filtroRuolo, filtroSerieA, searchInput, cercaRuolo].forEach(el => {
-          el && el.addEventListener('input', debounce(filtraLista, 150));
-        });
-        eventsBound = true;
-      }
-
-      filtraLista();
-      aggiornaCount();
+    const initialEndpoint = getCallEndpoint();
+    if (initialEndpoint && !initialEndpoint.includes("URL_DEPLOY")) {
+      fetch(initialEndpoint + "?ping=1", { method:"GET", mode:"no-cors" }).catch(() => {});
     }
 
-    function filtraLista(){
-      const ruoloTesto  = (cercaRuolo.value || '').toLowerCase();
-      const ruoloSelect = (filtroRuolo.value || '').toLowerCase().split(/[,;\s]+/).filter(Boolean);
-      const squadra     = (filtroSerieA.value || '').toLowerCase();
-      const cerca       = (searchInput.value || '').toLowerCase();
+    await ensureRostersLoaded();
+    U21_MAP = buildU21Map();
+    fillTeamSelectFromRosters();
+    updateCallTypeOptions();
 
-      Array.from(listaGiocatori.children).forEach(row => {
-        const nome = row.children[0].textContent.toLowerCase();
-        const r    = row.children[1].textContent.toLowerCase();
-        const s    = row.children[2].textContent.toLowerCase();
-        const ruoliGioc = r.split(/[,;\s]+/).map(p => p.trim()).filter(Boolean);
+    cpTeam.addEventListener("change", (e) => populateDropSelect(e.target.value));
 
-        const matchInput   = !ruoloTesto || ruoliGioc.some(part => part.includes(ruoloTesto));
-        const matchSelect  = !ruoloSelect.length || ruoloSelect.some(rs => ruoliGioc.includes(rs));
-        const matchSquadra = !squadra || s === squadra;
-        const matchNome    = !cerca || nome.includes(cerca);
-
-        row.style.display = (matchInput && matchSelect && matchSquadra && matchNome) ? '' : 'none';
-      });
-
-      aggiornaCount();
-    }
-
-    function aggiornaCount(){
-      const tot = listaGiocatori.children.length;
-      let vis = 0;
-      Array.from(listaGiocatori.children).forEach(r => {
-        if (r.style.display !== 'none') vis++;
-      });
-      countEl.textContent = 'Svincolati mostrati: ' + vis + ' / ' + tot;
-    }
-
-    function ordinaLista(colonnaIndex, numerico = false) {
-      const tbody = document.getElementById('lista-giocatori');
-      const righe = Array.from(tbody.querySelectorAll('tr'));
-
-      const asc = !ordineListaAscendente[colonnaIndex];
-      ordineListaAscendente[colonnaIndex] = asc;
-
-      document.querySelectorAll('#lista-giocatori-table thead th').forEach((th, idx) => {
-        th.textContent = th.textContent.replace(/[\u2191\u2193]/g, '');
-        if (idx === colonnaIndex) th.textContent += asc ? ' ↑' : ' ↓';
-      });
-
-      righe.sort((a, b) => {
-        const aText = a.children[colonnaIndex]?.textContent.trim();
-        const bText = b.children[colonnaIndex]?.textContent.trim();
-
-        if (numerico) {
-          const aNum = parseFloat(aText) || 0;
-          const bNum = parseFloat(bText) || 0;
-          return asc ? aNum - bNum : bNum - aNum;
-        } else {
-          return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
-        }
-      });
-
-      tbody.innerHTML = '';
-      righe.forEach(r => tbody.appendChild(r));
-      filtraLista();
-    }
-
-    window.ordinaLista = ordinaLista;
-
-    // =============================
-    // Rose
-    // =============================
-    function ensureRostersLoaded(){
-      if (ROSE_CACHE) return Promise.resolve(ROSE_CACHE);
-      if (typeof loadRoseCalls !== "function") return Promise.resolve({});
-      return loadRoseCalls().then(data => (ROSE_CACHE = data)).catch(() => (ROSE_CACHE = {}));
-    }
-
-    function fillTeamSelectFromRosters(){
-      if (!ROSE_CACHE) return;
-
-      const teams = Object.keys(ROSE_CACHE).sort((a,b)=>a.localeCompare(b));
-      if (!teams.length) return;
-
-      cpTeam.innerHTML =
-        `<option value="" selected disabled>Seleziona squadra…</option>` +
-        teams.map(t => `<option value="${t.replace(/"/g,'&quot;')}">${t}</option>`).join("");
-    }
-
-    function populateDropSelect(teamName){
-      if (!teamName) {
-        cpDrop.disabled = true;
-        cpDrop.innerHTML = `<option value="">Seleziona prima una squadra…</option>`;
-        return;
-      }
-
-      const roster = (ROSE_CACHE && ROSE_CACHE[teamName] && ROSE_CACHE[teamName].giocatori)
-        ? ROSE_CACHE[teamName].giocatori
-        : [];
-
-      if (!roster.length) {
-        cpDrop.disabled = true;
-        cpDrop.innerHTML = `<option value="">Nessun giocatore trovato per ${teamName}</option>`;
-        return;
-      }
-
-      const teamKey = normKey(teamName);
-      const u21Set = new Set(U21_MAP[teamKey] || []);
-
-      cpDrop.disabled = false;
-      cpDrop.innerHTML =
-        `<option value="" selected>Scegli chi svincoli…</option>` +
-        roster.map(g => {
-          const nome = (g.nome || "").trim();
-          const isU21 = u21Set.has(normKey(nome));
-          const badge = isU21 ? " 🟢U21" : "";
-
-          const label = [
-            g.nome,
-            g.ruolo ? `(${g.ruolo})` : "",
-            g.squadra ? `- ${g.squadra}` : ""
-          ].filter(Boolean).join(" ") + badge;
-
-          return `<option data-u21="${isU21 ? "1" : "0"}" value="${nome.replace(/"/g,'&quot;')}">${label}</option>`;
-        }).join("");
-    }
-
-    // =============================
-    // Panel chiamata
-    // =============================
-    function openCallPanel(data){
-      selectedRowData = data;
-
-      cpPlayer.textContent = data.nome || "-";
-      cpMeta.textContent = [
-        data.ruolo,
-        data.squadra,
-        (data.quotazione ? ("€" + data.quotazione) : ""),
-        (data.u21 || "")
-      ].filter(Boolean).join(" • ");
-
-      cpTeam.value = "";
-      populateDropSelect("");
-      setCallMsg("");
-
-      callPanel.classList.add("isOpen");
-      callPanel.setAttribute("aria-hidden", "false");
-    }
-
-    function closeCallPanel(){
-      callPanel.classList.remove("isOpen");
-      callPanel.setAttribute("aria-hidden", "true");
-    }
-
-    function setCallMsg(text, ok = false){
-      cpMsg.textContent = text || "";
-      cpMsg.style.color = ok ? "#0a7a2f" : "#b00020";
-    }
-
-    async function submitCall(){
-      const team = cpTeam.value;
-      const competition = cpCompetition.value;
-      const callType = cpType.value;
-      const drop = cpDrop.value || "";
-      const endpoint = getCallEndpoint();
-
-      if (!selectedRowData?.nome) return setCallMsg("Seleziona un giocatore.");
-      if (!team) return setCallMsg("Seleziona una squadra.");
-      if (!competition) return setCallMsg("Seleziona una competizione.");
-      if (!drop) return setCallMsg("Seleziona il giocatore da svincolare.");
-      if (!endpoint || endpoint.includes("URL_DEPLOY") || endpoint.includes("INCOLLA_QUI")) {
-        return setCallMsg("Endpoint non configurato per questa competizione.");
-      }
-
-      cpSubmit.disabled = true;
-      setCallMsg("Invio in corso…", true);
-
-      const payload = {
-        ts: new Date().toISOString(),
-        competition,
-        team,
-        callType,
-        player: selectedRowData.nome,
-        dropped: drop,
-        ruolo: selectedRowData.ruolo,
-        squadraSerieA: selectedRowData.squadra,
-        quotazione: selectedRowData.quotazione,
-        u21: selectedRowData.u21
-      };
-
-      try{
-        await fetch(endpoint, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload)
-        });
-
-        setCallMsg("Chiamata registrata ✅", true);
-        setTimeout(closeCallPanel, 700);
-      }catch(e){
-        console.error(e);
-        setCallMsg("Errore invio chiamata. Riprova.");
-      }finally{
-        cpSubmit.disabled = false;
-      }
-    }
-
-    // =============================
-    // Init
-    // =============================
-    document.addEventListener('DOMContentLoaded', async () => {
-      cpCompetition.value = getInitialCompetition();
+    cpCompetition.addEventListener("change", () => {
       updateCallTypeOptions();
-
-      const initialEndpoint = getCallEndpoint();
-      if (initialEndpoint && !initialEndpoint.includes("URL_DEPLOY")) {
-        fetch(initialEndpoint + "?ping=1", { method:"GET", mode:"no-cors" }).catch(() => {});
-      }
-
-      await ensureRostersLoaded();
-      U21_MAP = buildU21Map();
-      fillTeamSelectFromRosters();
-
-      cpTeam.addEventListener("change", (e) => populateDropSelect(e.target.value));
-      cpCompetition.addEventListener("change", () => {
-        updateCallTypeOptions();
-        setCallMsg("");
-      });
-
-      listaGiocatori.addEventListener("click", (e) => {
-        const td = e.target.closest("td.player-cell");
-        if (!td) return;
-
-        openCallPanel({
-          nome: td.dataset.nome,
-          ruolo: td.dataset.ruolo,
-          squadra: td.dataset.squadra,
-          quotazione: td.dataset.quotazione,
-          u21: td.dataset.u21
-        });
-      });
-
-      cpClose.addEventListener("click", closeCallPanel);
-      cpSubmit.addEventListener("click", submitCall);
-
-      caricaSvincolati();
-      setInterval(() => { caricaSvincolati(); }, AUTO_REFRESH_MS);
+      setCallMsg("");
+      console.log("Competizione selezionata:", cpCompetition.value);
+      console.log("Endpoint associato:", getCallEndpoint());
     });
-  </script>
+
+    listaGiocatori.addEventListener("click", (e) => {
+      const td = e.target.closest("td.player-cell");
+      if (!td) return;
+
+      openCallPanel({
+        nome: td.dataset.nome,
+        ruolo: td.dataset.ruolo,
+        squadra: td.dataset.squadra,
+        quotazione: td.dataset.quotazione,
+        u21: td.dataset.u21
+      });
+    });
+
+    cpClose.addEventListener("click", closeCallPanel);
+    cpSubmit.addEventListener("click", submitCall);
+
+    caricaSvincolati();
+    setInterval(() => { caricaSvincolati(); }, AUTO_REFRESH_MS);
+  });
+</script>
 
   <script src="navbar.js"></script>
 </body>
