@@ -1,19 +1,19 @@
 const squadre = [
-  { nome: "Rubinkebab", logo: "img/Rubinkebab.png", eliminata: true, ultimaEliminata: true },
+  { nome: "Rubinkebab", logo: "img/Rubinkebab.png", eliminata: true, ultimaEliminata: false },
   { nome: "Bayern Christiansen", logo: "img/Bayern Christiansen.png", eliminata: true, ultimaEliminata: false },
   { nome: "Team Bartowski", logo: "img/Team Bartowski.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Golden Knights", logo: "img/Golden Knights.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Golden Knights", logo: "img/Golden Knights.png", eliminata: false, ultimaEliminata: true },
   { nome: "Ibla", logo: "img/Ibla.png", eliminata: true, ultimaEliminata: false },
   { nome: "Fantaugusta", logo: "img/Fantaugusta.png", eliminata: true, ultimaEliminata: false },
   { nome: "Riverfilo", logo: "img/Riverfilo.png", eliminata: true, ultimaEliminata: false },
   { nome: "Desperados", logo: "img/Desperados.png", eliminata: true, ultimaEliminata: false },
   { nome: "Wildboys 78", logo: "img/wildboys78.png", eliminata: true, ultimaEliminata: false },
-  { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.png", eliminata: false, ultimaEliminata: false },
+  { nome: "Pandinicoccolosini", logo: "img/Pandinicoccolosini.png", eliminata: true, ultimaEliminata: false },
   { nome: "Pokermantra", logo: "img/PokerMantra.png", eliminata: true, ultimaEliminata: false },
   { nome: "Minnesode Timberland", logo: "img/Minnesode Timberland.png", eliminata: true, ultimaEliminata: false },
   { nome: "Minnesota Snakes", logo: "img/MinneSota Snakes.png", eliminata: true, ultimaEliminata: false },
   { nome: "Eintracht Franco 126", logo: "img/Eintracht Franco 126.png", eliminata: true, ultimaEliminata: false },
-  { nome: "FC Disoneste", logo: "img/FC Disoneste.png", eliminata: false, ultimaEliminata: false },
+  { nome: "FC Disoneste", logo: "img/FC Disoneste.png", eliminata: true, ultimaEliminata: false },
   { nome: "Athletic Pongao", logo: "img/Athletic Pongao.png", eliminata: true, ultimaEliminata: false }
 ];
 
