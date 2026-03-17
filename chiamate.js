@@ -10,10 +10,10 @@ const chiamateCSV = {
   round: ROUND_CSV_URL,
 
   // Conference League (legacy)
-  league: "https://docs.google.com/spreadsheets/d/1gvQlVxms2Sok4Inu9cWro3lZB9bI2LlrpkjbJlaaSGQ/export?format=csv&gid=492764886",
+  league: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQHDoilWAN41IuJFs2n6xKlHkHxP3AiulHlIXVntH7ZnchKvJ5PwCrjqVzLrdMXoZ52G5l21A4t72Ho/pub?gid=1853477980&single=true&output=csv",
 
   // Conference Championship (legacy)
-  champ: "https://docs.google.com/spreadsheets/d/11BF_R13ZfF3kttSb6mVNhmpDPYbrEA3xKNkHFadp6kE/export?format=csv&gid=1279168385"
+  champ: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR9loI7nuEWoy2fVDCOZu2X5UsVc-t7ZmUOYy2UPfPLIeTXnafEB1E85ApERpBbDiY8eLact3_bCl7n/pub?gid=1560731560&single=true&output=csv"
 };
 
 
