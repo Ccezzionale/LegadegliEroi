@@ -115,7 +115,6 @@
     </div>
   </div>
 
-  <!-- ===== PANNELLO CHIAMATA (in-page) ===== -->
   <section id="callPanel" class="callPanel" aria-hidden="true">
     <div class="callPanel__header">
       <div>
@@ -134,18 +133,14 @@
 
       <label class="callPanel__label" for="cpCompetition">Competizione</label>
       <select id="cpCompetition" class="callPanel__select">
-        <option value="Round Robin" selected>Round Robin</option>
+        <option value="Round Robin">Round Robin</option>
         <option value="Conference League">Conference League</option>
         <option value="Conf. Championship">Conf. Championship</option>
         <option value="Playoff">Playoff</option>
       </select>
 
       <label class="callPanel__label" for="cpType">Tipo chiamata</label>
-      <select id="cpType" class="callPanel__select">
-        <option value="1" selected>Prima chiamata</option>
-        <option value="2">Seconda chiamata</option>
-        <option value="3">Compensativa</option>
-      </select>
+      <select id="cpType" class="callPanel__select"></select>
 
       <label class="callPanel__label" for="cpDrop">Giocatore svincolato</label>
       <select id="cpDrop" class="callPanel__select" disabled>
@@ -174,16 +169,11 @@
     })();
 
     const CALL_ENDPOINTS = {
-  "Round Robin": "https://script.google.com/macros/s/AKfycbwN9hH0UAQkPhacB4qCENgPY9cr4gXftBageqOIC0Ov8IfG3FNZX7Rfrjfrgz3vQ8DCkw/exec",
-  "Conference League": "URL_DEPLOY_CONF_LEAGUE",
-  "Conf. Championship": "URL_DEPLOY_CONF_CHAMP",
-  "Playoff": "https://script.google.com/macros/s/AKfycbzPFDh7EFY90ce-xrXwfHP9lbMouPQ5vV3SAk0PlGwYr5bayPEZtJKyRKpCKcFmk9cf/exec"
-};
-
-    function getCallEndpoint() {
-  const competition = cpCompetition?.value || "Round Robin";
-  return CALL_ENDPOINTS[competition] || "";
-}
+      "Round Robin": "https://script.google.com/macros/s/AKfycbwN9hH0UAQkPhacB4qCENgPY9cr4gXftBageqOIC0Ov8IfG3FNZX7Rfrjfrgz3vQ8DCkw/exec",
+      "Conference League": "URL_DEPLOY_CONF_LEAGUE",
+      "Conf. Championship": "URL_DEPLOY_CONF_CHAMP",
+      "Playoff": "https://script.google.com/macros/s/AKfycbzPFDh7EFY90ce-xrXwfHP9lbMouPQ5vV3SAk0PlGwYr5bayPEZtJKyRKpCKcFmk9cf/exec"
+    };
 
     // =============================
     // UI refs
@@ -215,6 +205,8 @@
     let ordineListaAscendente = {};
     let eventsBound = false;
     let selectedRowData = null;
+    let ROSE_CACHE = null;
+    let U21_MAP = {};
 
     const CACHE_KEY = 'svincolati_cache_unico';
     const TTL = 0;
@@ -275,7 +267,17 @@
       return out;
     }
 
-    let U21_MAP = {};
+    function getCallEndpoint() {
+      const competition = cpCompetition.value || "Round Robin";
+      return CALL_ENDPOINTS[competition] || "";
+    }
+
+    function getInitialCompetition() {
+      const p = new URLSearchParams(window.location.search);
+      const c = p.get("competition");
+      if (c && CALL_ENDPOINTS[c]) return c;
+      return "Round Robin";
+    }
 
     // =============================
     // Tipi chiamata dinamici
@@ -339,7 +341,7 @@
     }
 
     // =============================
-    // Svincolati: load + parse + render
+    // Svincolati
     // =============================
     async function caricaSvincolati(){
       const now = Date.now();
@@ -512,10 +514,8 @@
     window.ordinaLista = ordinaLista;
 
     // =============================
-    // ROSE: dropdown svincolato
+    // Rose
     // =============================
-    let ROSE_CACHE = null;
-
     function ensureRostersLoaded(){
       if (ROSE_CACHE) return Promise.resolve(ROSE_CACHE);
       if (typeof loadRoseCalls !== "function") return Promise.resolve({});
@@ -572,7 +572,7 @@
     }
 
     // =============================
-    // Chiamate panel
+    // Panel chiamata
     // =============================
     function openCallPanel(data){
       selectedRowData = data;
@@ -586,8 +586,6 @@
       ].filter(Boolean).join(" • ");
 
       cpTeam.value = "";
-      cpCompetition.value = "Round Robin";
-      updateCallTypeOptions();
       populateDropSelect("");
       setCallMsg("");
 
@@ -606,70 +604,75 @@
     }
 
     async function submitCall(){
-  const team = cpTeam.value;
-  const competition = cpCompetition.value;
-  const callType = cpType.value;
-  const drop = document.getElementById("cpDrop")?.value || "";
-  const endpoint = getCallEndpoint();
+      const team = cpTeam.value;
+      const competition = cpCompetition.value;
+      const callType = cpType.value;
+      const drop = cpDrop.value || "";
+      const endpoint = getCallEndpoint();
 
-  if (!selectedRowData?.nome) return setCallMsg("Seleziona un giocatore.");
-  if (!team) return setCallMsg("Seleziona una squadra.");
-  if (!competition) return setCallMsg("Seleziona una competizione.");
-  if (!drop) return setCallMsg("Seleziona il giocatore da svincolare.");
-  if (!endpoint || endpoint.includes("URL_DEPLOY") || endpoint.includes("INCOLLA_QUI")) {
-    return setCallMsg("Endpoint non configurato per questa competizione.");
-  }
+      if (!selectedRowData?.nome) return setCallMsg("Seleziona un giocatore.");
+      if (!team) return setCallMsg("Seleziona una squadra.");
+      if (!competition) return setCallMsg("Seleziona una competizione.");
+      if (!drop) return setCallMsg("Seleziona il giocatore da svincolare.");
+      if (!endpoint || endpoint.includes("URL_DEPLOY") || endpoint.includes("INCOLLA_QUI")) {
+        return setCallMsg("Endpoint non configurato per questa competizione.");
+      }
 
-  cpSubmit.disabled = true;
-  setCallMsg("Invio in corso…", true);
+      cpSubmit.disabled = true;
+      setCallMsg("Invio in corso…", true);
 
-  const payload = {
-    ts: new Date().toISOString(),
-    competition,
-    team,
-    callType,
-    player: selectedRowData.nome,
-    dropped: drop,
-    ruolo: selectedRowData.ruolo,
-    squadraSerieA: selectedRowData.squadra,
-    quotazione: selectedRowData.quotazione,
-    u21: selectedRowData.u21
-  };
+      const payload = {
+        ts: new Date().toISOString(),
+        competition,
+        team,
+        callType,
+        player: selectedRowData.nome,
+        dropped: drop,
+        ruolo: selectedRowData.ruolo,
+        squadraSerieA: selectedRowData.squadra,
+        quotazione: selectedRowData.quotazione,
+        u21: selectedRowData.u21
+      };
 
-  try{
-    await fetch(endpoint, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
+      try{
+        await fetch(endpoint, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
 
-    setCallMsg("Chiamata registrata ✅", true);
-    setTimeout(closeCallPanel, 700);
-  }catch(e){
-    console.error(e);
-    setCallMsg("Errore invio chiamata. Riprova.");
-  }finally{
-    cpSubmit.disabled = false;
-  }
-}
+        setCallMsg("Chiamata registrata ✅", true);
+        setTimeout(closeCallPanel, 700);
+      }catch(e){
+        console.error(e);
+        setCallMsg("Errore invio chiamata. Riprova.");
+      }finally{
+        cpSubmit.disabled = false;
+      }
+    }
 
     // =============================
-    // DOM READY
+    // Init
     // =============================
     document.addEventListener('DOMContentLoaded', async () => {
-   const initialEndpoint = getCallEndpoint();
-if (initialEndpoint) {
-  fetch(initialEndpoint + "?ping=1", { method:"GET", mode:"no-cors" }).catch(() => {});
-}
+      cpCompetition.value = getInitialCompetition();
+      updateCallTypeOptions();
+
+      const initialEndpoint = getCallEndpoint();
+      if (initialEndpoint && !initialEndpoint.includes("URL_DEPLOY")) {
+        fetch(initialEndpoint + "?ping=1", { method:"GET", mode:"no-cors" }).catch(() => {});
+      }
 
       await ensureRostersLoaded();
       U21_MAP = buildU21Map();
       fillTeamSelectFromRosters();
-      updateCallTypeOptions();
 
       cpTeam.addEventListener("change", (e) => populateDropSelect(e.target.value));
-      cpCompetition.addEventListener("change", updateCallTypeOptions);
+      cpCompetition.addEventListener("change", () => {
+        updateCallTypeOptions();
+        setCallMsg("");
+      });
 
       listaGiocatori.addEventListener("click", (e) => {
         const td = e.target.closest("td.player-cell");
