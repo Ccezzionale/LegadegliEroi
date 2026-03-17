@@ -173,7 +173,12 @@
       return 'https://docs.google.com/spreadsheets/d/' + id + '/export?format=csv&gid=' + gid;
     })();
 
-    const CALL_ENDPOINT = "https://script.google.com/macros/s/AKfycbwN9hH0UAQkPhacB4qCENgPY9cr4gXftBageqOIC0Ov8IfG3FNZX7Rfrjfrgz3vQ8DCkw/exec";
+    const CALL_ENDPOINTS = {
+  "Round Robin": "https://script.google.com/macros/s/AKfycbwN9hH0UAQkPhacB4qCENgPY9cr4gXftBageqOIC0Ov8IfG3FNZX7Rfrjfrgz3vQ8DCkw/exec",
+  "Conference League": "URL_DEPLOY_CONF_LEAGUE",
+  "Conf. Championship": "URL_DEPLOY_CONF_CHAMP",
+  "Playoff": "https://script.google.com/macros/s/AKfycbzPFDh7EFY90ce-xrXwfHP9lbMouPQ5vV3SAk0PlGwYr5bayPEZtJKyRKpCKcFmk9cf/exec"
+};
 
     // =============================
     // UI refs
