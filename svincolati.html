@@ -153,9 +153,9 @@
   </section>
 
   <script src="rose_calls_data.js?v=1"></script>
-  <script src="u21.js?v=1"></script>
+<script src="u21.js?v=1"></script>
 
-  <script>
+<script>
   // =============================
   // CONFIG
   // =============================
@@ -179,6 +179,32 @@
     const competition = cpCompetition.value || "Round Robin";
     return CALL_ENDPOINTS[competition] || "";
   }
+
+  // =============================
+  // SQUADRE PER CONFERENCE
+  // =============================
+  // COMPILA QUESTE DUE LISTE CON I NOMI ESATTI DELLE TUE SQUADRE
+  const CONFERENCE_LEAGUE_TEAMS = [
+    // "Squadra 1",
+    // "Squadra 2",
+    // "Squadra 3",
+    // "Squadra 4",
+    // "Squadra 5",
+    // "Squadra 6",
+    // "Squadra 7",
+    // "Squadra 8"
+  ];
+
+  const CONFERENCE_CHAMPIONSHIP_TEAMS = [
+    // "Squadra 9",
+    // "Squadra 10",
+    // "Squadra 11",
+    // "Squadra 12",
+    // "Squadra 13",
+    // "Squadra 14",
+    // "Squadra 15",
+    // "Squadra 16"
+  ];
 
   // =============================
   // UI refs
@@ -214,6 +240,9 @@
   const CACHE_KEY = 'svincolati_cache_unico';
   const TTL = 0;
   const AUTO_REFRESH_MS = 60 * 1000;
+
+  let ROSE_CACHE = null;
+  let U21_MAP = {};
 
   // =============================
   // Utils
@@ -270,7 +299,70 @@
     return out;
   }
 
-  let U21_MAP = {};
+  function normalizeCompetitionName(value){
+    const v = normKey(value);
+
+    if (v.includes("league")) return "Conference League";
+    if (v.includes("championship")) return "Conf. Championship";
+    if (v.includes("playoff")) return "Playoff";
+    if (v.includes("round robin")) return "Round Robin";
+
+    return "";
+  }
+
+  function getTeamCompetitionFromRoster(teamName){
+    if (!ROSE_CACHE || !ROSE_CACHE[teamName]) return "";
+
+    const obj = ROSE_CACHE[teamName];
+
+    const possibleFields = [
+      obj.competition,
+      obj.competizione,
+      obj.torneo,
+      obj.conference,
+      obj.league,
+      obj.group,
+      obj.gruppo,
+      obj.tab,
+      obj.sheet
+    ];
+
+    for (const field of possibleFields){
+      const normalized = normalizeCompetitionName(field);
+      if (normalized) return normalized;
+    }
+
+    if (CONFERENCE_LEAGUE_TEAMS.map(normKey).includes(normKey(teamName))) {
+      return "Conference League";
+    }
+
+    if (CONFERENCE_CHAMPIONSHIP_TEAMS.map(normKey).includes(normKey(teamName))) {
+      return "Conf. Championship";
+    }
+
+    return "";
+  }
+
+  function getFilteredTeamsByCompetition(){
+    if (!ROSE_CACHE) return [];
+
+    const allTeams = Object.keys(ROSE_CACHE).sort((a,b) => a.localeCompare(b));
+    const competition = cpCompetition.value || "Round Robin";
+
+    if (competition === "Round Robin" || competition === "Playoff") {
+      return allTeams;
+    }
+
+    if (competition === "Conference League") {
+      return allTeams.filter(team => getTeamCompetitionFromRoster(team) === "Conference League");
+    }
+
+    if (competition === "Conf. Championship") {
+      return allTeams.filter(team => getTeamCompetitionFromRoster(team) === "Conf. Championship");
+    }
+
+    return allTeams;
+  }
 
   // =============================
   // Tipi chiamata dinamici
@@ -507,10 +599,8 @@
   window.ordinaLista = ordinaLista;
 
   // =============================
-  // ROSE: dropdown svincolato
+  // ROSE: dropdown squadra + svincolo
   // =============================
-  let ROSE_CACHE = null;
-
   function ensureRostersLoaded(){
     if (ROSE_CACHE) return Promise.resolve(ROSE_CACHE);
     if (typeof loadRoseCalls !== "function") return Promise.resolve({});
@@ -520,12 +610,19 @@
   function fillTeamSelectFromRosters(){
     if (!ROSE_CACHE) return;
 
-    const teams = Object.keys(ROSE_CACHE).sort((a,b)=>a.localeCompare(b));
-    if (!teams.length) return;
+    const teams = getFilteredTeamsByCompetition();
+
+    if (!teams.length) {
+      cpTeam.innerHTML = `<option value="" selected disabled>Nessuna squadra disponibile</option>`;
+      populateDropSelect("");
+      return;
+    }
 
     cpTeam.innerHTML =
       `<option value="" selected disabled>Seleziona squadra…</option>` +
       teams.map(t => `<option value="${t.replace(/"/g,'&quot;')}">${t}</option>`).join("");
+
+    populateDropSelect("");
   }
 
   function populateDropSelect(teamName){
@@ -582,6 +679,7 @@
 
     cpTeam.value = "";
     updateCallTypeOptions();
+    fillTeamSelectFromRosters();
     populateDropSelect("");
     setCallMsg("");
 
@@ -665,16 +763,22 @@
 
     await ensureRostersLoaded();
     U21_MAP = buildU21Map();
+
     fillTeamSelectFromRosters();
     updateCallTypeOptions();
 
-    cpTeam.addEventListener("change", (e) => populateDropSelect(e.target.value));
+    cpTeam.addEventListener("change", (e) => {
+      populateDropSelect(e.target.value);
+    });
 
     cpCompetition.addEventListener("change", () => {
       updateCallTypeOptions();
+      fillTeamSelectFromRosters();
       setCallMsg("");
+
       console.log("Competizione selezionata:", cpCompetition.value);
       console.log("Endpoint associato:", getCallEndpoint());
+      console.log("Squadre filtrate:", getFilteredTeamsByCompetition());
     });
 
     listaGiocatori.addEventListener("click", (e) => {
@@ -698,6 +802,4 @@
   });
 </script>
 
-  <script src="navbar.js"></script>
-</body>
-</html>
+<script src="navbar.js"></script>
