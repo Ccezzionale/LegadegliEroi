@@ -87,10 +87,10 @@ function creaHTMLSquadra(nome, seed = "", isPlaceholder = false, isVincente = fa
    BRACKET MANUALE
    ========================================= */
 const PICKS = {
-  WC1: { home: '1', away: '3' },
-  WC2: { home: '3', away: '1' },
-  WC3: { home: '3', away: '1' },
-  WC4: { home: '2', away: '3' },
+  WC1: { home: '', away: '1' },
+  WC2: { home: '1', away: '' },
+  WC3: { home: '1', away: '' },
+  WC4: { home: '', away: '1' },
 
   Q1:  { home: '', away: '' },
   Q2:  { home: '', away: '' },
