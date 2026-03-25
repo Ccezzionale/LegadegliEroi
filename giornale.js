@@ -425,12 +425,18 @@ function buildProssimamenteHTML(manual){
     <div class="block upcoming-block">
       <div class="label">Trailer</div>
       <h3>Prossimamente nella Lega degli Eroi</h3>
+
       ${teaserImageUrl ? `
         <div class="upcoming-media">
           <img src="${teaserImageUrl}" alt="Prossima giornata">
         </div>
       ` : ""}
-      ${teaserText ? `<div class="upcoming-text"><p>${escapeHtml(teaserText).replace(/\n/g, "<br>")}</p></div>` : ""}
+
+      ${teaserText ? `
+        <div class="upcoming-text">
+          <p>${escapeHtml(teaserText).replace(/\n/g, "<br>")}</p>
+        </div>
+      ` : ""}
     </div>
   `;
 }
