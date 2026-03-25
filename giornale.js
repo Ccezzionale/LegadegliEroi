@@ -415,8 +415,7 @@ function buildProssimamenteHTML(manual){
     return `
       <div class="block upcoming-block">
         <div class="label">Trailer</div>
-        <h3>Prossimamente nella Lega degli Eroi</h3>
-        <p class="small">Nessun teaser disponibile per questa giornata.</p>
+        <h3>Next on Lega degli Eroi</h3>
       </div>
     `;
   }
