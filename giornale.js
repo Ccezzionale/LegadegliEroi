@@ -10,9 +10,6 @@ const STATS_CSV_URL =
 const MANUAL_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vTIIcMsU01jJD0WJ8bz_V3rhlYXQOTpU0q8rnFaGzeG1edoqIVk9U3WaIb1WvCBKkrm8ciWYRgdY1ae/pub?output=csv";
 
-const CLASSIFICA_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTduESMbJiPuCDLaAFdOHjep9GW-notjraILSyyjo6SA0xKSR0H0fgMLPNNYSwXgnGGJUyv14kjFRqv/pub?gid=691152130&single=true&output=csv";
-
 // ===== Column mapping =====
 const COL = {
   gw: "GW_Stagionale",
@@ -29,18 +26,19 @@ const MAN = {
   title: "Titolo_manual",
   text: "Testo_manual",
   updated: "UpdatedAt",
-  image: "Immagine"
+  image: "Immagine",
+  teaserImage: "Immagine_teaser",
+  teaser: "Teaser"
 };
 
 // ===== Cache =====
-const CACHE_KEY_HTML = "giornale_cache_html_v2";
-const CACHE_KEY_TS   = "giornale_cache_ts_v2";
+const CACHE_KEY_HTML = "giornale_cache_html_v3";
+const CACHE_KEY_TS   = "giornale_cache_ts_v3";
 const AUTO_REFRESH_MS = 12 * 60 * 60 * 1000;
 
 // ===== State =====
 let STATS_DATA = [];
 let MANUAL_MAP = new Map();
-let CLASSIFICA_DATA = [];
 let CURRENT_GW = null;
 
 // ===== DOM helper =====
@@ -78,26 +76,6 @@ function toNum(x){
 function gwNum(v){
   const m = String(v ?? "").match(/\d+/);
   return m ? Number(m[0]) : NaN;
-}
-
-function normKey(s){
-  return String(s ?? "")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "")
-    .replace(/[._-]/g, "");
-}
-
-function findColByCandidates(obj, candidates){
-  const keys = Object.keys(obj || {});
-  const normalized = keys.map(k => ({ raw: k, norm: normKey(k) }));
-
-  for (const candidate of candidates){
-    const c = normKey(candidate);
-    const hit = normalized.find(x => x.norm === c || x.norm.includes(c));
-    if (hit) return hit.raw;
-  }
-  return null;
 }
 
 function extractDriveFileId(value){
@@ -233,15 +211,23 @@ async function loadManualMap(){
     const title = norm(r[MAN.title]);
     const text = norm(r[MAN.text]);
     const upd = norm(r[MAN.updated]);
+
     const imageRaw = norm(r[MAN.image]);
     const imageUrl = buildDriveImageUrl(imageRaw);
 
-    if (title || text || imageUrl){
+    const teaserImageRaw = norm(r[MAN.teaserImage]);
+    const teaserImageUrl = buildDriveImageUrl(teaserImageRaw);
+
+    const teaser = norm(r[MAN.teaser]);
+
+    if (title || text || imageUrl || teaserImageUrl || teaser){
       map.set(g, {
         title,
         text,
         updatedAt: upd,
-        imageUrl
+        imageUrl,
+        teaserImageUrl,
+        teaser
       });
     }
   }
@@ -336,12 +322,6 @@ function buildTeamStats(matches){
   return Array.from(map.values());
 }
 
-function magicToGoals(mp){
-  if (!Number.isFinite(mp)) return 0;
-  if (mp < 66) return 0;
-  return 1 + Math.floor((mp - 66) / 6);
-}
-
 function buildAutoArticle(data, gw){
   const matches = buildMatchesForGW(data, gw);
   const teamStats = buildTeamStats(matches);
@@ -363,7 +343,6 @@ function buildAutoArticle(data, gw){
   }
 
   const closestMatch = matches.slice().sort((a, b) => a.margin - b.margin)[0] || null;
-  const blowout = matches.slice().sort((a, b) => b.margin - a.margin)[0] || null;
 
   const thief = matches
     .filter(m => m.winner)
@@ -378,7 +357,6 @@ function buildAutoArticle(data, gw){
     matches,
     teamStats,
     matchOfWeek: closestMatch,
-    blowout,
     top: { team: topTeam, pf: Number.isFinite(topPF) ? topPF : 0 },
     flop: { team: flopTeam, pf: Number.isFinite(flopPF) ? flopPF : 0 },
     thief
@@ -423,112 +401,48 @@ function buildStatsBlocks(article){
     </ul>
   `;
 
-  const resultRows = article.matches.map(m => {
-    const hg = magicToGoals(m.aPoints);
-    const ag = magicToGoals(m.bPoints);
-
-    return `
-      <tr>
-        <td><b>${escapeHtml(m.home)}</b> vs <b>${escapeHtml(m.away)}</b></td>
-        <td class="score">${hg} - ${ag}</td>
-        <td class="score small">${m.aPoints.toFixed(1)} - ${m.bPoints.toFixed(1)}</td>
-      </tr>
-    `;
-  }).join("");
-
-  const resultsTableHTML = `
-    <div class="table-wrap">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Partita</th>
-            <th>Gol</th>
-            <th>Magic Punti</th>
-          </tr>
-        </thead>
-        <tbody>${resultRows}</tbody>
-      </table>
-    </div>
-  `;
-
   return {
     matchHTML,
-    premiHTML,
-    resultsTableHTML
+    premiHTML
   };
 }
 
-function buildClassificaHTML(rows){
-  if (!rows || !rows.length) {
-    return `<div class="empty-note">Classifica non disponibile.</div>`;
+function buildProssimamenteHTML(manual){
+  const teaserImageUrl = manual?.teaserImageUrl || "";
+  const teaserText = manual?.teaser || "";
+
+  if (!teaserImageUrl && !teaserText) {
+    return `
+      <div class="block upcoming-block">
+        <div class="label">Trailer</div>
+        <h3>Prossimamente nella Lega degli Eroi</h3>
+        <p class="small">Nessun teaser disponibile per questa giornata.</p>
+      </div>
+    `;
   }
 
-  const sample = rows.find(r => Object.values(r).some(v => String(v).trim() !== "")) || rows[0];
-
-  const colTeam = findColByCandidates(sample, ["Squadra", "Team", "Club", "Nome"]);
-  const teamKey = colTeam || Object.keys(sample)[0];
-
-  const colG  = findColByCandidates(sample, ["G"]);
-  const colPt = findColByCandidates(sample, ["Pt.", "Pt"]);
-  const colMP = findColByCandidates(sample, ["Pt. Totali", "Pt Totali", "Punti Totali"]);
-
-  const clean = rows.filter(r => norm(r[teamKey]) !== "");
-
-  const ordered = clean.slice().sort((a, b) => {
-    const aPt = toNum(a[colPt]);
-    const bPt = toNum(b[colPt]);
-    if (Number.isFinite(aPt) && Number.isFinite(bPt) && bPt !== aPt) return bPt - aPt;
-
-    const aMP = toNum(a[colMP]);
-    const bMP = toNum(b[colMP]);
-    if (Number.isFinite(aMP) && Number.isFinite(bMP) && bMP !== aMP) return bMP - aMP;
-
-    return norm(a[teamKey]).localeCompare(norm(b[teamKey]));
-  });
-
-  const body = ordered.map((r, i) => {
-    const team = norm(r[teamKey]);
-    const g = toNum(r[colG]);
-    const pt = toNum(r[colPt]);
-    const mp = toNum(r[colMP]);
-
-    return `
-      <tr>
-        <td class="small">${i + 1}</td>
-        <td><b>${escapeHtml(team)}</b></td>
-        <td class="score">${Number.isFinite(g) ? g.toFixed(0) : "-"}</td>
-        <td class="score">${Number.isFinite(pt) ? pt.toFixed(0) : "-"}</td>
-        <td class="score small">${Number.isFinite(mp) ? mp.toFixed(1) : "-"}</td>
-      </tr>
-    `;
-  }).join("");
-
   return `
-    <div class="table-wrap">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Squadra</th>
-            <th>G</th>
-            <th>Pt.</th>
-            <th>Pt. Totali</th>
-          </tr>
-        </thead>
-        <tbody>${body}</tbody>
-      </table>
+    <div class="block upcoming-block">
+      <div class="label">Trailer</div>
+      <h3>Prossimamente nella Lega degli Eroi</h3>
+      ${teaserImageUrl ? `
+        <div class="upcoming-media">
+          <img src="${teaserImageUrl}" alt="Prossima giornata">
+        </div>
+      ` : ""}
+      ${teaserText ? `<div class="upcoming-text"><p>${escapeHtml(teaserText).replace(/\n/g, "<br>")}</p></div>` : ""}
     </div>
   `;
 }
 
-function renderManualHTML(gw, manual, stats, classificaHTML){
+function renderManualHTML(gw, manual, stats){
   const title = manual?.title
     ? escapeHtml(manual.title)
     : `GW ${gw} | Edizione della Gazzetta`;
 
   const deck = manual?.text
     ? "La giornata lascia sentenze, rilancia gerarchie e mette qualcuno davanti allo specchio."
-    : "Testo editoriale non ancora inserito. La giornata però ha già lasciato risultati e verdetti.";
+    : "Testo editoriale non ancora inserito. Ma l’aria, intorno alla Lega degli Eroi, sa già di prossima battaglia.";
 
   const subtitle = manual?.updatedAt
     ? `Aggiornato: ${escapeHtml(manual.updatedAt)}`
@@ -536,18 +450,17 @@ function renderManualHTML(gw, manual, stats, classificaHTML){
 
   const editorialContent = manual?.text
     ? textToParagraphs(manual.text)
-    : `<p>Per questa giornata non è stato ancora inserito un editoriale manuale.</p>
-       <p>Puoi comunque consultare risultati, premi discutibili e classifica totale qui sotto.</p>`;
+    : `<p>Per questa giornata non è stato ancora inserito un editoriale manuale.</p>`;
 
-const heroImage = manual?.imageUrl
-  ? `
-    <div class="hero-media">
-      <img src="${manual.imageUrl}" alt="${title}">
-    </div>
-  `
-  : "";
+  const heroImage = manual?.imageUrl
+    ? `
+      <div class="hero-media">
+        <img src="${manual.imageUrl}" alt="${title}">
+      </div>
+    `
+    : "";
 
-  
+  const prossimamenteHTML = buildProssimamenteHTML(manual);
 
   return `
     <div class="lede-wrap">
@@ -568,15 +481,7 @@ const heroImage = manual?.imageUrl
           ${editorialContent}
         </div>
 
-        <div class="block">
-          <h3>Risultati di Giornata</h3>
-          ${stats.resultsTableHTML}
-        </div>
-
-        <div class="block">
-          <h3>Classifica Totale</h3>
-          ${classificaHTML}
-        </div>
+        ${prossimamenteHTML}
       </div>
 
       <div>
@@ -599,6 +504,7 @@ const heroImage = manual?.imageUrl
     </div>
   `;
 }
+
 // ===== Render flow =====
 function setStatus(msg, isErr = false){
   const el = $("status");
@@ -620,7 +526,6 @@ function renderCurrent(){
   const manual = MANUAL_MAP.get(gw) || null;
   const auto = buildAutoArticle(STATS_DATA, gw);
   const statsBlocks = buildStatsBlocks(auto);
-  const classificaHTML = buildClassificaHTML(CLASSIFICA_DATA);
 
   const d = new Date().toLocaleDateString("it-IT", {
     weekday: "long",
@@ -634,7 +539,7 @@ function renderCurrent(){
   if (chipDate) chipDate.textContent = d;
   if (chipGW) chipGW.textContent = `GW ${gw}`;
 
-  out.innerHTML = renderManualHTML(gw, manual, statsBlocks, classificaHTML);
+  out.innerHTML = renderManualHTML(gw, manual, statsBlocks);
   setStatus(`GW ${gw} aggiornata`);
 }
 
@@ -643,13 +548,6 @@ async function loadAll(){
 
   if (STATS_CSV_URL.includes("INCOLLA_QUI")) {
     throw new Error("Devi impostare STATS_CSV_URL con il tuo link CSV delle statistiche.");
-  }
-
-  try {
-    CLASSIFICA_DATA = await fetchCSV(CLASSIFICA_CSV_URL);
-  } catch (e) {
-    console.warn("Classifica non disponibile:", e.message);
-    CLASSIFICA_DATA = [];
   }
 
   STATS_DATA = await fetchCSV(STATS_CSV_URL);
