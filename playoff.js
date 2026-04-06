@@ -92,10 +92,10 @@ const PICKS = {
   WC3: { home: '1', away: '' },
   WC4: { home: '', away: '1' },
 
-  Q1:  { home: '', away: '' },
-  Q2:  { home: '', away: '' },
-  Q3:  { home: '', away: '' },
-  Q4:  { home: '', away: '' },
+  Q1:  { home: '1', away: '' },
+  Q2:  { home: '', away: '2' },
+  Q3:  { home: '', away: '2' },
+  Q4:  { home: '1', away: '' },
 
   S1:  { home: '', away: '' },
   S2:  { home: '', away: '' },
