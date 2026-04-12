@@ -173,11 +173,17 @@
     });
   </script>
 
-  <script>
+<script>
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js")
-    .then(() => console.log("SW registrato"))
-    .catch(err => console.log("Errore SW:", err));
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./sw.js")
+      .then(function () {
+        console.log("SW registrato");
+      })
+      .catch(function (err) {
+        console.log("Errore SW:", err);
+      });
+  });
 }
 </script>
 
