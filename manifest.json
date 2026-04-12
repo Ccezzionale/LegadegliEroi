@@ -1,7 +1,8 @@
 {
   "name": "Lega degli Eroi",
   "short_name": "Eroi",
-  "start_url": "/",
+  "start_url": "/LegadegliEroi/",
+  "scope": "/LegadegliEroi/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0b3d91",
