@@ -98,7 +98,7 @@ const PICKS = {
   Q4:  { home: '', away: '1' },
 
   S1:  { home: '1', away: '' },
-  S2:  { home: '', away: '1' },
+  S2:  { home: '1', away: '' },
 
   F:   { home: '', away: '' },
 };
