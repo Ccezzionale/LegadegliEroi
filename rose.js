@@ -48,7 +48,7 @@ const giocatoriFPManualiPerSquadra = {
   "MinneSota Snakes": [],
   "PokerMantra": [],
   "Minnesode Timberland": [],
-  "Bayern Christiansen": ["atta",
+  "Bayern Christiansen": ["atta"],
   "Golden Knights": [],
   "Ibla": [],
   "Fc Disoneste": [],
