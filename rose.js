@@ -43,15 +43,15 @@ const giocatoriU21PerSquadra = {
 
 const giocatoriFPManualiPerSquadra = {
   "Rubinkebab": ["butez"],
-  "wildboys78": [],
-  "Desperados": [],
+  "Riverfilo": ["pavlovic"],
+  "Fantaugusta": ["vlasic"],
   "MinneSota Snakes": ["bisseck", "carlos augusto","butez"],
-  "PokerMantra": [],
+  "PokerMantra": ["scalvini"],
   "Minnesode Timberland": ["pavlovic"],
   "Bayern Christiansen": ["atta"],
   "Golden Knights": [],
   "Ibla": ["saelemaekers"],
-  "Fc Disoneste": [],
+  "Fc Disoneste": ["mandragora"],
   "Athletic Pongao": ["lauriente"],
   "Pandinicoccolosini": [],
 };
