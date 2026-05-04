@@ -45,14 +45,14 @@ const giocatoriFPManualiPerSquadra = {
   "Rubinkebab": [],
   "wildboys78": [],
   "Desperados": [],
-  "MinneSota Snakes": [],
+  "MinneSota Snakes": ["bisseck", "carlos augusto","butez"],
   "PokerMantra": [],
-  "Minnesode Timberland": [],
+  "Minnesode Timberland": ["pavlovic"],
   "Bayern Christiansen": ["atta"],
   "Golden Knights": [],
-  "Ibla": [],
+  "Ibla": ["saelemaekers"],
   "Fc Disoneste": [],
-  "Athletic Pongao": [],
+  "Athletic Pongao": ["lauriente"],
   "Pandinicoccolosini": [],
 };
 
