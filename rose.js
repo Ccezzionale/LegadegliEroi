@@ -42,7 +42,7 @@ const giocatoriU21PerSquadra = {
 };
 
 const giocatoriFPManualiPerSquadra = {
-  "Rubinkebab": [],
+  "Rubinkebab": ["butez"],
   "wildboys78": [],
   "Desperados": [],
   "MinneSota Snakes": ["bisseck", "carlos augusto","butez"],
