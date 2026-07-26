@@ -89,7 +89,6 @@ function generaDraftDaCSV(classificaCSV, scambiCSV) {
   // --- Conference Championship + bonus Kebab ---
   const champDraftBase = generaSnakeDraftBase(champTeams, 23);
   applicaScambi(champDraftBase, scambi, "Conference Championship");
-  applicaBonusRubinkebab(champDraftBase);
   const championship = formattaDraft(champDraftBase);
 
   return {
