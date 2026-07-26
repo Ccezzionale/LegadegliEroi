@@ -52,45 +52,6 @@ function applicaScambi(draft, scambi, conference) {
   return draft;
 }
 
-// 🔹 BONUS KEBA B: sposta la sua ultima pick al numero 73
-function applicaBonusRubinkebab(draftChampionship) {
-  const squadra = "Rubinkebab";
-  const targetNumber = 73;   // prima pick del round 10
-
-  // 1) trova l'ultima pick di Rubinkebab (pickNumber massimo tra le sue)
-  let lastPick = null;
-  draftChampionship.forEach(round => {
-    round.forEach(p => {
-      if (p.team === squadra) {
-        if (!lastPick || p.pickNumber > lastPick.pickNumber) {
-          lastPick = p;
-        }
-      }
-    });
-  });
-  if (!lastPick) return draftChampionship;
-
-  const oldNumber = lastPick.pickNumber; // es. 179
-  if (oldNumber === targetNumber) return draftChampionship; // già a posto
-
-  // 2) rinumera:
-  // - le pick tra 73 e oldNumber-1 vanno su di 1
-  // - la vecchia oldNumber di Kebab diventa 73
-  draftChampionship.forEach(round => {
-    round.forEach(p => {
-      if (p === lastPick) return;
-      if (p.pickNumber >= targetNumber && p.pickNumber < oldNumber) {
-        p.pickNumber++;
-      }
-    });
-  });
-
-lastPick.pickNumber = targetNumber;
-lastPick.bonusCoppa = true;   // 👈 evidenzia questa pick
-
-return draftChampionship;
-
-}
 
 // Trasforma in formato finale
 function formattaDraft(draft) {
